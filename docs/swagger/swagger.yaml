@@ -1,0 +1,267 @@
+basePath: /v1
+definitions:
+  handler.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      message:
+        type: string
+    type: object
+  model.UserModel:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - username
+    - password
+    type: object
+  user.CreateRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  user.CreateResponse:
+    properties:
+      username:
+        type: string
+    type: object
+  user.ListRequest:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+      username:
+        type: string
+    type: object
+  user.SwaggerListResponse:
+    properties:
+      totalCount:
+        type: integer
+      userList:
+        items:
+          type: '&{model UserInfo}'
+        type: array
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: 466701708@qq.com
+    name: lkong
+    url: http://www.swagger.io/support
+  description: apiserver demo
+  license: {}
+  title: Apiserver Example API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      parameters:
+      - description: Username
+        in: body
+        name: username
+        required: true
+        schema:
+          type: object
+      - description: Password
+        in: body
+        name: password
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MjgwMTY5MjIsImlkIjowLCJuYmYiOjE1MjgwMTY5MjIsInVzZXJuYW1lIjoiYWRtaW4ifQ.LjxrK9DuAwAzUD8-9v43NzWBN7HXsSLfebw92DKd1JQ"}}'
+          schema:
+            type: string
+      summary: Login generates the authentication token
+  /sd/cpu:
+    get:
+      consumes:
+      - application/json
+      description: Checks the cpu usage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'CRITICAL - Load average: 1.78, 1.99, 2.02 | Cores: 2'
+          schema:
+            type: string
+      summary: Checks the cpu usage
+      tags:
+      - sd
+  /sd/disk:
+    get:
+      consumes:
+      - application/json
+      description: Checks the disk usage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'OK - Free space: 17233MB (16GB) / 51200MB (50GB) | Used: 33%'
+          schema:
+            type: string
+      summary: Checks the disk usage
+      tags:
+      - sd
+  /sd/health:
+    get:
+      consumes:
+      - application/json
+      description: Shows OK as the ping-pong result
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Shows OK as the ping-pong result
+      tags:
+      - sd
+  /sd/ram:
+    get:
+      consumes:
+      - application/json
+      description: Checks the ram usage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'OK - Free space: 402MB (0GB) / 8192MB (8GB) | Used: 4%'
+          schema:
+            type: string
+      summary: Checks the ram usage
+      tags:
+      - sd
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: List users
+      parameters:
+      - description: List users
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.ListRequest'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":{"totalCount":1,"userList":[{"id":0,"username":"admin","random":"user
+            ''admin'' get random string ''EnqntiSig''","password":"$2a$10$veGcArz47VGj7l9xN7g2iuT9TF21jLI1YGXarGzvARNdnt4inC9PG","createdAt":"2018-05-28
+            00:25:33","updatedAt":"2018-05-28 00:25:33"}]}}'
+          schema:
+            $ref: '#/definitions/user.SwaggerListResponse'
+            type: object
+      summary: List the users in the database
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Add a new user
+      parameters:
+      - description: Create a new user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateRequest'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":{"username":"kong"}}'
+          schema:
+            $ref: '#/definitions/user.CreateResponse'
+            type: object
+      summary: Add new user to the database
+      tags:
+      - user
+  /user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user by ID
+      parameters:
+      - description: The user's database id index num
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":null}'
+          schema:
+            $ref: '#/definitions/handler.Response'
+            type: object
+      summary: Delete an user by the user identifier
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Update a user by ID
+      parameters:
+      - description: The user's database id index num
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: The user info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserModel'
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":null}'
+          schema:
+            $ref: '#/definitions/handler.Response'
+            type: object
+      summary: Update a user info by the user identifier
+      tags:
+      - user
+  /user/{username}:
+    get:
+      consumes:
+      - application/json
+      description: Get an user by username
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":{"username":"kong","password":"$2a$10$E0kwtmtLZbwW/bDQ8qI8e.eHPqhQOW9tvjwpyo/p05f/f4Qvr3OmS"}}'
+          schema:
+            $ref: '#/definitions/model.UserModel'
+            type: object
+      summary: Get an user by the user identifier
+      tags:
+      - user
+swagger: "2.0"
