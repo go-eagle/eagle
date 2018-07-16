@@ -23,6 +23,7 @@ swag-init:
 	swag init
 	@echo "swag init done"
 	@echo "see docs by: http://localhost:8080/swagger/index.html"
+
 ca:
 	openssl req -new -nodes -x509 -out conf/server.crt -keyout conf/server.key -days 3650 -subj "/C=DE/ST=NRW/L=Earth/O=Random Company/OU=IT/CN=127.0.0.1/emailAddress=xxxxx@qq.com"
 
