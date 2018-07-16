@@ -18,6 +18,11 @@ clean:
 gotool:
 	gofmt -w .
 	go tool vet . |& grep -v vendor;true
+
+swag-init:
+	swag init
+	@echo "swag init done"
+	@echo "see docs by: http://localhost:8080/swagger/index.html"
 ca:
 	openssl req -new -nodes -x509 -out conf/server.crt -keyout conf/server.key -days 3650 -subj "/C=DE/ST=NRW/L=Earth/O=Random Company/OU=IT/CN=127.0.0.1/emailAddress=xxxxx@qq.com"
 
@@ -26,6 +31,7 @@ help:
 	@echo "make clean - remove binary file and vim swp files"
 	@echo "make gotool - run go tool 'fmt' and 'vet'"
 	@echo "make ca - generate ca files"
+	@echo "make swag-init - init swag doc"
 
 .PHONY: clean gotool ca help
 
