@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"go-api/pkg/errno"
+	"goapi/pkg/errno"
 
 	"github.com/gin-gonic/gin"
 )

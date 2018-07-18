@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVER="go-api"
+SERVER="goapi"
 BASE_DIR=$PWD
 INTERVAL=2
 

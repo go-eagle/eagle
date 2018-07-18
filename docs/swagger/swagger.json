@@ -1,12 +1,12 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "apiserver demo",
-        "title": "Apiserver Example API",
+        "description": "goapi demo",
+        "title": "goapi Example API",
         "contact": {
-            "name": "lkong",
+            "name": "qloog",
             "url": "http://www.swagger.io/support",
-            "email": "466701708@qq.com"
+            "email": "449128759@qq.com"
         },
         "license": {},
         "version": "1.0"

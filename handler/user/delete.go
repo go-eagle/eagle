@@ -3,9 +3,9 @@ package user
 import (
 	"strconv"
 
-	. "go-api/handler"
-	"go-api/model"
-	"go-api/pkg/errno"
+	. "goapi/handler"
+	"goapi/model"
+	"goapi/pkg/errno"
 
 	"github.com/gin-gonic/gin"
 )

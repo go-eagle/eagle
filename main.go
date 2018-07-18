@@ -9,11 +9,11 @@ import (
 	"os"
 	"time"
 
-	"go-api/config"
-	"go-api/model"
-	v "go-api/pkg/version"
-	"go-api/router"
-	"go-api/router/middleware"
+	"goapi/config"
+	"goapi/model"
+	v "goapi/pkg/version"
+	"goapi/router"
+	"goapi/router/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lexkong/log"
@@ -22,13 +22,13 @@ import (
 )
 
 var (
-	cfg     = pflag.StringP("config", "c", "", "go-api config file path.")
+	cfg     = pflag.StringP("config", "c", "", "goapi config file path.")
 	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
-// @title Apiserver Example API
+// @title goapi Example API
 // @version 1.0
-// @description apiserver demo
+// @description goapi demo
 
 // @contact.name lkong
 // @contact.url http://www.swagger.io/support

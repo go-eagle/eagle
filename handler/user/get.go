@@ -1,11 +1,12 @@
 package user
 
 import (
-	. "go-api/handler"
-	"go-api/model"
-	"go-api/pkg/errno"
+	. "goapi/handler"
+	"goapi/model"
+	"goapi/pkg/errno"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lexkong/log"
 )
 
 // @Summary Get an user by the user identifier
@@ -17,6 +18,8 @@ import (
 // @Success 200 {object} model.UserModel "{"code":0,"message":"OK","data":{"username":"kong","password":"$2a$10$E0kwtmtLZbwW/bDQ8qI8e.eHPqhQOW9tvjwpyo/p05f/f4Qvr3OmS"}}"
 // @Router /user/{username} [get]
 func Get(c *gin.Context) {
+	log.Info("Get function called.")
+
 	username := c.Param("username")
 	// Get the user by the `username` from the database.
 	user, err := model.GetUser(username)

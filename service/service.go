@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sync"
 
-	"go-api/model"
-	"go-api/util"
+	"goapi/model"
+	"goapi/util"
 )
 
 func ListUser(username string, offset, limit int) ([]*model.UserInfo, uint64, error) {

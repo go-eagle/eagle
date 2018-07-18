@@ -1,6 +1,6 @@
 runmode: debug                  # 开发模式, debug, release, test
 addr: :8080                     # HTTP绑定端口
-name: go-api                    # API Server的名字
+name: goapi                    # API Server的名字
 url: http://127.0.0.1:8080      # pingServer函数请求的API服务器的ip:port
 max_ping_count: 10              # pingServer函数try的次数
 jwt_secret: Rtg8BPKNEf2mB4mgvKONGPZZQSaJWNLijxR42qRgq0iBb5
@@ -11,7 +11,7 @@ tls:
 log:
   writers: stdout
   logger_level: DEBUG
-  logger_file: log/go-api.log
+  logger_file: log/goapi.log
   log_format_text: true
   rollingPolicy: size
   log_rotate_date: 1

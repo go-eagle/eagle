@@ -1,11 +1,11 @@
 package user
 
 import (
-	. "go-api/handler"
-	"go-api/model"
-	"go-api/pkg/auth"
-	"go-api/pkg/errno"
-	"go-api/pkg/token"
+	. "goapi/handler"
+	"goapi/model"
+	"goapi/pkg/auth"
+	"goapi/pkg/errno"
+	"goapi/pkg/token"
 
 	"github.com/gin-gonic/gin"
 )
