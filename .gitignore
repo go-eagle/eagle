@@ -33,6 +33,7 @@ _testmain.go
 *.test
 *.prof
 .idea
+.idea/*
 
 # custom
 goapi
