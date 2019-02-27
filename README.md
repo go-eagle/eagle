@@ -4,7 +4,6 @@ goapi 框架
 
 ## 技术栈
 
-### 后端
 - 框架路由使用 [gin](https://github.com/gin-gonic/gin) 路由
 - 中间件使用 [gin](https://github.com/gin-gonic/gin) 框架的中间件
 - 数据库组件 [gorm](https://github.com/jinzhu/gorm)
