@@ -1,0 +1,40 @@
+runmode: debug                  # 开发模式, debug, release, test
+addr: :8080                     # HTTP绑定端口
+name: goapi/backend             # API Server的名字
+url: http://127.0.0.1:8080      # pingServer函数请求的API服务器的ip:port
+max_ping_count: 10              # pingServer函数try的次数
+jwt_secret: Rtg9BPKNE62mB4mgvK9NGPZvQSaJWNxijxR42qRgq0iBv5
+jwt_duration: 2                 # token 有效时长，单位小时
+tls:
+  addr: :8081
+  cert: conf/server.crt
+  key: conf/server.key
+log:
+  writers: file,stdout            # 有2个可选项：file,stdout, 可以两者同时选择输出位置，有2个可选项：file,stdout。选择file会将日志记录到logger_file指定的日志文件中，选择stdout会将日志输出到标准输出，当然也可以两者同时选择
+  logger_level: DEBUG             # 日志级别，DEBUG, INFO, WARN, ERROR, FATAL
+  logger_file: logs/backend.log   # 日志文件
+  log_format_text: true           # 日志的输出格式，json或者plaintext，true会输出成plaintext格式，false会输出成json格式
+  rollingPolicy: daily            # rotate依据，可选的有：daily, size。如果选daily则根据天进行转存，如果是size则根据大小进行转存
+  log_rotate_date: 1              # rotate转存时间，配合rollingPolicy: daily使用
+  log_rotate_size: 1              # rotate转存大小，配合rollingPolicy: size使用
+  log_backup_count: 7             # 当日志文件达到转存标准时，log系统会将该日志文件进行压缩备份，这里指定了备份文件的最大个数。
+gorm:
+  show_log: true                  # 是否打印SQL日志
+  max_idle_conn: 10               # 最大打开的连接数
+  max_open_conn: 60               # 最大的闲置的连接数
+  conn_max_lift_time: 60          # 连接重用的最大时间，单位分钟
+db:
+  name: goapi
+  addr: 127.0.0.1:3306
+  username: root
+  password: 123456
+docker_db:
+  name: goapi
+  addr: 127.0.0.1:3306
+  username: root
+  password: 123456
+redis:
+  addr: "localhost:6379"
+  password: "hLR6W2Hu4W"
+  db: 0 # no password set
+  poolsize: 60 # use default DB
