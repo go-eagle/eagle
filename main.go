@@ -30,9 +30,9 @@ var (
 // @version 1.0
 // @description goapi demo
 
-// @contact.name lkong
+// @contact.name 1024casts
 // @contact.url http://www.swagger.io/support
-// @contact.email 466701708@qq.com
+// @contact.email
 
 // @host localhost:8080
 // @BasePath /v1
