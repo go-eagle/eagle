@@ -1,9 +1,8 @@
 package redis
 
 import (
-	"log"
-
 	"github.com/go-redis/redis"
+	"github.com/lexkong/log"
 	"github.com/spf13/viper"
 )
 
@@ -18,7 +17,7 @@ func init() {
 
 	_, err := Client.Ping().Result()
 	if err != nil {
-		log.Fatalf("[redis] redis ping err: %+v", err)
+		log.Errorf(err, "[redis] redis ping err: %+v")
 		panic(err)
 	}
 }
