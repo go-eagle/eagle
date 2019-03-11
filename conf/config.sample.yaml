@@ -37,4 +37,7 @@ redis:
   addr: "localhost:6379"
   password: "hLR6W2Hu4W"
   db: 0 # no password set
-  poolsize: 60 # use default DB
+  dial_timeout: 1   # 单位：秒
+  read_timeout: 1   # 单位：秒
+  write_timeout: 1  # 单位：秒
+  pool_size: 60 # use default DB
