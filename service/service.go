@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sync"
 
-	"goapi/model"
-	"goapi/util"
+	"github.com/1024casts/snake/model"
+	"github.com/1024casts/snake/util"
 )
 
 func ListUser(username string, offset, limit int) ([]*model.UserInfo, uint64, error) {

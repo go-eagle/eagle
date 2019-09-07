@@ -1,9 +1,9 @@
 package user
 
 import (
-	. "goapi/handler"
-	"goapi/pkg/errno"
-	"goapi/service"
+	. "github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lexkong/log"

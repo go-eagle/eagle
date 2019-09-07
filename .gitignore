@@ -36,5 +36,5 @@ _testmain.go
 .idea/*
 
 # custom
-goapi
+snake
 conf/config.yaml

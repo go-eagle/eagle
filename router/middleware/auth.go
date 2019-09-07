@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"goapi/handler"
-	"goapi/pkg/errno"
-	"goapi/pkg/token"
+	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/token"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVER="goapi"
+SERVER="snake"
 BASE_DIR=$PWD
 INTERVAL=2
 

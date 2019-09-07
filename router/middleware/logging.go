@@ -7,8 +7,8 @@ import (
 	"regexp"
 	"time"
 
-	"goapi/handler"
-	"goapi/pkg/errno"
+	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/pkg/errno"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lexkong/log"

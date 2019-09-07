@@ -9,11 +9,11 @@ import (
 	"os"
 	"time"
 
-	"goapi/config"
-	"goapi/model"
-	v "goapi/pkg/version"
-	"goapi/router"
-	"goapi/router/middleware"
+	"github.com/1024casts/snake/config"
+	"github.com/1024casts/snake/model"
+	v "github.com/1024casts/snake/pkg/version"
+	"github.com/1024casts/snake/router"
+	"github.com/1024casts/snake/router/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lexkong/log"
@@ -22,13 +22,13 @@ import (
 )
 
 var (
-	cfg     = pflag.StringP("config", "c", "", "goapi config file path.")
+	cfg     = pflag.StringP("config", "c", "", "snake config file path.")
 	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
-// @title goapi Example API
+// @title snake Example API
 // @version 1.0
-// @description goapi demo
+// @description snake demo
 
 // @contact.name 1024casts
 // @contact.url http://www.swagger.io/support

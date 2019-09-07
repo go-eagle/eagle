@@ -1,7 +1,7 @@
 package user
 
 import (
-	"goapi/model"
+	"github.com/1024casts/snake/model"
 )
 
 type CreateRequest struct {
