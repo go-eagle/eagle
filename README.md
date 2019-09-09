@@ -16,6 +16,7 @@ snake 框架
 ## 目录结构
 
 ```shell
+├── Makefile                     # 项目管理文件
 ├── admin.sh                     # 进程的start|stop|status|restart控制文件
 ├── conf                         # 配置文件统一存放目录
 ├── config                       # 专门用来处理配置和配置文件的Go package                 
@@ -41,7 +42,7 @@ Go 语言中常用的 API 风格是 RPC 和 REST，常用的媒体类型是 JSON
 本项目使用 API 风格采用 REST，媒体类型选择 JSON 。
 
 <details>
-### REST 
+ <summary>REST</summary>
 
 REST 风格虽然适用于很多传输协议，但在实际开发中，REST 由于天生和 HTTP 协议相辅相成，因此 HTTP 协议已经成了实现 RESTful API 事实上的标准。  
 在 HTTP 协议中通过 POST、DELETE、PUT、GET 方法来对应 REST 资源的增、删、改、查操作，具体的对应关系如下：
