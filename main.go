@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/1024casts/snake/pkg/redis"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
@@ -30,7 +31,7 @@ var (
 // @version 1.0
 // @description snake demo
 
-// @contact.name 1024casts
+// @contact.name 1024casts/snake
 // @contact.url http://www.swagger.io/support
 // @contact.email
 
@@ -58,6 +59,9 @@ func main() {
 	// init db
 	model.DB.Init()
 	defer model.DB.Close()
+
+	// init redis
+	redis.Init()
 
 	// Set gin mode.
 	gin.SetMode(viper.GetString("runmode"))
