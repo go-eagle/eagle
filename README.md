@@ -11,7 +11,9 @@ snake 框架
 - 配置文件解析库 [viper](https://github.com/spf13/viper)
 - 使用 [JWT](https://jwt.io/) 进行身份鉴权认证
 - 校验器 [validator](https://gopkg.in/go-playground/validator.v9)  也是 gin 框架默认的校验器，当前最新是v9版本
-- 第三方包管理工具 [govendor](https://github.com/kardianos/govendor)
+- 任务调度 [cron](https://github.com/robfig/cron)
+- 包管理工具 [go module](https://github.com/golang/go/wiki/Modules)
+- 测试框架 [goConvey](http://goconvey.co/)
 
 ## 目录结构
 
