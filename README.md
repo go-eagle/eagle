@@ -13,6 +13,26 @@ snake 框架
 - 校验器 [validator](https://gopkg.in/go-playground/validator.v9)  也是 gin 框架默认的校验器，当前最新是v9版本
 - 第三方包管理工具 [govendor](https://github.com/kardianos/govendor)
 
+## 目录结构
+
+```shell
+├── admin.sh                     # 进程的start|stop|status|restart控制文件
+├── conf                         # 配置文件统一存放目录
+├── config                       # 专门用来处理配置和配置文件的Go package                 
+├── db.sql                       # 在部署新环境时，可以登录MySQL客户端，执行source db.sql创建数据库和表
+├── docs                         # swagger文档，执行 swag init 生成的
+├── handler                      # 类似MVC架构中的C，用来读取输入，并将处理流程转发给实际的处理函数，最后返回结果
+├── log                          # 存放日志的目录
+├── main.go                      # 项目入口文件
+├── model                        # 数据库model
+├── pkg                          # 一些封装好的package
+├── repository                   # 数据访问层
+├── router                       # 路由及中间件目录
+├── service                      # 业务逻辑封装
+├── util                         # 业务工具包
+└── wrktest.sh                   # API 性能测试脚本
+```
+
 ## API风格和媒体类型
 
 Go 语言中常用的 API 风格是 RPC 和 REST，常用的媒体类型是 JSON、XML 和 Protobuf。  
@@ -20,6 +40,7 @@ Go 语言中常用的 API 风格是 RPC 和 REST，常用的媒体类型是 JSON
 
 本项目使用 API 风格采用 REST，媒体类型选择 JSON 。
 
+<details>
 ### REST 
 
 REST 风格虽然适用于很多传输协议，但在实际开发中，REST 由于天生和 HTTP 协议相辅相成，因此 HTTP 协议已经成了实现 RESTful API 事实上的标准。  
@@ -32,36 +53,7 @@ REST 风格虽然适用于很多传输协议，但在实际开发中，REST 由�
 | POST	  | 创建一个新的资源  | /users |	创建一个新用户 |
 | PUT	  | 更新一个资源	| /users/1 |	更新 id 为 1 的用户 |
 | DELETE  |	删除服务器上的一个资源	| /users/1 |	删除 id 为 1 的用户 |
-
-## 目录结构
-
-```shell
-├── admin.sh                     # 进程的start|stop|status|restart控制文件
-├── conf                         # 配置文件统一存放目录
-│   ├── config.yaml              # 配置文件
-│   ├── server.crt               # TLS配置文件
-│   └── server.key
-├── config                       # 专门用来处理配置和配置文件的Go package
-│   └── config.go                 
-├── db.sql                       # 在部署新环境时，可以登录MySQL客户端，执行source db.sql创建数据库和表
-├── docs                         # swagger文档，执行 swag init 生成的
-│   ├── docs.go
-│   └── swagger
-│       ├── swagger.json
-│       └── swagger.yaml
-├── handler                      # 类似MVC架构中的C，用来读取输入，并将处理流程转发给实际的处理函数，最后返回结果
-│   ├── handler.go
-│   ├── sd                       # 健康检查handler
-│   │   └── check.go 
-│   └── user                     # 核心：用户业务逻辑handler
-│       ├── create.go            # 新增用户
-│       ├── delete.go            # 删除用户
-│       ├── get.go               # 获取指定的用户信息
-│       ├── list.go              # 查询用户列表
-│       ├── login.go             # 用户登录
-│       ├── update.go            # 更新用户
-│       └── user.go
-```
+</details>
 
 ## 错误码设计
 
@@ -75,7 +67,8 @@ REST 风格虽然适用于很多传输协议，但在实际开发中，REST 由�
   "message": "Error occurred while binding the request body to the struct."
 }
 ```
-错误代码说明：
+<details>
+<summary>错误代码说明：</summary>
 
 | 1 | 00 | 02 |
 | :------ | :------ | :------ |
@@ -89,6 +82,7 @@ REST 风格虽然适用于很多传输协议，但在实际开发中，REST 由�
 - 建议代码中按服务模块将错误分类
 - 错误码均为 >= 0 的数
 - 在本项目中 HTTP Code 固定为 http.StatusOK，错误码通过 code 来表示。
+</details>
 
 ## 模块
 
