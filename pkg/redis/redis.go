@@ -1,6 +1,8 @@
 package redis
 
 import (
+	"fmt"
+
 	"github.com/go-redis/redis"
 	"github.com/lexkong/log"
 	"github.com/spf13/viper"
@@ -8,7 +10,7 @@ import (
 
 var Client *redis.Client
 
-func init() {
+func Init() {
 	Client = redis.NewClient(&redis.Options{
 		Addr:         viper.GetString("redis.addr"),
 		Password:     viper.GetString("redis.password"),
@@ -18,6 +20,8 @@ func init() {
 		WriteTimeout: viper.GetDuration("redis.write_timeout"),
 		PoolSize:     viper.GetInt("redis.pool_size"),
 	})
+
+	fmt.Println("redis addr:", viper.GetString("redis.addr"))
 
 	_, err := Client.Ping().Result()
 	if err != nil {
