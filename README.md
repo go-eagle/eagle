@@ -32,6 +32,7 @@ snake 框架
 ├── repository                   # 数据访问层
 ├── router                       # 路由及中间件目录
 ├── service                      # 业务逻辑封装
+├── schedule                     # 任务调度配置目录
 ├── util                         # 业务工具包
 └── wrktest.sh                   # API 性能测试脚本
 ```
