@@ -10,6 +10,8 @@ import (
 
 var Client *redis.Client
 
+const Nil = redis.Nil
+
 func Init() {
 	Client = redis.NewClient(&redis.Options{
 		Addr:         viper.GetString("redis.addr"),
