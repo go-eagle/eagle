@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/1024casts/snake/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,8 +12,7 @@ func RequestId() gin.HandlerFunc {
 
 		// Create request id with UUID4
 		if requestId == "" {
-			//u4, _ := uuid.NewV4()
-			//requestId = u4.String()
+			requestId = util.GenUUID()
 		}
 
 		// Expose it for use in the application
