@@ -1,11 +1,10 @@
 package service
 
 import (
-	"os"
-
 	"github.com/pkg/errors"
 	"github.com/qiniu/api.v7/auth"
 	"github.com/qiniu/api.v7/sms"
+	"github.com/spf13/viper"
 )
 
 // 直接初始化，可以避免在使用时再实例化
@@ -34,42 +33,15 @@ func (srv *smsService) Send(phoneNumber string, verifyCode int) error {
 // 调用第三方发送服务
 func (srv *smsService) _sendViaQiNiu(phoneNumber string, verifyCode int) error {
 
-	accessKey := os.Getenv("accessKey")
-	secretKey := os.Getenv("secretKey")
+	accessKey := viper.GetString("qiniu.access_key")
+	secretKey := viper.GetString("qiniu.secret_key")
 
 	mac := auth.New(accessKey, secretKey)
 	manager := sms.NewManager(mac)
 
-	// CreateTemplate
-	tempArgs := sms.TemplateRequest{
-		Name:     "Test",
-		Type:     sms.VerificationType,
-		Template: "验证码: ${code}， 10分钟内有效。",
-	}
-	tempRet, err := manager.CreateTemplate(tempArgs)
-	if err != nil {
-		return errors.New("create template error")
-	}
-	if len(tempRet.TemplateID) == 0 {
-		return errors.New("template id is empty")
-	}
-
-	// CreateSignature
-	signArgs := sms.SignatureRequest{
-		Signature: "Test",
-		Source:    sms.APP,
-	}
-	signRet, err := manager.CreateSignature(signArgs)
-	if err != nil {
-		return errors.New("create signature error")
-	}
-	if len(signRet.SignatureID) == 0 {
-		return errors.New("signature id is empty")
-	}
-
 	args := sms.MessagesRequest{
-		SignatureID: signRet.SignatureID,
-		TemplateID:  tempRet.TemplateID,
+		SignatureID: viper.GetString("qiniu.signature_id"),
+		TemplateID:  viper.GetString("qiniu.template_id"),
 		Mobiles:     []string{phoneNumber},
 		Parameters: map[string]interface{}{
 			"code": verifyCode,
