@@ -41,3 +41,8 @@ redis:
   read_timeout: 1   # 单位：秒
   write_timeout: 1  # 单位：秒
   pool_size: 60 # use default DB
+qiniu:
+  access_key: ACCESS_KEY
+  secret_key: SECRET_KEY
+  signature_id: signature_id  # 短信签名id
+  template_id: template_id    # 模板id
