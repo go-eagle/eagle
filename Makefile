@@ -32,7 +32,7 @@ help:
 	@echo "make clean - remove binary file and vim swp files"
 	@echo "make gotool - run go tool 'fmt' and 'vet'"
 	@echo "make ca - generate ca files"
-	@echo "make swag-init - init swag doc"
+	@echo "make swag-init - gen swag doc"
 
 .PHONY: clean gotool ca help
 
