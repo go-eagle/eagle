@@ -25,6 +25,7 @@ snake 框架
 - 单元测试(基于net/http/httptest包，覆盖所有接口层的测试)
 - 依赖注入(基于dig) todo
 - 使用 make 来管理Go工程
+- 使用 shell(admin.sh) 脚本来管理进程
 
 ## 目录结构
 
