@@ -15,7 +15,7 @@ func ListUser(username string, offset, limit int) ([]*model.UserInfo, uint64, er
 		return nil, count, err
 	}
 
-	ids := []uint64{}
+	var ids []uint64
 	for _, user := range users {
 		ids = append(ids, user.Id)
 	}
