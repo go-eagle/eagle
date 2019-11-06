@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/1024casts/snake/pkg/redis"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
 	"time"
 
 	"github.com/1024casts/snake/config"
-	"github.com/1024casts/snake/model"
+	"github.com/1024casts/snake/pkg/db"
+	"github.com/1024casts/snake/pkg/redis"
 	v "github.com/1024casts/snake/pkg/version"
 	"github.com/1024casts/snake/router"
 	"github.com/1024casts/snake/router/middleware"
@@ -56,9 +56,13 @@ func main() {
 		panic(err)
 	}
 
+	serverConfig := config.GetServerConfig()
+
 	// init db
-	model.DB.Init()
-	defer model.DB.Close()
+	if err := db.Init(&serverConfig.DB); err != nil {
+		log.Fatalf(err, "[main] init db err")
+		panic(err)
+	}
 
 	// init redis
 	redis.Init()
