@@ -25,10 +25,10 @@ var (
 type Repository interface {
 	Create(tx Connection, src model.ValidatedObject) error
 	FirstOrCreate(tx Connection, src model.ValidatedObject) error
-	DeleteById(tx Connection, id model.ValidatedObject) error
 	GetById(tx Connection, id model.ValidatedObject) error
 	Save(tx Connection, src model.ValidatedObject) error
 	Patch(tx Connection, src model.ValidatedObject, data model.ValidatedObject) error
+	DeleteById(tx Connection, id model.ValidatedObject) error
 	List(tx Connection, items interface{}, filter ListFilter, orders Orders) (totalCount int, err error)
 	CreateTable(tx Connection) error
 }

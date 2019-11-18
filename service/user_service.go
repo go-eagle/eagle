@@ -2,10 +2,10 @@ package service
 
 import (
 	"github.com/1024casts/snake/pkg/db"
+	"github.com/1024casts/snake/pkg/valid"
+	"github.com/pkg/errors"
 
 	"github.com/1024casts/snake/repository"
-
-	"github.com/realsangil/apimonitor/pkg/amerr"
 
 	"github.com/1024casts/snake/model"
 )
@@ -16,10 +16,10 @@ type userRequest struct {
 }
 
 type UserService interface {
-	CreateUser(request model.UserModel) (*model.UserModel, *amerr.ErrorWithLanguage)
+	CreateUser(request model.UserRequest) (*model.UserModel, error)
 	GetUserById(data *model.UserModel) error
-	DeleteUserById(webService *model.UserModel) *amerr.ErrorWithLanguage
-	UpdateUserById(webService *model.UserModel, request model.UserModel) *amerr.ErrorWithLanguage
+	DeleteUserById(webService *model.UserModel) error
+	UpdateUserById(webService *model.UserModel, request model.UserRequest) error
 	GetUserList(request userRequest) ([]*model.UserModel, int, error)
 }
 
@@ -33,15 +33,33 @@ func NewUserService() UserService {
 	}
 }
 
-func (srv *UserServiceImpl) CreateUser(request model.UserModel) (*model.UserModel, *amerr.ErrorWithLanguage) {
-	return nil, amerr.GetErrorsFromCode(amerr.ErrInternalServer)
+func (srv *UserServiceImpl) CreateUser(request model.UserRequest) (*model.UserModel, error) {
+	if valid.IsZero(request) {
+		return nil, errors.New("param error")
+	}
+
+	user, err := model.NewUser(request)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := srv.userRepo.Create(db.GetConnection(), user); err != nil {
+		switch err {
+		case db.ErrInvalidData:
+			return nil, db.ErrInvalidData
+		case db.ErrDuplicateData:
+			return nil, db.ErrDuplicateData
+		}
+		return nil, errors.New("param error")
+	}
+
+	return user, nil
 }
 
 func (srv *UserServiceImpl) GetUserById(userModel *model.UserModel) error {
-
-	//if valid.IsZero(userModel) {
-	//	return amerr.GetErrorsFromCode(amerr.ErrInternalServer)
-	//}
+	if valid.IsZero(userModel) {
+		return errors.New("param error")
+	}
 
 	if err := srv.userRepo.GetById(db.GetConnection(), userModel); err != nil {
 		switch err {
@@ -53,18 +71,48 @@ func (srv *UserServiceImpl) GetUserById(userModel *model.UserModel) error {
 	return nil
 }
 
-func (service *UserServiceImpl) DeleteUserById(request *model.UserModel) *amerr.ErrorWithLanguage {
+func (srv *UserServiceImpl) DeleteUserById(userModel *model.UserModel) error {
+	if valid.IsZero(userModel) {
+		return errors.New("param error")
+	}
+
+	if err := srv.userRepo.DeleteById(db.GetConnection(), userModel); err != nil {
+		switch err {
+		case db.ErrRecordNotFound:
+			return err
+		}
+		return err
+	}
 	return nil
 }
 
-func (service *UserServiceImpl) UpdateUserById(user *model.UserModel, request model.UserModel) *amerr.ErrorWithLanguage {
+func (srv *UserServiceImpl) UpdateUserById(userModel *model.UserModel, request model.UserRequest) error {
+	if valid.IsZero(request) {
+		return errors.New("param error")
+	}
+
+	if err := userModel.UpdateFromRequest(request); err != nil {
+		return err
+	}
+
+	if err := srv.userRepo.Save(db.GetConnection(), userModel); err != nil {
+		switch err {
+		case db.ErrRecordNotFound:
+			return err
+		}
+		return err
+	}
+
 	return nil
 }
 
-func (service *UserServiceImpl) GetUserList(request userRequest) ([]*model.UserModel, int, error) {
+func (srv *UserServiceImpl) GetUserList(request userRequest) ([]*model.UserModel, int, error) {
+	if valid.IsZero(request) {
+		return nil, 0, errors.New("param error")
+	}
 
 	items := make([]*model.UserModel, 0)
-	totalCount, err := service.userRepo.List(db.GetConnection(), &items, db.ListFilter{
+	totalCount, err := srv.userRepo.List(db.GetConnection(), &items, db.ListFilter{
 		Page:       request.Page,
 		Conditions: map[string]interface{}{},
 	}, db.Orders{

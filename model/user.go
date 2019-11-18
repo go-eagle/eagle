@@ -23,6 +23,20 @@ type UserModel struct {
 //	return validate.Struct(u)
 //}
 
+func NewUser(request UserRequest) (*UserModel, error) {
+	user := &UserModel{}
+
+	if err := user.UpdateFromRequest(request); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	if err := user.Validate(); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return user, nil
+}
+
 func (user *UserModel) Validate() error {
 	if valid.IsZero(
 		user.Username,
@@ -30,6 +44,17 @@ func (user *UserModel) Validate() error {
 		return errors.Wrap(errno.ErrParam, "webService")
 	}
 	user.isValidated = true
+	return nil
+}
+
+type UserRequest struct {
+	Username string
+}
+
+func (user *UserModel) UpdateFromRequest(request UserRequest) error {
+
+	user.Username = request.Username
+
 	return nil
 }
 
