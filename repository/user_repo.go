@@ -8,11 +8,11 @@ import (
 )
 
 type UserRepository interface {
-	Repository
+	db.Repository
 }
 
 type UserRepositoryImpl struct {
-	Repository
+	db.Repository
 }
 
 func (repository UserRepositoryImpl) CreateTable(transaction db.Connection) error {
@@ -28,5 +28,5 @@ func (repository UserRepositoryImpl) CreateTable(transaction db.Connection) erro
 }
 
 func NewUserRepository() UserRepository {
-	return &UserRepositoryImpl{&BaseRepository{}}
+	return &UserRepositoryImpl{&db.DefaultRepository{}}
 }

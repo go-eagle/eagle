@@ -11,9 +11,9 @@ import (
 
 type BaseModel struct {
 	Id        uint64     `gorm:"primary_key;AUTO_INCREMENT;column:id" json:"-"`
-	CreatedAt time.Time  `gorm:"column:createdAt" json:"-"`
-	UpdatedAt time.Time  `gorm:"column:updatedAt" json:"-"`
-	DeletedAt *time.Time `gorm:"column:deletedAt" sql:"index" json:"-"`
+	CreatedAt time.Time  `gorm:"column:created_at" json:"-"`
+	UpdatedAt time.Time  `gorm:"column:updated_at" json:"-"`
+	DeletedAt *time.Time `gorm:"column:deleted_at" sql:"index" json:"-"`
 }
 
 type NullType byte
@@ -47,6 +47,14 @@ type DefaultValidateChecker struct {
 
 func (c DefaultValidateChecker) IsValidated() bool {
 	return c.isValidated
+}
+
+type ListResponse struct {
+	TotalCount uint64      `json:"total_count"`
+	HasMore    int         `json:"has_more"`
+	PageKey    string      `json:"page_key"`
+	PageValue  int         `json:"page_value"`
+	Items      interface{} `json:"items"`
 }
 
 type PaginatedList struct {

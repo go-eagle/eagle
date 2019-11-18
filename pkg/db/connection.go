@@ -22,11 +22,11 @@ func GetConnection() Connection {
 }
 
 type Connection interface {
+	Conn() *gorm.DB
 	Begin() (Connection, error)
 	Close() error
 	Rollback() error
 	Commit() error
-	Conn() *gorm.DB
 }
 
 type defaultConnection struct {
@@ -35,6 +35,10 @@ type defaultConnection struct {
 
 func NewConnection(tx *gorm.DB) Connection {
 	return &defaultConnection{tx}
+}
+
+func (conn *defaultConnection) Conn() *gorm.DB {
+	return conn.db
 }
 
 func (conn *defaultConnection) Begin() (Connection, error) {
@@ -58,10 +62,6 @@ func (conn *defaultConnection) Rollback() error {
 
 func (conn *defaultConnection) Commit() error {
 	return conn.Conn().Commit().Error
-}
-
-func (conn *defaultConnection) Conn() *gorm.DB {
-	return conn.db
 }
 
 func Init(config DatabaseConfig) error {

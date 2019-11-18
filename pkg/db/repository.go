@@ -1,4 +1,4 @@
-package repository
+package db
 
 import (
 	"fmt"
@@ -7,16 +7,10 @@ import (
 	"strings"
 
 	"github.com/1024casts/snake/model"
-
 	"github.com/1024casts/snake/pkg/errno"
-
 	"github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/lexkong/log"
-
-	. "github.com/1024casts/snake/pkg/db"
-	"github.com/realsangil/apimonitor/pkg/model"
-
 	"github.com/pkg/errors"
 )
 
@@ -34,18 +28,18 @@ type Repository interface {
 	DeleteById(tx Connection, id model.ValidatedObject) error
 	GetById(tx Connection, id model.ValidatedObject) error
 	Save(tx Connection, src model.ValidatedObject) error
-	Update(tx Connection, src model.ValidatedObject, data model.ValidatedObject) error
+	Patch(tx Connection, src model.ValidatedObject, data model.ValidatedObject) error
 	List(tx Connection, items interface{}, filter ListFilter, orders Orders) (totalCount int, err error)
 	CreateTable(tx Connection) error
 }
 
-type BaseRepository struct{}
+type DefaultRepository struct{}
 
-func NewBaseRepository() Repository {
-	return &BaseRepository{}
+func NewDefaultRepository() Repository {
+	return &DefaultRepository{}
 }
 
-func (repo BaseRepository) CreateTable(tx Connection) error {
+func (repo DefaultRepository) CreateTable(tx Connection) error {
 	return nil
 }
 
@@ -63,7 +57,30 @@ func checkItems(items interface{}) error {
 	return nil
 }
 
-func (repo *BaseRepository) Create(tx Connection, src model.ValidatedObject) error {
+func (repo *DefaultRepository) Patch(tx Connection, src model.ValidatedObject, data model.ValidatedObject) error {
+	if !data.IsValidated() {
+		return ErrInvalidModel
+	}
+	err := tx.Conn().Model(src).Updates(data).Error
+	return HandleSQLError(err)
+}
+
+func (repo *DefaultRepository) Save(tx Connection, src model.ValidatedObject) error {
+	err := tx.Conn().Save(src).Error
+	return HandleSQLError(err)
+}
+
+func (repo *DefaultRepository) DeleteById(tx Connection, id model.ValidatedObject) error {
+	err := tx.Conn().Debug().Delete(id).Error
+	return HandleSQLError(err)
+}
+
+func (repo *DefaultRepository) GetById(tx Connection, id model.ValidatedObject) error {
+	err := tx.Conn().First(id).Error
+	return HandleSQLError(err)
+}
+
+func (repo *DefaultRepository) Create(tx Connection, src model.ValidatedObject) error {
 	if !src.IsValidated() {
 		return ErrInvalidModel
 	}
@@ -73,7 +90,7 @@ func (repo *BaseRepository) Create(tx Connection, src model.ValidatedObject) err
 	return nil
 }
 
-func (repo *BaseRepository) FirstOrCreate(tx Connection, src model.ValidatedObject) error {
+func (repo *DefaultRepository) FirstOrCreate(tx Connection, src model.ValidatedObject) error {
 	if !src.IsValidated() {
 		return ErrInvalidModel
 	}
@@ -83,30 +100,7 @@ func (repo *BaseRepository) FirstOrCreate(tx Connection, src model.ValidatedObje
 	return nil
 }
 
-func (repo *BaseRepository) Update(tx Connection, src model.ValidatedObject, data model.ValidatedObject) error {
-	if !data.IsValidated() {
-		return ErrInvalidModel
-	}
-	err := tx.Conn().Model(src).Updates(data).Error
-	return HandleSQLError(err)
-}
-
-func (repo *BaseRepository) Save(tx Connection, src model.ValidatedObject) error {
-	err := tx.Conn().Save(src).Error
-	return HandleSQLError(err)
-}
-
-func (repo *BaseRepository) DeleteById(tx Connection, id model.ValidatedObject) error {
-	err := tx.Conn().Debug().Delete(id).Error
-	return HandleSQLError(err)
-}
-
-func (repo *BaseRepository) GetById(tx Connection, id model.ValidatedObject) error {
-	err := tx.Conn().First(id).Error
-	return HandleSQLError(err)
-}
-
-func (repo *BaseRepository) List(tx Connection, items interface{}, filter ListFilter, orders Orders) (int, error) {
+func (repo *DefaultRepository) List(tx Connection, items interface{}, filter ListFilter, orders Orders) (int, error) {
 	if e := checkItems(items); e != nil {
 		return 0, errors.WithStack(e)
 	}
@@ -126,7 +120,7 @@ func (repo *BaseRepository) List(tx Connection, items interface{}, filter ListFi
 		query = query.Order(orders.String())
 	}
 
-	if e := query.Offset(filter.PageSize * (filter.Page - 1)).Limit(filter.PageSize).Find(items).Error; e != nil {
+	if e := query.Offset(filter.NumItem * (filter.Page - 1)).Limit(filter.NumItem).Find(items).Error; e != nil {
 		return 0, HandleSQLError(e)
 	}
 
@@ -153,13 +147,13 @@ func HandleSQLError(err error) error {
 	}
 
 	_, fn, line, _ := runtime.Caller(1)
-	log.Errorf(err, "repository function=%v, line=%v", fn, line)
+	log.Errorf(err, "repository error=%v, function=%v, line=%v", fn, line)
 	return err
 }
 
 type ListFilter struct {
 	Page       int
-	PageSize   int
+	NumItem    int
 	Conditions map[string]interface{}
 }
 
