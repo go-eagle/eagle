@@ -22,7 +22,7 @@ gorm:
   show_log: true                  # 是否打印SQL日志
   max_idle_conn: 10               # 最大打开的连接数
   max_open_conn: 60               # 最大的闲置的连接数
-  conn_max_lift_time: 60          # 连接重用的最大时间，单位分钟
+  conn_max_life_time: 60          # 连接重用的最大时间，单位分钟
 db:
   name: snake
   addr: 127.0.0.1:3306
