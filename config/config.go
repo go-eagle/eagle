@@ -4,11 +4,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/pkg/errors"
-	"github.com/realsangil/apimonitor/pkg/rserrors"
+	"github.com/1024casts/snake/pkg/errno"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/lexkong/log"
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
 
@@ -51,9 +51,9 @@ func Init(cfg string) error {
 	return nil
 }
 
-func (c *Config) initConfig() error {
-	if c.Name != "" {
-		viper.SetConfigFile(c.Name) // 如果指定了配置文件，则解析指定的配置文件
+func (cfg *Config) initConfig() error {
+	if cfg.Name != "" {
+		viper.SetConfigFile(cfg.Name) // 如果指定了配置文件，则解析指定的配置文件
 	} else {
 		viper.AddConfigPath("conf") // 如果没有指定配置文件，则解析默认的配置文件
 		viper.SetConfigName("config")
@@ -76,7 +76,7 @@ func (c *Config) initConfig() error {
 	return nil
 }
 
-func (c *Config) initLog() {
+func (cfg *Config) initLog() {
 	passLagerCfg := log.PassLagerCfg{
 		Writers:        viper.GetString("log.writers"),
 		LoggerLevel:    viper.GetString("log.logger_level"),
@@ -92,7 +92,7 @@ func (c *Config) initLog() {
 }
 
 // 监控配置文件变化并热加载程序
-func (c *Config) watchConfig() {
+func (cfg *Config) watchConfig() {
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
 		log.Infof("Config file changed: %s", e.Name)
@@ -134,19 +134,19 @@ func (c *dbConfigure) GetVerbose() bool {
 
 func (c *dbConfigure) Validate() error {
 	if c.Host == "" {
-		return errors.Wrap(rserrors.ErrInvalidParameter, "db.host")
+		return errors.Wrap(errno.ErrParam, "db.host")
 	}
 	if c.Port == 0 {
-		return errors.Wrap(rserrors.ErrInvalidParameter, "db.password")
+		return errors.Wrap(errno.ErrParam, "db.password")
 	}
 	if c.Username == "" {
-		return errors.Wrap(rserrors.ErrInvalidParameter, "db.username")
+		return errors.Wrap(errno.ErrParam, "db.username")
 	}
 	if c.Password == "" {
-		return errors.Wrap(rserrors.ErrInvalidParameter, "db.password")
+		return errors.Wrap(errno.ErrParam, "db.password")
 	}
 	if c.Name == "" {
-		return errors.Wrap(rserrors.ErrInvalidParameter, "db.name")
+		return errors.Wrap(errno.ErrParam, "db.name")
 	}
 	return nil
 }
