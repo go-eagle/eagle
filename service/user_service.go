@@ -15,6 +15,10 @@ type userRequest struct {
 	Page int `json:"page"`
 }
 
+// 直接初始化，可以避免在使用时再实例化，简化代码
+// 可以在handler中直接使用，eg：service.UserSrv.GetUserById()
+var UserSrv = NewUserService()
+
 type UserService interface {
 	CreateUser(request model.UserRequest) (*model.UserModel, error)
 	GetUserById(data *model.UserModel) error
