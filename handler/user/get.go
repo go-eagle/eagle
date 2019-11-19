@@ -31,8 +31,7 @@ func Get(c *gin.Context) {
 
 	userModel := &model.UserModel{}
 	userModel.Id = uint64(userId)
-	userSrv := service.NewUserService()
-	err := userSrv.GetUserById(userModel)
+	err := service.UserSrv.GetUserById(userModel)
 	if err != nil {
 		log.Warnf("get user err, %v", errors.WithStack(err))
 		SendResponse(c, errno.InternalServerError, nil)
