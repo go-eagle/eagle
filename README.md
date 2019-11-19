@@ -11,21 +11,7 @@ snake 框架
 - 配置文件解析库 [viper](https://github.com/spf13/viper)
 - 使用 [JWT](https://jwt.io/) 进行身份鉴权认证
 - 校验器 [validator](https://gopkg.in/go-playground/validator.v9)  也是 gin 框架默认的校验器，当前最新是v9版本
-- 任务调度 [cron](https://github.com/robfig/cron)
-- 包管理工具 [go module](https://github.com/golang/go/wiki/Modules)
-- 测试框架 [goConvey](http://goconvey.co/)
-
-## 特性
-
-- 遵循 RESTful API 设计规范
-- 基于 GIN WEB 框架，提供了丰富的中间件支持（用户认证、跨域、访问日志、请求频率限制、追踪 ID 等）
-- 基于 GORM 的数据库存储
-- JWT 认证
-- 支持 Swagger 文档(基于[swaggo](https://github.com/swaggo/swag))
-- 单元测试(基于net/http/httptest包，覆盖所有接口层的测试)
-- 依赖注入(基于dig) todo
-- 使用 make 来管理Go工程
-- 使用 shell(admin.sh) 脚本来管理进程
+- 第三方包管理工具 [govendor](https://github.com/kardianos/govendor)
 
 ## 目录结构
 
@@ -44,7 +30,6 @@ snake 框架
 ├── repository                   # 数据访问层
 ├── router                       # 路由及中间件目录
 ├── service                      # 业务逻辑封装
-├── schedule                     # 任务调度配置目录
 ├── util                         # 业务工具包
 └── wrktest.sh                   # API 性能测试脚本
 ```
@@ -103,9 +88,5 @@ REST 风格虽然适用于很多传输协议，但在实际开发中，REST 由�
 ## 模块
 
 好了，现在可以使用该项目来开发相关业务了。
-
-## 部署
-
-
 
 Happy Coding. ^_^
