@@ -3,7 +3,6 @@ package user
 import (
 	. "github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/pkg/errno"
-	"github.com/1024casts/snake/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lexkong/log"
@@ -25,14 +24,14 @@ func List(c *gin.Context) {
 		return
 	}
 
-	infos, count, err := service.ListUser(r.Username, r.Offset, r.Limit)
-	if err != nil {
-		SendResponse(c, err, nil)
-		return
-	}
-
-	SendResponse(c, nil, ListResponse{
-		TotalCount: count,
-		UserList:   infos,
-	})
+	//infos, count, err := service.ListUser(r.Username, r.Offset, r.Limit)
+	//if err != nil {
+	//	SendResponse(c, err, nil)
+	//	return
+	//}
+	//
+	//SendResponse(c, nil, model.ListResponse{
+	//	TotalCount: count,
+	//	Items:      infos,
+	//})
 }

@@ -43,17 +43,17 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	// Encrypt the user password.
-	if err := u.Encrypt(); err != nil {
-		SendResponse(c, errno.ErrEncrypt, nil)
-		return
-	}
-
-	// Save changed fields.
-	if err := u.Update(); err != nil {
-		SendResponse(c, errno.ErrDatabase, nil)
-		return
-	}
+	//// Encrypt the user password.
+	//if err := u.Encrypt(); err != nil {
+	//	SendResponse(c, errno.ErrEncrypt, nil)
+	//	return
+	//}
+	//
+	//// Save changed fields.
+	//if err := u.Update(); err != nil {
+	//	SendResponse(c, errno.ErrDatabase, nil)
+	//	return
+	//}
 
 	SendResponse(c, nil, nil)
 }

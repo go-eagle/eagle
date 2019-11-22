@@ -39,15 +39,15 @@ func Create(c *gin.Context) {
 	}
 
 	// Encrypt the user password.
-	if err := u.Encrypt(); err != nil {
-		SendResponse(c, errno.ErrEncrypt, nil)
-		return
-	}
-	// Insert the user to the database.
-	if err := u.Create(); err != nil {
-		SendResponse(c, errno.ErrDatabase, nil)
-		return
-	}
+	//if err := u.Encrypt(); err != nil {
+	//	SendResponse(c, errno.ErrEncrypt, nil)
+	//	return
+	//}
+	//// Insert the user to the database.
+	//if err := u.Create(); err != nil {
+	//	SendResponse(c, errno.ErrDatabase, nil)
+	//	return
+	//}
 
 	rsp := CreateResponse{
 		Username: r.Username,

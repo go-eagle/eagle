@@ -3,10 +3,7 @@ package user
 import (
 	. "github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/model"
-	"github.com/1024casts/snake/pkg/auth"
 	"github.com/1024casts/snake/pkg/errno"
-	"github.com/1024casts/snake/pkg/token"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,25 +21,25 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// Get the user information by the login username.
-	d, err := model.GetUser(u.Username)
-	if err != nil {
-		SendResponse(c, errno.ErrUserNotFound, nil)
-		return
-	}
-
-	// Compare the login password with the user password.
-	if err := auth.Compare(d.Password, u.Password); err != nil {
-		SendResponse(c, errno.ErrPasswordIncorrect, nil)
-		return
-	}
-
-	// Sign the json web token.
-	t, err := token.Sign(c, token.Context{ID: d.Id, Username: d.Username}, "")
-	if err != nil {
-		SendResponse(c, errno.ErrToken, nil)
-		return
-	}
-
-	SendResponse(c, nil, model.Token{Token: t})
+	//// Get the user information by the login username.
+	//d, err := model.GetUser(u.Username)
+	//if err != nil {
+	//	SendResponse(c, errno.ErrUserNotFound, nil)
+	//	return
+	//}
+	//
+	//// Compare the login password with the user password.
+	//if err := auth.Compare(d.Password, u.Password); err != nil {
+	//	SendResponse(c, errno.ErrPasswordIncorrect, nil)
+	//	return
+	//}
+	//
+	//// Sign the json web token.
+	//t, err := token.Sign(c, token.Context{ID: d.Id, Username: d.Username}, "")
+	//if err != nil {
+	//	SendResponse(c, errno.ErrToken, nil)
+	//	return
+	//}
+	//
+	//SendResponse(c, nil, model.Token{Token: t})
 }
