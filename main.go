@@ -119,4 +119,5 @@ func pingServer() error {
 		time.Sleep(time.Second)
 	}
 	return errors.New("Cannot connect to the router.")
+
 }
