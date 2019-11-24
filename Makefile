@@ -18,7 +18,13 @@ clean:
 gotool:
 	gofmt -w .
 	go tool vet . | grep -v vendor;true
-
+dep: ## Get the dependencies
+	@go mod download
+lint: ## Lint Golang files
+	@golint -set_exit_status ${PKG_LIST}
+test-coverage: ## Run tests with coverage
+	@go test -short -coverprofile cover.out -covermode=atomic ${PKG_LIST}
+	@cat cover.out >> coverage.txt
 swag-init:
 	swag init
 	@echo "swag init done"
