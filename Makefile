@@ -10,7 +10,8 @@ gitTreeState = $(shell if git status|grep -q 'clean';then echo clean; else echo 
 
 ldflags="-w -X ${versionDir}.gitTag=${gitTag} -X ${versionDir}.buildDate=${buildDate} -X ${versionDir}.gitCommit=${gitCommit} -X ${versionDir}.gitTreeState=${gitTreeState}"
 
-all: gotool
+all: build
+build: dep ## Build the binary file
 	@go build -v -ldflags ${ldflags} .
 clean:
 	rm -f snake
