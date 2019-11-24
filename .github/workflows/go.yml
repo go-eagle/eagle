@@ -1,17 +1,5 @@
 name: Go
-on:
-  # 当代码推送到master和release分支的时候触发
-  push:
-    branches:
-      - master
-      - release/*
-  # 当只有pull_request被合并到master分支的时候
-  pull_request:
-    branches:
-      - master
-  # 星期一到星期五的每天2点构建任务
-  #schedule:
-  #  - cron: 0 2 * * 1-5
+on: [push]
 jobs:
 
   build:
