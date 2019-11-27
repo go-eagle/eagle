@@ -109,3 +109,9 @@ REST 风格虽然适用于很多传输协议，但在实际开发中，REST 由�
 整理中
 
 Happy Coding. ^_^
+
+## Discussion
+- Issue: https://github.com/1024casts/snake/issues
+
+## License
+MIT. See the [LICENSE](LICENSE) file for details.
