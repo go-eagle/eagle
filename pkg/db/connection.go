@@ -8,10 +8,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
-	"github.com/realsangil/apimonitor/pkg/rserrors"
 )
-
-const ErrInvalidTransaction = rserrors.Error("invalid transaction")
 
 var (
 	conn *defaultConnection
