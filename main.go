@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/1024casts/snake/config"
@@ -102,7 +105,39 @@ func main() {
 	}
 
 	log.Infof("Start to listening the incoming requests on http address: %s", viper.GetString("addr"))
-	log.Info(http.ListenAndServe(viper.GetString("addr"), g).Error())
+	srv := &http.Server{
+		Addr:    viper.GetString("addr"),
+		Handler: g,
+	}
+	go func() {
+		// service connections
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf(err, "listen: %s", err.Error())
+		}
+		log.Info(srv.ListenAndServe().Error())
+	}()
+
+	// 等待中断信号以超时 5 秒正常关闭服务器
+	// 官方说明：https://github.com/gin-gonic/gin#graceful-restart-or-stop
+	quit := make(chan os.Signal)
+	// kill 命令发送信号 syscall.SIGTERM
+	// kill -2 命令发送信号 syscall.SIGINT
+	// kill -9 命令发送信号 syscall.SIGKILL
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Info("Shutdown Server ...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("Server Shutdown:", err)
+	}
+	// 5 秒后捕获 ctx.Done() 信号
+	select {
+	case <-ctx.Done():
+		log.Info("timeout of 5 seconds.")
+	}
+	log.Info("Server exiting")
 }
 
 // pingServer pings the http server to make sure the router is working.
