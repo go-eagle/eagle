@@ -1,29 +1,13 @@
 package cache
 
 import (
-	"log"
 	"time"
 )
 
 type Cache interface {
 	Set(key string, value interface{}, expiration time.Duration) error
-	Get(key string) (interface{}, error)
-	Del(key string) error
-}
-
-// 禁止直接调用redis，统一使用该变量
-var RedisCache = New("redis")
-
-func New(typ string) Cache {
-	var c Cache
-	if typ == "redis" {
-		c = newRedisCache()
-	}
-
-	if c == nil {
-		panic("unknown cache type " + typ)
-	}
-
-	log.Println(typ, "ready to serve")
-	return c
+	Get(key string) ([]byte, error)
+	Del(keys ...string) (int64, error)
+	Incr(key string, step int64) (int64, error)
+	Decr(key string, step int64) (int64, error)
 }

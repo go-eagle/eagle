@@ -18,13 +18,21 @@ func newRedisCache() *redisCache {
 }
 
 func (c *redisCache) Set(key string, value interface{}, expiration time.Duration) error {
-	return nil
+	return c.client.Set(key, value, expiration).Err()
 }
 
-func (c *redisCache) Get(key string) (interface{}, error) {
-	return nil, nil
+func (c *redisCache) Get(key string) ([]byte, error) {
+	return c.client.Get(key).Bytes()
 }
 
-func (c *redisCache) Del(string) error {
-	panic("implement me")
+func (c *redisCache) Del(keys ...string) (int64, error) {
+	return c.client.Del(keys...).Result()
+}
+
+func (c *redisCache) Incr(key string, step int64) (int64, error) {
+	return c.client.IncrBy(key, step).Result()
+}
+
+func (c *redisCache) Decr(key string, step int64) (int64, error) {
+	return c.client.DecrBy(key, step).Result()
 }
