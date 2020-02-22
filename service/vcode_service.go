@@ -11,7 +11,6 @@ import (
 )
 
 // 验证码服务，主要提供生成验证码和获取验证码
-
 // 直接初始化，可以避免在使用时再实例化
 var VCodeService = NewVCodeService()
 
@@ -45,7 +44,7 @@ func (srv *vcodeService) GenLoginVCode(phone string) (string, error) {
 	return vcode, nil
 }
 
-// 生成校验码
+// 获取校验码
 func (srv *vcodeService) GetLoginVCode(phone string) (string, error) {
 	// 直接从redis里获取
 	key := fmt.Sprintf(verifyCodeRedisKey, phone)
