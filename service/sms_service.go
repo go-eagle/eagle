@@ -7,8 +7,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+// 短信服务
+// 使用七牛云
 // 直接初始化，可以避免在使用时再实例化
-// 使用七牛云短信服务
 var SmsService = NewSmsService()
 
 // 校验码服务，生成校验码和获得校验码
@@ -23,14 +24,14 @@ func NewSmsService() *smsService {
 func (srv *smsService) Send(phoneNumber string, verifyCode int) error {
 	// 校验参数的正确性
 	if phoneNumber == "" || verifyCode == 0 {
-		return errors.New("param error")
+		return errors.New("param phone or verify_code error")
 	}
 
 	// 调用第三方发送服务
 	return srv._sendViaQiNiu(phoneNumber, verifyCode)
 }
 
-// 调用第三方发送服务
+// 调用七牛短信服务
 func (srv *smsService) _sendViaQiNiu(phoneNumber string, verifyCode int) error {
 
 	accessKey := viper.GetString("qiniu.access_key")
