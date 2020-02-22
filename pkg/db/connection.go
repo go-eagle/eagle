@@ -107,8 +107,10 @@ func Init(config DatabaseConfig) error {
 	}
 	db = db.Set("gorm:table_options", "ENGINE=InnoDB charset=utf8mb4")
 
-	db.DB().SetMaxOpenConns(viper.GetInt("grom.max_open_conn")) // 用于设置最大打开的连接数，默认值为0表示不限制.设置最大的连接数，可以避免并发太高导致连接mysql出现too many connections的错误。
-	db.DB().SetMaxIdleConns(viper.GetInt("grom.max_idle_conn")) // 用于设置闲置的连接数.设置闲置的连接数则当开启的一个连接使用完成后可以放在池里等候下一次使用。
+	// 用于设置最大打开的连接数，默认值为0表示不限制.设置最大的连接数，可以避免并发太高导致连接mysql出现too many connections的错误。
+	db.DB().SetMaxOpenConns(viper.GetInt("grom.max_open_conn"))
+	// 用于设置闲置的连接数.设置闲置的连接数则当开启的一个连接使用完成后可以放在池里等候下一次使用。
+	db.DB().SetMaxIdleConns(viper.GetInt("grom.max_idle_conn"))
 	db.DB().SetConnMaxLifetime(time.Minute * viper.GetDuration("grom.conn_max_life_time"))
 
 	if config.GetVerbose() {

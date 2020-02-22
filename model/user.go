@@ -3,8 +3,8 @@ package model
 import (
 	"sync"
 
+	"github.com/1024casts/snake/pkg/auth"
 	"github.com/1024casts/snake/pkg/errno"
-
 	"github.com/1024casts/snake/pkg/valid"
 	"github.com/pkg/errors"
 )
@@ -16,12 +16,6 @@ type UserModel struct {
 	Password string `json:"password" gorm:"column:password;not null" binding:"required" validate:"min=5,max=128"`
 	DefaultValidateChecker
 }
-
-// Validate the fields.
-//func (u *UserModel) Validate() error {
-//	validate := validator.New()
-//	return validate.Struct(u)
-//}
 
 func NewUser(request UserRequest) (*UserModel, error) {
 	user := &UserModel{}
@@ -37,13 +31,19 @@ func NewUser(request UserRequest) (*UserModel, error) {
 	return user, nil
 }
 
+// Validate the fields.
+//func (u *UserModel) Validate() error {
+//	validate := validator.New()
+//	return validate.Struct(u)
+//}
+
 func (user *UserModel) Validate() error {
 	if valid.IsZero(
 		user.Username,
 	) {
 		return errors.Wrap(errno.ErrParam, "webService")
 	}
-	user.isValidated = true
+	user.SetValidated()
 	return nil
 }
 
@@ -81,13 +81,13 @@ type Token struct {
 }
 
 // Compare with the plain text password. Returns true if it's the same as the encrypted one (in the `User` struct).
-//func (u *UserModel) Compare(pwd string) (err error) {
-//	err = auth.Compare(u.Password, pwd)
-//	return
-//}
+func (u *UserModel) Compare(pwd string) (err error) {
+	err = auth.Compare(u.Password, pwd)
+	return
+}
 
-//// Encrypt the user password.
-//func (u *UserModel) Encrypt() (err error) {
-//	u.Password, err = auth.Encrypt(u.Password)
-//	return
-//}
+// Encrypt the user password.
+func (u *UserModel) Encrypt() (err error) {
+	u.Password, err = auth.Encrypt(u.Password)
+	return
+}

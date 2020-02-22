@@ -5,14 +5,14 @@ import (
 )
 
 func IsZero(i ...interface{}) bool {
-	bool := false
+	ret := false
 	for _, j := range i {
 		v := reflect.ValueOf(j)
 		if isZero(v) {
 			return true
 		}
 	}
-	return bool
+	return ret
 }
 
 func isZero(v reflect.Value) bool {
