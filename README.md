@@ -1,4 +1,4 @@
-snake 框架
+# snake 框架
 
 适合于开发Go项目,主要是提供API 服务。
 
@@ -15,7 +15,7 @@ snake 框架
 - 包管理工具 [go module](https://github.com/golang/go/wiki/Modules)
 - 测试框架 [goConvey](http://goconvey.co/)
 - CI/CD [Github Actions](https://github.com/actions)
-- [Docker](https://www.docker.com/)
+- 容器化 [Docker](https://www.docker.com/)
 
 ## 特性
 
