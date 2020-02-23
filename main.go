@@ -12,8 +12,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/1024casts/snake/model"
+
 	"github.com/1024casts/snake/config"
-	"github.com/1024casts/snake/pkg/db"
 	"github.com/1024casts/snake/pkg/redis"
 	v "github.com/1024casts/snake/pkg/version"
 	"github.com/1024casts/snake/router"
@@ -59,13 +60,9 @@ func main() {
 		panic(err)
 	}
 
-	serverConfig := config.GetServerConfig()
-
 	// init db
-	if err := db.Init(&serverConfig.DB); err != nil {
-		log.Fatalf(err, "[main] init db err")
-		panic(err)
-	}
+	model.DB.Init()
+	defer model.DB.Close()
 
 	// init redis
 	redis.Init()

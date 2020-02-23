@@ -13,6 +13,12 @@ type CreateResponse struct {
 	Username string `json:"username"`
 }
 
+// 手机登录
+type PhoneLoginCredentials struct {
+	Phone      int `json:"phone" form:"phone" binding:"required"`
+	VerifyCode int `json:"verify_code" form:"verify_code" binding:"required"`
+}
+
 type ListRequest struct {
 	Username string `json:"username"`
 	Offset   int    `json:"offset"`

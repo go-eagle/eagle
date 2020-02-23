@@ -51,7 +51,7 @@ func (srv *smsService) _sendViaQiNiu(phoneNumber string, verifyCode int) error {
 
 	ret, err := manager.SendMessage(args)
 	if err != nil {
-		return errors.New("send sms message error")
+		return errors.Wrap(err, "send sms message error")
 	}
 
 	if len(ret.JobID) == 0 {

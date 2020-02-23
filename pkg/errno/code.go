@@ -17,4 +17,10 @@ var (
 	ErrUserNotFound      = &Errno{Code: 20102, Message: "The user was not found."}
 	ErrTokenInvalid      = &Errno{Code: 20103, Message: "The token was invalid."}
 	ErrPasswordIncorrect = &Errno{Code: 20104, Message: "The password was incorrect."}
+	ErrAreaCodeEmpty     = &Errno{Code: 20105, Message: "手机区号不能为空"}
+	ErrPhoneEmpty        = &Errno{Code: 20106, Message: "手机号不能为空"}
+	ErrGenVCode          = &Errno{Code: 20107, Message: "生成验证码错误"}
+	ErrSendSMS           = &Errno{Code: 20108, Message: "发送短信错误"}
+	ErrSendSMSTooMany    = &Errno{Code: 20109, Message: "已超出当日限制，请明天再试"}
+	ErrVerifyCode        = &Errno{Code: 20110, Message: "验证码错误"}
 )

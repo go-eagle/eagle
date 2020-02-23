@@ -27,6 +27,9 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 		c.String(http.StatusNotFound, "The incorrect API route.")
 	})
 
+	// 静态资源，主要是图片
+	g.Static("/static", "./static")
+
 	// swagger api docs
 	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
@@ -35,16 +38,15 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 
 	// api for authentication functionalities
 	g.POST("/v1/users/login", user.Login)
+	g.GET("/v1/users/vcode", user.VCode)
 
 	// The user handlers, requiring authentication
-	g.GET("/v1/users/:user_id", user.Get)
+	g.GET("/v1/users/profile", user.Profile)
 	u := g.Group("/v1/users")
 	u.Use(middleware.AuthMiddleware())
 	{
-		u.POST("", user.Create)
-		u.DELETE("/:id", user.Delete)
 		u.PUT("/:id", user.Update)
-		u.GET("", user.List)
+		u.GET("/me", user.Me)
 	}
 
 	// The health check handlers

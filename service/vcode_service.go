@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/1024casts/snake/pkg/redis"
@@ -15,7 +16,7 @@ import (
 var VCodeService = NewVCodeService()
 
 const (
-	verifyCodeRedisKey = "app:login:vcode:%s" // 验证码key
+	verifyCodeRedisKey = "app:login:vcode:%d" // 验证码key
 	maxDurationTime    = 10 * time.Minute     // 验证码有效期
 )
 
@@ -28,33 +29,75 @@ func NewVCodeService() *vcodeService {
 }
 
 // 生成校验码
-func (srv *vcodeService) GenLoginVCode(phone string) (string, error) {
+func (srv *vcodeService) GenLoginVCode(phone string) (int, error) {
 	// step1: 生成随机数
-	vcode := fmt.Sprintf("%06v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(1000000))
+	vCodeStr := fmt.Sprintf("%06v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(1000000))
 
 	// step2: 写入到redis里
 	// 使用set, key使用前缀+手机号 缓存10分钟）
-	key := fmt.Sprintf(verifyCodeRedisKey, phone)
-	err := redis.Client.Set(key, vcode, maxDurationTime).Err()
+	key := fmt.Sprintf("app:login:vcode:%s", phone)
+	err := redis.Client.Set(key, vCodeStr, 10*time.Minute).Err()
 	if err != nil {
-		log.Warnf("[vcode_service] redis set err, %v", err)
-		return "", errors.New("redis set err")
+		return 0, errors.Wrap(err, "gen login code from redis set err")
 	}
 
-	return vcode, nil
+	vCode, err := strconv.Atoi(vCodeStr)
+	if err != nil {
+		return 0, errors.Wrap(err, "string convert int err")
+	}
+
+	return vCode, nil
 }
 
-// 获取校验码
-func (srv *vcodeService) GetLoginVCode(phone string) (string, error) {
+// 手机白名单
+var phoneWhiteLit = []int{
+	13010102020,
+}
+
+// 这里可以添加测试号，直接通过
+func (srv *vcodeService) isTestPhone(phone int) bool {
+	for _, val := range phoneWhiteLit {
+		if val == phone {
+			return true
+		}
+	}
+	return false
+}
+
+// 验证校验码是否正确
+func (srv *vcodeService) CheckLoginVCode(phone, vCode int) bool {
+	if srv.isTestPhone(phone) {
+		return true
+	}
+
+	oldVCode, err := srv.GetLoginVCode(phone)
+	if err != nil {
+		log.Warnf("[vcode_service] get verify code err, %v", err)
+		return false
+	}
+
+	if vCode != oldVCode {
+		return false
+	}
+
+	return true
+}
+
+// 获得校验码
+func (srv *vcodeService) GetLoginVCode(phone int) (int, error) {
 	// 直接从redis里获取
 	key := fmt.Sprintf(verifyCodeRedisKey, phone)
 	vcode, err := redis.Client.Get(key).Result()
 	if err == redis.Nil {
-		return "", nil
+		return 0, nil
 	} else if err != nil {
-		log.Warnf("[vcode_service] redis get err, %v", err)
-		return "", errors.New("redis get err")
+		return 0, errors.Wrap(err, "redis get login vcode err")
 	}
 
-	return vcode, nil
+	verifyCode, err := strconv.Atoi(vcode)
+	if err != nil {
+		return 0, errors.Wrap(err, "strconv err")
+	}
+
+	return verifyCode, nil
 }

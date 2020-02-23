@@ -2,31 +2,12 @@ package config
 
 import (
 	"strings"
-	"sync"
-
-	"github.com/1024casts/snake/pkg/errno"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/lexkong/log"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
-
-var (
-	c   configure
-	mux sync.Mutex
-)
-
-type configure struct {
-	DB dbConfigure `mapstructure:"db"`
-}
-
-func (c *configure) Validate() error {
-	if err := c.DB.Validate(); err != nil {
-		return errors.WithStack(err)
-	}
-	return nil
-}
 
 type Config struct {
 	Name string
@@ -67,12 +48,6 @@ func (cfg *Config) initConfig() error {
 		return errors.WithStack(err)
 	}
 
-	mux.Lock()
-	defer mux.Unlock()
-	if err := viper.Unmarshal(&c); err != nil {
-		return errors.WithStack(err)
-	}
-
 	return nil
 }
 
@@ -97,60 +72,4 @@ func (cfg *Config) watchConfig() {
 	viper.OnConfigChange(func(e fsnotify.Event) {
 		log.Infof("Config file changed: %s", e.Name)
 	})
-}
-
-type dbConfigure struct {
-	Host     string `mapstructure:"host"`
-	Name     string `mapstructure:"name"`
-	Username string `mapstructure:"username"`
-	Password string `mapstructure:"password"`
-	Port     uint   `mapstructure:"port"`
-	Verbose  bool   `mapstructure:"verbose"`
-}
-
-func (c *dbConfigure) GetHost() string {
-	return c.Host
-}
-
-func (c *dbConfigure) GetPort() uint {
-	return c.Port
-}
-
-func (c *dbConfigure) GetUsername() string {
-	return c.Username
-}
-
-func (c *dbConfigure) GetPassword() string {
-	return c.Password
-}
-
-func (c *dbConfigure) GetDatabaseName() string {
-	return c.Name
-}
-
-func (c *dbConfigure) GetVerbose() bool {
-	return c.Verbose
-}
-
-func (c *dbConfigure) Validate() error {
-	if c.Host == "" {
-		return errors.Wrap(errno.ErrParam, "db.host")
-	}
-	if c.Port == 0 {
-		return errors.Wrap(errno.ErrParam, "db.password")
-	}
-	if c.Username == "" {
-		return errors.Wrap(errno.ErrParam, "db.username")
-	}
-	if c.Password == "" {
-		return errors.Wrap(errno.ErrParam, "db.password")
-	}
-	if c.Name == "" {
-		return errors.Wrap(errno.ErrParam, "db.name")
-	}
-	return nil
-}
-
-func GetServerConfig() configure {
-	return c
 }

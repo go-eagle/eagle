@@ -2,13 +2,14 @@ package model
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/lexkong/log"
 	"github.com/spf13/viper"
+
 	// MySQL driver.
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"time"
 )
 
 type Database struct {
@@ -76,6 +77,10 @@ func (db *Database) Init() {
 		Self:   GetSelfDB(),
 		Docker: GetDockerDB(),
 	}
+}
+
+func GetDB() *gorm.DB {
+	return DB.Self
 }
 
 func (db *Database) Close() {
