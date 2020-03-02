@@ -3,8 +3,9 @@ package log
 import (
 	"io"
 	"os"
-	"path"
 	"time"
+
+	"github.com/1024casts/snake/util"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 
@@ -12,17 +13,19 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var zapLog *zap.Logger
+var logger *zap.Logger
 
 func InitLogger() *zap.Logger {
-	encoder := getEncoder()
+	encoder := getJsonEncoder()
 
-	infoWrite := getLogWriter("./", "snake.log")
-	warnWrite := getLogWriter("./", "snake.log.wf")
-	errorWrite := getLogWriter("./", "snake.log.err")
+	// 注意：如果多个文件，最后一个会是全的，前两个可能会丢日志
+	filename := "./snake"
+	infoWrite := getLogWriterWithTime(filename, "")
+	warnWrite := getLogWriterWithTime(filename, ".wf")
+	errorWrite := getLogWriterWithTime(filename, ".err")
 
 	infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl < zapcore.WarnLevel
+		return lvl <= zapcore.InfoLevel
 	})
 	warnLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl == zapcore.WarnLevel
@@ -38,12 +41,19 @@ func InitLogger() *zap.Logger {
 		zapcore.NewCore(encoder, zapcore.AddSync(errorWrite), errorLevel),
 	)
 
-	zapLog = zap.New(core)
+	// 开启开发模式，堆栈跟踪
+	caller := zap.AddCaller()
+	// 开启文件及行号
+	development := zap.Development()
+	// 设置初始化字段
+	filed := zap.Fields(zap.String("ip", util.GetCurrentIP()), zap.String("app", "ebao-policy"))
+	// 构造日志
+	logger = zap.New(core, caller, development, filed)
 
-	return zapLog
+	return logger
 }
 
-func getEncoder() zapcore.Encoder {
+func getJsonEncoder() zapcore.Encoder {
 	encoderConfig := zapcore.EncoderConfig{
 		MessageKey: "msg",
 		LevelKey:   "level",
@@ -63,16 +73,36 @@ func getEncoder() zapcore.Encoder {
 	return zapcore.NewJSONEncoder(encoderConfig)
 }
 
-func getLogWriter(logPath, filename string) io.Writer {
-	logFullPath := path.Join(logPath, filename)
+func getLogWriterWithTime(filename string, suffix string) io.Writer {
+	logFullPath := filename + suffix
 	hook, err := rotatelogs.New(
-		logFullPath+".%Y%m%d%H",                   // 没有使用go风格反人类的format格式
-		rotatelogs.WithLinkName(logFullPath),      // 生成软链，指向最新日志文件
-		rotatelogs.WithRotationCount(7),           // 文件最大保存份数
-		rotatelogs.WithRotationTime(24*time.Hour), // 日志切割时间间隔
+		logFullPath+".%Y%m%d%H",                // 没有使用go风格反人类的format格式
+		rotatelogs.WithLinkName(logFullPath),   // 生成软链，指向最新日志文件
+		rotatelogs.WithRotationCount(7),        // 文件最大保存份数
+		rotatelogs.WithRotationTime(time.Hour), // 日志切割时间间隔
 	)
 	if err != nil {
 		panic(err)
 	}
 	return hook
+}
+
+func Debug(msg string, args ...zap.Field) {
+	logger.Debug(msg, args...)
+}
+
+func Info(msg string, args ...zap.Field) {
+	logger.Info(msg, args...)
+}
+
+func Warn(msg string, args ...zap.Field) {
+	logger.Warn(msg, args...)
+}
+
+func Error(msg string, args ...zap.Field) {
+	logger.Error(msg, args...)
+}
+
+func Fatal(msg string, args ...zap.Field) {
+	logger.Fatal(msg, args...)
 }
