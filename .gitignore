@@ -4,7 +4,7 @@
 *.so
 
 # logs
-log
+# log
 logs
 
 # Editors
@@ -38,3 +38,4 @@ _testmain.go
 # custom
 snake
 conf/config.yaml
+conf/config.local.yaml
