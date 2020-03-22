@@ -1,9 +1,12 @@
 package log
 
 import (
+	"fmt"
 	"io"
 	"os"
 	"time"
+
+	"github.com/spf13/viper"
 
 	"github.com/1024casts/snake/util"
 
@@ -19,10 +22,12 @@ func InitLogger() *zap.Logger {
 	encoder := getJsonEncoder()
 
 	// 注意：如果多个文件，最后一个会是全的，前两个可能会丢日志
-	filename := "./snake"
-	infoWrite := getLogWriterWithTime(filename, "")
-	warnWrite := getLogWriterWithTime(filename, ".wf")
-	errorWrite := getLogWriterWithTime(filename, ".err")
+	infoFilename := viper.GetString("log.logger_file")
+	infoWrite := getLogWriterWithTime(infoFilename)
+	warnFilename := viper.GetString("log.logger_warn_file")
+	warnWrite := getLogWriterWithTime(warnFilename)
+	errorFilename := viper.GetString("log.logger_error_file")
+	errorWrite := getLogWriterWithTime(errorFilename)
 
 	infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.InfoLevel
@@ -46,7 +51,7 @@ func InitLogger() *zap.Logger {
 	// 开启文件及行号
 	development := zap.Development()
 	// 设置初始化字段
-	filed := zap.Fields(zap.String("ip", util.GetCurrentIP()), zap.String("app", "ebao-policy"))
+	filed := zap.Fields(zap.String("ip", util.GetCurrentIP()), zap.String("app", viper.GetString("name")))
 	// 构造日志
 	logger = zap.New(core, caller, development, filed)
 
@@ -73,14 +78,16 @@ func getJsonEncoder() zapcore.Encoder {
 	return zapcore.NewJSONEncoder(encoderConfig)
 }
 
-func getLogWriterWithTime(filename string, suffix string) io.Writer {
-	logFullPath := filename + suffix
+// 按时间(小时)进行切割
+func getLogWriterWithTime(filename string) io.Writer {
+	logFullPath := filename
 	hook, err := rotatelogs.New(
-		logFullPath+".%Y%m%d%H",                // 没有使用go风格反人类的format格式
-		rotatelogs.WithLinkName(logFullPath),   // 生成软链，指向最新日志文件
-		rotatelogs.WithRotationCount(7),        // 文件最大保存份数
-		rotatelogs.WithRotationTime(time.Hour), // 日志切割时间间隔
+		logFullPath+".%Y%m%d%H",                                             // 时间格式使用shell的date时间格式
+		rotatelogs.WithLinkName(logFullPath),                                // 生成软链，指向最新日志文件
+		rotatelogs.WithRotationCount(viper.GetUint("log.log_backup_count")), // 文件最大保存份数
+		rotatelogs.WithRotationTime(time.Hour),                              // 日志切割时间间隔
 	)
+
 	if err != nil {
 		panic(err)
 	}
@@ -105,4 +112,9 @@ func Error(msg string, args ...zap.Field) {
 
 func Fatal(msg string, args ...zap.Field) {
 	logger.Fatal(msg, args...)
+}
+
+func Infof(format string, args ...interface{}) {
+	message := fmt.Sprintf(format, args...)
+	logger.Info(message)
 }
