@@ -7,15 +7,23 @@ import (
 	"github.com/pkg/errors"
 )
 
+type IUserService interface {
+	CreateUser(user model.UserModel) (id uint64, err error)
+	UpdateUser(userMap map[string]interface{}, id uint64) error
+	GetUserById(id uint64) (*model.UserModel, error)
+	GetUserListByIds(id []uint64) (map[uint64]*model.UserModel, error)
+	GetUserByPhone(phone int) (*model.UserModel, error)
+	GetUserByEmail(email string) (*model.UserModel, error)
+}
+
 // 直接初始化，可以避免在使用时再实例化
 var UserService = NewUserService()
 
-// 校验码服务，生成校验码和获得校验码
 type userService struct {
-	userRepo repository.UserRepo
+	userRepo repository.IUserRepo
 }
 
-func NewUserService() *userService {
+func NewUserService() IUserService {
 	return &userService{
 		userRepo: repository.NewUserRepo(),
 	}
@@ -68,7 +76,16 @@ func (srv *userService) GetUserListByIds(id []uint64) (map[uint64]*model.UserMod
 func (srv *userService) GetUserByPhone(phone int) (*model.UserModel, error) {
 	userModel, err := srv.userRepo.GetUserByPhone(phone)
 	if err != nil || gorm.IsRecordNotFoundError(err) {
-		return userModel, errors.Wrapf(err, "get user info err from db by phone: %s", phone)
+		return userModel, errors.Wrapf(err, "get user info err from db by phone: %d", phone)
+	}
+
+	return userModel, nil
+}
+
+func (srv *userService) GetUserByEmail(email string) (*model.UserModel, error) {
+	userModel, err := srv.userRepo.GetUserByEmail(email)
+	if err != nil || gorm.IsRecordNotFoundError(err) {
+		return userModel, errors.Wrapf(err, "get user info err from db by email: %s", email)
 	}
 
 	return userModel, nil
