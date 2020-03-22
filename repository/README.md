@@ -11,5 +11,6 @@ HTTP 接口调用逻辑
 
 如果是返回的列表，尽量返回map，方便service使用。
 
-参考：
-https://github.com/realsangil/apimonitor/blob/fe1e9ef75dfbf021822d57ee242089167582934a/pkg/rsdb/repository.go
+## Reference
+ - https://github.com/realsangil/apimonitor/blob/fe1e9ef75dfbf021822d57ee242089167582934a/pkg/rsdb/repository.go
+ - https://youtu.be/twcDf_Y2gXY?t=636
