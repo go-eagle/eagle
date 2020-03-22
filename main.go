@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"github.com/1024casts/snake/model"
+	"github.com/1024casts/snake/pkg/redis"
 
 	"github.com/1024casts/snake/config"
-	"github.com/1024casts/snake/pkg/redis"
 	v "github.com/1024casts/snake/pkg/version"
 	"github.com/1024casts/snake/router"
 	"github.com/1024casts/snake/router/middleware"
