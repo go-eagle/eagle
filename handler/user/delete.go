@@ -7,7 +7,7 @@ import (
 
 // @Summary Delete an user by the user identifier
 // @Description Delete user by ID
-// @Tags user
+// @Tags 用户
 // @Accept  json
 // @Produce  json
 // @Param id path uint64 true "The user's database id index num"
