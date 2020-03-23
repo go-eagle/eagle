@@ -27,11 +27,11 @@ func (u *UserModel) Validate() error {
 }
 
 type UserInfo struct {
-	Id        uint64 `json:"id"`
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	Id        uint64 `json:"id" example:"1"`
+	Username  string `json:"username" example:"张三"`
+	Password  string `json:"password" example:"9dXd13#k$1123!kln"`
+	CreatedAt string `json:"createdAt" example:"2020-03-23 20:00:00"`
+	UpdatedAt string `json:"updatedAt" example:"2020-03-23 20:00:00"`
 }
 
 func (c *UserModel) TableName() string {
