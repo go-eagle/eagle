@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// @Summary 根据手机号获取校验码 Done
+// @Summary 根据手机号获取校验码
 // @Description Get an user by username
 // @Tags 用户
 // @Accept  json

@@ -10,14 +10,14 @@ import (
 	"github.com/lexkong/log"
 )
 
-// @Summary 通过用户id获取用户信息 Done
+// @Summary 通过用户id获取用户信息
 // @Description Get an user by user id
 // @Tags 用户
 // @Accept  json
 // @Produce  json
 // @Param id query string true "用户id"
 // @Success 200 {object} model.UserInfo "用户信息"
-// @Router /users/{id} [get]
+// @Router /users/profile [get]
 func Profile(c *gin.Context) {
 	log.Info("Profile function called.")
 

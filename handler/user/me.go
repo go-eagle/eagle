@@ -8,7 +8,7 @@ import (
 	"github.com/lexkong/log"
 )
 
-// @Summary 获取自己的个人信息 Done
+// @Summary 获取自己的个人信息
 // @Description Get an user by user id
 // @Tags 用户
 // @Accept  json

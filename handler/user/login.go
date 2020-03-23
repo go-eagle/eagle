@@ -13,12 +13,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary 用户登录接口 Done
+// @Summary 用户登录接口
 // @Description 仅限手机登录
 // @Tags 用户
 // @Produce  json
-// @Param phone body string true "phone"
-// @Param verifyCode body string true "verify_code"
+// @Param req body PhoneLoginCredentials true "phone"
 // @Success 200 {string} json "{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MjgwMTY5MjIsImlkIjowLCJuYmYiOjE1MjgwMTY5MjIsInVzZXJuYW1lIjoiYWRtaW4ifQ.LjxrK9DuAwAzUD8-9v43NzWBN7HXsSLfebw92DKd1JQ"}}"
 // @Router /users/login [post]
 func Login(c *gin.Context) {
