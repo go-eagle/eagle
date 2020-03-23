@@ -78,8 +78,36 @@ REST 风格虽然适用于很多传输协议，但在实际开发中，REST 由�
 
 [看这里](https://github.com/1024casts/snake/tree/master/pkg/errno)
 
+## 启动项目
+
+```bash
+// 下载依赖
+make dep
+
+// 编译项目
+make build
+
+// 本地环境
+cp config.sample.yaml config.local.yaml
+./snake -c conf/config.local.yaml
+
+// 线上环境类似操作
+cp config.sample.yaml config.prod.yaml
+./snake -c conf/config.prod.yaml
+```
+
+## 常用命令
+ - make help 查看帮助
+ - make dep 下载go依赖包
+ - make build 编译项目
+ - make swag-init 生成接口文档(需要重新编译)
+ - make test-coverage 生成测试覆盖
+
 ## 模块
- - 用户
+ - 用户(示例)
+ 
+## 接口文档
+`http://localhost:8080/swagger/index.html`
 
 ## 部署
 
