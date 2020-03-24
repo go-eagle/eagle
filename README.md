@@ -1,6 +1,13 @@
-# snake 框架
+<h1 align="center">snake 框架</h1>
 
+<p align="center">
 适合于开发Go项目,主要是提供API 服务。
+</p> 
+
+<p align="center">
+<img alt="GitHub" src="https://img.shields.io/github/license/1024casts/snake?style=flat-square">
+</p> 
+
 
 ## 技术栈
 
