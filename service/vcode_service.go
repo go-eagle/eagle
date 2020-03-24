@@ -36,7 +36,7 @@ func (srv *vcodeService) GenLoginVCode(phone string) (int, error) {
 	// step2: 写入到redis里
 	// 使用set, key使用前缀+手机号 缓存10分钟）
 	key := fmt.Sprintf("app:login:vcode:%s", phone)
-	err := redis.Client.Set(key, vCodeStr, 10*time.Minute).Err()
+	err := redis.Client.Set(key, vCodeStr, maxDurationTime).Err()
 	if err != nil {
 		return 0, errors.Wrap(err, "gen login code from redis set err")
 	}
