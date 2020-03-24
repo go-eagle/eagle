@@ -15,7 +15,7 @@ const (
 type restyClient struct {
 }
 
-func newRestyClient() *restyClient {
+func newRestyClient() Client {
 	return &restyClient{}
 }
 

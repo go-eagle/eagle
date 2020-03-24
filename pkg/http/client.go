@@ -4,6 +4,8 @@ import (
 	"log"
 )
 
+// see: https://github.com/iiinsomnia/gochat/blob/master/utils/http.go
+
 // 禁止直接调用resty，统一使用HttpClient
 var HttpClient = New("resty")
 
