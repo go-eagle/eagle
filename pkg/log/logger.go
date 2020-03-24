@@ -51,7 +51,7 @@ func InitLogger() *zap.Logger {
 	// 开启文件及行号
 	development := zap.Development()
 	// 设置初始化字段
-	filed := zap.Fields(zap.String("ip", util.GetCurrentIP()), zap.String("app", viper.GetString("name")))
+	filed := zap.Fields(zap.String("ip", util.GetLocalIP()), zap.String("app", viper.GetString("name")))
 	// 构造日志
 	logger = zap.New(core, caller, development, filed)
 
