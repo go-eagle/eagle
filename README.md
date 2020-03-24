@@ -6,6 +6,7 @@
 
 <p align="center">
  <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/1024casts/snake/Go?style=flat-square">
+ <a href="https://pkg.go.dev/github.com/1024casts/snake" rel="nofollow"><img src="https://camo.githubusercontent.com/cc8ece95e1e3139079889b8311ea73a4ab23b05f/68747470733a2f2f676f646f632e6f72672f6769746875622e636f6d2f676f2d72657374792f72657374793f7374617475732e737667" alt="GoDoc" data-canonical-src="https://godoc.org/github.com/1024casts/snake?status.svg" style="max-width:100%;"></a>
  <img alt="GitHub" src="https://img.shields.io/github/license/1024casts/snake?style=flat-square">
 </p> 
 
