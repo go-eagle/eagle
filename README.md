@@ -1,6 +1,18 @@
-# snake 框架
+<h1 align="center">snake</h1>
 
-适合于开发Go项目,主要是提供API 服务。
+<p align="center">
+一款适合于快速开发业务的Go框架，主要是提供API服务。
+</p> 
+
+<p align="center">
+ <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/1024casts/snake/Go?style=flat-square">
+ <a href="https://codecov.io/gh/1024casts/snake">
+  <img src="https://codecov.io/gh/1024casts/snake/branch/master/graph/badge.svg" />
+ </a>
+ <a href="https://pkg.go.dev/github.com/1024casts/snake" rel="nofollow"><img src="https://camo.githubusercontent.com/cc8ece95e1e3139079889b8311ea73a4ab23b05f/68747470733a2f2f676f646f632e6f72672f6769746875622e636f6d2f676f2d72657374792f72657374793f7374617475732e737667" alt="GoDoc" data-canonical-src="https://godoc.org/github.com/1024casts/snake?status.svg" style="max-width:100%;"></a>
+ <img alt="GitHub" src="https://img.shields.io/github/license/1024casts/snake?style=flat-square">
+</p> 
+
 
 ## 技术栈
 
@@ -114,6 +126,9 @@ cp config.sample.yaml config.prod.yaml
 ### docker部署
 
 Happy Coding. ^_^
+
+## 谁在用
+ - [1024课堂](https://1024casts.com)
 
 ## Discussion
 - Issue: https://github.com/1024casts/snake/issues
