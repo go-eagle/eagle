@@ -10,6 +10,11 @@ gitTreeState = $(shell if git status|grep -q 'clean';then echo clean; else echo 
 
 ldflags="-w -X ${versionDir}.gitTag=${gitTag} -X ${versionDir}.buildDate=${buildDate} -X ${versionDir}.gitCommit=${gitCommit} -X ${versionDir}.gitTreeState=${gitTreeState}"
 
+PROJECT_NAME := "github.com/1024casts/snake"
+PKG := "$(PROJECT_NAME)"
+PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
+GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
+
 all: build
 build: dep ## Build the binary file
 	@go build -v -ldflags ${ldflags} .
