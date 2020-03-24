@@ -1,11 +1,12 @@
-<h1 align="center">snake 框架</h1>
+<h1 align="center">snake</h1>
 
 <p align="center">
-适合于开发Go项目,主要是提供API 服务。
+一款适合于快速开发业务的Go框架，主要是提供API服务。
 </p> 
 
 <p align="center">
-<img alt="GitHub" src="https://img.shields.io/github/license/1024casts/snake?style=flat-square">
+ <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/1024casts/snake/main?style=flat-square">
+ <img alt="GitHub" src="https://img.shields.io/github/license/1024casts/snake?style=flat-square">
 </p> 
 
 
