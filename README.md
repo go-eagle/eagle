@@ -127,6 +127,9 @@ cp config.sample.yaml config.prod.yaml
 
 Happy Coding. ^_^
 
+## 谁在用
+ - [1024课堂](https://1024casts.com)
+
 ## Discussion
 - Issue: https://github.com/1024casts/snake/issues
 
