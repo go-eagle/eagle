@@ -6,7 +6,11 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-var headerDataType = "application/json"
+// docs: https://github.com/go-resty/resty
+
+const (
+	headerDataType = "application/json"
+)
 
 type restyClient struct {
 }
@@ -15,11 +19,21 @@ func newRestyClient() *restyClient {
 	return &restyClient{}
 }
 
-func (r restyClient) Get(url string, duration time.Duration) ([]byte, error) {
+func (r restyClient) Get(url string, params map[string]string, duration time.Duration) ([]byte, error) {
 	client := resty.New()
 
+	if duration != 0 {
+		client.SetTimeout(duration)
+	}
+
+	if len(params) > 0 {
+		client.SetPathParams(params)
+	}
+
 	resp, err := client.R().
-		// here can add set header
+		SetHeaders(map[string]string{
+			"Content-Type": headerDataType,
+		}).
 		Get(url)
 	if err != nil {
 		return nil, err
