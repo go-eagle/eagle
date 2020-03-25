@@ -15,13 +15,13 @@ import (
 // @Tags 用户
 // @Accept  json
 // @Produce  json
-// @Param id query string true "用户id"
+// @Param id path string true "用户id"
 // @Success 200 {object} model.UserInfo "用户信息"
-// @Router /users/profile [get]
-func Profile(c *gin.Context) {
-	log.Info("Profile function called.")
+// @Router /users/:id [get]
+func Get(c *gin.Context) {
+	log.Info("Get function called.")
 
-	userIdStr := c.Query("id")
+	userIdStr := c.Param("id")
 	if userIdStr == "" {
 		SendResponse(c, errno.ErrParam, nil)
 		return
