@@ -37,11 +37,11 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	pprof.Register(g)
 
 	// api for authentication functionalities
-	g.POST("/v1/users/login", user.Login)
-	g.GET("/v1/users/vcode", user.VCode)
+	g.POST("/v1/login", user.Login)
+	g.GET("/v1/vcode", user.VCode)
 
 	// The user handlers, requiring authentication
-	g.GET("/v1/users/profile", user.Profile)
+	g.GET("/v1/users/:id", user.Get)
 	u := g.Group("/v1/users")
 	u.Use(middleware.AuthMiddleware())
 	{
