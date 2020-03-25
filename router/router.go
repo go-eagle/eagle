@@ -46,7 +46,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	u.Use(middleware.AuthMiddleware())
 	{
 		u.PUT("/:id", user.Update)
-		u.GET("/me", user.Me)
 	}
 
 	// The health check handlers
