@@ -15,8 +15,8 @@ type CreateResponse struct {
 
 // 手机登录
 type PhoneLoginCredentials struct {
-	Phone      int `json:"phone" form:"phone" binding:"required"`
-	VerifyCode int `json:"verify_code" form:"verify_code" binding:"required"`
+	Phone      int `json:"phone" form:"phone" binding:"required" example:"13010002000"`
+	VerifyCode int `json:"verify_code" form:"verify_code" binding:"required" example:"120110"`
 }
 
 type ListRequest struct {
