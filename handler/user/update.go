@@ -6,7 +6,7 @@ import (
 	. "github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/model"
 	"github.com/1024casts/snake/pkg/errno"
-	"github.com/1024casts/snake/util"
+	"github.com/1024casts/snake/pkg/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lexkong/log"

@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/1024casts/snake/util"
+	"github.com/1024casts/snake/pkg/util"
 	"github.com/gin-gonic/gin"
 )
 

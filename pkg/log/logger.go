@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/1024casts/snake/util"
+	"github.com/1024casts/snake/pkg/util"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 
