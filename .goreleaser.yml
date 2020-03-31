@@ -1,0 +1,37 @@
+project_name: snake
+env:
+  - GO111MODULE=on
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - main: .
+    binary: snake
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - 386
+    goarm:
+      - "6"
+    ldflags: -s -w -X main.Version={{.Version}}  -X main.BuildDate={{.Date}}
+archive:
+  format: tar.gz
+  name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{
+    .Arm }}{{ end }}'
+  files:
+    - licence*
+    - LICENCE*
+    - license*
+    - LICENSE*
+    - readme*
+    - README*
+    - changelog*
+    - CHANGELOG*
+release:
+  github:
+    owner: qloog
+    name: snake
+  name_template: '{{.Tag}}'
