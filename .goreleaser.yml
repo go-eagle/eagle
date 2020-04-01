@@ -1,3 +1,5 @@
+# see: https://goreleaser.com/customization/
+
 project_name: snake
 env:
   - GO111MODULE=on
@@ -11,6 +13,8 @@ builds:
       - linux
       - darwin
       - windows
+    # amd64 (64-bit x86)
+    # 386 (32-bit x86)
     goarch:
       - amd64
       - 386
@@ -18,9 +22,13 @@ builds:
       - "6"
     ldflags: -s -w -X main.Version={{.Version}}  -X main.BuildDate={{.Date}}
 archive:
-  format: tar.gz
+  id: snake
   name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{
-    .Arm }}{{ end }}'
+      .Arm }}{{ end }}'
+  format: tar.gz
+  format_overrides:
+    - goos: windows
+      format: zip
   files:
     - licence*
     - LICENCE*
