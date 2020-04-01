@@ -1,4 +1,4 @@
-package service
+package sms
 
 import (
 	"github.com/pkg/errors"

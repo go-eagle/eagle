@@ -3,7 +3,8 @@ package user
 import (
 	. "github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/pkg/errno"
-	"github.com/1024casts/snake/service"
+	"github.com/1024casts/snake/service/sms"
+	"github.com/1024casts/snake/service/vcode"
 	"github.com/gin-gonic/gin"
 	"github.com/lexkong/log"
 	"github.com/pkg/errors"
@@ -36,7 +37,7 @@ func VCode(c *gin.Context) {
 	// TODO: 频率控制，以防攻击
 
 	// 生成短信验证码
-	vcode, err := service.VCodeService.GenLoginVCode(phone)
+	verifyCode, err := vcode.VCodeService.GenLoginVCode(phone)
 	if err != nil {
 		log.Warnf("gen login verify code err, %v", errors.WithStack(err))
 		SendResponse(c, errno.ErrGenVCode, nil)
@@ -44,7 +45,7 @@ func VCode(c *gin.Context) {
 	}
 
 	// 发送短信
-	err = service.SmsService.Send(phone, vcode)
+	err = sms.SmsService.Send(phone, verifyCode)
 	if err != nil {
 		log.Warnf("send phone sms err, %v", errors.WithStack(err))
 		SendResponse(c, errno.ErrSendSMS, nil)

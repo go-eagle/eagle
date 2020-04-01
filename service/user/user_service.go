@@ -1,4 +1,4 @@
-package service
+package user
 
 import (
 	"github.com/1024casts/snake/model"

@@ -3,9 +3,10 @@ package user
 import (
 	"strconv"
 
+	"github.com/1024casts/snake/service/user"
+
 	. "github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/pkg/errno"
-	"github.com/1024casts/snake/service"
 	"github.com/gin-gonic/gin"
 	"github.com/lexkong/log"
 )
@@ -29,11 +30,11 @@ func Get(c *gin.Context) {
 	userId, _ := strconv.Atoi(userIdStr)
 
 	// Get the user by the `user_id` from the database.
-	user, err := service.UserService.GetUserById(uint64(userId))
+	u, err := user.UserService.GetUserById(uint64(userId))
 	if err != nil {
 		SendResponse(c, errno.ErrUserNotFound, nil)
 		return
 	}
 
-	SendResponse(c, nil, user)
+	SendResponse(c, nil, u)
 }

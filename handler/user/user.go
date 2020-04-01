@@ -19,6 +19,11 @@ type PhoneLoginCredentials struct {
 	VerifyCode int `json:"verify_code" form:"verify_code" binding:"required" example:"120110"`
 }
 
+type UpdateRequest struct {
+	Avatar string `json:"avatar"`
+	Sex    int    `json:"sex"`
+}
+
 type ListRequest struct {
 	Username string `json:"username"`
 	Offset   int    `json:"offset"`
