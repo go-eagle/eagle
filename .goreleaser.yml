@@ -3,9 +3,9 @@
 project_name: snake
 env:
   - GO111MODULE=on
-#before:
-#  hooks:
-#    - go mod tidy
+before:
+  hooks:
+    - go mod download
 builds:
   - main: .
     binary: snake
@@ -21,6 +21,14 @@ builds:
     goarm:
       - "6"
     ldflags: -s -w -X main.Version={{.Version}}  -X main.BuildDate={{.Date}}
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - Merge pull request
+      - Merge branch
 archives:
   -
     # Defaults to `default`.
