@@ -3,9 +3,9 @@
 project_name: snake
 env:
   - GO111MODULE=on
-before:
-  hooks:
-    - go mod tidy
+#before:
+#  hooks:
+#    - go mod tidy
 builds:
   - main: .
     binary: snake
