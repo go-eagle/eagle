@@ -21,23 +21,24 @@ builds:
     goarm:
       - "6"
     ldflags: -s -w -X main.Version={{.Version}}  -X main.BuildDate={{.Date}}
-archive:
-  id: snake
-  name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{
-      .Arm }}{{ end }}'
-  format: tar.gz
-  format_overrides:
-    - goos: windows
-      format: zip
-  files:
-    - licence*
-    - LICENCE*
-    - license*
-    - LICENSE*
-    - readme*
-    - README*
-    - changelog*
-    - CHANGELOG*
+archives:
+  -
+    # Defaults to `default`.
+    id: snake
+    name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - licence*
+      - LICENCE*
+      - license*
+      - LICENSE*
+      - readme*
+      - README*
+      - changelog*
+      - CHANGELOG*
 release:
   github:
     owner: qloog
