@@ -4,14 +4,18 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+
+	redis2 "github.com/1024casts/snake/pkg/redis"
 )
 
 var Cache Driver = NewMemoryCache()
 
-// 初始化缓存
+// 初始化缓存，在main.go里调用
+// 默认是redis，这里也可以改为其他缓存，可以通过配置进行配置
 func Init() {
 	if gin.Mode() != gin.TestMode {
-		Cache = NewRedisCache()
+		// Cache = NewRedisCache()
+		Cache = NewRedisCache(redis2.Client, "snake:", JsonEncoding{})
 	}
 }
 
