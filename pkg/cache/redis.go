@@ -66,7 +66,7 @@ func (c *redisCache) Get(key string) (val interface{}, err error) {
 
 	err = Unmarshal(c.encoding, data, &val)
 	if err != nil {
-		return errors.Wrapf(err, "unmarshal data error, key=%s, cacheKey=%s type=%v, json is %s ",
+		return errors.Wrapf(err, "unmarshal data error, key=%s, cacheKey=%s type=%v, json is %+v ",
 			key, cacheKey, reflect.TypeOf(val), string(data)), nil
 	}
 	return

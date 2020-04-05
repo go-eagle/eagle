@@ -8,7 +8,8 @@ import (
 	redis2 "github.com/1024casts/snake/pkg/redis"
 )
 
-var Cache Driver = NewMemoryCache()
+// keyPrefix 一般为业务前缀
+var Cache Driver = NewMemoryCache("snake:", JsonEncoding{})
 
 // 初始化缓存，在main.go里调用
 // 默认是redis，这里也可以改为其他缓存，可以通过配置进行配置
