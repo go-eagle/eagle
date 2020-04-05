@@ -12,10 +12,9 @@ import (
 var Cache Driver = NewMemoryCache("snake:", JsonEncoding{})
 
 // 初始化缓存，在main.go里调用
-// 默认是redis，这里也可以改为其他缓存，可以通过配置进行配置
+// 默认是redis，这里也可以改为其他缓存
 func Init() {
-	if gin.Mode() != gin.TestMode {
-		// Cache = NewRedisCache()
+	if gin.Mode() == gin.ReleaseMode {
 		Cache = NewRedisCache(redis2.Client, "snake:", JsonEncoding{})
 	}
 }
