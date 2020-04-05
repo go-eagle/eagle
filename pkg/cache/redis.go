@@ -6,7 +6,6 @@ import (
 
 	"github.com/lexkong/log"
 
-	redis2 "github.com/1024casts/snake/pkg/redis"
 	"github.com/go-redis/redis"
 	"github.com/pkg/errors"
 )
@@ -23,9 +22,12 @@ const (
 	DefaultExpireTime = 60 * time.Second
 )
 
-func NewRedisCache() *redisCache {
+// client 参数是可传入的，这样方便进行单元测试
+func NewRedisCache(client *redis.Client, keyPrefix string, encoding Encoding) *redisCache {
 	return &redisCache{
-		client: redis2.Client,
+		client:    client,
+		KeyPrefix: keyPrefix,
+		encoding:  encoding,
 	}
 }
 
@@ -47,6 +49,27 @@ func (c *redisCache) Set(key string, val interface{}, expiration time.Duration) 
 		return errors.Wrapf(err, "redis set error")
 	}
 	return nil
+}
+
+func (c *redisCache) Get(key string) (val interface{}, err error) {
+	cacheKey, err := BuildCacheKey(c.KeyPrefix, key)
+	if err != nil {
+		return nil, errors.Wrapf(err, "build cache key err, key is %+v", key)
+	}
+
+	data, err := c.client.Get(cacheKey).Bytes()
+	if err != nil {
+		if err != redis.Nil {
+			return nil, errors.Wrapf(err, "get data error from redis, key is %+v", cacheKey)
+		}
+	}
+
+	err = Unmarshal(c.encoding, data, &val)
+	if err != nil {
+		return errors.Wrapf(err, "unmarshal data error, key=%s, cacheKey=%s type=%v, json is %s ",
+			key, cacheKey, reflect.TypeOf(val), string(data)), nil
+	}
+	return
 }
 
 func (c *redisCache) MultiSet(valMap map[string]interface{}, expiration time.Duration) error {
@@ -90,27 +113,6 @@ func (c *redisCache) MultiSet(valMap map[string]interface{}, expiration time.Dur
 	return nil
 }
 
-func (c *redisCache) Get(key string) (val interface{}, err error) {
-	cacheKey, err := BuildCacheKey(c.KeyPrefix, key)
-	if err != nil {
-		return nil, errors.Wrapf(err, "build cache key err, key is %+v", key)
-	}
-
-	data, err := c.client.Get(cacheKey).Bytes()
-	if err != nil {
-		if err != redis2.Nil {
-			return nil, errors.Wrapf(err, "get data error from redis, key is %+v", cacheKey)
-		}
-	}
-
-	err = Unmarshal(c.encoding, data, val)
-	if err != nil {
-		return errors.Wrapf(err, "unmarshal data error, key=%s, cacheKey=%s type=%v ,json is %s ",
-			key, cacheKey, reflect.TypeOf(val), string(data)), nil
-	}
-	return
-}
-
 func (c *redisCache) MultiGet(keys ...string) (val interface{}, err error) {
 	if len(keys) == 0 {
 		return nil, nil
@@ -138,7 +140,7 @@ func (c *redisCache) MultiGet(keys ...string) (val interface{}, err error) {
 			continue
 		}
 		object := c.newObject()
-		err = Unmarshal(c.encoding, []byte(value.(string)), object)
+		err = Unmarshal(c.encoding, []byte(value.(string)), &object)
 		if err != nil {
 			log.Warnf("unmarshal data error: %+v, key=%s, cacheKey=%s type=%v", err,
 				keys[i], cacheKeys[i], reflect.TypeOf(value))
