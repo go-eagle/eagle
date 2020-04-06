@@ -43,6 +43,7 @@
 - 支持 Swagger 文档(基于[swaggo](https://github.com/swaggo/swag))
 - 使用 make 来管理Go工程
 - 使用 shell(admin.sh) 脚本来管理进程
+- 支持多环境运行
 - todo: 单元测试(基于net/http/httptest包，覆盖所有接口层的测试)
 - todo: 使用github actions 进行CI/CD
 - todo: 使用docker进行快速部署
@@ -69,28 +70,6 @@
 └── wrktest.sh                   # API 性能测试脚本
 ```
 
-## API风格和媒体类型
-
-Go 语言中常用的 API 风格是 RPC 和 REST，常用的媒体类型是 JSON、XML 和 Protobuf。  
-在 Go API 开发中常用的组合是 `gRPC + Protobuf` (更适合调用频繁的微服务场景) 和 `REST + JSON`。
-
-本项目使用 API 风格采用 REST，媒体类型选择 JSON 。
-
-<details>
- <summary>REST</summary>
-
-REST 风格虽然适用于很多传输协议，但在实际开发中，REST 由于天生和 HTTP 协议相辅相成，因此 HTTP 协议已经成了实现 RESTful API 事实上的标准。  
-在 HTTP 协议中通过 POST、DELETE、PUT、GET 方法来对应 REST 资源的增、删、改、查操作，具体的对应关系如下：
-
-| HTTP方法 | 行为 | URI | 示例说明 |  
-| :------ | :------ | :------ | :------ |
-| GET	  | 获取资源列表  |	/users | 获取用户列表 |
-| GET	  | 获取一个具体的资源  |	/users/admin |	获取 admin 用户的详细信息 |
-| POST	  | 创建一个新的资源  | /users |	创建一个新用户 |
-| PUT	  | 更新一个资源	| /users/1 |	更新 id 为 1 的用户 |
-| DELETE  |	删除服务器上的一个资源	| /users/1 |	删除 id 为 1 的用户 |
-</details>
-
 ## 错误码设计
 
 [看这里](https://github.com/1024casts/snake/tree/master/pkg/errno)
@@ -106,11 +85,9 @@ make build
 
 // 本地环境
 cp config.sample.yaml config.local.yaml
-./snake -c conf/config.local.yaml
 
-// 线上环境类似操作
-cp config.sample.yaml config.prod.yaml
-./snake -c conf/config.prod.yaml
+// 运行
+./snake -c conf/config.local.yaml
 ```
 
 ## 常用命令
@@ -119,6 +96,7 @@ cp config.sample.yaml config.prod.yaml
  - make build 编译项目
  - make swag-init 生成接口文档(需要重新编译)
  - make test-coverage 生成测试覆盖
+ - make lint 检查代码规范
 
 ## 模块
  - 用户(示例)

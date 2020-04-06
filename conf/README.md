@@ -1,9 +1,9 @@
 # conf
 
-默认从 config.yaml 加载配置, 可以通过下面命令生成 config.yaml文件：
+默认从 config.local.yaml 加载配置, 可以通过下面命令生成：
 
 ```bash
-cp config.sample.yaml config.yaml
+cp config.sample.yaml config.local.yaml
 ```
 
 如果是多环境可以设定不同的配置文件，比如：
@@ -24,5 +24,12 @@ cp config.sample.yaml config.dev.yaml
  使用本地配置文件来运行程序，命令如下:
  
  ```bash
+# 本地启动
+# 也可以直接 ./snake
 ./snake -c conf/config.local.yaml
+# 开发环境启动
+./snake -c conf/config.dev.yaml
+# 线上环境启动
+./snake -c conf/config.prod.yaml
+
 ```
