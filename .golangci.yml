@@ -47,7 +47,7 @@ run:
   # If invoked with -mod=vendor, the go command assumes that the vendor
   # directory holds the correct copies of dependencies and ignores
   # the dependency descriptions in go.mod.
-  modules-download-mode: readonly|release|vendor
+  # modules-download-mode: readonly|release|vendor
 
 
 # output configuration options
@@ -89,7 +89,7 @@ linters-settings:
 
     # path to a file containing a list of functions to exclude from checking
     # see https://github.com/kisielk/errcheck#excluding-functions for details
-    exclude: /path/to/file.txt
+    # exclude: /path/to/file.txt
   funlen:
     lines: 60
     statements: 40
@@ -106,8 +106,8 @@ linters-settings:
     # See https://go-critic.github.io/overview#checks-overview
     # To check which checks are enabled run `GL_DEBUG=gocritic golangci-lint run`
     # By default list of stable checks is used.
-    enabled-checks:
-      - rangeValCopy
+    # enabled-checks:
+    #  - rangeValCopy
 
     # Which checks should be disabled; can't be combined with 'enabled-checks'; default is empty
     disabled-checks:
@@ -240,29 +240,42 @@ linters-settings:
 
   # The custom section can be used to define linter plugins to be loaded at runtime. See README doc
   #  for more info.
-  custom:
-    # Each custom linter should have a unique name.
-    example:
-      # The path to the plugin *.so. Can be absolute or local. Required for each custom linter
-      path: /path/to/example.so
-      # The description of the linter. Optional, just for documentation purposes.
-      description: This is an example usage of a plugin linter.
-      # Intended to point to the repo location of the linter. Optional, just for documentation purposes.
-      original-url: github.com/golangci/example-linter
 
 linters:
+  # please, do not use `enable-all`: it's deprecated and will be removed soon.
+  # inverted configuration with `enable-all` and `disable` is not scalable during updates of golangci-lint
+  disable-all: true
   enable:
-    - megacheck
+    - bodyclose
+    - deadcode
+    - depguard
+    - dogsled
+    - dupl
+    - errcheck
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gocyclo
+    - gofmt
+    - goimports
+    - golint
+    - goprintffuncname
+#    - gosec
+    - gosimple
     - govet
-  disable:
-    - maligned
-    - prealloc
-  disable-all: false
-  presets:
-    - bugs
+    - ineffassign
+    - interfacer
+    - lll
+    - misspell
+    - rowserrcheck
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unconvert
+    - unparam
     - unused
-  fast: false
-
+    - varcheck
+    - whitespace
 
 issues:
   # List of regexps of issue texts to exclude, empty list by default.
@@ -323,4 +336,4 @@ issues:
   new-from-rev: REV
 
   # Show only new issues created in git patch with set file path.
-  new-from-patch: path/to/patch/file
+  # new-from-patch: path/to/patch/file
