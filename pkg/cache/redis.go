@@ -118,8 +118,9 @@ func (c *redisCache) MultiGet(keys ...string) (val interface{}, err error) {
 		return nil, nil
 	}
 	cacheKeys := make([]string, len(keys))
+	var cacheKey string
 	for index, key := range keys {
-		cacheKey, err := BuildCacheKey(c.KeyPrefix, key)
+		cacheKey, err = BuildCacheKey(c.KeyPrefix, key)
 		if err != nil {
 			return nil, errors.Wrapf(err, "build cache key err, key is %+v", key)
 		}

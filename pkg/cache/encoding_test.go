@@ -13,7 +13,6 @@ func BenchmarkJsonMarshal(b *testing.B) {
 		if err != nil {
 			b.Error(err)
 		}
-
 	}
 }
 
@@ -33,7 +32,6 @@ func BenchmarkJsonUnmarshal(b *testing.B) {
 		if err != nil {
 			b.Error(err)
 		}
-
 	}
 }
 
@@ -54,6 +52,5 @@ func BenchmarkMsgpack(b *testing.B) {
 		if err != nil {
 			b.Error(err)
 		}
-
 	}
 }

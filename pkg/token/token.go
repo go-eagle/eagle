@@ -1,3 +1,5 @@
+// 主要是配合jwt来生成用户登录token
+
 package token
 
 import (
@@ -12,7 +14,7 @@ import (
 
 var (
 	// ErrMissingHeader means the `Authorization` header was empty.
-	ErrMissingHeader = errors.New("The length of the `Authorization` header is zero.")
+	ErrMissingHeader = errors.New("the length of the `Authorization` header is zero")
 )
 
 // Context is the context of the JSON web token.
@@ -71,7 +73,10 @@ func ParseRequest(c *gin.Context) (*Context, error) {
 
 	var t string
 	// Parse the header to get the token part.
-	fmt.Sscanf(header, "Bearer %s", &t)
+	_, err := fmt.Sscanf(header, "Bearer %s", &t)
+	if err != nil {
+		fmt.Printf("fmt.Sscanf err: %+v", err)
+	}
 	return Parse(t, secret)
 }
 

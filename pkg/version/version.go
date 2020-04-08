@@ -17,7 +17,7 @@ type Info struct {
 }
 
 // String returns info as a human-friendly version string.
-func (info Info) String() string {
+func (info *Info) String() string {
 	return info.GitTag
 }
 

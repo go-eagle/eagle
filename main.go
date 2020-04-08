@@ -45,13 +45,13 @@ func main() {
 	pflag.Parse()
 	if *version {
 		v := v.Get()
-		marshalled, err := json.MarshalIndent(&v, "", "  ")
+		marshaled, err := json.MarshalIndent(&v, "", "  ")
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Println(string(marshalled))
+		fmt.Println(string(marshaled))
 		return
 	}
 
@@ -150,6 +150,5 @@ func pingServer() error {
 		log.Info("Waiting for the router, retry in 1 second.")
 		time.Sleep(time.Second)
 	}
-	return errors.New("Cannot connect to the router.")
-
+	return errors.New("cannot connect to the router")
 }

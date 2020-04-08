@@ -45,7 +45,7 @@ func VCode(c *gin.Context) {
 	}
 
 	// 发送短信
-	err = sms.SmsService.Send(phone, verifyCode)
+	err = sms.ServiceSms.Send(phone, verifyCode)
 	if err != nil {
 		log.Warnf("send phone sms err, %v", errors.WithStack(err))
 		SendResponse(c, errno.ErrSendSMS, nil)

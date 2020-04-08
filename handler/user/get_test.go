@@ -21,9 +21,9 @@ func TestGet(t *testing.T) {
 	// Test body will be here!
 	// Set up a test table.
 	userTests := []model.UserModel{
-		model.UserModel{
+		{
 			BaseModel: model.BaseModel{
-				Id: 11,
+				Id: 12,
 			},
 			Username: "user001",
 			Password: "123456",
@@ -31,9 +31,9 @@ func TestGet(t *testing.T) {
 			Avatar:   "",
 			Sex:      0,
 		},
-		model.UserModel{
+		{
 			BaseModel: model.BaseModel{
-				Id: 12,
+				Id: 13,
 			},
 			Username: "user002",
 			Password: "123456",

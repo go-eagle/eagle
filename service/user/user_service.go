@@ -10,7 +10,7 @@ import (
 type IUserService interface {
 	CreateUser(user model.UserModel) (id uint64, err error)
 	UpdateUser(userMap map[string]interface{}, id uint64) error
-	GetUserById(id uint64) (*model.UserModel, error)
+	GetUserByID(id uint64) (*model.UserModel, error)
 	GetUserListByIds(id []uint64) (map[uint64]*model.UserModel, error)
 	GetUserByPhone(phone int) (*model.UserModel, error)
 	GetUserByEmail(email string) (*model.UserModel, error)
@@ -23,6 +23,7 @@ type userService struct {
 	userRepo repository.IUserRepo
 }
 
+// NewUserService 实例化一个userService
 func NewUserService() IUserService {
 	return &userService{
 		userRepo: repository.NewUserRepo(),
@@ -48,7 +49,7 @@ func (srv *userService) UpdateUser(userMap map[string]interface{}, id uint64) er
 	return nil
 }
 
-func (srv *userService) GetUserById(id uint64) (*model.UserModel, error) {
+func (srv *userService) GetUserByID(id uint64) (*model.UserModel, error) {
 	userModel, err := srv.userRepo.GetUserById(id)
 	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by id: %d", id)

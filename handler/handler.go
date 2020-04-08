@@ -8,12 +8,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Response api的返回结构体
 type Response struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 }
 
+// SendResponse 返回json
 func SendResponse(c *gin.Context, err error, data interface{}) {
 	code, message := errno.DecodeErr(err)
 
@@ -25,7 +27,8 @@ func SendResponse(c *gin.Context, err error, data interface{}) {
 	})
 }
 
-func GetUserId(c *gin.Context) uint64 {
+// 返回用户id
+func GetUserID(c *gin.Context) uint64 {
 	if c == nil {
 		return 0
 	}

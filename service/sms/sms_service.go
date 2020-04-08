@@ -10,12 +10,13 @@ import (
 // 短信服务
 // 使用七牛云
 // 直接初始化，可以避免在使用时再实例化
-var SmsService = NewSmsService()
+var ServiceSms = NewSmsService()
 
 // 校验码服务，生成校验码和获得校验码
 type smsService struct {
 }
 
+// NewSmsService 实例化一个sms
 func NewSmsService() *smsService {
 	return &smsService{}
 }

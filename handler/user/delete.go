@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Delete 删除用户
 // @Summary Delete an user by the user identifier
 // @Description Delete user by ID
 // @Tags 用户

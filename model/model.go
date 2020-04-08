@@ -23,14 +23,6 @@ const (
 	IsNotNull
 )
 
-type ListResponse struct {
-	TotalCount uint64      `json:"total_count"`
-	HasMore    int         `json:"has_more"`
-	PageKey    string      `json:"page_key"`
-	PageValue  int         `json:"page_value"`
-	Items      interface{} `json:"items"`
-}
-
 // sql build where
 // see: https://github.com/jinzhu/gorm/issues/2055
 func WhereBuild(where map[string]interface{}) (whereSQL string, vals []interface{}, err error) {
@@ -67,35 +59,27 @@ func WhereBuild(where map[string]interface{}) (whereSQL string, vals []interface
 			case "=":
 				whereSQL += fmt.Sprint(k, "=?")
 				vals = append(vals, v)
-				break
 			case ">":
 				whereSQL += fmt.Sprint(k, ">?")
 				vals = append(vals, v)
-				break
 			case ">=":
 				whereSQL += fmt.Sprint(k, ">=?")
 				vals = append(vals, v)
-				break
 			case "<":
 				whereSQL += fmt.Sprint(k, "<?")
 				vals = append(vals, v)
-				break
 			case "<=":
 				whereSQL += fmt.Sprint(k, "<=?")
 				vals = append(vals, v)
-				break
 			case "!=":
 				whereSQL += fmt.Sprint(k, "!=?")
 				vals = append(vals, v)
-				break
 			case "<>":
 				whereSQL += fmt.Sprint(k, "!=?")
 				vals = append(vals, v)
-				break
 			case "in":
 				whereSQL += fmt.Sprint(k, " in (?)")
 				vals = append(vals, v)
-				break
 			case "like":
 				whereSQL += fmt.Sprint(k, " like ?")
 				vals = append(vals, v)

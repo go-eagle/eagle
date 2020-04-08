@@ -1,6 +1,9 @@
+// 根据文件进行初始化配置，例如设定日志的配置，并监控文件的变化
+
 package config
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/fsnotify/fsnotify"
@@ -65,7 +68,10 @@ func (cfg *Config) initLog() {
 		LogBackupCount: viper.GetInt("log.log_backup_count"),
 	}
 
-	log.InitWithConfig(&passLagerCfg)
+	err := log.InitWithConfig(&passLagerCfg)
+	if err != nil {
+		fmt.Printf("InitWithConfig err: %v", err)
+	}
 }
 
 // 监控配置文件变化并热加载程序

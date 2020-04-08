@@ -1,3 +1,5 @@
+// http 客户端
+
 package http
 
 import (
@@ -7,8 +9,9 @@ import (
 // see: https://github.com/iiinsomnia/gochat/blob/master/utils/http.go
 
 // 禁止直接调用resty，统一使用HttpClient
-var HttpClient = New("resty")
+var HTTPClient = New("resty")
 
+// New 实例化一个client
 func New(typ string) Client {
 	var c Client
 	if typ == "resty" {

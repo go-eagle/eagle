@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"encoding"
 	"encoding/gob"
+	"fmt"
 
 	"encoding/json"
 	"io/ioutil"
@@ -128,7 +129,10 @@ func GzipEncode(in []byte) ([]byte, error) {
 
 	_, err = writer.Write(in)
 	if err != nil {
-		writer.Close()
+		err = writer.Close()
+		if err != nil {
+			return out, err
+		}
 		return out, err
 	}
 	err = writer.Close()
@@ -145,7 +149,12 @@ func GzipDecode(in []byte) ([]byte, error) {
 		var out []byte
 		return out, err
 	}
-	defer reader.Close()
+	defer func() {
+		err = reader.Close()
+		if err != nil {
+			fmt.Printf("reader close err: %+v", err)
+		}
+	}()
 
 	return ioutil.ReadAll(reader)
 }

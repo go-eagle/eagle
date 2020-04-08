@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/1024casts/snake/model"
+
 	"github.com/jinzhu/gorm"
 	"github.com/lexkong/log"
 )
@@ -22,6 +23,7 @@ func NewUserRepo() IUserRepo {
 	return &UserRepo{}
 }
 
+// CreateUser 创建用户
 func (repo *UserRepo) CreateUser(db *gorm.DB, user model.UserModel) (id uint64, err error) {
 	err = db.Create(&user).Error
 	if err != nil {
@@ -31,6 +33,7 @@ func (repo *UserRepo) CreateUser(db *gorm.DB, user model.UserModel) (id uint64, 
 	return user.Id, nil
 }
 
+// GetUserByID 获取用户
 func (repo *UserRepo) GetUserById(id uint64) (*model.UserModel, error) {
 	user := &model.UserModel{}
 	result := model.GetDB().Where("id = ?", id).First(user)
@@ -38,6 +41,7 @@ func (repo *UserRepo) GetUserById(id uint64) (*model.UserModel, error) {
 	return user, result.Error
 }
 
+// GetUserByPhone 根据手机号获取用户
 func (repo *UserRepo) GetUserByPhone(phone int) (*model.UserModel, error) {
 	user := model.UserModel{}
 	result := model.GetDB().Where("phone = ?", phone).First(&user)
@@ -47,6 +51,7 @@ func (repo *UserRepo) GetUserByPhone(phone int) (*model.UserModel, error) {
 	return &user, result.Error
 }
 
+// GetUserByEmail 根据邮箱获取手机号
 func (repo *UserRepo) GetUserByEmail(phone string) (*model.UserModel, error) {
 	user := model.UserModel{}
 	result := model.GetDB().Where("email = ?", phone).First(&user)
@@ -56,6 +61,7 @@ func (repo *UserRepo) GetUserByEmail(phone string) (*model.UserModel, error) {
 	return &user, result.Error
 }
 
+// GetUsersByIds 批量获取用户
 func (repo *UserRepo) GetUsersByIds(ids []uint64) ([]*model.UserModel, error) {
 	users := make([]*model.UserModel, 0)
 	result := model.GetDB().Where("id in (?)", ids).Find(&users)
@@ -63,6 +69,7 @@ func (repo *UserRepo) GetUsersByIds(ids []uint64) ([]*model.UserModel, error) {
 	return users, result.Error
 }
 
+// Update 更新用户信息
 func (repo *UserRepo) Update(userMap map[string]interface{}, id uint64) error {
 	user, err := repo.GetUserById(id)
 	if err != nil {

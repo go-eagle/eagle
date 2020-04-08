@@ -58,7 +58,6 @@ func getValue(item interface{}, ok bool) (interface{}, bool) {
 	}
 
 	return itemObj.value, true
-
 }
 
 // interface 转 byte
@@ -70,7 +69,6 @@ func GetBytes(key interface{}) ([]byte, error) {
 		return nil, err
 	}
 	return buf.Bytes(), nil
-
 }
 
 func (m memoryCache) Set(key string, val interface{}, expiration time.Duration) error {

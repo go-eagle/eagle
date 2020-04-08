@@ -4,6 +4,7 @@ import (
 	"reflect"
 )
 
+// IsZero 检查是否是零值
 func IsZero(i ...interface{}) bool {
 	ret := false
 	for _, j := range i {

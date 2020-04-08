@@ -11,6 +11,7 @@ import (
 	"github.com/lexkong/log"
 )
 
+// Update 更新用户信息
 // @Summary Update a user info by the user identifier
 // @Description Update a user by ID
 // @Tags 用户
@@ -23,7 +24,7 @@ import (
 func Update(c *gin.Context) {
 	log.Info("Update function called.")
 	// Get the user id from the url parameter.
-	userId, _ := strconv.Atoi(c.Param("id"))
+	userID, _ := strconv.Atoi(c.Param("id"))
 
 	// Binding the user data.
 	var req UpdateRequest
@@ -35,12 +36,12 @@ func Update(c *gin.Context) {
 	userMap := make(map[string]interface{})
 	userMap["avatar"] = req.Avatar
 	userMap["sex"] = req.Sex
-	err := user.UserService.UpdateUser(userMap, uint64(userId))
+	err := user.UserService.UpdateUser(userMap, uint64(userID))
 	if err != nil {
 		log.Warnf("[user] update user err, %v", err)
 		SendResponse(c, errno.InternalServerError, nil)
 		return
 	}
 
-	SendResponse(c, nil, userId)
+	SendResponse(c, nil, userID)
 }

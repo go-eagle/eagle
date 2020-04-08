@@ -11,6 +11,7 @@ import (
 	"github.com/lexkong/log"
 )
 
+// Get 获取用户信息
 // @Summary 通过用户id获取用户信息
 // @Description Get an user by user id
 // @Tags 用户
@@ -22,15 +23,15 @@ import (
 func Get(c *gin.Context) {
 	log.Info("Get function called.")
 
-	userIdStr := c.Param("id")
-	if userIdStr == "" {
+	userIDStr := c.Param("id")
+	if userIDStr == "" {
 		SendResponse(c, errno.ErrParam, nil)
 		return
 	}
-	userId, _ := strconv.Atoi(userIdStr)
+	userID, _ := strconv.Atoi(userIDStr)
 
 	// Get the user by the `user_id` from the database.
-	u, err := user.UserService.GetUserById(uint64(userId))
+	u, err := user.UserService.GetUserByID(uint64(userID))
 	if err != nil {
 		SendResponse(c, errno.ErrUserNotFound, nil)
 		return

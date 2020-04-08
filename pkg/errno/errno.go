@@ -2,6 +2,7 @@ package errno
 
 import "fmt"
 
+// Errno 返回错误码和消息的结构体
 type Errno struct {
 	Code    int
 	Message string
@@ -18,27 +19,8 @@ type Err struct {
 	Err     error
 }
 
-func New(errno *Errno, err error) *Err {
-	return &Err{Code: errno.Code, Message: errno.Message, Err: err}
-}
-
-func (err *Err) Add(message string) error {
-	err.Message += " " + message
-	return err
-}
-
-func (err *Err) Addf(format string, args ...interface{}) error {
-	err.Message += " " + fmt.Sprintf(format, args...)
-	return err
-}
-
 func (err *Err) Error() string {
 	return fmt.Sprintf("Err - code: %d, message: %s, error: %s", err.Code, err.Message, err.Err)
-}
-
-func IsErrUserNotFound(err error) bool {
-	code, _ := DecodeErr(err)
-	return code == ErrUserNotFound.Code
 }
 
 func DecodeErr(err error) (int, string) {

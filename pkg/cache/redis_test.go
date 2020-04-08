@@ -9,7 +9,6 @@ import (
 )
 
 func Test_redisCache_SetGet(t *testing.T) {
-
 	// 实例化redis客户端
 	redis2.InitTestRedis()
 

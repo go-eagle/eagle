@@ -68,12 +68,14 @@ func Logging() gin.HandlerFunc {
 		end := time.Now().UTC()
 		latency := end.Sub(start)
 
-		code, message := -1, ""
+		var code int
+		var message string
 
 		// get code and message
 		var response handler.Response
 		if err := json.Unmarshal(blw.body.Bytes(), &response); err != nil {
-			log.Errorf(err, "response body can not unmarshal to model.Response struct, body: `%s`", blw.body.Bytes())
+			log.Errorf(err, "response body can not unmarshal to model.Response struct, body: `%s`",
+				blw.body.Bytes())
 			code = errno.InternalServerError.Code
 			message = err.Error()
 		} else {
@@ -81,6 +83,7 @@ func Logging() gin.HandlerFunc {
 			message = response.Message
 		}
 
-		log.Infof("%-13s | %-12s | %s %s | {code: %d, message: %s}", latency, ip, pad.Right(method, 5, ""), path, code, message)
+		log.Infof("%-13s | %-12s | %s %s | {code: %d, message: %s}", latency, ip,
+			pad.Right(method, 5, ""), path, code, message)
 	}
 }
