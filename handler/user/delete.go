@@ -2,6 +2,7 @@ package user
 
 import (
 	. "github.com/1024casts/snake/handler"
+
 	"github.com/gin-gonic/gin"
 )
 

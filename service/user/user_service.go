@@ -3,6 +3,7 @@ package user
 import (
 	"github.com/1024casts/snake/model"
 	"github.com/1024casts/snake/repository"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )

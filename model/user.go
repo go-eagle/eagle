@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/1024casts/snake/pkg/auth"
+
 	validator "github.com/go-playground/validator/v10"
 )
 

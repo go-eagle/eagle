@@ -7,7 +7,6 @@ import (
 )
 
 func Test_memoryCache_SetGet(t *testing.T) {
-
 	// 实例化memory cache
 	cache := NewMemoryCache("memory-unit-test", JsonEncoding{})
 

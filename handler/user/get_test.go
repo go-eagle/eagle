@@ -9,9 +9,9 @@ import (
 	"testing"
 
 	"github.com/1024casts/snake/model"
-	"github.com/gin-gonic/gin"
-
 	"github.com/1024casts/snake/pkg/testutil"
+
+	"github.com/gin-gonic/gin"
 )
 
 // see: https://rshipp.com/go-api-integration-testing/

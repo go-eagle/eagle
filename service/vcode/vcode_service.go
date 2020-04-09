@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/1024casts/snake/pkg/redis"
+
 	"github.com/lexkong/log"
 	"github.com/pkg/errors"
 )

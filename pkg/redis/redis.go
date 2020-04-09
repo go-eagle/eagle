@@ -10,10 +10,13 @@ import (
 	"github.com/spf13/viper"
 )
 
+// redis 客户端
 var Client *redis.Client
 
+// redis 返回为空
 const Nil = redis.Nil
 
+// Init 实例化一个redis client
 func Init() {
 	Client = redis.NewClient(&redis.Options{
 		Addr:     viper.GetString("redis.addr"),
@@ -31,6 +34,7 @@ func Init() {
 	}
 }
 
+// InitTestRedis 实例化一个可以用于单元测试的redis
 func InitTestRedis() {
 	mr, err := miniredis.Run()
 	if err != nil {

@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// VCode 获取验证码
 // @Summary 根据手机号获取校验码
 // @Description Get an user by username
 // @Tags 用户
