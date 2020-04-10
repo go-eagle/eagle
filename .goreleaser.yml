@@ -6,21 +6,21 @@ env:
 before:
   hooks:
     - go mod download
-builds:
-  - main: .
-    binary: snake
-    goos:
-      - linux
-      - darwin
-      - windows
-    # amd64 (64-bit x86)
-    # 386 (32-bit x86)
-    goarch:
-      - amd64
-      - 386
-    goarm:
-      - "6"
-    ldflags: -s -w -X main.Version={{.Version}}  -X main.BuildDate={{.Date}}
+#builds:
+#  - main: .
+#    binary: snake
+#    goos:
+#      - linux
+#      - darwin
+#      - windows
+#    # amd64 (64-bit x86)
+#    # 386 (32-bit x86)
+#    goarch:
+#      - amd64
+#      - 386
+#    goarm:
+#      - "6"
+#    ldflags: -s -w -X main.Version={{.Version}}  -X main.BuildDate={{.Date}}
 changelog:
   sort: asc
   filters:
