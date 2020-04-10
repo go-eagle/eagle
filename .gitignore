@@ -33,6 +33,7 @@ _testmain.go
 *.test
 *.prof
 *.out
+coverage.txt
 .idea
 .idea/*
 
