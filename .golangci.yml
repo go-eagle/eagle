@@ -103,7 +103,7 @@ linters-settings:
     min-occurrences: 3
   gocyclo:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
-    min-complexity: 10
+    min-complexity: 20
   godox:
     # report any comments starting with keywords, this is useful for TODO or FIXME comments that
     # might be left in the code accidentally and should be resolved before merging
@@ -224,7 +224,7 @@ linters:
   # inverted configuration with `enable-all` and `disable` is not scalable during updates of golangci-lint
   disable-all: true
   enable:
-    - bodyclose
+#    - bodyclose
     - deadcode
     - depguard
     - dogsled
@@ -304,7 +304,7 @@ issues:
   new: false
 
   # Show only new issues created after git revision `REV`
-  new-from-rev: REV
+  new-from-rev: ""
 
   # Show only new issues created in git patch with set file path.
   # new-from-patch: path/to/patch/file
