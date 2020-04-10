@@ -22,7 +22,6 @@
 - 包管理工具 [go module](https://github.com/golang/go/wiki/Modules)
 - 测试框架 [goConvey](http://goconvey.co/)
 - CI/CD [Github Actions](https://github.com/actions)
-- 容器化 [Docker](https://www.docker.com/)
 
 ## 特性
 
@@ -33,10 +32,7 @@
 - 支持 Swagger 文档(基于[swaggo](https://github.com/swaggo/swag))
 - 使用 make 来管理Go工程
 - 使用 shell(admin.sh) 脚本来管理进程
-- 支持多环境运行
-- todo: 单元测试(基于net/http/httptest包，覆盖所有接口层的测试)
-- todo: 使用github actions 进行CI/CD
-- todo: 使用docker进行快速部署
+- 支持多环境配置
 
 ## 目录结构
 
