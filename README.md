@@ -1,8 +1,4 @@
-<h1 align="center">snake</h1>
-
-<p align="center">
-一款适合于快速开发业务的Go框架，主要是提供API服务。
-</p> 
+# snake
 
  [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/1024casts/snake/Go?style=flat-square)](https://github.com/1024casts/snake)
  [![codecov](https://codecov.io/gh/1024casts/snake/branch/master/graph/badge.svg)](https://codecov.io/gh/1024casts/snake)
@@ -11,6 +7,7 @@
  [![Go Report Card](https://goreportcard.com/badge/github.com/1024casts/snake)](https://goreportcard.com/report/github.com/1024casts/snake)
  [![License](https://img.shields.io/github/license/1024casts/snake?style=flat-square)](/LICENSE)
 
+一款适合于快速开发业务的Go框架，主要是提供API服务。
 
 ## 技术栈
 
