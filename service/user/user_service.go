@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// IUserService 用户服务接口定义
 type IUserService interface {
 	CreateUser(user model.UserModel) (id uint64, err error)
 	UpdateUser(userMap map[string]interface{}, id uint64) error
@@ -17,7 +18,7 @@ type IUserService interface {
 	GetUserByEmail(email string) (*model.UserModel, error)
 }
 
-// 直接初始化，可以避免在使用时再实例化
+// UserService 直接初始化，可以避免在使用时再实例化
 var UserService = NewUserService()
 
 type userService struct {
@@ -51,7 +52,7 @@ func (srv *userService) UpdateUser(userMap map[string]interface{}, id uint64) er
 }
 
 func (srv *userService) GetUserByID(id uint64) (*model.UserModel, error) {
-	userModel, err := srv.userRepo.GetUserById(id)
+	userModel, err := srv.userRepo.GetUserByID(id)
 	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by id: %d", id)
 	}
@@ -69,7 +70,7 @@ func (srv *userService) GetUserListByIds(id []uint64) (map[uint64]*model.UserMod
 	}
 
 	for _, v := range userModels {
-		retMap[v.Id] = v
+		retMap[v.ID] = v
 	}
 
 	return retMap, nil

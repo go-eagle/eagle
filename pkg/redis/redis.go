@@ -10,10 +10,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-// redis 客户端
+// Client redis 客户端
 var Client *redis.Client
 
-// redis 返回为空
+// Nil redis 返回为空
 const Nil = redis.Nil
 
 // Init 实例化一个redis client

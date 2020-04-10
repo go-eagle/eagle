@@ -6,13 +6,15 @@ import (
 	"time"
 )
 
+// BaseModel 公共model
 type BaseModel struct {
-	Id        uint64     `gorm:"primary_key;AUTO_INCREMENT;column:id" json:"-"`
+	ID        uint64     `gorm:"primary_key;AUTO_INCREMENT;column:id" json:"-"`
 	CreatedAt time.Time  `gorm:"column:created_at" json:"-"`
 	UpdatedAt time.Time  `gorm:"column:updated_at" json:"-"`
 	DeletedAt *time.Time `gorm:"column:deleted_at" sql:"index" json:"-"`
 }
 
+// NullType 空字节类型
 type NullType byte
 
 const (
@@ -23,7 +25,7 @@ const (
 	IsNotNull
 )
 
-// sql build where
+// WhereBuild sql build where
 // see: https://github.com/jinzhu/gorm/issues/2055
 func WhereBuild(where map[string]interface{}) (whereSQL string, vals []interface{}, err error) {
 	for k, v := range where {
@@ -52,7 +54,6 @@ func WhereBuild(where map[string]interface{}) (whereSQL string, vals []interface
 				whereSQL += fmt.Sprint(k, "=?")
 				vals = append(vals, v)
 			}
-			break
 		case 2:
 			k = ks[0]
 			switch ks[1] {
@@ -84,7 +85,6 @@ func WhereBuild(where map[string]interface{}) (whereSQL string, vals []interface
 				whereSQL += fmt.Sprint(k, " like ?")
 				vals = append(vals, v)
 			}
-			break
 		}
 	}
 	return

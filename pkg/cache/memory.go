@@ -1,8 +1,6 @@
 package cache
 
 import (
-	"bytes"
-	"encoding/gob"
 	"sync"
 	"time"
 
@@ -17,7 +15,8 @@ type memoryCache struct {
 	encoding  Encoding
 }
 
-func NewMemoryCache(keyPrefix string, encoding Encoding) *memoryCache {
+// NewMemoryCache 实例化一个内存cache
+func NewMemoryCache(keyPrefix string, encoding Encoding) Driver {
 	return &memoryCache{
 		client:    &sync.Map{},
 		KeyPrefix: keyPrefix,
@@ -31,6 +30,7 @@ type itemWithTTL struct {
 	value   interface{}
 }
 
+// newItem 返回带有效期的value
 func newItem(value interface{}, expires time.Duration) itemWithTTL {
 	expires64 := int64(expires)
 	if expires > 0 {
@@ -60,17 +60,7 @@ func getValue(item interface{}, ok bool) (interface{}, bool) {
 	return itemObj.value, true
 }
 
-// interface 转 byte
-func GetBytes(key interface{}) ([]byte, error) {
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	err := enc.Encode(key)
-	if err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
-}
-
+// Set data
 func (m memoryCache) Set(key string, val interface{}, expiration time.Duration) error {
 	cacheKey, err := BuildCacheKey(m.KeyPrefix, key)
 	if err != nil {
@@ -80,6 +70,7 @@ func (m memoryCache) Set(key string, val interface{}, expiration time.Duration) 
 	return nil
 }
 
+// Get data
 func (m memoryCache) Get(key string) (interface{}, error) {
 	cacheKey, err := BuildCacheKey(m.KeyPrefix, key)
 	if err != nil {
@@ -92,14 +83,17 @@ func (m memoryCache) Get(key string) (interface{}, error) {
 	return val, nil
 }
 
+// MultiSet 批量set
 func (m memoryCache) MultiSet(valMap map[string]interface{}, expiration time.Duration) error {
 	panic("implement me")
 }
 
+// MultiGet 批量获取
 func (m memoryCache) MultiGet(keys ...string) (interface{}, error) {
 	panic("implement me")
 }
 
+// Del 批量删除
 func (m memoryCache) Del(keys ...string) error {
 	if len(keys) == 0 {
 		return nil
@@ -117,10 +111,12 @@ func (m memoryCache) Del(keys ...string) error {
 	return nil
 }
 
+// Incr 自增
 func (m memoryCache) Incr(key string, step int64) (int64, error) {
 	panic("implement me")
 }
 
+// Decr 自减
 func (m memoryCache) Decr(key string, step int64) (int64, error) {
 	panic("implement me")
 }

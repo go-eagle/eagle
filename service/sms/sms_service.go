@@ -7,21 +7,26 @@ import (
 	"github.com/spf13/viper"
 )
 
-// 短信服务
+// ServiceSms 短信服务
 // 使用七牛云
 // 直接初始化，可以避免在使用时再实例化
 var ServiceSms = NewSmsService()
 
-// 校验码服务，生成校验码和获得校验码
-type smsService struct {
+// ISmsService 短信服务接口定义
+type ISmsService interface {
+	Send(phoneNumber string, verifyCode int) error
+	_sendViaQiNiu(phoneNumber string, verifyCode int) error
 }
 
+// smsService 校验码服务，生成校验码和获得校验码
+type smsService struct{}
+
 // NewSmsService 实例化一个sms
-func NewSmsService() *smsService {
+func NewSmsService() ISmsService {
 	return &smsService{}
 }
 
-// 发送短信
+// Send 发送短信
 func (srv *smsService) Send(phoneNumber string, verifyCode int) error {
 	// 校验参数的正确性
 	if phoneNumber == "" || verifyCode == 0 {
@@ -32,9 +37,8 @@ func (srv *smsService) Send(phoneNumber string, verifyCode int) error {
 	return srv._sendViaQiNiu(phoneNumber, verifyCode)
 }
 
-// 调用七牛短信服务
+// _sendViaQiNiu 调用七牛短信服务
 func (srv *smsService) _sendViaQiNiu(phoneNumber string, verifyCode int) error {
-
 	accessKey := viper.GetString("qiniu.access_key")
 	secretKey := viper.GetString("qiniu.secret_key")
 

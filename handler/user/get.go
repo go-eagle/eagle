@@ -3,7 +3,8 @@ package user
 import (
 	"strconv"
 
-	. "github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/handler"
+
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/service/user"
 
@@ -25,7 +26,7 @@ func Get(c *gin.Context) {
 
 	userIDStr := c.Param("id")
 	if userIDStr == "" {
-		SendResponse(c, errno.ErrParam, nil)
+		handler.SendResponse(c, errno.ErrParam, nil)
 		return
 	}
 	userID, _ := strconv.Atoi(userIDStr)
@@ -33,9 +34,9 @@ func Get(c *gin.Context) {
 	// Get the user by the `user_id` from the database.
 	u, err := user.UserService.GetUserByID(uint64(userID))
 	if err != nil {
-		SendResponse(c, errno.ErrUserNotFound, nil)
+		handler.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
 	}
 
-	SendResponse(c, nil, u)
+	handler.SendResponse(c, nil, u)
 }

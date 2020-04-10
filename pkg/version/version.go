@@ -21,6 +21,7 @@ func (info *Info) String() string {
 	return info.GitTag
 }
 
+// Get 返回详细的版本信息
 func Get() Info {
 	return Info{
 		GitTag:       gitTag,

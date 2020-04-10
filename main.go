@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	// http pprof
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
@@ -80,7 +82,7 @@ func main() {
 
 		// Middlwares.
 		middleware.Logging(),
-		middleware.RequestId(),
+		middleware.RequestID(),
 	)
 
 	// Ping the server to make sure the router is working.
@@ -133,6 +135,7 @@ func main() {
 	select {
 	case <-ctx.Done():
 		log.Info("timeout of 5 seconds.")
+	default:
 	}
 	log.Info("Server exiting")
 }

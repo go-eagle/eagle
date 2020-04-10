@@ -9,7 +9,7 @@ import (
 	validator "github.com/go-playground/validator/v10"
 )
 
-// User represents a registered user.
+// UserModel User represents a registered user.
 type UserModel struct {
 	BaseModel
 	Username      string    `json:"username" gorm:"column:username;not null" binding:"required" validate:"min=1,max=32"`
@@ -27,21 +27,24 @@ func (u *UserModel) Validate() error {
 	return validate.Struct(u)
 }
 
+// UserInfo 对外暴露的结构体
 type UserInfo struct {
-	Id        uint64 `json:"id" example:"1"`
+	ID        uint64 `json:"id" example:"1"`
 	Username  string `json:"username" example:"张三"`
 	Password  string `json:"password" example:"9dXd13#k$1123!kln"`
 	CreatedAt string `json:"createdAt" example:"2020-03-23 20:00:00"`
 	UpdatedAt string `json:"updatedAt" example:"2020-03-23 20:00:00"`
 }
 
-func (c *UserModel) TableName() string {
+// TableName 表名
+func (u *UserModel) TableName() string {
 	return "tb_users"
 }
 
+// UserList 用户列表结构体
 type UserList struct {
 	Lock  *sync.Mutex
-	IdMap map[uint64]*UserInfo
+	IDMap map[uint64]*UserInfo
 }
 
 // Token represents a JSON web token.

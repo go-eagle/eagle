@@ -1,6 +1,8 @@
 package util
 
 import (
+	"bytes"
+	"encoding/gob"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -9,22 +11,25 @@ import (
 	tnet "github.com/toolkits/net"
 )
 
-func GenShortId() (string, error) {
+// GenShortID 生成一个id
+func GenShortID() (string, error) {
 	return shortid.Generate()
 }
 
+// GenUUID 生成随机字符串
 func GenUUID() string {
 	u, _ := uuid.NewRandom()
 	return u.String()
 }
 
+// GetReqID 获取请求中的request_id
 func GetReqID(c *gin.Context) string {
-	v, ok := c.Get("X-Request-Id")
+	v, ok := c.Get("X-Request-ID")
 	if !ok {
 		return ""
 	}
-	if requestId, ok := v.(string); ok {
-		return requestId
+	if requestID, ok := v.(string); ok {
+		return requestID
 	}
 	return ""
 }
@@ -45,4 +50,15 @@ func GetLocalIP() string {
 		}
 	})
 	return clientIP
+}
+
+// GetBytes interface 转 byte
+func GetBytes(key interface{}) ([]byte, error) {
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	err := enc.Encode(key)
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }

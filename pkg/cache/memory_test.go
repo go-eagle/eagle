@@ -8,7 +8,7 @@ import (
 
 func Test_memoryCache_SetGet(t *testing.T) {
 	// 实例化memory cache
-	cache := NewMemoryCache("memory-unit-test", JsonEncoding{})
+	cache := NewMemoryCache("memory-unit-test", JSONEncoding{})
 
 	// test set
 	type setArgs struct {
@@ -19,7 +19,7 @@ func Test_memoryCache_SetGet(t *testing.T) {
 
 	setTests := []struct {
 		name    string
-		cache   *memoryCache
+		cache   Driver
 		args    setArgs
 		wantErr bool
 	}{
@@ -47,7 +47,7 @@ func Test_memoryCache_SetGet(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		cache   *memoryCache
+		cache   Driver
 		args    args
 		wantVal interface{}
 		wantErr bool

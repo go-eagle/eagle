@@ -23,7 +23,7 @@ func TestGet(t *testing.T) {
 	userTests := []model.UserModel{
 		{
 			BaseModel: model.BaseModel{
-				Id: 12,
+				ID: 12,
 			},
 			Username: "user001",
 			Password: "123456",
@@ -33,7 +33,7 @@ func TestGet(t *testing.T) {
 		},
 		{
 			BaseModel: model.BaseModel{
-				Id: 13,
+				ID: 13,
 			},
 			Username: "user002",
 			Password: "123456",
@@ -48,7 +48,7 @@ func TestGet(t *testing.T) {
 		app.DB.Create(user)
 
 		// Set up a new request.
-		req, err := http.NewRequest("GET", fmt.Sprintf("/v1/users/%d", user.Id), nil)
+		req, err := http.NewRequest("GET", fmt.Sprintf("/v1/users/%d", user.ID), nil)
 		if err != nil {
 			t.Fatal(err)
 		}

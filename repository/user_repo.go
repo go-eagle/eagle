@@ -7,34 +7,36 @@ import (
 	"github.com/lexkong/log"
 )
 
+// IUserRepo 定义用户仓库接口
 type IUserRepo interface {
 	CreateUser(db *gorm.DB, user model.UserModel) (id uint64, err error)
-	GetUserById(id uint64) (*model.UserModel, error)
+	GetUserByID(id uint64) (*model.UserModel, error)
 	GetUserByPhone(phone int) (*model.UserModel, error)
 	GetUserByEmail(email string) (*model.UserModel, error)
 	GetUsersByIds(ids []uint64) ([]*model.UserModel, error)
 	Update(userMap map[string]interface{}, id uint64) error
 }
 
-type UserRepo struct {
-}
+// userRepo 用户仓库
+type userRepo struct{}
 
+// NewUserRepo 实例化用户仓库
 func NewUserRepo() IUserRepo {
-	return &UserRepo{}
+	return &userRepo{}
 }
 
 // CreateUser 创建用户
-func (repo *UserRepo) CreateUser(db *gorm.DB, user model.UserModel) (id uint64, err error) {
+func (repo *userRepo) CreateUser(db *gorm.DB, user model.UserModel) (id uint64, err error) {
 	err = db.Create(&user).Error
 	if err != nil {
 		return 0, err
 	}
 
-	return user.Id, nil
+	return user.ID, nil
 }
 
 // GetUserByID 获取用户
-func (repo *UserRepo) GetUserById(id uint64) (*model.UserModel, error) {
+func (repo *userRepo) GetUserByID(id uint64) (*model.UserModel, error) {
 	user := &model.UserModel{}
 	result := model.GetDB().Where("id = ?", id).First(user)
 
@@ -42,7 +44,7 @@ func (repo *UserRepo) GetUserById(id uint64) (*model.UserModel, error) {
 }
 
 // GetUserByPhone 根据手机号获取用户
-func (repo *UserRepo) GetUserByPhone(phone int) (*model.UserModel, error) {
+func (repo *userRepo) GetUserByPhone(phone int) (*model.UserModel, error) {
 	user := model.UserModel{}
 	result := model.GetDB().Where("phone = ?", phone).First(&user)
 
@@ -52,7 +54,7 @@ func (repo *UserRepo) GetUserByPhone(phone int) (*model.UserModel, error) {
 }
 
 // GetUserByEmail 根据邮箱获取手机号
-func (repo *UserRepo) GetUserByEmail(phone string) (*model.UserModel, error) {
+func (repo *userRepo) GetUserByEmail(phone string) (*model.UserModel, error) {
 	user := model.UserModel{}
 	result := model.GetDB().Where("email = ?", phone).First(&user)
 
@@ -62,7 +64,7 @@ func (repo *UserRepo) GetUserByEmail(phone string) (*model.UserModel, error) {
 }
 
 // GetUsersByIds 批量获取用户
-func (repo *UserRepo) GetUsersByIds(ids []uint64) ([]*model.UserModel, error) {
+func (repo *userRepo) GetUsersByIds(ids []uint64) ([]*model.UserModel, error) {
 	users := make([]*model.UserModel, 0)
 	result := model.GetDB().Where("id in (?)", ids).Find(&users)
 
@@ -70,8 +72,8 @@ func (repo *UserRepo) GetUsersByIds(ids []uint64) ([]*model.UserModel, error) {
 }
 
 // Update 更新用户信息
-func (repo *UserRepo) Update(userMap map[string]interface{}, id uint64) error {
-	user, err := repo.GetUserById(id)
+func (repo *userRepo) Update(userMap map[string]interface{}, id uint64) error {
+	user, err := repo.GetUserByID(id)
 	if err != nil {
 		return err
 	}

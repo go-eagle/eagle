@@ -7,7 +7,7 @@ func BenchmarkJsonMarshal(b *testing.B) {
 	for i := 0; i < 400; i++ {
 		a = append(a, i)
 	}
-	jsonEncoding := JsonEncoding{}
+	jsonEncoding := JSONEncoding{}
 	for n := 0; n < b.N; n++ {
 		_, err := jsonEncoding.Marshal(a)
 		if err != nil {
@@ -21,7 +21,7 @@ func BenchmarkJsonUnmarshal(b *testing.B) {
 	for i := 0; i < 400; i++ {
 		a = append(a, i)
 	}
-	jsonEncoding := JsonEncoding{}
+	jsonEncoding := JSONEncoding{}
 	data, err := jsonEncoding.Marshal(a)
 	if err != nil {
 		b.Error(err)

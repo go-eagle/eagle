@@ -1,5 +1,6 @@
 package errno
 
+//nolint: golint
 var (
 	// Common errors
 	OK                  = &Errno{Code: 0, Message: "OK"}

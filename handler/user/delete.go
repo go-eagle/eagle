@@ -1,7 +1,7 @@
 package user
 
 import (
-	. "github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/handler"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,5 +22,5 @@ func Delete(c *gin.Context) {
 	//	return
 	//}
 
-	SendResponse(c, nil, nil)
+	handler.SendResponse(c, nil, nil)
 }

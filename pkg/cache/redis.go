@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// redisCache redis cache结构体
 type redisCache struct {
 	client            *redis.Client
 	KeyPrefix         string
@@ -19,11 +20,12 @@ type redisCache struct {
 }
 
 const (
+	// DefaultExpireTime 默认过期时间
 	DefaultExpireTime = 60 * time.Second
 )
 
-// client 参数是可传入的，这样方便进行单元测试
-func NewRedisCache(client *redis.Client, keyPrefix string, encoding Encoding) *redisCache {
+// NewRedisCache new一个redis cache, client 参数是可传入的，这样方便进行单元测试
+func NewRedisCache(client *redis.Client, keyPrefix string, encoding Encoding) Driver {
 	return &redisCache{
 		client:    client,
 		KeyPrefix: keyPrefix,

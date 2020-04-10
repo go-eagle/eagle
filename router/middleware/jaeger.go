@@ -24,7 +24,8 @@ package middleware
 //			Tracer, Closer, Error = jaeger_trace.NewJaegerTracer(config.AppName, config.JaegerHostPort)
 //			defer Closer.Close()
 //
-//			spCtx, err := opentracing.GlobalTracer().Extract(opentracing.HTTPHeaders, opentracing.HTTPHeadersCarrier(c.Request.Header))
+//			spCtx, err := opentracing.GlobalTracer().Extract(opentracing.HTTPHeaders,
+//			opentracing.HTTPHeadersCarrier(c.Request.Header))
 //			if err != nil {
 //				ParentSpan = Tracer.StartSpan(c.Request.URL.Path)
 //				defer ParentSpan.Finish()

@@ -3,7 +3,8 @@ package user
 import (
 	"strconv"
 
-	. "github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/handler"
+
 	"github.com/1024casts/snake/model"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/token"
@@ -28,20 +29,20 @@ func Login(c *gin.Context) {
 	// Binding the data with the u struct.
 	var req PhoneLoginCredentials
 	if err := c.Bind(&req); err != nil {
-		SendResponse(c, errno.ErrBind, nil)
+		handler.SendResponse(c, errno.ErrBind, nil)
 		return
 	}
 
 	log.Infof("req %#v", req)
 	// check param
 	if req.Phone == 0 || req.VerifyCode == 0 {
-		SendResponse(c, errno.ErrParam, nil)
+		handler.SendResponse(c, errno.ErrParam, nil)
 		return
 	}
 
 	// 验证校验码
 	if !vcode.VCodeService.CheckLoginVCode(req.Phone, req.VerifyCode) {
-		SendResponse(c, errno.ErrVerifyCode, nil)
+		handler.SendResponse(c, errno.ErrVerifyCode, nil)
 		return
 	}
 
@@ -52,28 +53,28 @@ func Login(c *gin.Context) {
 	}
 
 	// 否则新建用户信息, 并取得用户信息
-	if u.Id == 0 {
+	if u.ID == 0 {
 		u := model.UserModel{
 			Phone:    req.Phone,
 			Username: strconv.Itoa(req.Phone),
 		}
-		u.Id, err = user.UserService.CreateUser(u)
+		u.ID, err = user.UserService.CreateUser(u)
 		if err != nil {
 			log.Warnf("[login] create u err, %v", err)
-			SendResponse(c, errno.InternalServerError, nil)
+			handler.SendResponse(c, errno.InternalServerError, nil)
 			return
 		}
 	}
 
 	// 签发签名 Sign the json web token.
-	t, err := token.Sign(c, token.Context{UserID: u.Id, Username: u.Username}, "")
+	t, err := token.Sign(c, token.Context{UserID: u.ID, Username: u.Username}, "")
 	if err != nil {
 		log.Warnf("[login] gen token sign err:, %v", err)
-		SendResponse(c, errno.ErrToken, nil)
+		handler.SendResponse(c, errno.ErrToken, nil)
 		return
 	}
 
-	SendResponse(c, nil, model.Token{
+	handler.SendResponse(c, nil, model.Token{
 		Token: t,
 	})
 }

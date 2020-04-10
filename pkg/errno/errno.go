@@ -23,6 +23,7 @@ func (err *Err) Error() string {
 	return fmt.Sprintf("Err - code: %d, message: %s, error: %s", err.Code, err.Message, err.Err)
 }
 
+// DecodeErr 对错误进行解码，返回错误code和错误提示
 func DecodeErr(err error) (int, string) {
 	if err == nil {
 		return OK.Code, OK.Message

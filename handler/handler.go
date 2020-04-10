@@ -27,7 +27,7 @@ func SendResponse(c *gin.Context, err error, data interface{}) {
 	})
 }
 
-// 返回用户id
+// GetUserID 返回用户id
 func GetUserID(c *gin.Context) uint64 {
 	if c == nil {
 		return 0

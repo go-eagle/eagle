@@ -18,8 +18,9 @@ import (
 
 var logger *zap.Logger
 
+// InitLogger 初始化logger
 func InitLogger() *zap.Logger {
-	encoder := getJsonEncoder()
+	encoder := getJSONEncoder()
 
 	// 注意：如果多个文件，最后一个会是全的，前两个可能会丢日志
 	infoFilename := viper.GetString("log.logger_file")
@@ -58,7 +59,7 @@ func InitLogger() *zap.Logger {
 	return logger
 }
 
-func getJsonEncoder() zapcore.Encoder {
+func getJSONEncoder() zapcore.Encoder {
 	encoderConfig := zapcore.EncoderConfig{
 		MessageKey: "msg",
 		LevelKey:   "level",
@@ -94,26 +95,32 @@ func getLogWriterWithTime(filename string) io.Writer {
 	return hook
 }
 
+// Debug log
 func Debug(msg string, args ...zap.Field) {
 	logger.Debug(msg, args...)
 }
 
+// Info log
 func Info(msg string, args ...zap.Field) {
 	logger.Info(msg, args...)
 }
 
+// Warn log
 func Warn(msg string, args ...zap.Field) {
 	logger.Warn(msg, args...)
 }
 
+// Error log
 func Error(msg string, args ...zap.Field) {
 	logger.Error(msg, args...)
 }
 
+// Fatal log
 func Fatal(msg string, args ...zap.Field) {
 	logger.Fatal(msg, args...)
 }
 
+// Infof log
 func Infof(format string, args ...interface{}) {
 	message := fmt.Sprintf(format, args...)
 	logger.Info(message)

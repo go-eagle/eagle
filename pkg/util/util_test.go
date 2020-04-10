@@ -4,32 +4,32 @@ import (
 	"testing"
 )
 
-func TestGenShortId(t *testing.T) {
-	shortId, err := GenShortId()
-	if shortId == "" || err != nil {
-		t.Error("GenShortId failed!")
+func TestGenShortID(t *testing.T) {
+	shortID, err := GenShortID()
+	if shortID == "" || err != nil {
+		t.Error("GenShortID failed!")
 	}
 
-	t.Log("GenShortId test pass")
+	t.Log("GenShortID test pass")
 }
 
-func BenchmarkGenShortId(b *testing.B) {
+func BenchmarkGenShortID(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		GenShortId()
+		GenShortID()
 	}
 }
 
-func BenchmarkGenShortIdTimeConsuming(b *testing.B) {
+func BenchmarkGenShortIDTimeConsuming(b *testing.B) {
 	b.StopTimer() //调用该函数停止压力测试的时间计数
 
-	shortId, err := GenShortId()
-	if shortId == "" || err != nil {
+	shortID, err := GenShortID()
+	if shortID == "" || err != nil {
 		b.Error(err)
 	}
 
 	b.StartTimer() //重新开始时间
 
 	for i := 0; i < b.N; i++ {
-		GenShortId()
+		GenShortID()
 	}
 }

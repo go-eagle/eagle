@@ -3,7 +3,8 @@ package user
 import (
 	"strconv"
 
-	. "github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/handler"
+
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/service/user"
 
@@ -29,7 +30,7 @@ func Update(c *gin.Context) {
 	// Binding the user data.
 	var req UpdateRequest
 	if err := c.Bind(&req); err != nil {
-		SendResponse(c, errno.ErrBind, nil)
+		handler.SendResponse(c, errno.ErrBind, nil)
 		return
 	}
 
@@ -39,9 +40,9 @@ func Update(c *gin.Context) {
 	err := user.UserService.UpdateUser(userMap, uint64(userID))
 	if err != nil {
 		log.Warnf("[user] update user err, %v", err)
-		SendResponse(c, errno.InternalServerError, nil)
+		handler.SendResponse(c, errno.InternalServerError, nil)
 		return
 	}
 
-	SendResponse(c, nil, userID)
+	handler.SendResponse(c, nil, userID)
 }

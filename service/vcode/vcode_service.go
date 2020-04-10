@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// 验证码服务，主要提供生成验证码和获取验证码
+// VCodeService 验证码服务，主要提供生成验证码和获取验证码
 // 直接初始化，可以避免在使用时再实例化
 var VCodeService = NewVCodeService()
 
@@ -21,15 +21,26 @@ const (
 	maxDurationTime    = 10 * time.Minute     // 验证码有效期
 )
 
-// 校验码服务，生成校验码和获得校验码
-type vcodeService struct {
+// IVerifyCodeService 校验码服务接口定义
+type IVerifyCodeService interface {
+	// public func
+	GenLoginVCode(phone string) (int, error)
+	CheckLoginVCode(phone, vCode int) bool
+	GetLoginVCode(phone int) (int, error)
+
+	// private func
+	isTestPhone(phone int) bool
 }
 
-func NewVCodeService() *vcodeService {
+// vcodeService 校验码服务，生成校验码和获得校验码
+type vcodeService struct{}
+
+// NewVCodeService 实例化一个验证码服务
+func NewVCodeService() IVerifyCodeService {
 	return &vcodeService{}
 }
 
-// 生成校验码
+// GenLoginVCode 生成校验码
 func (srv *vcodeService) GenLoginVCode(phone string) (int, error) {
 	// step1: 生成随机数
 	vCodeStr := fmt.Sprintf("%06v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(1000000))
@@ -55,7 +66,7 @@ var phoneWhiteLit = []int{
 	13010102020,
 }
 
-// 这里可以添加测试号，直接通过
+// isTestPhone 这里可以添加测试号，直接通过
 func (srv *vcodeService) isTestPhone(phone int) bool {
 	for _, val := range phoneWhiteLit {
 		if val == phone {
@@ -65,7 +76,7 @@ func (srv *vcodeService) isTestPhone(phone int) bool {
 	return false
 }
 
-// 验证校验码是否正确
+// CheckLoginVCode 验证校验码是否正确
 func (srv *vcodeService) CheckLoginVCode(phone, vCode int) bool {
 	if srv.isTestPhone(phone) {
 		return true
@@ -84,7 +95,7 @@ func (srv *vcodeService) CheckLoginVCode(phone, vCode int) bool {
 	return true
 }
 
-// 获得校验码
+// GetLoginVCode 获得校验码
 func (srv *vcodeService) GetLoginVCode(phone int) (int, error) {
 	// 直接从redis里获取
 	key := fmt.Sprintf(verifyCodeRedisKey, phone)

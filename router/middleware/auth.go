@@ -4,11 +4,12 @@ import (
 	"github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/token"
-	"github.com/lexkong/log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lexkong/log"
 )
 
+// AuthMiddleware 认证中间件
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Parse the json web token.
