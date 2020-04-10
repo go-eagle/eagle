@@ -5,17 +5,14 @@
 </p> 
 
 <p align="center">
- <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/1024casts/snake/Go?style=flat-square">
- <a href="https://codecov.io/gh/1024casts/snake">
-  <img src="https://codecov.io/gh/1024casts/snake/branch/master/graph/badge.svg" />
- </a>
+ [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/1024casts/snake/Go?style=flat-square)](https://github.com/1024casts/snake)
+ [![codecov](https://codecov.io/gh/1024casts/snake/branch/master/graph/badge.svg)](https://codecov.io/gh/1024casts/snake)
+ [![GolangCI](https://golangci.com/badges/github.com/golangci/golangci-lint.svg)](https://golangci.com)
  <a href="https://pkg.go.dev/github.com/1024casts/snake" rel="nofollow">
    <img src="https://camo.githubusercontent.com/cc8ece95e1e3139079889b8311ea73a4ab23b05f/68747470733a2f2f676f646f632e6f72672f6769746875622e636f6d2f676f2d72657374792f72657374793f7374617475732e737667" alt="GoDoc" data-canonical-src="https://godoc.org/github.com/1024casts/snake?status.svg" style="max-width:100%;">
  </a>
- <a href="https://goreportcard.com/report/github.com/1024casts/snake" rel="nofollow">
-   <img src="https://camo.githubusercontent.com/4693f183dcbcd9ede6b5f53a7359f3e0709af676/68747470733a2f2f676f7265706f7274636172642e636f6d2f62616467652f6769746875622e636f6d2f737465696e666c6574636865722f61706974657374" alt="Go Report Card" data-canonical-src="https://goreportcard.com/badge/github.com/1024casts/snake" style="max-width:100%;">
- </a>
- <img alt="GitHub" src="https://img.shields.io/github/license/1024casts/snake?style=flat-square">
+ [![Go Report Card](https://goreportcard.com/badge/github.com/1024casts/snake)](https://goreportcard.com/report/github.com/1024casts/snake)
+ [![License](https://img.shields.io/github/license/1024casts/snake?style=flat-square)](/LICENSE)
 </p> 
 
 
