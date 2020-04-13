@@ -7,8 +7,8 @@ import (
 	"github.com/lexkong/log"
 )
 
-// IUserRepo 定义用户仓库接口
-type IUserRepo interface {
+// UserRepo 定义用户仓库接口
+type UserRepo interface {
 	CreateUser(db *gorm.DB, user model.UserModel) (id uint64, err error)
 	GetUserByID(id uint64) (*model.UserModel, error)
 	GetUserByPhone(phone int) (*model.UserModel, error)
@@ -21,7 +21,7 @@ type IUserRepo interface {
 type userRepo struct{}
 
 // NewUserRepo 实例化用户仓库
-func NewUserRepo() IUserRepo {
+func NewUserRepo() UserRepo {
 	return &userRepo{}
 }
 

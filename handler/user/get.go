@@ -32,7 +32,7 @@ func Get(c *gin.Context) {
 	userID, _ := strconv.Atoi(userIDStr)
 
 	// Get the user by the `user_id` from the database.
-	u, err := user.UserService.GetUserByID(uint64(userID))
+	u, err := user.UserSvc.GetUserByID(uint64(userID))
 	if err != nil {
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)
 		return

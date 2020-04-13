@@ -8,8 +8,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-// IUserService 用户服务接口定义
-type IUserService interface {
+// Service 用户服务接口定义
+// 使用大写的service对外保留方法
+type Service interface {
 	CreateUser(user model.UserModel) (id uint64, err error)
 	UpdateUser(userMap map[string]interface{}, id uint64) error
 	GetUserByID(id uint64) (*model.UserModel, error)
@@ -18,15 +19,18 @@ type IUserService interface {
 	GetUserByEmail(email string) (*model.UserModel, error)
 }
 
-// UserService 直接初始化，可以避免在使用时再实例化
-var UserService = NewUserService()
+// UserSvc 直接初始化，可以避免在使用时再实例化
+var UserSvc = NewUserService()
 
+// 用小写的 service 实现接口中定义的方法
 type userService struct {
-	userRepo repository.IUserRepo
+	userRepo repository.UserRepo
 }
 
 // NewUserService 实例化一个userService
-func NewUserService() IUserService {
+// 通过 NewService 函数初始化 Service 接口
+// 依赖接口，不要依赖实现，面向接口编程
+func NewUserService() Service {
 	return &userService{
 		userRepo: repository.NewUserRepo(),
 	}

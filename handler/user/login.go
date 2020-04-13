@@ -47,7 +47,7 @@ func Login(c *gin.Context) {
 	}
 
 	// 如果是已经注册用户，则通过手机号获取用户信息
-	u, err := user.UserService.GetUserByPhone(req.Phone)
+	u, err := user.UserSvc.GetUserByPhone(req.Phone)
 	if err != nil {
 		log.Warnf("[login] get u info err, %v", err)
 	}
@@ -58,7 +58,7 @@ func Login(c *gin.Context) {
 			Phone:    req.Phone,
 			Username: strconv.Itoa(req.Phone),
 		}
-		u.ID, err = user.UserService.CreateUser(u)
+		u.ID, err = user.UserSvc.CreateUser(u)
 		if err != nil {
 			log.Warnf("[login] create u err, %v", err)
 			handler.SendResponse(c, errno.InternalServerError, nil)
