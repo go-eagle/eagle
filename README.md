@@ -56,10 +56,6 @@
 └── wrktest.sh                   # API 性能测试脚本
 ```
 
-## 错误码设计
-
-[看这里](https://github.com/1024casts/snake/tree/master/pkg/errno)
-
 ## 启动项目
 
 ```bash
@@ -90,12 +86,16 @@ cp config.sample.yaml config.local.yaml
 ## 接口文档
 `http://localhost:8080/swagger/index.html`
 
-## 部署
-
-### docker部署
-
-Happy Coding. ^_^
-
+## 开发约定
+ - [service的使用规则](https://github.com/1024casts/snake/blob/master/service)
+ - [repository的使用规则](https://github.com/1024casts/snake/blob/master/repository)
+ - [配置说明](https://github.com/1024casts/snake/blob/master/conf)
+ - [cache使用说明](https://github.com/1024casts/snake/blob/master/pkg/cache)
+ - [错误码设计](https://github.com/1024casts/snake/tree/master/pkg/errno)
+ 
+## CHANGELOG
+ [更新说明](https://github.com/1024casts/snake/blob/master/CHANGELOG.md)
+ 
 ## 谁在用
  - [1024课堂](https://1024casts.com)
 
