@@ -29,6 +29,7 @@ require (
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/pkg/errors v0.9.1
+	github.com/prometheus/client_golang v1.5.1
 	github.com/qiniu/api.v7 v0.0.0-20190520053455-bea02cd22bf4
 	github.com/realsangil/apimonitor v0.0.0-20190908073435-d27984eece9e
 	github.com/rogpeppe/go-internal v1.5.2 // indirect
