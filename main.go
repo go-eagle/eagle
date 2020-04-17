@@ -3,25 +3,27 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
-
-	// http pprof
-	_ "net/http/pprof"
-	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/1024casts/snake/handler"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
+	routers "github.com/1024casts/snake/router"
+
 	"github.com/1024casts/snake/model"
 	"github.com/1024casts/snake/pkg/redis"
 
+	// http pprof
+	_ "net/http/pprof"
+	"os"
+
 	"github.com/1024casts/snake/config"
 	v "github.com/1024casts/snake/pkg/version"
-	"github.com/1024casts/snake/router"
-	"github.com/1024casts/snake/router/middleware"
-
 	"github.com/gin-gonic/gin"
 	"github.com/lexkong/log"
 	"github.com/spf13/pflag"
@@ -33,7 +35,7 @@ var (
 	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
-// @title snake Example API
+// @title snake docs api
 // @version 1.0
 // @description snake demo
 
@@ -70,43 +72,23 @@ func main() {
 	redis.Init()
 
 	// Set gin mode.
-	gin.SetMode(viper.GetString("runmode"))
+	gin.SetMode(viper.GetString("run_mode"))
 
 	// Create the Gin engine.
-	g := gin.New()
+	router := gin.Default()
 
-	// Routes.
-	router.Load(
-		// Cores.
-		g,
+	// HealthCheck 健康检查路由
+	router.GET("/health", handler.HealthCheck)
+	// metrics router 可以在 prometheus 中进行监控
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
-		// Middlwares.
-		middleware.Logging(),
-		middleware.RequestID(),
-	)
-
-	// Ping the server to make sure the router is working.
-	go func() {
-		if err := pingServer(); err != nil {
-			log.Fatal("The router has no response, or it might took too long to start up.", err)
-		}
-		log.Info("The router has been deployed successfully.")
-	}()
-
-	// Start to listening the incoming requests.
-	cert := viper.GetString("tls.cert")
-	key := viper.GetString("tls.key")
-	if cert != "" && key != "" {
-		go func() {
-			log.Infof("Start to listening the incoming requests on https address: %s", viper.GetString("tls.addr"))
-			log.Info(http.ListenAndServeTLS(viper.GetString("tls.addr"), cert, key, g).Error())
-		}()
-	}
+	// API Routes.
+	routers.Load(router)
 
 	log.Infof("Start to listening the incoming requests on http address: %s", viper.GetString("addr"))
 	srv := &http.Server{
 		Addr:    viper.GetString("addr"),
-		Handler: g,
+		Handler: router,
 	}
 	go func() {
 		// service connections
@@ -116,8 +98,14 @@ func main() {
 		log.Info(srv.ListenAndServe().Error())
 	}()
 
-	// 等待中断信号以超时 5 秒正常关闭服务器
-	// 官方说明：https://github.com/gin-gonic/gin#graceful-restart-or-stop
+	gracefulStop(srv)
+
+}
+
+// gracefulStop 优雅退出
+// 等待中断信号以超时 5 秒正常关闭服务器
+// 官方说明：https://github.com/gin-gonic/gin#graceful-restart-or-stop
+func gracefulStop(srv *http.Server) {
 	quit := make(chan os.Signal)
 	// kill 命令发送信号 syscall.SIGTERM
 	// kill -2 命令发送信号 syscall.SIGINT
@@ -138,20 +126,4 @@ func main() {
 	default:
 	}
 	log.Info("Server exiting")
-}
-
-// pingServer pings the http server to make sure the router is working.
-func pingServer() error {
-	for i := 0; i < viper.GetInt("max_ping_count"); i++ {
-		// Ping the server by sending a GET request to `/health`.
-		resp, err := http.Get(viper.GetString("url") + "/sd/health")
-		if err == nil && resp.StatusCode == 200 {
-			return nil
-		}
-
-		// Sleep for a second to continue the next ping.
-		log.Info("Waiting for the router, retry in 1 second.")
-		time.Sleep(time.Second)
-	}
-	return errors.New("cannot connect to the router")
 }

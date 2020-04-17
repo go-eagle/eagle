@@ -44,3 +44,20 @@ func GetUserID(c *gin.Context) uint64 {
 	}
 	return 0
 }
+
+// RouteNotFound
+func RouteNotFound(c *gin.Context) {
+	c.String(http.StatusNotFound, "The incorrect API route.")
+	return
+}
+
+// healthCheckResponse 健康检查响应结构体
+type healthCheckResponse struct {
+	Status string `json:"status"`
+}
+
+// HealthCheck will return OK if the underlying BoltDB is healthy. At least healthy enough for demoing purposes.
+func HealthCheck(c *gin.Context) {
+	c.JSON(http.StatusOK, healthCheckResponse{Status: "UP"})
+	return
+}

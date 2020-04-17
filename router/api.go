@@ -1,9 +1,8 @@
-package router
+package routers
 
 import (
-	"net/http"
+	"github.com/1024casts/snake/handler"
 
-	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 
 	"github.com/swaggo/gin-swagger" //nolint: goimports
@@ -17,16 +16,17 @@ import (
 
 // Load loads the middlewares, routes, handlers.
 func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
-	// Middlewares.
-	g.Use(gin.Recovery())
+	// 使用中间件
 	g.Use(middleware.NoCache)
 	g.Use(middleware.Options)
 	g.Use(middleware.Secure)
+	g.Use(middleware.Logging())
+	g.Use(middleware.RequestID())
 	g.Use(mw...)
+
 	// 404 Handler.
-	g.NoRoute(func(c *gin.Context) {
-		c.String(http.StatusNotFound, "The incorrect API route.")
-	})
+	g.NoRoute(handler.RouteNotFound)
+	g.NoMethod(handler.RouteNotFound)
 
 	// 静态资源，主要是图片
 	g.Static("/static", "./static")
@@ -34,8 +34,14 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	// swagger api docs
 	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// pprof router
-	pprof.Register(g)
+	// pprof router 性能分析路由
+	// 默认关闭，开发环境下可以打开
+	// 访问方式: HOST/debug/pprof
+	// 通过 HOST/debug/pprof/profile 生成profile
+	// 查看分析图 go tool pprof -http=:5000 profile
+	// pprof.Register(g)
+
+	// 下面就可以开始写具体的业务路由了
 
 	// api for authentication functionalities
 	g.POST("/v1/login", user.Login)
