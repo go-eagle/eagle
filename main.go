@@ -5,27 +5,24 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/1024casts/snake/handler"
-
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-
-	routers "github.com/1024casts/snake/router"
-
-	"github.com/1024casts/snake/model"
-	"github.com/1024casts/snake/pkg/redis"
-
 	// http pprof
 	_ "net/http/pprof"
-	"os"
 
 	"github.com/1024casts/snake/config"
+	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/model"
+	"github.com/1024casts/snake/pkg/redis"
 	v "github.com/1024casts/snake/pkg/version"
+	routers "github.com/1024casts/snake/router"
+
 	"github.com/gin-gonic/gin"
 	"github.com/lexkong/log"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -99,7 +96,6 @@ func main() {
 	}()
 
 	gracefulStop(srv)
-
 }
 
 // gracefulStop 优雅退出
