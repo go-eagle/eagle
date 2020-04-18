@@ -2,7 +2,7 @@
 
 > 参考 新浪开放平台 [Error code](http://open.weibo.com/wiki/Error_code) 的设计
 
-错误返回值格式：
+#### 错误返回值格式
 
 ```json
 {
@@ -10,8 +10,8 @@
   "message": "Error occurred while binding the request body to the struct."
 }
 ```
-<details>
-<summary>错误代码说明：</summary>
+
+#### 错误代码说明
 
 | 1 | 00 | 02 |
 | :------ | :------ | :------ |
@@ -25,4 +25,3 @@
 - 建议代码中按服务模块将错误分类
 - 错误码均为 >= 0 的数
 - 在本项目中 HTTP Code 固定为 http.StatusOK，错误码通过 code 来表示。
-</details>

@@ -87,14 +87,14 @@ cp config.sample.yaml config.local.yaml
 `http://localhost:8080/swagger/index.html`
 
 ## 开发约定
+ - [配置说明](https://github.com/1024casts/snake/blob/master/conf)
+ - [错误码设计](https://github.com/1024casts/snake/tree/master/pkg/errno)
  - [service的使用规则](https://github.com/1024casts/snake/blob/master/service)
  - [repository的使用规则](https://github.com/1024casts/snake/blob/master/repository)
- - [配置说明](https://github.com/1024casts/snake/blob/master/conf)
  - [cache使用说明](https://github.com/1024casts/snake/blob/master/pkg/cache)
- - [错误码设计](https://github.com/1024casts/snake/tree/master/pkg/errno)
  
 ## CHANGELOG
- [更新说明](https://github.com/1024casts/snake/blob/master/CHANGELOG.md)
+ [更新日志](https://github.com/1024casts/snake/blob/master/CHANGELOG.md)
  
 ## 谁在用
  - [1024课堂](https://1024casts.com)
