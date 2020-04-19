@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/1024casts/snake/model"
-	"github.com/1024casts/snake/repository"
+	"github.com/1024casts/snake/repository/user"
 
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -12,7 +12,7 @@ import (
 // 使用大写的service对外保留方法
 type Service interface {
 	CreateUser(user model.UserModel) (id uint64, err error)
-	UpdateUser(userMap map[string]interface{}, id uint64) error
+	UpdateUser(id uint64, userMap map[string]interface{}) error
 	GetUserByID(id uint64) (*model.UserModel, error)
 	GetUserListByIds(id []uint64) (map[uint64]*model.UserModel, error)
 	GetUserByPhone(phone int) (*model.UserModel, error)
@@ -24,7 +24,7 @@ var UserSvc = NewUserService()
 
 // 用小写的 service 实现接口中定义的方法
 type userService struct {
-	userRepo repository.UserRepo
+	userRepo user.UserRepo
 }
 
 // NewUserService 实例化一个userService
@@ -32,12 +32,12 @@ type userService struct {
 // 依赖接口，不要依赖实现，面向接口编程
 func NewUserService() Service {
 	return &userService{
-		userRepo: repository.NewUserRepo(),
+		userRepo: user.NewUserRepo(),
 	}
 }
 
 func (srv *userService) CreateUser(user model.UserModel) (id uint64, err error) {
-	id, err = srv.userRepo.CreateUser(model.GetDB(), user)
+	id, err = srv.userRepo.Create(model.GetDB(), user)
 	if err != nil {
 		return id, err
 	}
@@ -45,8 +45,8 @@ func (srv *userService) CreateUser(user model.UserModel) (id uint64, err error) 
 	return id, nil
 }
 
-func (srv *userService) UpdateUser(userMap map[string]interface{}, id uint64) error {
-	err := srv.userRepo.Update(userMap, id)
+func (srv *userService) UpdateUser(id uint64, userMap map[string]interface{}) error {
+	err := srv.userRepo.Update(model.GetDB(), id, userMap)
 
 	if err != nil {
 		return err
