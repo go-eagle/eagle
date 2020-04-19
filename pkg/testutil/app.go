@@ -23,5 +23,5 @@ func (app *App) Initialize() {
 
 	// init db
 	model.DB.Init()
-	app.DB = model.DB.Self
+	app.DB = model.DB.Default
 }
