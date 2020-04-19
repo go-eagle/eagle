@@ -15,8 +15,8 @@ import (
 
 // Database 定义现有的数据库
 type Database struct {
-	Self   *gorm.DB
-	Docker *gorm.DB
+	Default *gorm.DB
+	Docker  *gorm.DB
 }
 
 // DB 数据库全局变量
@@ -56,17 +56,22 @@ func setupDB(db *gorm.DB) {
 	db.DB().SetConnMaxLifetime(time.Minute * viper.GetDuration("grom.conn_max_lift_time"))
 }
 
-// InitSelfDB used for cli
-func InitSelfDB() *gorm.DB {
+// GetDB 返回默认的数据库
+func GetDB() *gorm.DB {
+	return DB.Default
+}
+
+// InitDefaultDB used for cli
+func InitDefaultDB() *gorm.DB {
 	return openDB(viper.GetString("db.username"),
 		viper.GetString("db.password"),
 		viper.GetString("db.addr"),
 		viper.GetString("db.name"))
 }
 
-// GetSelfDB 获取self数据库示例
-func GetSelfDB() *gorm.DB {
-	return InitSelfDB()
+// GetDefaultDB 获取默认数据库示例
+func GetDefaultDB() *gorm.DB {
+	return InitDefaultDB()
 }
 
 // InitDockerDB 初始化一个docker数据库
@@ -85,21 +90,16 @@ func GetDockerDB() *gorm.DB {
 // Init 初始化数据库
 func (db *Database) Init() {
 	DB = &Database{
-		Self:   GetSelfDB(),
-		Docker: GetDockerDB(),
+		Default: GetDefaultDB(),
+		Docker:  GetDockerDB(),
 	}
-}
-
-// GetDB 返回默认的数据库
-func GetDB() *gorm.DB {
-	return DB.Self
 }
 
 // Close 关闭数据库链接
 func (db *Database) Close() {
-	err := DB.Self.Close()
+	err := DB.Default.Close()
 	if err != nil {
-		log.Warnf("[model] close self db err: %+v", err)
+		log.Warnf("[model] close default db err: %+v", err)
 	}
 	err = DB.Docker.Close()
 	if err != nil {
