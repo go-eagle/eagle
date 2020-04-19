@@ -4,14 +4,7 @@
  - service 只能通过 repository 层获取数据
  - 面向接口编程
  - 依赖接口，不要依赖实现
- 
-一个业务一个目录，比如用户是在user目录下，设计用户相关的都可以放到这里，根据不同的模块分离到不同的文件，同时又避免了单个文件func太多的问题。
-比如：
- - 用户基础服务- user_service.go
- - 用户关注- user_follow_service.go
- - 用户喜欢- user_like_service.go
- - 用户评论- user_comment_service.go
-
+ - 如果有事务处理，在这一层进行处理
  
  ## Reference
  - https://github.com/qiangxue/go-rest-api
