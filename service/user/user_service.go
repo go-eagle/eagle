@@ -24,7 +24,7 @@ var UserSvc = NewUserService()
 
 // 用小写的 service 实现接口中定义的方法
 type userService struct {
-	userRepo user.UserRepo
+	userRepo user.Repo
 }
 
 // NewUserService 实例化一个userService

@@ -1,14 +1,14 @@
 package user
 
 import (
-	"github.com/1024casts/snake/model"
-
 	"github.com/jinzhu/gorm"
 	"github.com/lexkong/log"
+
+	"github.com/1024casts/snake/model"
 )
 
-// UserRepo 定义用户仓库接口
-type UserRepo interface {
+// Repo 定义用户仓库接口
+type Repo interface {
 	Create(db *gorm.DB, user model.UserModel) (id uint64, err error)
 	Update(db *gorm.DB, id uint64, userMap map[string]interface{}) error
 	GetUserByID(id uint64) (*model.UserModel, error)
@@ -21,7 +21,7 @@ type UserRepo interface {
 type userRepo struct{}
 
 // NewUserRepo 实例化用户仓库
-func NewUserRepo() UserRepo {
+func NewUserRepo() Repo {
 	return &userRepo{}
 }
 
