@@ -38,7 +38,6 @@
 
 ```shell
 ├── Makefile                     # 项目管理文件
-├── admin.sh                     # 进程的start|stop|status|restart控制文件
 ├── conf                         # 配置文件统一存放目录
 ├── config                       # 专门用来处理配置和配置文件的Go package                 
 ├── db.sql                       # 在部署新环境时，可以登录MySQL客户端，执行source db.sql创建数据库和表
@@ -52,7 +51,7 @@
 ├── router                       # 路由及中间件目录
 ├── service                      # 业务逻辑封装
 ├── schedule                     # 任务调度配置目录
-├── util                         # 业务工具包
+└── scripts                      # 存放用于执行各种构建，安装，分析等操作的脚本
 └── wrktest.sh                   # API 性能测试脚本
 ```
 
