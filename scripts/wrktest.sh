@@ -13,24 +13,27 @@ API 性能测试脚本，会自动执行 wrk 命令，采集数据、分析数�
 
 使用方式 (对比2次测试结果)
 
-1. 执行命令： ./wrktest.sh diff apiserver1_wrk.dat http_wrk.dat
+1. 执行命令： ./wrktest.sh diff snake_wrk.dat http_wrk.dat
  
 > Note: 需要确保系统安装了 wrk 和 gnuplot 工具
+> wrk官网：https://github.com/wg/wrk
+> gnuplot官网：http://www.gnuplot.info/
 EOF
 
-t1="apiserver2" # 对比图中红色线条名称
+t1="snake" # 对比图中红色线条名称
 t2="http" # 对比图中粉色线条名称
-jobname="apiserver2" # 本次测试名称
+jobname="snake" # 本次测试名称
 
 ## wrk 参数配置
 d="300s" 
-concurrent="200 500 1000 3000 5000 10000 15000 20000 25000 50000 100000 200000 500000 1000000"
+# concurrent="200 500 1000 3000 5000 10000 15000 20000 25000 50000 100000 200000 500000 1000000"
+concurrent="200 500"
 threads=144
 
 if [ "$1" != "" ];then
 	url="$1"
 else
-	url="http://127.0.0.1:8080/sd/health"
+	url="http://127.0.0.1:8080/health"
 fi
 
 cmd="wrk --latency -t$threads -d$d -T30s $url"
