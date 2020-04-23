@@ -32,6 +32,7 @@ require (
 	github.com/prometheus/client_golang v1.5.1
 	github.com/qiniu/api.v7 v0.0.0-20190520053455-bea02cd22bf4
 	github.com/realsangil/apimonitor v0.0.0-20190908073435-d27984eece9e
+	github.com/robfig/cron/v3 v3.0.0
 	github.com/rogpeppe/go-internal v1.5.2 // indirect
 	github.com/shirou/gopsutil v2.18.12+incompatible
 	github.com/spf13/pflag v1.0.3

@@ -4,6 +4,7 @@
 - 新增 健康检查接口，便于对应用进行探活检测
 - 新增 metrics接口，便于prometheus进行监控
 - 新增 scripts目录，将各种脚本文件统一放到此目录
+- 新增 schedule目录，可以配置需要跑的计划任务
 - 优化 main.go
 - 更新 在repo README 中增加使用建议
 

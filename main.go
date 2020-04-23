@@ -13,18 +13,19 @@ import (
 	// http pprof
 	_ "net/http/pprof"
 
+	"github.com/gin-gonic/gin"
+	"github.com/lexkong/log"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
+
 	"github.com/1024casts/snake/config"
 	"github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/model"
 	"github.com/1024casts/snake/pkg/redis"
 	v "github.com/1024casts/snake/pkg/version"
 	routers "github.com/1024casts/snake/router"
-
-	"github.com/gin-gonic/gin"
-	"github.com/lexkong/log"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
+	"github.com/1024casts/snake/schedule"
 )
 
 var (
@@ -92,8 +93,9 @@ func main() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf(err, "listen: %s", err.Error())
 		}
-		log.Info(srv.ListenAndServe().Error())
 	}()
+
+	schedule.Init()
 
 	gracefulStop(srv)
 }

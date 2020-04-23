@@ -274,6 +274,8 @@ github.com/qiniu/api.v7 v0.0.0-20190520053455-bea02cd22bf4/go.mod h1:V8/EzlTgLN6
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/realsangil/apimonitor v0.0.0-20190908073435-d27984eece9e h1:DaeWoS83YDsE9Omfz/t9dBtTiubvPB6qcTRPMWCXBfs=
 github.com/realsangil/apimonitor v0.0.0-20190908073435-d27984eece9e/go.mod h1:rYtk7UfcSeZ8aXJXqV9IxHw2HorIbs6w+Kq1Wcj4tXY=
+github.com/robfig/cron/v3 v3.0.0 h1:kQ6Cb7aHOHTSzNVNEhmp8EcWKLb4CbiMW9h9VyIhO4E=
+github.com/robfig/cron/v3 v3.0.0/go.mod h1:eQICP3HwyT7UooqI/z+Ov+PtYAWygg1TEWWzGIFLtro=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/rogpeppe/go-internal v1.5.2/go.mod h1:xXDCJY+GAPziupqXw64V24skbSoqbTEfhy4qGm1nDQc=
