@@ -23,9 +23,9 @@ import (
 	"github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/model"
 	"github.com/1024casts/snake/pkg/redis"
+	"github.com/1024casts/snake/pkg/schedule"
 	v "github.com/1024casts/snake/pkg/version"
 	routers "github.com/1024casts/snake/router"
-	"github.com/1024casts/snake/schedule"
 )
 
 var (
