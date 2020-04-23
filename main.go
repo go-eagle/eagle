@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/1024casts/snake/pkg/email"
+
 	// http pprof
 	_ "net/http/pprof"
 
@@ -96,6 +98,7 @@ func main() {
 	}()
 
 	schedule.Init()
+	email.Init()
 
 	gracefulStop(srv)
 }
