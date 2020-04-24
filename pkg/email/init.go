@@ -37,7 +37,7 @@ func Init() {
 		ReplyTo:   viper.GetString("email.reply_to"),
 		Host:      viper.GetString("email.host"),
 		Port:      viper.GetInt("email.port"),
-		Username:  viper.GetString("email.subject"),
+		Username:  viper.GetString("email.username"),
 		Password:  viper.GetString("email.password"),
 		Keepalive: viper.GetInt("email.keepalive"),
 	})
