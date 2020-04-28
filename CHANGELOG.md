@@ -1,5 +1,9 @@
 ## Changelog
 
+### v1.0.3
+- 新增 user_repo 新增单元测试
+- 移除 BaseModel，ID由各model单独管理
+
 ### v1.0.2
 - 新增 健康检查接口，便于对应用进行探活检测
 - 新增 metrics接口，便于prometheus进行监控

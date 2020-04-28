@@ -2,7 +2,6 @@ package user
 
 import (
 	"github.com/jinzhu/gorm"
-	"github.com/lexkong/log"
 
 	"github.com/1024casts/snake/model"
 )
@@ -11,9 +10,9 @@ import (
 type Repo interface {
 	Create(db *gorm.DB, user model.UserModel) (id uint64, err error)
 	Update(db *gorm.DB, id uint64, userMap map[string]interface{}) error
-	GetUserByID(id uint64) (*model.UserModel, error)
-	GetUserByPhone(phone int) (*model.UserModel, error)
-	GetUserByEmail(email string) (*model.UserModel, error)
+	GetUserByID(db *gorm.DB, id uint64) (*model.UserModel, error)
+	GetUserByPhone(db *gorm.DB, phone int) (*model.UserModel, error)
+	GetUserByEmail(db *gorm.DB, email string) (*model.UserModel, error)
 	GetUsersByIds(ids []uint64) ([]*model.UserModel, error)
 }
 
@@ -37,7 +36,7 @@ func (repo *userRepo) Create(db *gorm.DB, user model.UserModel) (id uint64, err 
 
 // Update 更新用户信息
 func (repo *userRepo) Update(db *gorm.DB, id uint64, userMap map[string]interface{}) error {
-	user, err := repo.GetUserByID(id)
+	user, err := repo.GetUserByID(db, id)
 	if err != nil {
 		return err
 	}
@@ -46,29 +45,25 @@ func (repo *userRepo) Update(db *gorm.DB, id uint64, userMap map[string]interfac
 }
 
 // GetUserByID 获取用户
-func (repo *userRepo) GetUserByID(id uint64) (*model.UserModel, error) {
+func (repo *userRepo) GetUserByID(db *gorm.DB, id uint64) (*model.UserModel, error) {
 	user := &model.UserModel{}
-	result := model.GetDB().Where("id = ?", id).First(user)
+	result := db.Where("id = ?", id).First(user)
 
 	return user, result.Error
 }
 
 // GetUserByPhone 根据手机号获取用户
-func (repo *userRepo) GetUserByPhone(phone int) (*model.UserModel, error) {
+func (repo *userRepo) GetUserByPhone(db *gorm.DB, phone int) (*model.UserModel, error) {
 	user := model.UserModel{}
-	result := model.GetDB().Where("phone = ?", phone).First(&user)
-
-	log.Warnf("select result: %v", user)
+	result := db.Where("phone = ?", phone).First(&user)
 
 	return &user, result.Error
 }
 
 // GetUserByEmail 根据邮箱获取手机号
-func (repo *userRepo) GetUserByEmail(phone string) (*model.UserModel, error) {
+func (repo *userRepo) GetUserByEmail(db *gorm.DB, phone string) (*model.UserModel, error) {
 	user := model.UserModel{}
-	result := model.GetDB().Where("email = ?", phone).First(&user)
-
-	log.Warnf("select result: %v", user)
+	result := db.Where("email = ?", phone).First(&user)
 
 	return &user, result.Error
 }

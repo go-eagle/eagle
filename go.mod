@@ -3,6 +3,7 @@ module github.com/1024casts/snake
 go 1.12
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.3.3
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
 	github.com/VividCortex/mysqlerr v0.0.0-20170204212430-6c6b55f8796f
 	github.com/alicebob/gopher-json v0.0.0-20180125190556-5a6b3ba71ee6 // indirect
@@ -17,6 +18,7 @@ require (
 	github.com/go-redis/redis v6.15.5+incompatible
 	github.com/go-resty/resty/v2 v2.1.0
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/go-test/deep v1.0.6
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/google/uuid v1.1.1
@@ -35,6 +37,7 @@ require (
 	github.com/realsangil/apimonitor v0.0.0-20190908073435-d27984eece9e
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/rogpeppe/go-internal v1.5.2 // indirect
+	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/shirou/gopsutil v2.18.12+incompatible
 	github.com/spf13/pflag v1.0.3
 	github.com/spf13/viper v1.4.0

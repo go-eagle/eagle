@@ -22,9 +22,7 @@ func TestGet(t *testing.T) {
 	// Set up a test table.
 	userTests := []model.UserModel{
 		{
-			BaseModel: model.BaseModel{
-				ID: 12,
-			},
+			ID:       12,
 			Username: "user001",
 			Password: "123456",
 			Phone:    13810002000,
@@ -32,9 +30,7 @@ func TestGet(t *testing.T) {
 			Sex:      0,
 		},
 		{
-			BaseModel: model.BaseModel{
-				ID: 13,
-			},
+			ID:       13,
 			Username: "user002",
 			Password: "123456",
 			Phone:    13810002001,

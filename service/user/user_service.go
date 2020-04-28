@@ -56,7 +56,7 @@ func (srv *userService) UpdateUser(id uint64, userMap map[string]interface{}) er
 }
 
 func (srv *userService) GetUserByID(id uint64) (*model.UserModel, error) {
-	userModel, err := srv.userRepo.GetUserByID(id)
+	userModel, err := srv.userRepo.GetUserByID(model.GetDB(), id)
 	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by id: %d", id)
 	}
@@ -81,7 +81,7 @@ func (srv *userService) GetUserListByIds(id []uint64) (map[uint64]*model.UserMod
 }
 
 func (srv *userService) GetUserByPhone(phone int) (*model.UserModel, error) {
-	userModel, err := srv.userRepo.GetUserByPhone(phone)
+	userModel, err := srv.userRepo.GetUserByPhone(model.GetDB(), phone)
 	if err != nil || gorm.IsRecordNotFoundError(err) {
 		return userModel, errors.Wrapf(err, "get user info err from db by phone: %d", phone)
 	}
@@ -90,7 +90,7 @@ func (srv *userService) GetUserByPhone(phone int) (*model.UserModel, error) {
 }
 
 func (srv *userService) GetUserByEmail(email string) (*model.UserModel, error) {
-	userModel, err := srv.userRepo.GetUserByEmail(email)
+	userModel, err := srv.userRepo.GetUserByEmail(model.GetDB(), email)
 	if err != nil || gorm.IsRecordNotFoundError(err) {
 		return userModel, errors.Wrapf(err, "get user info err from db by email: %s", email)
 	}

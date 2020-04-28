@@ -3,16 +3,7 @@ package model
 import (
 	"fmt"
 	"strings"
-	"time"
 )
-
-// BaseModel 公共model
-type BaseModel struct {
-	ID        uint64     `gorm:"primary_key;AUTO_INCREMENT;column:id" json:"-"`
-	CreatedAt time.Time  `gorm:"column:created_at" json:"-"`
-	UpdatedAt time.Time  `gorm:"column:updated_at" json:"-"`
-	DeletedAt *time.Time `gorm:"column:deleted_at" sql:"index" json:"-"`
-}
 
 // NullType 空字节类型
 type NullType byte

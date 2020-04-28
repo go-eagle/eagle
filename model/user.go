@@ -11,14 +11,17 @@ import (
 
 // UserModel User represents a registered user.
 type UserModel struct {
-	BaseModel
+	ID            uint64    `gorm:"primary_key;AUTO_INCREMENT;column:id" json:"-"`
 	Username      string    `json:"username" gorm:"column:username;not null" binding:"required" validate:"min=1,max=32"`
 	Password      string    `json:"password" gorm:"column:password;not null" binding:"required" validate:"min=5,max=128"`
 	Phone         int       `gorm:"column:phone" json:"phone"`
+	Email         string    `gorm:"column:email" json:"email"`
 	Avatar        string    `gorm:"column:avatar" json:"avatar"`
 	Sex           int       `gorm:"column:sex" json:"sex"`
 	LastLoginIP   string    `gorm:"column:last_login_ip" json:"last_login_ip"`
 	LastLoginTime time.Time `gorm:"column:last_login_time" json:"last_login_time"`
+	CreatedAt     time.Time `gorm:"column:created_at" json:"-"`
+	UpdatedAt     time.Time `gorm:"column:updated_at" json:"-"`
 }
 
 // Validate the fields.
@@ -38,7 +41,7 @@ type UserInfo struct {
 
 // TableName 表名
 func (u *UserModel) TableName() string {
-	return "tb_users"
+	return "users"
 }
 
 // UserList 用户列表结构体

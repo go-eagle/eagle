@@ -20,6 +20,7 @@ build: dep ## Build the binary file
 	@go build -v -ldflags ${ldflags} .
 clean:
 	rm -f snake
+	rm cover.out coverage.txt
 	find . -name "[._]*.s[a-w][a-z]" | xargs -i rm -f {}
 gotool:
 	gofmt -w .
@@ -28,9 +29,13 @@ dep: ## Get the dependencies
 	@go mod download
 lint: ## Lint Golang files
 	@golint -set_exit_status ${PKG_LIST}
+test: ## Run unittests
+	@go test -short ${PKG_LIST}
 test-coverage: ## Run tests with coverage
-	@go test -short -coverprofile cover.out -covermode=atomic ${PKG_LIST}
+	@go test -coverprofile=cover.out -mode=atomic ${PKG_LIST}
 	@cat cover.out >> coverage.txt
+test-view: ## 浏览器查看测试结果
+	@go tool cover -html=coverage.txt
 swag-init:
 	swag init
 	@echo "swag init done"
