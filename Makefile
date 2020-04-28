@@ -32,9 +32,9 @@ lint: ## Lint Golang files
 test: ## Run unittests
 	@go test -short ${PKG_LIST}
 test-coverage: ## Run tests with coverage
-	@go test -coverprofile=cover.out -mode=atomic ${PKG_LIST}
+	@go test -short -coverprofile cover.out -covermode=atomic ${PKG_LIST}
 	@cat cover.out >> coverage.txt
-test-view: ## 浏览器查看测试结果
+test-view: ## view test result
 	@go tool cover -html=coverage.txt
 swag-init:
 	swag init
