@@ -32,5 +32,5 @@ Repository或者叫DAO，是数据访问层，负责访问 DB、MC、外部 HTTP
 ## Reference
  - https://github.com/realsangil/apimonitor/blob/fe1e9ef75dfbf021822d57ee242089167582934a/pkg/rsdb/repository.go
  - https://youtu.be/twcDf_Y2gXY?t=636
+ - [Unit testing GORM with go-sqlmock in Go](https://medium.com/@rosaniline/unit-testing-gorm-with-go-sqlmock-in-go-93cbce1f6b5b)
  - [如何使用Sqlmock对GORM应用进行单元测试](https://1024casts.com/topics/R9re7QDaq8MnJoaXRZxdljbNA5BwoK)
- - [GoMock快速入门指南](https://medium.com/better-programming/a-gomock-quick-start-guide-71bee4b3a6f1)
