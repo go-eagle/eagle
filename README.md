@@ -54,7 +54,14 @@
 └── scripts                      # 存放用于执行各种构建，安装，分析等操作的脚本
 ```
 
-## 启动项目
+## 下载安装
+
+```bash
+# 进入到自己的开发目录，下载安装即可，可以不用是 GOPATH
+git clone https://github.com/1024casts/snake
+```
+
+## 快速开始
 
 ```bash
 // 下载依赖
