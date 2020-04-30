@@ -63,13 +63,14 @@ func (s *Suite) Test_repository_Create() {
 		UpdatedAt: time.Now(),
 	}
 
-	const sqlInsert = `INSERT INTO "users" ("username","password","phone","email","avatar","sex","created_at","updated_at") VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING "users"."id"`
-	const newId = 1
+	const sqlInsert = `INSERT INTO "users" ("username","password","phone","email","avatar","sex","created_at",
+"updated_at") VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING "users"."id"`
+	const newID = 1
 
 	s.mock.ExpectBegin()
 	s.mock.ExpectQuery(regexp.QuoteMeta(sqlInsert)).
 		WithArgs(user.Username, user.Password, user.Phone, user.Email, user.Avatar, user.Sex, user.CreatedAt, user.UpdatedAt).
-		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(newId))
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(newID))
 	s.mock.ExpectCommit()
 
 	_, err := s.repository.Create(s.db, user)
