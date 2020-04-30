@@ -63,8 +63,7 @@ func (s *Suite) Test_repository_Create() {
 		UpdatedAt: time.Now(),
 	}
 
-	const sqlInsert = `INSERT INTO "users" ("username","password","phone","email","avatar","sex","created_at",
-"updated_at") VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING "users"."id"`
+	const sqlInsert = `INSERT INTO "users" ("username","password","phone","email","avatar","sex","created_at","updated_at") VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING "users"."id"`
 	const newID = 1
 
 	s.mock.ExpectBegin()
