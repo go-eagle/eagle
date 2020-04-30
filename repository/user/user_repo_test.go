@@ -4,9 +4,11 @@ import (
 	"database/sql"
 	"regexp"
 	"testing"
+	"time"
+
+	"github.com/go-test/deep"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
-	"github.com/go-test/deep"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -49,27 +51,31 @@ func TestInit(t *testing.T) {
 	suite.Run(t, new(Suite))
 }
 
-//func (s *Suite) Test_repository_Create() {
-//	var (
-//		id       = 20
-//		username = "test-name"
-//	)
-//
-//	s.mock.ExpectQuery(regexp.QuoteMeta(
-//		`INSERT INTO "users" ("id","username")
-//       VALUES ($1,$2) RETURNING "users"."id"`)).
-//		WithArgs(id, username).
-//		WillReturnRows(
-//			sqlmock.NewRows([]string{"id"}).AddRow(id))
-//
-//	user := model.UserModel{
-//		ID:       uint64(id),
-//		Username: username,
-//	}
-//	_, err := s.repository.Create(s.db, user)
-//
-//	require.NoError(s.T(), err)
-//}
+func (s *Suite) Test_repository_Create() {
+	user := model.UserModel{
+		Username:  "test-name",
+		Password:  "123456",
+		Phone:     123455678,
+		Email:     "test@test.com",
+		Avatar:    "/statics/avatar/1.jpg",
+		Sex:       1,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	const sqlInsert = `INSERT INTO "users" ("username","password","phone","email","avatar","sex","created_at","updated_at") VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING "users"."id"`
+	const newId = 1
+
+	s.mock.ExpectBegin()
+	s.mock.ExpectQuery(regexp.QuoteMeta(sqlInsert)).
+		WithArgs(user.Username, user.Password, user.Phone, user.Email, user.Avatar, user.Sex, user.CreatedAt, user.UpdatedAt).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(newId))
+	s.mock.ExpectCommit()
+
+	_, err := s.repository.Create(s.db, user)
+
+	require.NoError(s.T(), err)
+}
 
 func (s *Suite) Test_repository_GetUserByID() {
 	var (
