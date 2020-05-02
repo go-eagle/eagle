@@ -1,21 +1,32 @@
 package email
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/1024casts/snake/config"
+)
 
 func TestSend(t *testing.T) {
+	// init config
+	if err := config.Init("../../conf/config.local.yaml"); err != nil {
+		panic(err)
+	}
+
+	Init()
+
 	type args struct {
 		to      string
 		subject string
 		body    string
 	}
 
-	subject, body := NewActivationEmail("test", "snake.com")
+	subject, body := NewResetPasswordHTMLEmail("test", "http://snake.com")
 	tests := []struct {
 		name    string
 		args    args
 		wantErr bool
 	}{
-		{"test send mail", args{"go-snake@gmail.com", subject, body}, false},
+		{"test send reset mail", args{"test100@test.com", subject, body}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
