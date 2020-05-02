@@ -4,9 +4,8 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/spf13/viper"
-
 	"github.com/lexkong/log"
+	"github.com/spf13/viper"
 )
 
 // Client 邮件发送客户端
