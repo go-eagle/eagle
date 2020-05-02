@@ -26,7 +26,7 @@ func TestSend(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		{"test send reset mail", args{"test100@test.com", subject, body}, false},
+		{"test send reset mail", args{"test100@test.com", subject, body}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
