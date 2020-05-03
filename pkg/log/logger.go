@@ -1,7 +1,6 @@
 package log
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"time"
@@ -16,18 +15,38 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var logger *zap.Logger
+// A global variable so that logger functions can be directly accessed
+var logger *zap.SugaredLogger
+
+//Fields Type to pass when we want to call WithFields for structured logging
+type Fields map[string]interface{}
+
+//Logger is our contract for the logger
+type Logger interface {
+	Debug(args ...interface{})
+	Info(args ...interface{})
+	Warn(args ...interface{})
+	Error(args ...interface{})
+	Fatal(args ...interface{})
+	Debugf(format string, args ...interface{})
+	Infof(format string, args ...interface{})
+	Warnf(format string, args ...interface{})
+	Errorf(format string, args ...interface{})
+	Fatalf(format string, args ...interface{})
+	Panicf(format string, args ...interface{})
+	WithFields(keyValues Fields) Logger
+}
 
 // InitLogger 初始化logger
-func NewLogger() *zap.Logger {
+func NewLogger() *zap.SugaredLogger {
 	encoder := getJSONEncoder()
 
 	// 注意：如果多个文件，最后一个会是全的，前两个可能会丢日志
-	infoFilename := viper.GetString("log.logger_file")
+	infoFilename := viper.GetString("logger.logger_file")
 	infoWrite := getLogWriterWithTime(infoFilename)
-	warnFilename := viper.GetString("log.logger_warn_file")
+	warnFilename := viper.GetString("logger.logger_warn_file")
 	warnWrite := getLogWriterWithTime(warnFilename)
-	errorFilename := viper.GetString("log.logger_error_file")
+	errorFilename := viper.GetString("logger.logger_error_file")
 	errorWrite := getLogWriterWithTime(errorFilename)
 
 	infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
@@ -54,7 +73,7 @@ func NewLogger() *zap.Logger {
 	// 设置初始化字段
 	filed := zap.Fields(zap.String("ip", util.GetLocalIP()), zap.String("app", viper.GetString("name")))
 	// 构造日志
-	logger = zap.New(core, caller, development, filed)
+	logger = zap.New(core, caller, development, filed).Sugar()
 
 	return logger
 }
@@ -83,10 +102,10 @@ func getJSONEncoder() zapcore.Encoder {
 func getLogWriterWithTime(filename string) io.Writer {
 	logFullPath := filename
 	hook, err := rotatelogs.New(
-		logFullPath+".%Y%m%d%H",                                             // 时间格式使用shell的date时间格式
-		rotatelogs.WithLinkName(logFullPath),                                // 生成软链，指向最新日志文件
-		rotatelogs.WithRotationCount(viper.GetUint("log.log_backup_count")), // 文件最大保存份数
-		rotatelogs.WithRotationTime(time.Hour),                              // 日志切割时间间隔
+		logFullPath+".%Y%m%d%H",                                                // 时间格式使用shell的date时间格式
+		rotatelogs.WithLinkName(logFullPath),                                   // 生成软链，指向最新日志文件
+		rotatelogs.WithRotationCount(viper.GetUint("logger.log_backup_count")), // 文件最大保存份数
+		rotatelogs.WithRotationTime(time.Hour),                                 // 日志切割时间间隔
 	)
 
 	if err != nil {
@@ -95,33 +114,57 @@ func getLogWriterWithTime(filename string) io.Writer {
 	return hook
 }
 
-// Debug log
-func Debug(msg string, args ...zap.Field) {
-	logger.Debug(msg, args...)
+// Debug logger
+func Debug(args ...interface{}) {
+	logger.Debug(args...)
 }
 
-// Info log
-func Info(msg string, args ...zap.Field) {
-	logger.Info(msg, args...)
+// Info logger
+func Info(args ...interface{}) {
+	logger.Info(args...)
 }
 
-// Warn log
-func Warn(msg string, args ...zap.Field) {
-	logger.Warn(msg, args...)
+// Warn logger
+func Warn(args ...interface{}) {
+	logger.Warn(args...)
 }
 
-// Error log
-func Error(msg string, args ...zap.Field) {
-	logger.Error(msg, args...)
+// Error logger
+func Error(args ...interface{}) {
+	logger.Error(args...)
 }
 
-// Fatal log
-func Fatal(msg string, args ...zap.Field) {
-	logger.Fatal(msg, args...)
+// Fatal logger
+func Fatal(args ...interface{}) {
+	logger.Fatal(args...)
 }
 
-// Infof log
+// Debugf logger
+func Debugf(format string, args ...interface{}) {
+	logger.Debugf(format, args)
+}
+
+// Infof logger
 func Infof(format string, args ...interface{}) {
-	message := fmt.Sprintf(format, args...)
-	logger.Info(message)
+	logger.Infof(format, args)
+}
+
+// Warnf logger
+func Warnf(format string, args ...interface{}) {
+	logger.Warnf(format, args...)
+}
+
+// Errorf logger
+func Errorf(format string, args ...interface{}) {
+	logger.Errorf(format, args...)
+}
+
+// Fatalf logger
+func Fatalf(format string, args ...interface{}) {
+	logger.Fatalf(format, args...)
+}
+
+// Panicf logger
+func Panicf(format string, args ...interface{}) {
+	logger.Panicf(format, args...)
 }
