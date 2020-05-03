@@ -16,7 +16,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var Logger *zap.Logger
+var logger *zap.Logger
 
 // InitLogger 初始化logger
 func NewLogger() *zap.Logger {
@@ -54,9 +54,9 @@ func NewLogger() *zap.Logger {
 	// 设置初始化字段
 	filed := zap.Fields(zap.String("ip", util.GetLocalIP()), zap.String("app", viper.GetString("name")))
 	// 构造日志
-	Logger = zap.New(core, caller, development, filed)
+	logger = zap.New(core, caller, development, filed)
 
-	return Logger
+	return logger
 }
 
 func getJSONEncoder() zapcore.Encoder {
@@ -97,31 +97,31 @@ func getLogWriterWithTime(filename string) io.Writer {
 
 // Debug log
 func Debug(msg string, args ...zap.Field) {
-	Logger.Debug(msg, args...)
+	logger.Debug(msg, args...)
 }
 
 // Info log
 func Info(msg string, args ...zap.Field) {
-	Logger.Info(msg, args...)
+	logger.Info(msg, args...)
 }
 
 // Warn log
 func Warn(msg string, args ...zap.Field) {
-	Logger.Warn(msg, args...)
+	logger.Warn(msg, args...)
 }
 
 // Error log
 func Error(msg string, args ...zap.Field) {
-	Logger.Error(msg, args...)
+	logger.Error(msg, args...)
 }
 
 // Fatal log
 func Fatal(msg string, args ...zap.Field) {
-	Logger.Fatal(msg, args...)
+	logger.Fatal(msg, args...)
 }
 
 // Infof log
 func Infof(format string, args ...interface{}) {
 	message := fmt.Sprintf(format, args...)
-	Logger.Info(message)
+	logger.Info(message)
 }
