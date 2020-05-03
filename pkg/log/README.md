@@ -16,5 +16,6 @@
  - 日志分割库-按时间：https://github.com/lestrrat-go/file-rotatelogs
  - 日志分割库-按大小：https://github.com/natefinch/lumberjack 
  - [深度 | 从Go高性能日志库zap看如何实现高性能Go组件](https://mp.weixin.qq.com/s/i0bMh_gLLrdnhAEWlF-xDw)
+ - [Logger interface for GO with zap and logrus implementation](https://www.mountedthoughts.com/golang-logger-interface/)
  - https://github.com/wzyonggege/logger
  - https://wisp888.github.io/golang-iris-%E5%AD%A6%E4%B9%A0%E4%BA%94-zap%E6%97%A5%E5%BF%97.html
