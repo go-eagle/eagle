@@ -9,7 +9,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/lexkong/log"
+	"github.com/1024casts/snake/pkg/log"
 )
 
 // NewActivationEmail 发送激活邮件

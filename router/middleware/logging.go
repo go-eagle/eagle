@@ -7,12 +7,12 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/willf/pad"
+
 	"github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/pkg/errno"
-
-	"github.com/gin-gonic/gin"
-	"github.com/lexkong/log"
-	"github.com/willf/pad"
+	"github.com/1024casts/snake/pkg/log"
 )
 
 type bodyLogWriter struct {
@@ -74,8 +74,8 @@ func Logging() gin.HandlerFunc {
 		// get code and message
 		var response handler.Response
 		if err := json.Unmarshal(blw.body.Bytes(), &response); err != nil {
-			log.Errorf(err, "response body can not unmarshal to model.Response struct, body: `%s`",
-				blw.body.Bytes())
+			log.Errorf("response body can not unmarshal to model.Response struct, body: `%s`, err: %+v",
+				blw.body.Bytes(), err)
 			code = errno.InternalServerError.Code
 			message = err.Error()
 		} else {

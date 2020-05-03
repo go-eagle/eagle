@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/lexkong/log"
 	"github.com/spf13/viper"
-
 	// MySQL driver.
 	"github.com/jinzhu/gorm"
 	// GORM MySQL
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+
+	"github.com/1024casts/snake/pkg/log"
 )
 
 // Database 定义现有的数据库
@@ -35,7 +35,7 @@ func openDB(username, password, addr, name string) *gorm.DB {
 
 	db, err := gorm.Open("mysql", config)
 	if err != nil {
-		log.Errorf(err, "Database connection failed. Database name: %s", name)
+		log.Errorf("Database connection failed. Database name: %s, err: %+v", name, err)
 	}
 
 	db.Set("gorm:table_options", "CHARSET=utf8mb4")

@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/alicebob/miniredis"
-
 	"github.com/go-redis/redis"
-	"github.com/lexkong/log"
 	"github.com/spf13/viper"
+
+	"github.com/1024casts/snake/pkg/log"
 )
 
 // Client redis 客户端
@@ -29,7 +29,7 @@ func Init() {
 
 	_, err := Client.Ping().Result()
 	if err != nil {
-		log.Errorf(err, "[redis] redis ping err")
+		log.Errorf("[redis] redis ping err: %+v", err)
 		panic(err)
 	}
 }

@@ -4,10 +4,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/lexkong/log"
-
 	"github.com/go-redis/redis"
 	"github.com/pkg/errors"
+
+	"github.com/1024casts/snake/pkg/log"
 )
 
 // redisCache redis cache结构体

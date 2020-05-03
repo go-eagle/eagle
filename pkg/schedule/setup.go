@@ -3,8 +3,9 @@ package schedule
 import (
 	"time"
 
-	"github.com/lexkong/log"
 	"github.com/robfig/cron/v3"
+
+	"github.com/1024casts/snake/pkg/log"
 )
 
 // Init 初始化计划任务

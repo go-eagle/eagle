@@ -4,9 +4,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lexkong/log"
-
 	"github.com/pkg/errors"
+
+	"github.com/1024casts/snake/pkg/log"
 )
 
 type memoryCache struct {

@@ -3,11 +3,11 @@ package user
 import (
 	"github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/service/sms"
 	"github.com/1024casts/snake/service/vcode"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lexkong/log"
 	"github.com/pkg/errors"
 )
 

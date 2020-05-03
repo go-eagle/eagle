@@ -4,7 +4,8 @@ import (
 	"time"
 
 	"github.com/go-mail/mail"
-	"github.com/lexkong/log"
+
+	"github.com/1024casts/snake/pkg/log"
 )
 
 // SMTPConfig SMTP配置

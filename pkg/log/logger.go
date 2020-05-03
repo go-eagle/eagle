@@ -1,27 +1,24 @@
 package log
 
-import (
-	"io"
-	"os"
-	"time"
+import "errors"
 
-	"github.com/spf13/viper"
+// A global variable so that log functions can be directly accessed
+var log Logger
 
-	"github.com/1024casts/snake/pkg/util"
-
-	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
-
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-)
-
-// A global variable so that logger functions can be directly accessed
-var logger *zap.SugaredLogger
-
-//Fields Type to pass when we want to call WithFields for structured logging
+// Fields Type to pass when we want to call WithFields for structured logging
 type Fields map[string]interface{}
 
-//Logger is our contract for the logger
+const (
+	// InstanceZapLogger zap logger
+	InstanceZapLogger int = iota
+	// here add other logger
+)
+
+var (
+	errInvalidLoggerInstance = errors.New("invalid logger instance")
+)
+
+// Logger is our contract for the logger
 type Logger interface {
 	Debug(args ...interface{})
 	Info(args ...interface{})
@@ -37,134 +34,91 @@ type Logger interface {
 	WithFields(keyValues Fields) Logger
 }
 
-// InitLogger 初始化logger
-func NewLogger() *zap.SugaredLogger {
-	encoder := getJSONEncoder()
-
-	// 注意：如果多个文件，最后一个会是全的，前两个可能会丢日志
-	infoFilename := viper.GetString("logger.logger_file")
-	infoWrite := getLogWriterWithTime(infoFilename)
-	warnFilename := viper.GetString("logger.logger_warn_file")
-	warnWrite := getLogWriterWithTime(warnFilename)
-	errorFilename := viper.GetString("logger.logger_error_file")
-	errorWrite := getLogWriterWithTime(errorFilename)
-
-	infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl <= zapcore.InfoLevel
-	})
-	warnLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl == zapcore.WarnLevel
-	})
-	errorLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl >= zapcore.ErrorLevel
-	})
-
-	core := zapcore.NewTee(
-		zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel),
-		zapcore.NewCore(encoder, zapcore.AddSync(infoWrite), infoLevel),
-		zapcore.NewCore(encoder, zapcore.AddSync(warnWrite), warnLevel),
-		zapcore.NewCore(encoder, zapcore.AddSync(errorWrite), errorLevel),
-	)
-
-	// 开启开发模式，堆栈跟踪
-	caller := zap.AddCaller()
-	// 开启文件及行号
-	development := zap.Development()
-	// 设置初始化字段
-	filed := zap.Fields(zap.String("ip", util.GetLocalIP()), zap.String("app", viper.GetString("name")))
-	// 构造日志
-	logger = zap.New(core, caller, development, filed).Sugar()
-
-	return logger
+// Config is the struct for logger information
+type Config struct {
+	Writers         string `yaml:"writers"`
+	LoggerLevel     string `yaml:"logger_level"`
+	LoggerFile      string `yaml:"logger_file"`
+	LoggerWarnFile  string `yaml:"logger_warn_file"`
+	LoggerErrorFile string `yaml:"logger_error_file"`
+	LogFormatText   bool   `yaml:"log_format_text"`
+	RollingPolicy   string `yaml:"rollingPolicy"`
+	LogRotateDate   int    `yaml:"log_rotate_date"`
+	LogRotateSize   int    `yaml:"log_rotate_size"`
+	LogBackupCount  int    `yaml:"log_backup_count"`
 }
 
-func getJSONEncoder() zapcore.Encoder {
-	encoderConfig := zapcore.EncoderConfig{
-		MessageKey: "msg",
-		LevelKey:   "level",
-		TimeKey:    "timestamp",
-		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-			enc.AppendString(t.Format("2006-01-02 15:04:05"))
-		},
-		NameKey:       "app",
-		CallerKey:     "file",
-		StacktraceKey: "stacktrace",
-		EncodeCaller:  zapcore.ShortCallerEncoder,
-		EncodeLevel:   zapcore.LowercaseLevelEncoder,
-		EncodeDuration: func(d time.Duration, enc zapcore.PrimitiveArrayEncoder) {
-			enc.AppendInt64(int64(d) / 1000000)
-		},
+// NewLogger returns an instance of logger
+func NewLogger(cfg *Config, loggerInstance int) error {
+	switch loggerInstance {
+	case InstanceZapLogger:
+		logger, err := newZapLogger(cfg)
+		if err != nil {
+			return err
+		}
+		log = logger
+		return nil
+	default:
+		return errInvalidLoggerInstance
 	}
-	return zapcore.NewJSONEncoder(encoderConfig)
-}
-
-// 按时间(小时)进行切割
-func getLogWriterWithTime(filename string) io.Writer {
-	logFullPath := filename
-	hook, err := rotatelogs.New(
-		logFullPath+".%Y%m%d%H",                                                // 时间格式使用shell的date时间格式
-		rotatelogs.WithLinkName(logFullPath),                                   // 生成软链，指向最新日志文件
-		rotatelogs.WithRotationCount(viper.GetUint("logger.log_backup_count")), // 文件最大保存份数
-		rotatelogs.WithRotationTime(time.Hour),                                 // 日志切割时间间隔
-	)
-
-	if err != nil {
-		panic(err)
-	}
-	return hook
 }
 
 // Debug logger
 func Debug(args ...interface{}) {
-	logger.Debug(args...)
+	log.Debug(args...)
 }
 
 // Info logger
 func Info(args ...interface{}) {
-	logger.Info(args...)
+	log.Info(args...)
 }
 
 // Warn logger
 func Warn(args ...interface{}) {
-	logger.Warn(args...)
+	log.Warn(args...)
 }
 
 // Error logger
 func Error(args ...interface{}) {
-	logger.Error(args...)
+	log.Error(args...)
 }
 
 // Fatal logger
 func Fatal(args ...interface{}) {
-	logger.Fatal(args...)
+	log.Fatal(args...)
 }
 
 // Debugf logger
 func Debugf(format string, args ...interface{}) {
-	logger.Debugf(format, args)
+	log.Debugf(format, args...)
 }
 
 // Infof logger
 func Infof(format string, args ...interface{}) {
-	logger.Infof(format, args)
+	log.Infof(format, args...)
 }
 
 // Warnf logger
 func Warnf(format string, args ...interface{}) {
-	logger.Warnf(format, args...)
+	log.Warnf(format, args...)
 }
 
 // Errorf logger
 func Errorf(format string, args ...interface{}) {
-	logger.Errorf(format, args...)
+	log.Errorf(format, args...)
 }
 
 // Fatalf logger
 func Fatalf(format string, args ...interface{}) {
-	logger.Fatalf(format, args...)
+	log.Fatalf(format, args...)
 }
 
 // Panicf logger
 func Panicf(format string, args ...interface{}) {
-	logger.Panicf(format, args...)
+	log.Panicf(format, args...)
+}
+
+// WithFields logger
+func WithFields(keyValues Fields) Logger {
+	return log.WithFields(keyValues)
 }

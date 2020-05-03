@@ -7,9 +7,10 @@ import (
 	"strings"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/lexkong/log"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+
+	"github.com/1024casts/snake/pkg/log"
 )
 
 // Config 读取配置
@@ -57,18 +58,19 @@ func (cfg *Config) initConfig() error {
 }
 
 func (cfg *Config) initLog() {
-	passLagerCfg := log.PassLagerCfg{
-		Writers:        viper.GetString("log.writers"),
-		LoggerLevel:    viper.GetString("log.logger_level"),
-		LoggerFile:     viper.GetString("log.logger_file"),
-		LogFormatText:  viper.GetBool("log.log_format_text"),
-		RollingPolicy:  viper.GetString("log.rollingPolicy"),
-		LogRotateDate:  viper.GetInt("log.log_rotate_date"),
-		LogRotateSize:  viper.GetInt("log.log_rotate_size"),
-		LogBackupCount: viper.GetInt("log.log_backup_count"),
+	config := log.Config{
+		Writers:         viper.GetString("log.writers"),
+		LoggerLevel:     viper.GetString("log.logger_level"),
+		LoggerFile:      viper.GetString("log.logger_file"),
+		LoggerWarnFile:  viper.GetString("log.logger_warn_file"),
+		LoggerErrorFile: viper.GetString("log.logger_error_file"),
+		LogFormatText:   viper.GetBool("log.log_format_text"),
+		RollingPolicy:   viper.GetString("log.rollingPolicy"),
+		LogRotateDate:   viper.GetInt("log.log_rotate_date"),
+		LogRotateSize:   viper.GetInt("log.log_rotate_size"),
+		LogBackupCount:  viper.GetInt("log.log_backup_count"),
 	}
-
-	err := log.InitWithConfig(&passLagerCfg)
+	err := log.NewLogger(&config, log.InstanceZapLogger)
 	if err != nil {
 		fmt.Printf("InitWithConfig err: %v", err)
 	}
@@ -78,6 +80,6 @@ func (cfg *Config) initLog() {
 func (cfg *Config) watchConfig() {
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) {
-		log.Infof("Config file changed: %s", e.Name)
+		// log.Infof("Config file changed: %s", e.Name)
 	})
 }

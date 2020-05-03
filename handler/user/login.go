@@ -3,16 +3,15 @@ package user
 import (
 	"strconv"
 
-	"github.com/1024casts/snake/handler"
+	"github.com/gin-gonic/gin"
 
+	"github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/model"
 	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/token"
 	"github.com/1024casts/snake/service/user"
 	"github.com/1024casts/snake/service/vcode"
-
-	"github.com/gin-gonic/gin"
-	"github.com/lexkong/log"
 )
 
 // Login 手机登录接口

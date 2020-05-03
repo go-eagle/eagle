@@ -16,7 +16,6 @@ import (
 	_ "net/http/pprof"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lexkong/log"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -24,6 +23,7 @@ import (
 	"github.com/1024casts/snake/config"
 	"github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/model"
+	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/redis"
 	"github.com/1024casts/snake/pkg/schedule"
 	v "github.com/1024casts/snake/pkg/version"
@@ -93,7 +93,7 @@ func main() {
 	go func() {
 		// service connections
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf(err, "listen: %s", err.Error())
+			log.Fatalf("listen: %s", err.Error())
 		}
 	}()
 
