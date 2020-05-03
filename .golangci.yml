@@ -248,7 +248,7 @@ linters:
     - structcheck
     - typecheck
     - unconvert
-    - unparam
+#    - unparam
     - unused
     - varcheck
     - whitespace
