@@ -1,0 +1,21 @@
+# yaml 配置
+version: "3.7"
+services:
+  snake_app:
+    build: .
+    command: sh -c "./wait-for.sh mysql8019:3306 -- ./snake ./conf/config.sample.yaml"
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+  db:
+    image: "mysql:8.0.19"
+    ports:
+      - "33061:3306"
+    command: "--default-authentication-plugin=mysql_native_password --init-file /data/application/db.sql"
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: "root"
+      MYSQL_PASSWORD: "123456"
+    volumes:
+      - ./db.sql:/data/application/db.sql
