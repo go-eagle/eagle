@@ -2,6 +2,7 @@
 
 ### v1.0.3
 - 新增 user_repo 新增单元测试
+- 新增 支持docker部署(docker-compose方式)
 - 优化 使用zap日志库替换原有日志库
 - 移除 BaseModel，ID由各model单独管理
 
