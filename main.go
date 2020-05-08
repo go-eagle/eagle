@@ -10,8 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/1024casts/snake/pkg/email"
-
 	// http pprof
 	_ "net/http/pprof"
 
@@ -23,6 +21,7 @@ import (
 	"github.com/1024casts/snake/config"
 	"github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/model"
+	"github.com/1024casts/snake/pkg/email"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/redis"
 	"github.com/1024casts/snake/pkg/schedule"
