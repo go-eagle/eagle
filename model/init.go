@@ -38,6 +38,7 @@ func openDB(username, password, addr, name string) *gorm.DB {
 		log.Errorf("Database connection failed. Database name: %s, err: %+v", name, err)
 	}
 
+	// docker方式启动时，由于数据库启动需要一定的时间，所以这里进行重试处理
 	retryCount := 30
 	for {
 		err := db.DB().Ping()
