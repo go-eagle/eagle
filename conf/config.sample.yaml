@@ -27,7 +27,7 @@ gorm:
   conn_max_life_time: 60          # 连接重用的最大时间，单位分钟
 db:
   name: snake
-  addr: 127.0.0.1:3306
+  addr: 127.0.0.1:3306            # 如果是docker,可以替换为 对应的数据库容器服务名称，eg: db:3306
   username: root
   password: 123456
 docker_db:
