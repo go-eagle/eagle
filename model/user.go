@@ -39,7 +39,7 @@ type UserInfo struct {
 
 // TableName 表名
 func (u *UserModel) TableName() string {
-	return "users"
+	return "tb_users"
 }
 
 // UserList 用户列表结构体
