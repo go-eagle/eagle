@@ -38,12 +38,6 @@ WORKDIR /
 COPY --from=builder /app/snake /
 COPY conf /conf
 
-RUN set -eux; \
-	apt-get update; \
-	apt-get install -y \
-	--no-install-recommends \
-    netcat;
-
 # Expose port 8080 to the outside world
 EXPOSE 8080
 
