@@ -1,34 +1,79 @@
 # yaml 配置
+# 官方文档：https://docs.docker.com/compose/compose-file/
 version: "3.7"
 services:
   app:
-    container_name: app
+    container_name: go-app
     build: .
-    environment:
-      MYSQL_NAME: "snake"
-      MYSQL_ROOT_PASSWORD: "123456"
-      MYSQL_DATABASE: "root"
-      MYSQL_PASSWORD: "123456"
-    depends_on:
-      - "database"
+    links:
+      - "db:mysql"
+      - redis
     ports:
       - "8080:8080"
-  database:
-    container_name: db
-    image: "mysql:8"
-    command: --default-authentication-plugin=mysql_native_password --init-file /data/application/init.sql
+    networks:
+      - default
+
+  db:
+    container_name: mysql57
+    image: mysql:5.7.22
     ports:
-      - "33061:3306"
+      - "3306:3306"
+    expose:
+      - "3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=root
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: "snake"
+      MYSQL_PASSWORD: "123456"
+      TZ: Asia/Shanghai
+    # 解决外部无法访问 for mysql8
+    command: --default-authentication-plugin=mysql_native_password --init-file /data/application/init.sql
+    stdin_open: true
+    tty: true
+    # 修复问题 mbind: Operation not permitted
+    security_opt:
+      - seccomp:unconfined
     volumes:
       - ./db.sql:/data/application/init.sql
+      - ./build/docker/mysql/my.cnf:/etc/mysql/my.cnf
+      - mysql-data:/var/lib/mysql
+    networks:
+      - default
+
+  # web 数据库管理工具，tips: host使用 db:3306
+  adminer:
+    container_name: adminer
+    image: adminer
+    restart: always
+    links:
+      - "db:mysql"
+    ports:
+      - 8036:8080
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - default
+    volumes:
+      - redis_data:/var/lib/redis
+
   nginx:
-    image: nginx:stable-alpine
+    container_name: nginx
+    image: nginx:1.17.10-alpine
     ports:
       - 80:80
     depends_on:
       - app
     volumes:
       - ./conf/nginx_api.conf:/etc/nginx/conf.d/default.conf
-    command: nginx -g 'daemon off;'
+    command: nginx -g 'daemon off';
+
+networks:
+  default:
+    driver: "bridge"
+
+volumes:
+  mysql-data:
+  redis_data:
