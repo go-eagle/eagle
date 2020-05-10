@@ -3,12 +3,12 @@ CREATE DATABASE IF NOT EXISTS `snake`;
 USE `snake`;
 
 --
--- Table structure for table `tb_users`
+-- Table structure for table `users`
 --
 
-DROP TABLE IF EXISTS `tb_users`;
+DROP TABLE IF EXISTS `users`;
 
-CREATE TABLE `tb_users` (
+CREATE TABLE `users` (
      `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
      `username` varchar(255) NOT NULL DEFAULT '',
      `password` varchar(60) NOT NULL DEFAULT '',
@@ -23,7 +23,7 @@ CREATE TABLE `tb_users` (
      UNIQUE KEY `uniq_phone` (`phone`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
 
-INSERT INTO `tb_users` (`id`, `username`, `password`, `avatar`, `phone`, `sex`, `created_at`, `updated_at`,`deleted_at`)
+INSERT INTO `users` (`id`, `username`, `password`, `avatar`, `phone`, `sex`, `created_at`, `updated_at`,`deleted_at`)
 VALUES
 (null, 'test-name', '6BB4837EB74329105EE4568DDA7DC67ED2CA2AD9', '/uploads/avatar.jpg', 13810002001, 1, '2020-02-09 10:23:33', '2020-05-09 10:23:33', NULL);
 
