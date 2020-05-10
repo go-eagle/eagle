@@ -12,7 +12,7 @@ import (
 func Init() {
 	c := cron.New()
 	// demo
-	_, err := c.AddFunc("*/3 * * * *", func() {
+	_, err := c.AddFunc("* */5 * * *", func() {
 		log.Infof("test cron, time: %d ", time.Now().Unix())
 	})
 	if err != nil {
