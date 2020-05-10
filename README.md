@@ -63,25 +63,27 @@ git clone https://github.com/1024casts/snake
 
 ## 快速开始
 
+TIPS: 需要本地安装数据库和redis
+
 ```bash
-// 下载依赖
-make dep
+// 进入到下载目录
+cd snake
 
-// 编译项目
-make build
-
-// 本地环境
+// 生成本地环境配置文件
 cp config.sample.yaml config.local.yaml
 
+// 编译
+make build
+
 // 运行
-./snake -c conf/config.local.yaml
+./scripts/admin.sh start
 ```
 
 ## 常用命令
  - make help 查看帮助
  - make dep 下载go依赖包
  - make build 编译项目
- - make swag-init 生成接口文档(需要重新编译)
+ - make swag-init 生成接口文档
  - make test-coverage 生成测试覆盖
  - make lint 检查代码规范
 
@@ -98,8 +100,57 @@ cp config.sample.yaml config.local.yaml
  - [repository的使用规则](https://github.com/1024casts/snake/blob/master/repository)
  - [cache使用说明](https://github.com/1024casts/snake/blob/master/pkg/cache)
  
+ ## 部署
+ 
+ ### 单独部署
+ 
+ 上传到服务器后，直接运行命令即可
+ ```bash
+./scripts/admin.sh start
+```
+ 
+ ### Docker 部署
+ 
+ 如果安装了docker可以通过下面命令启动应用：
+ 
+ ```bash
+// 运行
+docker-compose up -d
+
+// 验证
+http://127.0.0.1/health
+ ```
+ 
+ ### Supervisord
+ 
+ 如果安装了 Supervisord，可以在配置文件中添加下面内容(默认：`/etc/supervisor/supervisord.conf`)：
+ 
+ ```bash
+ [program:snake]
+ # environment=
+ directory=/home/go/src/snake/
+ command=/home/go/bin_snake
+ autostart=true
+ autorestart=true
+ user=root
+ stdout_logfile=/home/log/snake_std.log
+ startsecs = 2
+ startretries = 2
+ stdout_logfile_maxbytes=10MB
+ stdout_logfile_backups=10
+ stderr_logfile=/home/log/snake_err.log
+ stderr_logfile_maxbytes=10MB
+ stderr_logfile_backups=10
+ ```
+
+重启 Supervisord
+
+```bash
+supervisorctl restart
+```
+ 
 ## CHANGELOG
- [更新日志](https://github.com/1024casts/snake/blob/master/CHANGELOG.md)
+ - [更新日志](https://github.com/1024casts/snake/blob/master/CHANGELOG.md)
  
 ## 谁在用
  - [1024课堂](https://1024casts.com)
