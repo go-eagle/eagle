@@ -1,5 +1,9 @@
 ## Changelog
 
+### v1.0.4
+- 新增 cache 可以通过配置文件进行设定，支持内存、redis缓存，默认使用memory
+- 修复 日志行数显示问题
+
 ### v1.0.3
 - 新增 user_repo 增加单元测试
 - 新增 支持单独、docker(docker-compose方式)、Supervisord 三种部署方式
