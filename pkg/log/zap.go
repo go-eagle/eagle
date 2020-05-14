@@ -1,7 +1,6 @@
 package log
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -36,7 +35,6 @@ func newZapLogger(cfg *Config) (Logger, error) {
 		if w == "file" {
 			// 注意：如果多个文件，最后一个会是全的，前两个可能会丢日志
 			infoFilename := cfg.LoggerFile
-			fmt.Printf("info filename, %s", infoFilename)
 			infoWrite := getLogWriterWithTime(infoFilename)
 			warnFilename := cfg.LoggerWarnFile
 			warnWrite := getLogWriterWithTime(warnFilename)
