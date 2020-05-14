@@ -69,7 +69,13 @@ func newZapLogger(cfg *Config) (Logger, error) {
 	// 设置初始化字段
 	filed := zap.Fields(zap.String("ip", util.GetLocalIP()), zap.String("app", viper.GetString("name")))
 	// 构造日志
-	logger := zap.New(combinedCore, caller, development, filed).Sugar()
+	logger := zap.New(
+		combinedCore,
+		zap.AddCallerSkip(2), // 跳过文件调用层数
+		caller,
+		development,
+		filed,
+	).Sugar()
 
 	return &zapLogger{
 		sugaredLogger: logger,
