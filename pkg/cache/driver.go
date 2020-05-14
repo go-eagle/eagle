@@ -3,19 +3,34 @@ package cache
 import (
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 
 	redis2 "github.com/1024casts/snake/pkg/redis"
 )
 
 // Cache 生成一个缓存客户端，其中keyPrefix 一般为业务前缀
-var Cache Driver = NewMemoryCache("snake:", JSONEncoding{})
+var Cache Driver
+
+const (
+	// memCacheDriver 内存缓存
+	memCacheDriver = "memory"
+	// redisCacheDriver redis缓存
+	redisCacheDriver = "redis"
+)
 
 // Init 初始化缓存，在main.go里调用
-// 默认是redis，这里也可以改为其他缓存
 func Init() {
-	if gin.Mode() == gin.ReleaseMode {
-		Cache = NewRedisCache(redis2.Client, "snake:", JSONEncoding{})
+	cacheDriver := viper.GetString("cache.driver")
+	cachePrefix := viper.GetString("cache.prefix")
+	encoding := JSONEncoding{}
+
+	switch cacheDriver {
+	case memCacheDriver:
+		Cache = NewMemoryCache(cachePrefix, encoding)
+	case redisCacheDriver:
+		Cache = NewRedisCache(redis2.Client, cachePrefix, encoding)
+	default:
+		Cache = NewMemoryCache(cachePrefix, encoding)
 	}
 }
 
