@@ -8,7 +8,7 @@ import (
 
 func TestSend(t *testing.T) {
 	// init config
-	if err := config.Init("../../conf/config.local.yaml"); err != nil {
+	if err := config.Init("../../conf/config.sample.yaml"); err != nil {
 		panic(err)
 	}
 
