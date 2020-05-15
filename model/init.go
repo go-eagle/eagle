@@ -38,23 +38,6 @@ func openDB(username, password, addr, name string) *gorm.DB {
 		log.Errorf("Database connection failed. Database name: %s, err: %+v", name, err)
 	}
 
-	// docker方式启动时，由于数据库启动需要一定的时间，所以这里进行重试处理
-	retryCount := 30
-	for {
-		err := db.DB().Ping()
-		if err != nil {
-			if retryCount == 0 {
-				log.Fatalf("Not able to establish connection to database %s", name)
-			}
-
-			log.Errorf(fmt.Sprintf("Could not connect to database. Wait 2 seconds. %d retries left...", retryCount))
-			retryCount--
-			time.Sleep(2 * time.Second)
-		} else {
-			break
-		}
-	}
-
 	db.Set("gorm:table_options", "CHARSET=utf8mb4")
 
 	// set for db connection
