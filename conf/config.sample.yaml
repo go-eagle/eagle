@@ -46,6 +46,15 @@ redis:
   read_timeout: 2   # 单位：秒
   write_timeout: 2  # 单位：秒
   pool_size: 60
+email:
+  host: SMTP_HOST       # SMTP地址
+  port: PORT            # 端口
+  username: USER        # 用户名
+  password: PASSWORD    # 密码
+  name: snake           # 发送者名称
+  address: SEND_EMAIL   # 发送者邮箱
+  reply_to: EMAIL       # 回复地址
+  keepalive: 30         # 连接保持时长
 qiniu:
   access_key: ACCESS_KEY
   secret_key: SECRET_KEY
