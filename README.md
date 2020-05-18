@@ -22,17 +22,10 @@
 - 包管理工具 [go module](https://github.com/golang/go/wiki/Modules)
 - 测试框架 [goConvey](http://goconvey.co/)
 - CI/CD [Github Actions](https://github.com/actions)
-
-## 特性
-
-- 遵循 RESTful API 设计规范
-- 基于 GIN WEB 框架，提供了丰富的中间件支持（用户认证、跨域、访问日志、请求频率限制、追踪 ID 等）
-- 基于 GORM 的数据库存储
-- JWT 认证
-- 支持 Swagger 文档(基于[swaggo](https://github.com/swaggo/swag))
+- 使用 [GolangCI-lint](https://golangci.com/) 进行代码检测
 - 使用 make 来管理Go工程
 - 使用 shell(admin.sh) 脚本来管理进程
-- 支持多环境配置
+- 使用 yaml 文件进行多环境配置
 
 ## 目录结构
 
