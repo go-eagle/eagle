@@ -44,8 +44,11 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	// 下面就可以开始写具体的业务路由了
 
 	// api for authentication functionalities
+	g.POST("/v1/register", user.Register)
 	g.POST("/v1/login", user.Login)
 	g.GET("/v1/vcode", user.VCode)
+	// 手机号登录
+	g.POST("/v1/login/phone", user.PhoneLogin)
 
 	// The user handlers, requiring authentication
 	g.GET("/v1/users/:id", user.Get)
