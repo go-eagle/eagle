@@ -20,8 +20,6 @@ import (
 // @Success 200 {string} json "{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik"}}"
 // @Router /login [post]
 func Login(c *gin.Context) {
-	log.Info("Email Login function called.")
-
 	// Binding the data with the u struct.
 	var req LoginCredentials
 	if err := c.Bind(&req); err != nil {
@@ -30,7 +28,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	log.Infof("req %#v", req)
+	log.Infof("login req %#v", req)
 	// check param
 	if req.Email == "" || req.Password == "" {
 		log.Warnf("email or password is empty: %v", req)

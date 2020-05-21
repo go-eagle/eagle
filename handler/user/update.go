@@ -22,16 +22,17 @@ import (
 // @Success 200 {object} handler.Response "{"code":0,"message":"OK","data":null}"
 // @Router /users/{id} [put]
 func Update(c *gin.Context) {
-	log.Info("Update function called.")
 	// Get the user id from the url parameter.
 	userID, _ := strconv.Atoi(c.Param("id"))
 
 	// Binding the user data.
 	var req UpdateRequest
 	if err := c.Bind(&req); err != nil {
+		log.Warnf("bind request param err: %+v", err)
 		handler.SendResponse(c, errno.ErrBind, nil)
 		return
 	}
+	log.Infof("user update req: %#v", req)
 
 	userMap := make(map[string]interface{})
 	userMap["avatar"] = req.Avatar

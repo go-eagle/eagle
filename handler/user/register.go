@@ -18,8 +18,6 @@ import (
 // @Success 200 {string} json "{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik"}}"
 // @Router /Register [post]
 func Register(c *gin.Context) {
-	log.Info("Register function called.")
-
 	// Binding the data with the u struct.
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

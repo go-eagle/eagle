@@ -22,16 +22,16 @@ import (
 // @Success 200 {object} handler.Response
 // @Router /users/vcode [get]
 func VCode(c *gin.Context) {
-	log.Info("VCode function called.")
-
 	// 验证区号和手机号是否为空
 	if c.Query("area_code") == "" {
+		log.Warn("vcode area code is empty")
 		handler.SendResponse(c, errno.ErrAreaCodeEmpty, nil)
 		return
 	}
 
 	phone := c.Query("phone")
 	if phone == "" {
+		log.Warn("vcode phone is empty")
 		handler.SendResponse(c, errno.ErrPhoneEmpty, nil)
 		return
 	}
