@@ -48,7 +48,7 @@ func GetUserID(c *gin.Context) uint64 {
 
 // RouteNotFound 未找到相关路由
 func RouteNotFound(c *gin.Context) {
-	c.String(http.StatusNotFound, "The incorrect API route.")
+	c.String(http.StatusNotFound, "the route not found")
 }
 
 // getHostname 获取主机名
