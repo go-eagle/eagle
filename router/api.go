@@ -41,21 +41,22 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	// 查看分析图 go tool pprof -http=:5000 profile
 	// pprof.Register(g)
 
-	// 下面就可以开始写具体的业务路由了
-
-	// api for authentication functionalities
+	// 认证相关路由
 	g.POST("/v1/register", user.Register)
 	g.POST("/v1/login", user.Login)
-	g.GET("/v1/vcode", user.VCode)
-	// 手机号登录
 	g.POST("/v1/login/phone", user.PhoneLogin)
+	g.GET("/v1/vcode", user.VCode)
 
-	// The user handlers, requiring authentication
+	// 用户
 	g.GET("/v1/users/:id", user.Get)
+	g.GET("/v1/users/:id/following", user.FollowList)
+	g.GET("/v1/users/:id/followers", user.FollowerList)
 	u := g.Group("/v1/users")
 	u.Use(middleware.AuthMiddleware())
 	{
 		u.PUT("/:id", user.Update)
+		u.POST("/follow", user.Follow)
+		u.POST("/unfollow", user.Unfollow)
 	}
 
 	return g

@@ -14,6 +14,8 @@ type Repo interface {
 	GetUserByPhone(db *gorm.DB, phone int) (*model.UserModel, error)
 	GetUserByEmail(db *gorm.DB, email string) (*model.UserModel, error)
 	GetUsersByIds(ids []uint64) ([]*model.UserModel, error)
+	IncrFollowCount(db *gorm.DB, userId uint64, step int) error
+	IncrFollowerCount(db *gorm.DB, userId uint64, step int) error
 }
 
 // userRepo 用户仓库
@@ -74,4 +76,18 @@ func (repo *userRepo) GetUsersByIds(ids []uint64) ([]*model.UserModel, error) {
 	result := model.GetDB().Where("id in (?)", ids).Find(&users)
 
 	return users, result.Error
+}
+
+// IncrFollowCount 增加关注数
+func (repo *userRepo) IncrFollowCount(db *gorm.DB, userId uint64, step int) error {
+	userStat := model.UserStatModel{}
+	return db.Model(&userStat).Where("user_id=? and follow_count>0", userId).
+		Updates(map[string]interface{}{"follow_count": gorm.Expr("follow_count + ?", step)}).Error
+}
+
+// IncrFollowerCount 增加粉丝数
+func (repo *userRepo) IncrFollowerCount(db *gorm.DB, userId uint64, step int) error {
+	userStat := model.UserStatModel{}
+	return db.Model(&userStat).Where("user_id=? and follower_count>0", userId).
+		Updates(map[string]interface{}{"follower_count": gorm.Expr("follower_count + ?", step)}).Error
 }

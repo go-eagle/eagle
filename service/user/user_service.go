@@ -10,8 +10,19 @@ import (
 
 	"github.com/1024casts/snake/model"
 	"github.com/1024casts/snake/pkg/auth"
+	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/token"
 	"github.com/1024casts/snake/repository/user"
+)
+
+const (
+	// FollowStatusNormal 关注状态-正常
+	FollowStatusNormal int = 1 // 正常
+	// FollowStatusDelete 关注状态-删除
+	FollowStatusDelete = 0 // 删除
+
+	// 最大id
+	MaxID = 0xffffffffffff
 )
 
 // Service 用户服务接口定义
@@ -21,10 +32,18 @@ type Service interface {
 	EmailLogin(ctx *gin.Context, email, password string) (tokenStr string, err error)
 	PhoneLogin(ctx *gin.Context, phone int, verifyCode int) (tokenStr string, err error)
 	GetUserByID(id uint64) (*model.UserModel, error)
-	GetUserListByIds(id []uint64) (map[uint64]*model.UserModel, error)
+	BatchGetUserListByIds(userID []uint64) (map[uint64]*model.UserModel, error)
 	GetUserByPhone(phone int) (*model.UserModel, error)
 	GetUserByEmail(email string) (*model.UserModel, error)
 	UpdateUser(id uint64, userMap map[string]interface{}) error
+
+	// 关注
+	IsFollowedUser(userId uint64, followedUId uint64) bool
+	IsCanceledFollow(userId uint64, followedUId uint64) bool
+	AddUserFollow(userId uint64, followedUId uint64) error
+	CancelUserFollow(userId uint64, followedUId uint64) error
+	GetFollowingUserList(userId uint64, lastId uint64, limit int) ([]*model.UserFollowModel, error)
+	GetFollowerUserList(userId uint64, lastId uint64, limit int) ([]*model.UserFansModel, error)
 }
 
 // UserSvc 直接初始化，可以避免在使用时再实例化
@@ -32,7 +51,8 @@ var UserSvc = NewUserService()
 
 // 用小写的 service 实现接口中定义的方法
 type userService struct {
-	userRepo user.Repo
+	userRepo       user.Repo
+	userFollowRepo user.FollowRepo
 }
 
 // NewUserService 实例化一个userService
@@ -40,7 +60,8 @@ type userService struct {
 // 依赖接口，不要依赖实现，面向接口编程
 func NewUserService() Service {
 	return &userService{
-		userRepo: user.NewUserRepo(),
+		userRepo:       user.NewUserRepo(),
+		userFollowRepo: user.NewUserFollowRepo(),
 	}
 }
 
@@ -127,20 +148,20 @@ func (srv *userService) UpdateUser(id uint64, userMap map[string]interface{}) er
 
 func (srv *userService) GetUserByID(id uint64) (*model.UserModel, error) {
 	userModel, err := srv.userRepo.GetUserByID(model.GetDB(), id)
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return userModel, errors.Wrapf(err, "get user info err from db by id: %d", id)
 	}
 
 	return userModel, nil
 }
 
-// 批量获取
-func (srv *userService) GetUserListByIds(id []uint64) (map[uint64]*model.UserModel, error) {
-	userModels, err := srv.userRepo.GetUsersByIds(id)
+// BatchGetUserListByIds 批量获取用户信息
+func (srv *userService) BatchGetUserListByIds(userID []uint64) (map[uint64]*model.UserModel, error) {
+	userModels, err := srv.userRepo.GetUsersByIds(userID)
 	retMap := make(map[uint64]*model.UserModel)
 
 	if err != nil {
-		return retMap, errors.Wrapf(err, "get user model err from db by id: %v", id)
+		return retMap, errors.Wrapf(err, "get user model err from db by id: %v", userID)
 	}
 
 	for _, v := range userModels {
@@ -166,4 +187,171 @@ func (srv *userService) GetUserByEmail(email string) (*model.UserModel, error) {
 	}
 
 	return userModel, nil
+}
+
+// 获取用户关注
+func (srv *userService) GetFollowUser(userId uint64, followedUId uint64) (*model.UserFollowModel, error) {
+	userFollowModel := &model.UserFollowModel{}
+	result := model.GetDB().
+		Where("user_id=? AND followed_uid=? ", userId, followedUId).
+		Find(userFollowModel)
+
+	return userFollowModel, result.Error
+}
+
+// IsFollowedUser 是否关注过某用户
+func (srv *userService) IsFollowedUser(userId uint64, followedUId uint64) bool {
+	userFollowModel := &model.UserFollowModel{}
+	result := model.GetDB().
+		Where("user_id=? AND followed_uid=? ", userId, followedUId).
+		Find(userFollowModel)
+
+	if err := result.Error; err != nil {
+		log.Warnf("[user_service] get user follow err, %v", err)
+		return false
+	}
+
+	if userFollowModel.ID > 0 && userFollowModel.Status == FollowStatusNormal {
+		return true
+	}
+
+	return false
+}
+
+// IsCanceledFollow 是否已经取消关注
+func (srv *userService) IsCanceledFollow(userId uint64, followedUId uint64) bool {
+	userFollowModel := &model.UserFollowModel{}
+	result := model.GetDB().
+		Where("user_id=? AND followed_uid=? ", userId, followedUId).
+		Find(userFollowModel)
+
+	if err := result.Error; err != nil {
+		log.Warnf("[user_service] get user follow err, %v", err)
+		return false
+	}
+
+	if userFollowModel.ID > 0 && userFollowModel.Status == FollowStatusDelete {
+		return true
+	}
+	return false
+}
+
+// AddUserFollow 添加关注
+func (srv *userService) AddUserFollow(userID uint64, followedUID uint64) error {
+	db := model.GetDB()
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// 添加到关注表
+	err := srv.userFollowRepo.CreateUserFollow(tx, userID, followedUID)
+	if err != nil {
+		tx.Rollback()
+		return errors.Wrap(err, "insert into user follow err")
+	}
+
+	// 添加到粉丝表
+	err = srv.userFollowRepo.CreateUserFans(tx, followedUID, userID)
+	if err != nil {
+		tx.Rollback()
+		return errors.Wrap(err, "insert into user fans err")
+	}
+
+	// 添加关注数
+	err = srv.userRepo.IncrFollowCount(tx, userID, 1)
+	if err != nil {
+		tx.Rollback()
+		return errors.Wrap(err, "update user follow count err")
+	}
+
+	// 添加粉丝数
+	err = srv.userRepo.IncrFollowerCount(tx, followedUID, 1)
+	if err != nil {
+		return errors.Wrap(err, "update user fans count err")
+	}
+
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return errors.Wrap(err, "tx commit err")
+	}
+
+	return nil
+}
+
+// CancelUserFollow 取消用户关注
+func (srv *userService) CancelUserFollow(userId uint64, followedUId uint64) error {
+
+	db := model.GetDB()
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// 删除关注
+	err := srv.userFollowRepo.UpdateUserFollowStatus(tx, userId, followedUId, FollowStatusDelete)
+	if err != nil {
+		tx.Rollback()
+		return errors.Wrap(err, "update user follow err")
+	}
+
+	// 删除粉丝
+	err = srv.userFollowRepo.UpdateUserFansStatus(tx, followedUId, userId, FollowStatusDelete)
+	if err != nil {
+		tx.Rollback()
+		return errors.Wrap(err, "update user follow err")
+	}
+
+	// 减少关注数
+	err = srv.userRepo.IncrFollowerCount(tx, userId, -1)
+	if err != nil {
+		tx.Rollback()
+		return errors.Wrap(err, "update user follow count err")
+	}
+
+	// 减少粉丝数
+	err = srv.userRepo.IncrFollowerCount(tx, followedUId, -1)
+	if err != nil {
+		tx.Rollback()
+		return errors.Wrap(err, "update user fans count err")
+	}
+
+	err = tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return errors.Wrap(err, "tx commit err")
+	}
+
+	return nil
+}
+
+// GetFollowingUserList 获取正在关注的用户列表
+func (srv *userService) GetFollowingUserList(userId uint64, lastId uint64, limit int) ([]*model.UserFollowModel, error) {
+	if lastId == 0 {
+		lastId = MaxID
+	}
+	userFollowList, err := srv.userFollowRepo.GetFollowingUserList(userId, lastId, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	return userFollowList, nil
+}
+
+// GetFollowerUserList 获取粉丝用户列表
+func (srv *userService) GetFollowerUserList(userId uint64, lastId uint64, limit int) ([]*model.UserFansModel, error) {
+	if lastId == 0 {
+		lastId = MaxID
+	}
+	userFollowerList, err := srv.userFollowRepo.GetFollowerUserList(userId, lastId, limit)
+	if err != nil {
+		return nil, err
+	}
+
+	return userFollowerList, nil
 }

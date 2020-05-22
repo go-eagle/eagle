@@ -41,6 +41,20 @@ type UpdateRequest struct {
 	Sex    int    `json:"sex"`
 }
 
+// FollowRequest 关注请求
+type FollowRequest struct {
+	UserID uint64 `json:"user_id"`
+}
+
+// ListResponse 通用列表resp
+type ListResponse struct {
+	TotalCount uint64      `json:"total_count"`
+	HasMore    int         `json:"has_more"`
+	PageKey    string      `json:"page_key"`
+	PageValue  int         `json:"page_value"`
+	Items      interface{} `json:"items"`
+}
+
 // SwaggerListResponse 文档
 type SwaggerListResponse struct {
 	TotalCount uint64           `json:"totalCount"`
