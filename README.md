@@ -117,22 +117,29 @@ http://127.0.0.1/health
  
  ### Supervisord
  
+ 编译并生成二进制文件
+ 
+ ```bash
+go build -o bin_snake
+```
+ 
+ 这里日志目录设定为 `/data/log`  
  如果安装了 Supervisord，可以在配置文件中添加下面内容(默认：`/etc/supervisor/supervisord.conf`)：
  
  ```bash
  [program:snake]
  # environment=
- directory=/home/go/src/snake/
+ directory=/home/go/snake
  command=/home/go/bin_snake
  autostart=true
  autorestart=true
  user=root
- stdout_logfile=/home/log/snake_std.log
+ stdout_logfile=/data/log/snake_std.log
  startsecs = 2
  startretries = 2
  stdout_logfile_maxbytes=10MB
  stdout_logfile_backups=10
- stderr_logfile=/home/log/snake_err.log
+ stderr_logfile=/data/log/snake_err.log
  stderr_logfile_maxbytes=10MB
  stderr_logfile_backups=10
  ```
@@ -140,7 +147,7 @@ http://127.0.0.1/health
 重启 Supervisord
 
 ```bash
-supervisorctl restart
+supervisorctl restart snake
 ```
  
 ## CHANGELOG
