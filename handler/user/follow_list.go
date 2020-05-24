@@ -3,15 +3,17 @@ package user
 import (
 	"strconv"
 
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/idl"
+	"github.com/1024casts/snake/model"
 	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/service/user"
-	"github.com/gin-gonic/gin"
 )
 
-// Get 关注列表
+// FollowList 关注列表
 // @Summary 正在关注的用户列表
 // @Description Get an user by user id
 // @Tags 用户
@@ -19,21 +21,28 @@ import (
 // @Produce  json
 // @Param user_id body string true "用户id"
 // @Success 200 {object} model.UserInfo "用户信息"
-// @Router /users/following [get]
+// @Router /users/{id}/following [get]
 func FollowList(c *gin.Context) {
-	userID := handler.GetUserID(c)
+	userIDStr := c.Param("id")
+	userID, _ := strconv.Atoi(userIDStr)
 
-	_, err := user.UserSvc.GetUserByID(userID)
+	curUser, err := user.UserSvc.GetUserByID(handler.GetUserID(c))
 	if err != nil {
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
 	}
 
-	lastIdStr := c.DefaultQuery("last_id", "0")
-	lastID, _ := strconv.Atoi(lastIdStr)
-	limit := 10
+	_, err = user.UserSvc.GetUserByID(uint64(userID))
+	if err != nil {
+		handler.SendResponse(c, errno.ErrUserNotFound, nil)
+		return
+	}
 
-	userFollowList, err := user.UserSvc.GetFollowingUserList(userID, uint64(lastID), limit+1)
+	lastIDStr := c.DefaultQuery("last_id", "0")
+	lastID, _ := strconv.Atoi(lastIDStr)
+	limit := 2
+
+	userFollowList, err := user.UserSvc.GetFollowingUserList(uint64(userID), uint64(lastID), limit+1)
 	if err != nil {
 		log.Warnf("get following user list err: %+v", err)
 		handler.SendResponse(c, errno.InternalServerError, nil)
@@ -53,10 +62,24 @@ func FollowList(c *gin.Context) {
 		userIDs = append(userIDs, v.FollowedUID)
 	}
 
-	userOutList, err := user.UserSvc.BatchGetUserListByIds(userIDs)
+	userMap, err := user.UserSvc.BatchGetUserListByIds(userIDs)
 	if err != nil {
 		handler.SendResponse(c, errno.InternalServerError, nil)
 		return
+	}
+
+	// trans
+	userOutList := make([]*model.UserUnion, 0)
+	for _, uID := range userIDs {
+		userInput := idl.TransUserInput{
+			CurUser:  curUser,
+			User:     userMap[uID],
+			UserStat: nil,
+			IsFollow: 0,
+			IsFans:   0,
+		}
+		userInfo := idl.TransUser(&userInput)
+		userOutList = append(userOutList, userInfo)
 	}
 
 	handler.SendResponse(c, errno.OK, ListResponse{
@@ -66,5 +89,4 @@ func FollowList(c *gin.Context) {
 		PageValue:  pageValue,
 		Items:      userOutList,
 	})
-	return
 }

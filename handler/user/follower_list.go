@@ -3,14 +3,15 @@ package user
 import (
 	"strconv"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/service/user"
-	"github.com/gin-gonic/gin"
 )
 
-// Get 粉丝列表
+// FollowerList 粉丝列表
 // @Summary 通过用户id关注用户
 // @Description Get an user by user id
 // @Tags 用户
@@ -18,21 +19,22 @@ import (
 // @Produce  json
 // @Param user_id body string true "用户id"
 // @Success 200 {object} model.UserInfo "用户信息"
-// @Router /users/followers [get]
+// @Router /users/{id}/followers [get]
 func FollowerList(c *gin.Context) {
-	userID := handler.GetUserID(c)
+	userIDStr := c.Param("id")
+	userID, _ := strconv.Atoi(userIDStr)
 
-	_, err := user.UserSvc.GetUserByID(userID)
+	_, err := user.UserSvc.GetUserByID(uint64(userID))
 	if err != nil {
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
 	}
 
-	lastIdStr := c.DefaultQuery("last_id", "0")
-	lastID, _ := strconv.Atoi(lastIdStr)
+	lastIDStr := c.DefaultQuery("last_id", "0")
+	lastID, _ := strconv.Atoi(lastIDStr)
 	limit := 10
 
-	userFollowList, err := user.UserSvc.GetFollowerUserList(userID, uint64(lastID), limit+1)
+	userFollowerList, err := user.UserSvc.GetFollowerUserList(uint64(userID), uint64(lastID), limit+1)
 	if err != nil {
 		log.Warnf("get follower user list err: %+v", err)
 		handler.SendResponse(c, errno.InternalServerError, nil)
@@ -41,15 +43,15 @@ func FollowerList(c *gin.Context) {
 
 	hasMore := 0
 	pageValue := lastID
-	if len(userFollowList) > limit {
+	if len(userFollowerList) > limit {
 		hasMore = 1
-		userFollowList = userFollowList[0 : len(userFollowList)-1]
+		userFollowerList = userFollowerList[0 : len(userFollowerList)-1]
 		pageValue = lastID + 1
 	}
 
 	var userIDs []uint64
-	for _, v := range userFollowList {
-		userIDs = append(userIDs, v.FollowedUID)
+	for _, v := range userFollowerList {
+		userIDs = append(userIDs, v.FollowerUID)
 	}
 
 	userOutList, err := user.UserSvc.BatchGetUserListByIds(userIDs)
@@ -65,5 +67,4 @@ func FollowerList(c *gin.Context) {
 		PageValue:  pageValue,
 		Items:      userOutList,
 	})
-	return
 }

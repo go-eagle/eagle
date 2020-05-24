@@ -28,13 +28,27 @@ func (u *UserModel) Validate() error {
 	return validate.Struct(u)
 }
 
+// UserFollow 关注
+type UserFollow struct {
+	FollowNum int `json:"follow_num"` // 关注数
+	FansNum   int `json:"fans_num"`   // 粉丝数
+	IsFollow  int `json:"is_follow"`  // 是否关注 1:是 0:否
+	IsFans    int `json:"is_fans"`    // 是否是粉丝 1:是 0:否
+}
+
 // UserInfo 对外暴露的结构体
 type UserInfo struct {
 	ID        uint64 `json:"id" example:"1"`
 	Username  string `json:"username" example:"张三"`
-	Password  string `json:"password" example:"9dXd13#k$1123!kln"`
+	Avatar    string `json:"avatar"`
+	Sex       int    `json:"sex"`
 	CreatedAt string `json:"createdAt" example:"2020-03-23 20:00:00"`
-	UpdatedAt string `json:"updatedAt" example:"2020-03-23 20:00:00"`
+}
+
+// UserUnion 用户综合信息
+type UserUnion struct {
+	User       *UserInfo   `json:"user"`
+	UserFollow *UserFollow `json:"user_follow"`
 }
 
 // TableName 表名

@@ -1,6 +1,8 @@
 package user
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 
 	"github.com/1024casts/snake/model"
@@ -14,8 +16,8 @@ type Repo interface {
 	GetUserByPhone(db *gorm.DB, phone int) (*model.UserModel, error)
 	GetUserByEmail(db *gorm.DB, email string) (*model.UserModel, error)
 	GetUsersByIds(ids []uint64) ([]*model.UserModel, error)
-	IncrFollowCount(db *gorm.DB, userId uint64, step int) error
-	IncrFollowerCount(db *gorm.DB, userId uint64, step int) error
+	IncrFollowCount(db *gorm.DB, userID uint64, step int) error
+	IncrFollowerCount(db *gorm.DB, userID uint64, step int) error
 }
 
 // userRepo 用户仓库
@@ -79,15 +81,15 @@ func (repo *userRepo) GetUsersByIds(ids []uint64) ([]*model.UserModel, error) {
 }
 
 // IncrFollowCount 增加关注数
-func (repo *userRepo) IncrFollowCount(db *gorm.DB, userId uint64, step int) error {
-	userStat := model.UserStatModel{}
-	return db.Model(&userStat).Where("user_id=? and follow_count>0", userId).
-		Updates(map[string]interface{}{"follow_count": gorm.Expr("follow_count + ?", step)}).Error
+func (repo *userRepo) IncrFollowCount(db *gorm.DB, userID uint64, step int) error {
+	return db.Exec("insert into user_stat set user_id=?, follow_count=1, created_at=? on duplicate key update "+
+		"follow_count=follow_count+?, updated_at=?",
+		userID, time.Now(), step, time.Now()).Error
 }
 
 // IncrFollowerCount 增加粉丝数
-func (repo *userRepo) IncrFollowerCount(db *gorm.DB, userId uint64, step int) error {
-	userStat := model.UserStatModel{}
-	return db.Model(&userStat).Where("user_id=? and follower_count>0", userId).
-		Updates(map[string]interface{}{"follower_count": gorm.Expr("follower_count + ?", step)}).Error
+func (repo *userRepo) IncrFollowerCount(db *gorm.DB, userID uint64, step int) error {
+	return db.Exec("insert into user_stat set user_id=?, follower_count=1, created_at=? on duplicate key update "+
+		"follower_count=follower_count+?, updated_at=?",
+		userID, time.Now(), step, time.Now()).Error
 }

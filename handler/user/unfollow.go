@@ -9,7 +9,7 @@ import (
 	"github.com/1024casts/snake/service/user"
 )
 
-// Get 取消关注用户
+// Unfollow 取消关注用户
 // @Summary 通过用户id关注用户
 // @Description Get an user by user id
 // @Tags 用户
