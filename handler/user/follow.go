@@ -9,8 +9,8 @@ import (
 	"github.com/1024casts/snake/service/user"
 )
 
-// Follow 关注用户
-// @Summary 通过用户id关注用户
+// Follow 关注/取消关注
+// @Summary 通过用户id关注/取消关注用户
 // @Description Get an user by user id
 // @Tags 用户
 // @Accept  json
@@ -47,12 +47,22 @@ func Follow(c *gin.Context) {
 		return
 	}
 
-	// 添加关注
-	err = user.UserSvc.AddUserFollow(userID, req.UserID)
-	if err != nil {
-		log.Warnf("[follow] create user follow err: %v", err)
-		handler.SendResponse(c, errno.InternalServerError, nil)
-		return
+	if isFollowed {
+		// 取消关注
+		err = user.UserSvc.CancelUserFollow(userID, req.UserID)
+		if err != nil {
+			log.Warnf("[follow] cancel user follow err: %v", err)
+			handler.SendResponse(c, errno.InternalServerError, nil)
+			return
+		}
+	} else {
+		// 添加关注
+		err = user.UserSvc.AddUserFollow(userID, req.UserID)
+		if err != nil {
+			log.Warnf("[follow] add user follow err: %v", err)
+			handler.SendResponse(c, errno.InternalServerError, nil)
+			return
+		}
 	}
 
 	handler.SendResponse(c, nil, nil)

@@ -39,7 +39,6 @@ type Service interface {
 
 	// 关注
 	IsFollowedUser(userID uint64, followedUID uint64) bool
-	IsCanceledFollow(userID uint64, followedUID uint64) bool
 	AddUserFollow(userID uint64, followedUID uint64) error
 	CancelUserFollow(userID uint64, followedUID uint64) error
 	GetFollowingUserList(userID uint64, lastID uint64, limit int) ([]*model.UserFollowModel, error)
@@ -215,24 +214,6 @@ func (srv *userService) IsFollowedUser(userID uint64, followedUID uint64) bool {
 		return true
 	}
 
-	return false
-}
-
-// IsCanceledFollow 是否已经取消关注
-func (srv *userService) IsCanceledFollow(userID uint64, followedUID uint64) bool {
-	userFollowModel := &model.UserFollowModel{}
-	result := model.GetDB().
-		Where("user_id=? AND followed_uid=? ", userID, followedUID).
-		Find(userFollowModel)
-
-	if err := result.Error; err != nil {
-		log.Warnf("[user_service] get user follow err, %v", err)
-		return false
-	}
-
-	if userFollowModel.ID > 0 && userFollowModel.Status == FollowStatusDelete {
-		return true
-	}
 	return false
 }
 

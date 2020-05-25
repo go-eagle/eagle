@@ -56,7 +56,6 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	{
 		u.PUT("/:id", user.Update)
 		u.POST("/follow", user.Follow)
-		u.POST("/unfollow", user.Unfollow)
 	}
 
 	return g
