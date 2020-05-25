@@ -69,7 +69,7 @@ func FollowList(c *gin.Context) {
 	}
 
 	// trans
-	userOutList := make([]*model.UserUnion, 0)
+	userOutList := make([]*model.UserInfo, 0)
 	for _, uID := range userIDs {
 		userInput := idl.TransUserInput{
 			CurUser:  curUser,

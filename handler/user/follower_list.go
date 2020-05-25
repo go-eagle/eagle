@@ -3,6 +3,9 @@ package user
 import (
 	"strconv"
 
+	"github.com/1024casts/snake/idl"
+	"github.com/1024casts/snake/model"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/handler"
@@ -24,7 +27,13 @@ func FollowerList(c *gin.Context) {
 	userIDStr := c.Param("id")
 	userID, _ := strconv.Atoi(userIDStr)
 
-	_, err := user.Svc.GetUserByID(uint64(userID))
+	curUser, err := user.Svc.GetUserByID(handler.GetUserID(c))
+	if err != nil {
+		handler.SendResponse(c, errno.ErrUserNotFound, nil)
+		return
+	}
+
+	_, err = user.Svc.GetUserByID(uint64(userID))
 	if err != nil {
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
@@ -54,10 +63,24 @@ func FollowerList(c *gin.Context) {
 		userIDs = append(userIDs, v.FollowerUID)
 	}
 
-	userOutList, err := user.Svc.BatchGetUserListByIds(userIDs)
+	userMap, err := user.Svc.BatchGetUserListByIds(userIDs)
 	if err != nil {
 		handler.SendResponse(c, errno.InternalServerError, nil)
 		return
+	}
+
+	// trans
+	userOutList := make([]*model.UserInfo, 0)
+	for _, uID := range userIDs {
+		userInput := idl.TransUserInput{
+			CurUser:  curUser,
+			User:     userMap[uID],
+			UserStat: nil,
+			IsFollow: 0,
+			IsFans:   0,
+		}
+		userInfo := idl.TransUser(&userInput)
+		userOutList = append(userOutList, userInfo)
 	}
 
 	handler.SendResponse(c, errno.OK, ListResponse{

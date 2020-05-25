@@ -15,25 +15,17 @@ type TransUserInput struct {
 
 // TransUser 组装数据并输出
 // 对外暴露的user结构，都应该经过此结构进行转换
-func TransUser(input *TransUserInput) *model.UserUnion {
+func TransUser(input *TransUserInput) *model.UserInfo {
 	if input.User == nil {
-		return &model.UserUnion{}
+		return &model.UserInfo{}
 	}
 
-	return &model.UserUnion{
-		User:       transUserInfo(input),
-		UserFollow: transUserFollow(input),
-	}
-}
-
-// transUserFollow 转换用户相关字段
-func transUserInfo(input *TransUserInput) *model.UserInfo {
 	return &model.UserInfo{
-		ID:        input.User.ID,
-		Username:  input.User.Username,
-		Avatar:    input.User.Avatar, // todo: 转为url
-		Sex:       input.User.Sex,
-		CreatedAt: "",
+		ID:         input.User.ID,
+		Username:   input.User.Username,
+		Avatar:     input.User.Avatar, // todo: 转为url
+		Sex:        input.User.Sex,
+		UserFollow: transUserFollow(input),
 	}
 }
 

@@ -38,16 +38,10 @@ type UserFollow struct {
 
 // UserInfo 对外暴露的结构体
 type UserInfo struct {
-	ID        uint64 `json:"id" example:"1"`
-	Username  string `json:"username" example:"张三"`
-	Avatar    string `json:"avatar"`
-	Sex       int    `json:"sex"`
-	CreatedAt string `json:"createdAt" example:"2020-03-23 20:00:00"`
-}
-
-// UserUnion 用户综合信息
-type UserUnion struct {
-	User       *UserInfo   `json:"user"`
+	ID         uint64      `json:"id" example:"1"`
+	Username   string      `json:"username" example:"张三"`
+	Avatar     string      `json:"avatar"`
+	Sex        int         `json:"sex"`
 	UserFollow *UserFollow `json:"user_follow"`
 }
 
