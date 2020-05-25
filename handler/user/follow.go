@@ -27,7 +27,7 @@ func Follow(c *gin.Context) {
 	}
 
 	// Get the user by the `user_id` from the database.
-	_, err := user.UserSvc.GetUserByID(req.UserID)
+	_, err := user.Svc.GetUserByID(req.UserID)
 	if err != nil {
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
@@ -41,7 +41,7 @@ func Follow(c *gin.Context) {
 	}
 
 	// 检查是否已经关注过
-	isFollowed := user.UserSvc.IsFollowedUser(userID, req.UserID)
+	isFollowed := user.Svc.IsFollowedUser(userID, req.UserID)
 	if isFollowed {
 		handler.SendResponse(c, errno.OK, nil)
 		return
@@ -49,7 +49,7 @@ func Follow(c *gin.Context) {
 
 	if isFollowed {
 		// 取消关注
-		err = user.UserSvc.CancelUserFollow(userID, req.UserID)
+		err = user.Svc.CancelUserFollow(userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] cancel user follow err: %v", err)
 			handler.SendResponse(c, errno.InternalServerError, nil)
@@ -57,7 +57,7 @@ func Follow(c *gin.Context) {
 		}
 	} else {
 		// 添加关注
-		err = user.UserSvc.AddUserFollow(userID, req.UserID)
+		err = user.Svc.AddUserFollow(userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] add user follow err: %v", err)
 			handler.SendResponse(c, errno.InternalServerError, nil)

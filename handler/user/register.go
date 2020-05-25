@@ -41,7 +41,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	err := user.UserSvc.Register(c, req.Username, req.Email, req.Password)
+	err := user.Svc.Register(c, req.Username, req.Email, req.Password)
 	if err != nil {
 		log.Warnf("register err: %v", err)
 		handler.SendResponse(c, errno.ErrRegisterFailed, nil)

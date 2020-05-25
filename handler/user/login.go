@@ -36,7 +36,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	t, err := user.UserSvc.EmailLogin(c, req.Email, req.Password)
+	t, err := user.Svc.EmailLogin(c, req.Email, req.Password)
 	if err != nil {
 		log.Warnf("email login err: %v", err)
 		handler.SendResponse(c, errno.ErrEmailOrPassword, nil)
@@ -82,7 +82,7 @@ func PhoneLogin(c *gin.Context) {
 	}
 
 	// 登录
-	t, err := user.UserSvc.PhoneLogin(c, req.Phone, req.VerifyCode)
+	t, err := user.Svc.PhoneLogin(c, req.Phone, req.VerifyCode)
 	if err != nil {
 		handler.SendResponse(c, errno.ErrVerifyCode, nil)
 		return

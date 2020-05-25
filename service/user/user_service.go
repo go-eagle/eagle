@@ -45,8 +45,8 @@ type Service interface {
 	GetFollowerUserList(userID uint64, lastID uint64, limit int) ([]*model.UserFansModel, error)
 }
 
-// UserSvc 直接初始化，可以避免在使用时再实例化
-var UserSvc = NewUserService()
+// Svc 直接初始化，可以避免在使用时再实例化
+var Svc = NewUserService()
 
 // 用小写的 service 实现接口中定义的方法
 type userService struct {

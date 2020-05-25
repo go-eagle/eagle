@@ -26,13 +26,13 @@ func FollowList(c *gin.Context) {
 	userIDStr := c.Param("id")
 	userID, _ := strconv.Atoi(userIDStr)
 
-	curUser, err := user.UserSvc.GetUserByID(handler.GetUserID(c))
+	curUser, err := user.Svc.GetUserByID(handler.GetUserID(c))
 	if err != nil {
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
 	}
 
-	_, err = user.UserSvc.GetUserByID(uint64(userID))
+	_, err = user.Svc.GetUserByID(uint64(userID))
 	if err != nil {
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
@@ -42,7 +42,7 @@ func FollowList(c *gin.Context) {
 	lastID, _ := strconv.Atoi(lastIDStr)
 	limit := 2
 
-	userFollowList, err := user.UserSvc.GetFollowingUserList(uint64(userID), uint64(lastID), limit+1)
+	userFollowList, err := user.Svc.GetFollowingUserList(uint64(userID), uint64(lastID), limit+1)
 	if err != nil {
 		log.Warnf("get following user list err: %+v", err)
 		handler.SendResponse(c, errno.InternalServerError, nil)
@@ -62,7 +62,7 @@ func FollowList(c *gin.Context) {
 		userIDs = append(userIDs, v.FollowedUID)
 	}
 
-	userMap, err := user.UserSvc.BatchGetUserListByIds(userIDs)
+	userMap, err := user.Svc.BatchGetUserListByIds(userIDs)
 	if err != nil {
 		handler.SendResponse(c, errno.InternalServerError, nil)
 		return
