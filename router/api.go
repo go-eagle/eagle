@@ -49,13 +49,14 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 
 	// 用户
 	g.GET("/v1/users/:id", user.Get)
-	g.GET("/v1/users/:id/following", user.FollowList)
-	g.GET("/v1/users/:id/followers", user.FollowerList)
+
 	u := g.Group("/v1/users")
 	u.Use(middleware.AuthMiddleware())
 	{
 		u.PUT("/:id", user.Update)
 		u.POST("/follow", user.Follow)
+		u.GET("/:id/following", user.FollowList)
+		u.GET("/:id/followers", user.FollowerList)
 	}
 
 	return g

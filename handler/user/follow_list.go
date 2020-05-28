@@ -6,8 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/handler"
-	"github.com/1024casts/snake/idl"
-	"github.com/1024casts/snake/model"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/service/user"
@@ -26,13 +24,10 @@ func FollowList(c *gin.Context) {
 	userIDStr := c.Param("id")
 	userID, _ := strconv.Atoi(userIDStr)
 
-	curUser, err := user.Svc.GetUserByID(handler.GetUserID(c))
-	if err != nil {
-		handler.SendResponse(c, errno.ErrUserNotFound, nil)
-		return
-	}
+	curUserID := handler.GetUserID(c)
+	log.Infof("cur uid: %d", curUserID)
 
-	_, err = user.Svc.GetUserByID(uint64(userID))
+	_, err := user.Svc.GetUserByID(uint64(userID))
 	if err != nil {
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
@@ -40,7 +35,7 @@ func FollowList(c *gin.Context) {
 
 	lastIDStr := c.DefaultQuery("last_id", "0")
 	lastID, _ := strconv.Atoi(lastIDStr)
-	limit := 2
+	limit := 10
 
 	userFollowList, err := user.Svc.GetFollowingUserList(uint64(userID), uint64(lastID), limit+1)
 	if err != nil {
@@ -62,24 +57,11 @@ func FollowList(c *gin.Context) {
 		userIDs = append(userIDs, v.FollowedUID)
 	}
 
-	userMap, err := user.Svc.BatchGetUserListByIds(userIDs)
+	userOutList, err := user.Svc.BatchGetUsers(curUserID, userIDs)
 	if err != nil {
+		log.Warnf("batch get users err: %v", err)
 		handler.SendResponse(c, errno.InternalServerError, nil)
 		return
-	}
-
-	// trans
-	userOutList := make([]*model.UserInfo, 0)
-	for _, uID := range userIDs {
-		userInput := idl.TransUserInput{
-			CurUser:  curUser,
-			User:     userMap[uID],
-			UserStat: nil,
-			IsFollow: 0,
-			IsFans:   0,
-		}
-		userInfo := idl.TransUser(&userInput)
-		userOutList = append(userOutList, userInfo)
 	}
 
 	handler.SendResponse(c, errno.OK, ListResponse{

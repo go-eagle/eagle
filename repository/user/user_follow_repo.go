@@ -17,6 +17,8 @@ type FollowRepo interface {
 	UpdateUserFansStatus(db *gorm.DB, userID, followerUID uint64, status int) error
 	GetFollowingUserList(userID, lastID uint64, limit int) ([]*model.UserFollowModel, error)
 	GetFollowerUserList(userID, lastID uint64, limit int) ([]*model.UserFansModel, error)
+	GetFollowByUIds(userID uint64, followingUID []uint64) (map[uint64]*model.UserFollowModel, error)
+	GetFansByUIds(userID uint64, followerUID []uint64) (map[uint64]*model.UserFansModel, error)
 }
 
 // userFollowRepo 用户仓库
@@ -77,4 +79,46 @@ func (repo *userFollowRepo) GetFollowerUserList(userID, lastID uint64, limit int
 	}
 
 	return userFollowerList, nil
+}
+
+// 获取自己对关注列表的关注信息
+func (repo *userFollowRepo) GetFollowByUIds(userID uint64, followingUID []uint64) (map[uint64]*model.UserFollowModel, error) {
+	userFollowModel := make([]*model.UserFollowModel, 0)
+	retMap := make(map[uint64]*model.UserFollowModel)
+
+	result := model.GetDB().
+		Where("user_id=? AND followed_uid in (?) ", userID, followingUID).
+		Find(&userFollowModel)
+
+	if err := result.Error; err != nil {
+		log.Warnf("[user_follow] get user follow err, %v", err)
+		return retMap, err
+	}
+
+	for _, v := range userFollowModel {
+		retMap[v.FollowedUID] = v
+	}
+
+	return retMap, nil
+}
+
+// 获取自己对关注列表的被关注信息
+func (repo *userFollowRepo) GetFansByUIds(userID uint64, followerUID []uint64) (map[uint64]*model.UserFansModel, error) {
+	userFollowModel := make([]*model.UserFansModel, 0)
+	retMap := make(map[uint64]*model.UserFansModel)
+
+	result := model.GetDB().
+		Where("user_id=? AND follower_uid in (?) ", userID, followerUID).
+		Find(&userFollowModel)
+
+	if err := result.Error; err != nil {
+		log.Warnf("[user_follow] get user fans err, %v", err)
+		return retMap, err
+	}
+
+	for _, v := range userFollowModel {
+		retMap[v.UserID] = v
+	}
+
+	return retMap, nil
 }

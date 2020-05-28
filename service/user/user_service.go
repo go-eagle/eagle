@@ -2,12 +2,14 @@ package user
 
 import (
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 
+	"github.com/1024casts/snake/idl"
 	"github.com/1024casts/snake/model"
 	"github.com/1024casts/snake/pkg/auth"
 	"github.com/1024casts/snake/pkg/log"
@@ -32,10 +34,11 @@ type Service interface {
 	EmailLogin(ctx *gin.Context, email, password string) (tokenStr string, err error)
 	PhoneLogin(ctx *gin.Context, phone int, verifyCode int) (tokenStr string, err error)
 	GetUserByID(id uint64) (*model.UserModel, error)
-	BatchGetUserListByIds(userID []uint64) (map[uint64]*model.UserModel, error)
+	GetUserInfoByID(id uint64) (*model.UserInfo, error)
 	GetUserByPhone(phone int) (*model.UserModel, error)
 	GetUserByEmail(email string) (*model.UserModel, error)
 	UpdateUser(id uint64, userMap map[string]interface{}) error
+	BatchGetUsers(userID uint64, userIDs []uint64) ([]*model.UserInfo, error)
 
 	// 关注
 	IsFollowedUser(userID uint64, followedUID uint64) bool
@@ -145,29 +148,132 @@ func (srv *userService) UpdateUser(id uint64, userMap map[string]interface{}) er
 	return nil
 }
 
+// GetUserByID 获取单条用户信息
 func (srv *userService) GetUserByID(id uint64) (*model.UserModel, error) {
 	userModel, err := srv.userRepo.GetUserByID(model.GetDB(), id)
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by id: %d", id)
 	}
 
 	return userModel, nil
 }
 
-// BatchGetUserListByIds 批量获取用户信息
-func (srv *userService) BatchGetUserListByIds(userID []uint64) (map[uint64]*model.UserModel, error) {
-	userModels, err := srv.userRepo.GetUsersByIds(userID)
-	retMap := make(map[uint64]*model.UserModel)
-
+// GetUserInfoByID 获取组装好的用户数据
+func (srv *userService) GetUserInfoByID(id uint64) (*model.UserInfo, error) {
+	userInfos, err := srv.BatchGetUsers(0, []uint64{id})
 	if err != nil {
-		return retMap, errors.Wrapf(err, "get user model err from db by id: %v", userID)
+		return nil, err
+	}
+	return userInfos[0], nil
+}
+
+// BatchGetUsers 批量获取用户信息
+// 1. 处理关注和被关注状态
+// 2. 获取关注和粉丝数据
+func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model.UserInfo, error) {
+	infos := make([]*model.UserInfo, 0)
+	// 批量获取用户信息
+	users, err := srv.userRepo.GetUsersByIds(userIDs)
+	if err != nil {
+		return nil, err
 	}
 
-	for _, v := range userModels {
-		retMap[v.ID] = v
+	// 获取当前用户信息
+	curUser, err := srv.userRepo.GetUserByID(model.GetDB(), userID)
+	if err != nil {
+		return nil, err
 	}
 
-	return retMap, nil
+	var ids []uint64
+	for _, post := range users {
+		ids = append(ids, post.ID)
+	}
+
+	wg := sync.WaitGroup{}
+	userList := model.UserList{
+		Lock:  new(sync.Mutex),
+		IDMap: make(map[uint64]*model.UserInfo, len(users)),
+	}
+
+	errChan := make(chan error, 1)
+	finished := make(chan bool, 1)
+
+	// 获取自己对关注列表的关注状态
+	userFollowMap, err := srv.userFollowRepo.GetFollowByUIds(userID, userIDs)
+	if err != nil {
+		errChan <- err
+	}
+
+	// 获取自己对关注列表的被关注状态
+	userFansMap, err := srv.userFollowRepo.GetFansByUIds(userID, userIDs)
+	if err != nil {
+		errChan <- err
+	}
+
+	// 获取用户统计
+	userStatMap, err := srv.userRepo.GetUserStatByIDs(model.GetDB(), userIDs)
+	if err != nil {
+		errChan <- err
+	}
+
+	// Improve query efficiency in parallel
+	for _, u := range users {
+		wg.Add(1)
+		go func(u *model.UserModel) {
+			defer wg.Done()
+
+			userList.Lock.Lock()
+			defer userList.Lock.Unlock()
+
+			isFollow := 0
+			_, ok := userFollowMap[u.ID]
+			if ok {
+				isFollow = 1
+			}
+
+			isFollowed := 0
+			_, ok = userFansMap[u.ID]
+			if ok {
+				isFollowed = 1
+			}
+
+			userStatMap, ok := userStatMap[u.ID]
+			if !ok {
+				userStatMap = nil
+			}
+
+			transInput := &idl.TransUserInput{
+				CurUser:  curUser,
+				User:     u,
+				UserStat: userStatMap,
+				IsFollow: isFollow,
+				IsFans:   isFollowed,
+			}
+			userInfo := idl.TransUser(transInput)
+			if err != nil {
+				errChan <- err
+				return
+			}
+			userList.IDMap[u.ID] = userInfo
+		}(u)
+	}
+
+	go func() {
+		wg.Wait()
+		close(finished)
+	}()
+
+	select {
+	case <-finished:
+	case err := <-errChan:
+		return nil, err
+	}
+
+	for _, id := range ids {
+		infos = append(infos, userList.IDMap[id])
+	}
+
+	return infos, nil
 }
 
 func (srv *userService) GetUserByPhone(phone int) (*model.UserModel, error) {

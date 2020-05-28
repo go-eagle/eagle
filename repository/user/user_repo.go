@@ -3,6 +3,8 @@ package user
 import (
 	"time"
 
+	"github.com/1024casts/snake/pkg/log"
+
 	"github.com/jinzhu/gorm"
 
 	"github.com/1024casts/snake/model"
@@ -18,6 +20,8 @@ type Repo interface {
 	GetUsersByIds(ids []uint64) ([]*model.UserModel, error)
 	IncrFollowCount(db *gorm.DB, userID uint64, step int) error
 	IncrFollowerCount(db *gorm.DB, userID uint64, step int) error
+	GetUserStatByID(db *gorm.DB, userID uint64) (*model.UserStatModel, error)
+	GetUserStatByIDs(db *gorm.DB, userID []uint64) (map[uint64]*model.UserStatModel, error)
 }
 
 // userRepo 用户仓库
@@ -51,9 +55,12 @@ func (repo *userRepo) Update(db *gorm.DB, id uint64, userMap map[string]interfac
 // GetUserByID 获取用户
 func (repo *userRepo) GetUserByID(db *gorm.DB, id uint64) (*model.UserModel, error) {
 	user := &model.UserModel{}
-	result := db.Where("id = ?", id).First(user)
+	err := db.Where("id = ?", id).First(user).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return user, err
+	}
 
-	return user, result.Error
+	return user, nil
 }
 
 // GetUserByPhone 根据手机号获取用户
@@ -92,4 +99,30 @@ func (repo *userRepo) IncrFollowerCount(db *gorm.DB, userID uint64, step int) er
 	return db.Exec("insert into user_stat set user_id=?, follower_count=1, created_at=? on duplicate key update "+
 		"follower_count=follower_count+?, updated_at=?",
 		userID, time.Now(), step, time.Now()).Error
+}
+
+// GetUserStatByID 获取用户统计数据
+func (repo *userRepo) GetUserStatByID(db *gorm.DB, userID uint64) (*model.UserStatModel, error) {
+	userStat := model.UserStatModel{}
+	result := db.Where("user_id = ?", userID).First(&userStat)
+
+	return &userStat, result.Error
+}
+
+// GetUserStatByIDs 批量获取用户统计数据
+func (repo *userRepo) GetUserStatByIDs(db *gorm.DB, userID []uint64) (map[uint64]*model.UserStatModel, error) {
+	userStats := make([]*model.UserStatModel, 0)
+	retMap := make(map[uint64]*model.UserStatModel)
+
+	result := model.GetDB().Where("user_id in (?)", userID).Find(&userStats)
+	if err := result.Error; err != nil {
+		log.Warnf("[user_follow] get user follow err, %v", err)
+		return retMap, err
+	}
+
+	for _, v := range userStats {
+		retMap[v.UserID] = v
+	}
+
+	return retMap, nil
 }
