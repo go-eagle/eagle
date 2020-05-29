@@ -185,9 +185,8 @@ func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model
 	}
 
 	var ids []uint64
-	for _, post := range users {
-		ids = append(ids, post.ID)
-	}
+	// 保持原有id顺序
+	ids = userIDs
 
 	wg := sync.WaitGroup{}
 	userList := model.UserList{
@@ -216,7 +215,7 @@ func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model
 		errChan <- err
 	}
 
-	// Improve query efficiency in parallel
+	// 并行处理
 	for _, u := range users {
 		wg.Add(1)
 		go func(u *model.UserModel) {
@@ -269,6 +268,7 @@ func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model
 		return nil, err
 	}
 
+	// 根据原有id合并数据
 	for _, id := range ids {
 		infos = append(infos, userList.IDMap[id])
 	}
