@@ -184,9 +184,8 @@ func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model
 		return nil, err
 	}
 
-	var ids []uint64
 	// 保持原有id顺序
-	ids = userIDs
+	ids := userIDs
 
 	wg := sync.WaitGroup{}
 	userList := model.UserList{
