@@ -5,7 +5,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 
-	"github.com/1024casts/snake/model"
+	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/log"
 )
 

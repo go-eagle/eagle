@@ -6,7 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 
-	"github.com/1024casts/snake/model"
+	"github.com/1024casts/snake/internal/model"
 )
 
 // Repo 定义用户仓库接口

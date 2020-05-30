@@ -4,9 +4,9 @@ import (
 	"strconv"
 
 	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/internal/service/user"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/service/user"
 
 	"github.com/gin-gonic/gin"
 )

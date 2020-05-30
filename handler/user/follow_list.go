@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/internal/service/user"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/service/user"
 )
 
 // FollowList 关注列表

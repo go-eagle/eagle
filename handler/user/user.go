@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/1024casts/snake/model"
+	"github.com/1024casts/snake/internal/model"
 )
 
 // CreateRequest 创建用户请求

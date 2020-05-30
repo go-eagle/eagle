@@ -4,7 +4,7 @@ package testutil
 
 import (
 	"github.com/1024casts/snake/config"
-	"github.com/1024casts/snake/model"
+	"github.com/1024casts/snake/internal/model"
 
 	"github.com/jinzhu/gorm"
 )

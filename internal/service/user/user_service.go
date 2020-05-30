@@ -9,12 +9,12 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 
-	"github.com/1024casts/snake/idl"
-	"github.com/1024casts/snake/model"
+	"github.com/1024casts/snake/internal/idl"
+	"github.com/1024casts/snake/internal/model"
+	"github.com/1024casts/snake/internal/repository/user"
 	"github.com/1024casts/snake/pkg/auth"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/token"
-	"github.com/1024casts/snake/repository/user"
 )
 
 const (

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/1024casts/snake/model"
+	"github.com/1024casts/snake/internal/model"
 )
 
 type Suite struct {

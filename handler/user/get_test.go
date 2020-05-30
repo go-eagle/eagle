@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/1024casts/snake/model"
+	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/testutil"
 
 	"github.com/gin-gonic/gin"
