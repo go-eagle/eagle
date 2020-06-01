@@ -7,15 +7,19 @@ import (
 
 func TestStringSliceReflectEqual(t *testing.T) {
 	cases := []struct {
-		in, want []string
+		name     string
+		inA, inB []string
+		want     bool
 	}{
-		{[]string{"q", "w", "e", "r", "t"}, []string{"q", "w", "a", "s", "z", "x"}},
+		{"test slice is not equal", []string{"q", "w", "e", "r", "t"}, []string{"q", "w", "a", "s", "z", "x"}, false},
+		{"test slice is equal", []string{"q", "w", "e", "r", "t"}, []string{"q", "w", "e", "r", "t"}, true},
 	}
-	for _, c := range cases {
-		result := StringSliceReflectEqual(c.in, c.want)
-		if !result {
-			t.Errorf("StringSliceReflectEqual(%q) == %q", c.in, c.want)
-		}
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := StringSliceReflectEqual(tt.inA, tt.inB); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("DeleteElemOrderFromUint64Slice() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
@@ -29,16 +33,30 @@ func BenchmarkDeepEqual(b *testing.B) {
 }
 
 func TestStringSliceEqual(t *testing.T) {
-	cases := []struct {
-		in, want []string
-	}{
-		{[]string{"q", "w", "e", "r", "t"}, []string{"q", "w", "a", "s", "z", "x"}},
+	type args struct {
+		a []string
+		b []string
 	}
-	for _, c := range cases {
-		result := StringSliceEqual(c.in, c.want)
-		if !result {
-			t.Errorf("StringSliceEqual(%q) == %q", c.in, c.want)
-		}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{"test slice is equal", args{
+			a: []string{"golang", "ruby", "java", "rust"},
+			b: []string{"golang", "ruby", "java", "rust"},
+		}, true},
+		{"test slice is not equal", args{
+			a: []string{"golang", "ruby", "java", "rust"},
+			b: []string{"php", "ruby", "java", "rust"},
+		}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := StringSliceEqual(tt.args.a, tt.args.b); got != tt.want {
+				t.Errorf("StringSliceEqual() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
@@ -65,7 +83,7 @@ func TestUint64SliceReverse(t *testing.T) {
 	}
 }
 
-func TestDeleteElemFromUint64Slice(t *testing.T) {
+func TestUint64DeleteElemInSlice(t *testing.T) {
 	type args struct {
 		i int
 		a []uint64
@@ -75,21 +93,37 @@ func TestDeleteElemFromUint64Slice(t *testing.T) {
 		args args
 		want []uint64
 	}{
-		{"delete 3 from slice", args{
+		{"delete middle 3 from slice", args{
 			i: 2,
 			a: []uint64{1, 2, 3, 4, 5},
 		}, []uint64{1, 2, 5, 4}},
+		{"delete first 1 from slice", args{
+			i: 0,
+			a: []uint64{1, 2, 3, 4, 5},
+		}, []uint64{5, 2, 3, 4}},
+		{"delete last 5 from slice", args{
+			i: 4,
+			a: []uint64{1, 2, 3, 4, 5},
+		}, []uint64{1, 2, 3, 4}},
+		{"delete element out of last range slice", args{
+			i: 5,
+			a: []uint64{1, 2, 3, 4, 5},
+		}, []uint64{1, 2, 3, 4, 5}},
+		{"delete element out of first range slice", args{
+			i: -1,
+			a: []uint64{1, 2, 3, 4, 5},
+		}, []uint64{1, 2, 3, 4, 5}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := DeleteElemFromUint64Slice(tt.args.i, tt.args.a); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DeleteElemFromUint64Slice() = %v, want %v", got, tt.want)
+			if got := Uint64DeleteElemInSlice(tt.args.i, tt.args.a); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Uint64DeleteElemInSlice() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestDeleteElemOrderFromUint64Slice(t *testing.T) {
+func TestUint64DeleteElemInSliceWithOrder(t *testing.T) {
 	type args struct {
 		i int
 		a []uint64
@@ -114,8 +148,56 @@ func TestDeleteElemOrderFromUint64Slice(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := DeleteElemOrderFromUint64Slice(tt.args.i, tt.args.a); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DeleteElemOrderFromUint64Slice() = %v, want %v", got, tt.want)
+			if got := Uint64DeleteElemInSliceWithOrder(tt.args.i, tt.args.a); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Uint64DeleteElemInSliceWithOrder() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestUint64ShuffleSlice(t *testing.T) {
+	type args struct {
+		a []uint64
+	}
+	tests := []struct {
+		name string
+		args args
+		want []uint64
+	}{
+		{"test gen rand slice", args{a: []uint64{1, 2, 3, 4, 5}}, []uint64{5, 1, 3, 4, 2}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Uint64ShuffleSlice(tt.args.a); reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Uint64ShuffleSlice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStringSliceContains(t *testing.T) {
+	type args struct {
+		ss []string
+		s  string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{"test contain string in slice", args{
+			ss: []string{"golang", "java", "rust", "python", "php"},
+			s:  "golang",
+		}, true},
+		{"test not contain string in slice", args{
+			ss: []string{"golang", "java", "rust", "python", "php"},
+			s:  "ruby",
+		}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := StringSliceContains(tt.args.ss, tt.args.s); got != tt.want {
+				t.Errorf("StringSliceContains() = %v, want %v", got, tt.want)
 			}
 		})
 	}

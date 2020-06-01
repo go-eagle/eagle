@@ -68,26 +68,34 @@ func Uint64ShuffleSlice(a []uint64) []uint64 {
 
 // see: https://yourbasic.org/golang/
 
-// DeleteElemFromUint64Slice 从slice删除元素 fast version, 会改变顺序
+// Uint64DeleteElemInSlice 从slice删除元素
+// fast version, 会改变顺序
 // i：slice的索引值
-// a: slice
-func DeleteElemFromUint64Slice(i int, a []uint64) []uint64 {
-	// Remove the element at index i from a.
-	a[i] = a[len(a)-1] // Copy last element to index i.
-	a[len(a)-1] = 0    // Erase last element (write zero value).
-	a = a[:len(a)-1]   // Truncate slice.
+// s: slice
+func Uint64DeleteElemInSlice(i int, s []uint64) []uint64 {
+	if i < 0 || i > len(s)-1 {
+		return s
+	}
+	// Remove the element at index i from s.
+	s[i] = s[len(s)-1] // Copy last element to index i.
+	s[len(s)-1] = 0    // Erase last element (write zero value).
+	s = s[:len(s)-1]   // Truncate slice.
 
-	return a
+	return s
 }
 
-// DeleteElemOrderFromUint64Slice 从slice删除元素 slow version, 保持原有顺序
+// Uint64DeleteElemInSliceWithOrder 从slice删除元素
+// slow version, 保持原有顺序
 // i：slice的索引值
-// a: slice
-func DeleteElemOrderFromUint64Slice(i int, a []uint64) []uint64 {
-	// Remove the element at index i from a.
-	copy(a[i:], a[i+1:]) // Shift a[i+1:] left one index.
-	a[len(a)-1] = 0      // Erase last element (write zero value).
-	a = a[:len(a)-1]     // Truncate slice.
+// s: slice
+func Uint64DeleteElemInSliceWithOrder(i int, s []uint64) []uint64 {
+	if i < 0 || i > len(s)-1 {
+		return s
+	}
+	// Remove the element at index i from s.
+	copy(s[i:], s[i+1:]) // Shift s[i+1:] left one index.
+	s[len(s)-1] = 0      // Erase last element (write zero value).
+	s = s[:len(s)-1]     // Truncate slice.
 
-	return a
+	return s
 }
