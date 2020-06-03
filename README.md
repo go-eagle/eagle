@@ -37,14 +37,15 @@
 ├── db.sql                       # 在部署新环境时，可以登录MySQL客户端，执行source db.sql创建数据库和表
 ├── docs                         # swagger文档，执行 swag init 生成的
 ├── handler                      # 类似MVC架构中的C，用来读取输入，并将处理流程转发给实际的处理函数，最后返回结果
+├── internal                     # 业务目录
+    ├── idl                      # 数据结构转换
+    ├── model                    # 数据库model
+    ├── repository               # 数据访问层
+    └── service                  # 业务逻辑封装
 ├── log                          # 存放日志的目录
 ├── main.go                      # 项目入口文件
-├── model                        # 数据库model
 ├── pkg                          # 一些封装好的package
-├── repository                   # 数据访问层
 ├── router                       # 路由及中间件目录
-├── service                      # 业务逻辑封装
-├── schedule                     # 任务调度配置目录
 └── scripts                      # 存放用于执行各种构建，安装，分析等操作的脚本
 ```
 
