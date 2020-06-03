@@ -240,14 +240,14 @@ func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model
 				userStatMap = nil
 			}
 
-			transInput := &idl.TransUserInput{
+			transInput := &idl.TransferUserInput{
 				CurUser:  curUser,
 				User:     u,
 				UserStat: userStatMap,
 				IsFollow: isFollow,
 				IsFans:   isFollowed,
 			}
-			userInfo := idl.TransUser(transInput)
+			userInfo := idl.TransferUser(transInput)
 			if err != nil {
 				errChan <- err
 				return

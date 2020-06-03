@@ -4,8 +4,8 @@ import (
 	"github.com/1024casts/snake/internal/model"
 )
 
-// TransUserInput 转换输入字段
-type TransUserInput struct {
+// TransferUserInput 转换输入字段
+type TransferUserInput struct {
 	CurUser  *model.UserModel
 	User     *model.UserModel
 	UserStat *model.UserStatModel
@@ -13,9 +13,9 @@ type TransUserInput struct {
 	IsFans   int `json:"is_fans"`
 }
 
-// TransUser 组装数据并输出
+// TransferUser 组装数据并输出
 // 对外暴露的user结构，都应该经过此结构进行转换
-func TransUser(input *TransUserInput) *model.UserInfo {
+func TransferUser(input *TransferUserInput) *model.UserInfo {
 	if input.User == nil {
 		return &model.UserInfo{}
 	}
@@ -25,12 +25,12 @@ func TransUser(input *TransUserInput) *model.UserInfo {
 		Username:   input.User.Username,
 		Avatar:     input.User.Avatar, // todo: 转为url
 		Sex:        input.User.Sex,
-		UserFollow: transUserFollow(input),
+		UserFollow: transferUserFollow(input),
 	}
 }
 
-// transUserFollow 转换用户关注相关字段
-func transUserFollow(input *TransUserInput) *model.UserFollow {
+// transferUserFollow 转换用户关注相关字段
+func transferUserFollow(input *TransferUserInput) *model.UserFollow {
 	followCount := 0
 	if input.UserStat != nil {
 		followCount = input.UserStat.FollowCount
