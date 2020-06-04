@@ -36,11 +36,6 @@ func Logging() gin.HandlerFunc {
 			return
 		}
 
-		// Skip for the health check requests.
-		if path == "/sd/health" || path == "/sd/ram" || path == "/sd/cpu" || path == "/sd/disk" {
-			return
-		}
-
 		// Read the Body content
 		var bodyBytes []byte
 		if c.Request.Body != nil {
