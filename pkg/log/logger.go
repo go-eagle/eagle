@@ -36,16 +36,16 @@ type Logger interface {
 
 // Config is the struct for logger information
 type Config struct {
-	Writers         string `yaml:"writers"`
-	LoggerLevel     string `yaml:"logger_level"`
-	LoggerFile      string `yaml:"logger_file"`
-	LoggerWarnFile  string `yaml:"logger_warn_file"`
-	LoggerErrorFile string `yaml:"logger_error_file"`
-	LogFormatText   bool   `yaml:"log_format_text"`
-	RollingPolicy   string `yaml:"rollingPolicy"`
-	LogRotateDate   int    `yaml:"log_rotate_date"`
-	LogRotateSize   int    `yaml:"log_rotate_size"`
-	LogBackupCount  int    `yaml:"log_backup_count"`
+	Writers          string `yaml:"writers"`
+	LoggerLevel      string `yaml:"logger_level"`
+	LoggerFile       string `yaml:"logger_file"`
+	LoggerWarnFile   string `yaml:"logger_warn_file"`
+	LoggerErrorFile  string `yaml:"logger_error_file"`
+	LogFormatText    bool   `yaml:"log_format_text"`
+	LogRollingPolicy string `yaml:"log_rolling_policy"`
+	LogRotateDate    int    `yaml:"log_rotate_date"`
+	LogRotateSize    int    `yaml:"log_rotate_size"`
+	LogBackupCount   int    `yaml:"log_backup_count"`
 }
 
 // NewLogger returns an instance of logger

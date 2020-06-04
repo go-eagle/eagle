@@ -6,13 +6,26 @@ import (
 	"strings"
 	"time"
 
-	"github.com/1024casts/snake/pkg/util"
-
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/spf13/viper"
-
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	"github.com/1024casts/snake/pkg/util"
+)
+
+const (
+	// WriterStdOut 标准输出
+	WriterStdOut = "stdout"
+	// WriterFile 文件输出
+	WriterFile = "file"
+)
+
+const (
+	// RotateTimeDaily 按天切割
+	RotateTimeDaily = "daily"
+	// RotateTimeHourly 按小时切割
+	RotateTimeHourly = "hourly"
 )
 
 // zapLogger logger struct
@@ -25,15 +38,22 @@ func newZapLogger(cfg *Config) (Logger, error) {
 	encoder := getJSONEncoder()
 
 	var cores []zapcore.Core
+	var options []zap.Option
+	// 设置初始化字段
+	option := zap.Fields(zap.String("ip", util.GetLocalIP()), zap.String("app", viper.GetString("name")))
+	options = append(options, option)
+
+	allLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl <= zapcore.FatalLevel
+	})
+
 	writers := strings.Split(cfg.Writers, ",")
 	for _, w := range writers {
-		if w == "stdout" {
+		if w == WriterStdOut {
 			core := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel)
 			cores = append(cores, core)
 		}
-
-		if w == "file" {
-			// 注意：如果多个文件，最后一个会是全的，前两个可能会丢日志
+		if w == WriterFile {
 			infoFilename := cfg.LoggerFile
 			infoWrite := getLogWriterWithTime(infoFilename)
 			warnFilename := cfg.LoggerWarnFile
@@ -45,9 +65,13 @@ func newZapLogger(cfg *Config) (Logger, error) {
 				return lvl <= zapcore.InfoLevel
 			})
 			warnLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+				stacktrace := zap.AddStacktrace(zapcore.WarnLevel)
+				options = append(options, stacktrace)
 				return lvl == zapcore.WarnLevel
 			})
 			errorLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+				stacktrace := zap.AddStacktrace(zapcore.ErrorLevel)
+				options = append(options, stacktrace)
 				return lvl >= zapcore.ErrorLevel
 			})
 
@@ -58,28 +82,31 @@ func newZapLogger(cfg *Config) (Logger, error) {
 			core = zapcore.NewCore(encoder, zapcore.AddSync(errorWrite), errorLevel)
 			cores = append(cores, core)
 		}
+		if w != WriterFile && w != WriterStdOut {
+			core := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel)
+			cores = append(cores, core)
+			allWriter := getLogWriterWithTime(cfg.LoggerFile)
+			core = zapcore.NewCore(encoder, zapcore.AddSync(allWriter), allLevel)
+			cores = append(cores, core)
+		}
 	}
 
 	combinedCore := zapcore.NewTee(cores...)
 
 	// 开启开发模式，堆栈跟踪
 	caller := zap.AddCaller()
+	options = append(options, caller)
 	// 开启文件及行号
 	development := zap.Development()
-	// 设置初始化字段
-	filed := zap.Fields(zap.String("ip", util.GetLocalIP()), zap.String("app", viper.GetString("name")))
-	// 构造日志
-	logger := zap.New(
-		combinedCore,
-		zap.AddCallerSkip(2), // 跳过文件调用层数
-		caller,
-		development,
-		filed,
-	).Sugar()
+	options = append(options, development)
+	// 跳过文件调用层数
+	addCallerSkip := zap.AddCallerSkip(2)
+	options = append(options, addCallerSkip)
 
-	return &zapLogger{
-		sugaredLogger: logger,
-	}, nil
+	// 构造日志
+	logger := zap.New(combinedCore, options...).Sugar()
+
+	return &zapLogger{sugaredLogger: logger}, nil
 }
 
 // getJSONEncoder
@@ -102,11 +129,18 @@ func getJSONEncoder() zapcore.Encoder {
 // getLogWriterWithTime 按时间(小时)进行切割
 func getLogWriterWithTime(filename string) io.Writer {
 	logFullPath := filename
+	rotationPolicy := viper.Get("log.log_rolling_policy")
+	backupCount := viper.GetUint("log.log_backup_count")
+	// 默认
+	rotateDuration := time.Hour * 24
+	if rotationPolicy == RotateTimeHourly {
+		rotateDuration = time.Hour
+	}
 	hook, err := rotatelogs.New(
-		logFullPath+".%Y%m%d%H",                                                // 时间格式使用shell的date时间格式
-		rotatelogs.WithLinkName(logFullPath),                                   // 生成软链，指向最新日志文件
-		rotatelogs.WithRotationCount(viper.GetUint("logger.log_backup_count")), // 文件最大保存份数
-		rotatelogs.WithRotationTime(time.Hour),                                 // 日志切割时间间隔
+		logFullPath+".%Y%m%d%H",                     // 时间格式使用shell的date时间格式
+		rotatelogs.WithLinkName(logFullPath),        // 生成软链，指向最新日志文件
+		rotatelogs.WithRotationCount(backupCount),   // 文件最大保存份数
+		rotatelogs.WithRotationTime(rotateDuration), // 日志切割时间间隔
 	)
 
 	if err != nil {

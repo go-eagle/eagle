@@ -59,16 +59,16 @@ func (cfg *Config) initConfig() error {
 
 func (cfg *Config) initLog() {
 	config := log.Config{
-		Writers:         viper.GetString("log.writers"),
-		LoggerLevel:     viper.GetString("log.logger_level"),
-		LoggerFile:      viper.GetString("log.logger_file"),
-		LoggerWarnFile:  viper.GetString("log.logger_warn_file"),
-		LoggerErrorFile: viper.GetString("log.logger_error_file"),
-		LogFormatText:   viper.GetBool("log.log_format_text"),
-		RollingPolicy:   viper.GetString("log.rollingPolicy"),
-		LogRotateDate:   viper.GetInt("log.log_rotate_date"),
-		LogRotateSize:   viper.GetInt("log.log_rotate_size"),
-		LogBackupCount:  viper.GetInt("log.log_backup_count"),
+		Writers:          viper.GetString("log.writers"),
+		LoggerLevel:      viper.GetString("log.logger_level"),
+		LoggerFile:       viper.GetString("log.logger_file"),
+		LoggerWarnFile:   viper.GetString("log.logger_warn_file"),
+		LoggerErrorFile:  viper.GetString("log.logger_error_file"),
+		LogFormatText:    viper.GetBool("log.log_format_text"),
+		LogRollingPolicy: viper.GetString("log.log_rolling_policy"),
+		LogRotateDate:    viper.GetInt("log.log_rotate_date"),
+		LogRotateSize:    viper.GetInt("log.log_rotate_size"),
+		LogBackupCount:   viper.GetInt("log.log_backup_count"),
 	}
 	err := log.NewLogger(&config, log.InstanceZapLogger)
 	if err != nil {
