@@ -71,16 +71,16 @@ func (m memoryCache) Set(key string, val interface{}, expiration time.Duration) 
 }
 
 // Get data
-func (m memoryCache) Get(key string) (interface{}, error) {
+func (m memoryCache) Get(key string, val interface{}) error {
 	cacheKey, err := BuildCacheKey(m.KeyPrefix, key)
 	if err != nil {
-		return nil, errors.Wrapf(err, "build cache key err, key is %+v", key)
+		return errors.Wrapf(err, "build cache key err, key is %+v", key)
 	}
 	val, ok := getValue(m.client.Load(cacheKey))
 	if !ok {
-		return nil, errors.New("memory get value err")
+		return errors.New("memory get value err")
 	}
-	return val, nil
+	return nil
 }
 
 // MultiSet 批量set
@@ -89,7 +89,7 @@ func (m memoryCache) MultiSet(valMap map[string]interface{}, expiration time.Dur
 }
 
 // MultiGet 批量获取
-func (m memoryCache) MultiGet(keys ...string) (interface{}, error) {
+func (m memoryCache) MultiGet(keys []string, val interface{}) error {
 	panic("implement me")
 }
 
