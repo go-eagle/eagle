@@ -70,7 +70,8 @@ func Test_redisCache_SetGet(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := tt.cache
-			gotVal, err := c.Get(tt.args.key)
+			var gotVal interface{}
+			err := c.Get(tt.args.key, &gotVal)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
 				return
