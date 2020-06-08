@@ -66,6 +66,10 @@ func (c *redisCache) Get(key string, val interface{}) error {
 		}
 	}
 
+	// 防止data为空时，Unmarshal报错
+	if string(data) == "" {
+		return nil
+	}
 	err = Unmarshal(c.encoding, data, val)
 	if err != nil {
 		return errors.Wrapf(err, "unmarshal data error, key=%s, cacheKey=%s type=%v, json is %+v ",
