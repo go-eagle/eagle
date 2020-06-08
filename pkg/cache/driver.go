@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	redis2 "github.com/1024casts/snake/pkg/redis"
+	"github.com/1024casts/snake/pkg/redis"
 )
 
 // Client 生成一个缓存客户端，其中keyPrefix 一般为业务前缀
@@ -28,7 +28,7 @@ func Init() {
 	case memCacheDriver:
 		Client = NewMemoryCache(cachePrefix, encoding)
 	case redisCacheDriver:
-		Client = NewRedisCache(redis2.Client, cachePrefix, encoding)
+		Client = NewRedisCache(redis.Client, cachePrefix, encoding)
 	default:
 		Client = NewMemoryCache(cachePrefix, encoding)
 	}
