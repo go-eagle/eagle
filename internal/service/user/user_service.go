@@ -160,7 +160,7 @@ func (srv *userService) GetUserByID(id uint64) (*model.UserModel, error) {
 
 // GetUserInfoByID 获取组装好的用户数据
 func (srv *userService) GetUserInfoByID(id uint64) (*model.UserInfo, error) {
-	userInfos, err := srv.BatchGetUsers(0, []uint64{id})
+	userInfos, err := srv.BatchGetUsers(id, []uint64{id})
 	if err != nil {
 		return nil, err
 	}
