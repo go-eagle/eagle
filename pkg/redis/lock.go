@@ -4,9 +4,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/viper"
-
 	"github.com/go-redis/redis"
+	"github.com/google/uuid"
+	"github.com/spf13/viper"
 )
 
 // Lock 定义lock结构体
@@ -50,4 +50,10 @@ func (l *Lock) GetKey() string {
 	keyPrefix := viper.GetString("name")
 	lockKey := "redis:lock"
 	return strings.Join([]string{keyPrefix, lockKey, l.key}, ":")
+}
+
+// GenToken 生成token
+func (l *Lock) GenToken() string {
+	u, _ := uuid.NewRandom()
+	return u.String()
 }
