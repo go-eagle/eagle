@@ -22,6 +22,8 @@ type Cache struct {
 
 // NewUserCache new一个用户cache
 func NewUserCache() *Cache {
+	// todo: cache.Init() 已经在main.go执行，这里应该不需要再初始化，待排查
+	cache.Init()
 	return &Cache{
 		cache: cache.Client,
 	}

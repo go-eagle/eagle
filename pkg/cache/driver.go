@@ -1,9 +1,8 @@
 package cache
 
 import (
+	"fmt"
 	"time"
-
-	"github.com/spf13/viper"
 
 	"github.com/1024casts/snake/pkg/redis"
 )
@@ -20,14 +19,18 @@ const (
 
 // Init 初始化缓存，在main.go里调用
 func Init() {
-	cacheDriver := viper.GetString("cache.driver")
-	cachePrefix := viper.GetString("cache.prefix")
-	encoding := JSONEncoding{}
+	// todo: 读取配置文件
+	cacheDriver := "redis"
+	cachePrefix := "snake"
+	fmt.Println("get prefix key1:", cachePrefix)
+	encoding := MsgPackEncoding{}
 
 	switch cacheDriver {
 	case memCacheDriver:
 		Client = NewMemoryCache(cachePrefix, encoding)
 	case redisCacheDriver:
+		// todo: redis.Init() 已经在 main.go 执行，这里应该不需要再初始化，待排查
+		redis.Init()
 		Client = NewRedisCache(redis.Client, cachePrefix, encoding)
 	default:
 		Client = NewMemoryCache(cachePrefix, encoding)

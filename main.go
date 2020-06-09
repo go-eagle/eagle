@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/1024casts/snake/pkg/cache"
+
 	// http pprof
 	_ "net/http/pprof"
 
@@ -69,6 +71,8 @@ func main() {
 
 	// init redis
 	redis.Init()
+	// init cache
+	cache.Init()
 
 	// Set gin mode.
 	gin.SetMode(viper.GetString("run_mode"))

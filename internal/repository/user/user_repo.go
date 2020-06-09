@@ -6,7 +6,9 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 
+	"github.com/1024casts/snake/internal/cache/user"
 	"github.com/1024casts/snake/internal/model"
+	"github.com/1024casts/snake/pkg/log"
 )
 
 // Repo 定义用户仓库接口
@@ -24,11 +26,15 @@ type Repo interface {
 }
 
 // userRepo 用户仓库
-type userRepo struct{}
+type userRepo struct {
+	userCache *user.Cache
+}
 
 // NewUserRepo 实例化用户仓库
 func NewUserRepo() Repo {
-	return &userRepo{}
+	return &userRepo{
+		userCache: user.NewUserCache(),
+	}
 }
 
 // Create 创建用户
@@ -48,18 +54,40 @@ func (repo *userRepo) Update(db *gorm.DB, id uint64, userMap map[string]interfac
 		return errors.Wrap(err, "[user_repo] update user data err")
 	}
 
+	// 删除cache
+	err = repo.userCache.DelUserCache(id)
+	if err != nil {
+		log.Warnf("[user_repo] delete user cache err: %v", err)
+	}
+
 	return db.Model(user).Updates(userMap).Error
 }
 
 // GetUserByID 获取用户
 func (repo *userRepo) GetUserByID(db *gorm.DB, id uint64) (*model.UserModel, error) {
-	user := &model.UserModel{}
-	err := db.Where("id = ?", id).First(user).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return user, errors.Wrap(err, "[user_repo] get user data err")
+	// 从cache获取
+	userModel, err := repo.userCache.GetUserCache(id)
+	if err != nil {
+		return nil, errors.Wrap(err, "[user_repo] get user cache data err")
+	}
+	if userModel != nil && userModel.ID > 0 {
+		return userModel, nil
 	}
 
-	return user, nil
+	// 从数据库中获取
+	data := &model.UserModel{}
+	err = db.Where(&model.UserModel{ID: id}).First(&data).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, errors.Wrap(err, "[user_repo] get user data err")
+	}
+
+	// 写入cache
+	err = repo.userCache.SetUserCache(id, data)
+	if err != nil {
+		return data, errors.Wrap(err, "[user_repo] set user data err")
+	}
+
+	return data, nil
 }
 
 // GetUserByPhone 根据手机号获取用户
