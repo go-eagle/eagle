@@ -18,7 +18,7 @@
 - 文档使用 [Swagger](https://swagger.io/) 生成
 - 配置文件解析库 [Viper](https://github.com/spf13/viper)
 - 使用 [JWT](https://jwt.io/) 进行身份鉴权认证
-- 校验器使用 [validator](https://github.com/go-playground/validator/v10)  也是 Gin 框架默认的校验器
+- 校验器使用 [validator](https://github.com/go-playground/validator)  也是 Gin 框架默认的校验器
 - 任务调度 [cron](https://github.com/robfig/cron)
 - 包管理工具 [Go Modules](https://github.com/golang/go/wiki/Modules)
 - 测试框架 [GoConvey](http://goconvey.co/)
