@@ -58,7 +58,7 @@ git clone https://github.com/1024casts/snake
 
 ## 快速开始
 
-TIPS: 需要本地安装数据库和 Redis
+TIPS: 需要本地安装MySQL数据库和 Redis
 
 ```bash
 # 进入到下载目录
