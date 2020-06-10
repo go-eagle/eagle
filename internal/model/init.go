@@ -22,6 +22,14 @@ type Database struct {
 // DB 数据库全局变量
 var DB *Database
 
+// Init 初始化数据库
+func (db *Database) Init() {
+	DB = &Database{
+		Default: GetDefaultDB(),
+		Docker:  GetDockerDB(),
+	}
+}
+
 // openDB 链接数据库，生成数据库实例
 func openDB(username, password, addr, name string) *gorm.DB {
 	config := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=%t&loc=%s",
@@ -85,14 +93,6 @@ func InitDockerDB() *gorm.DB {
 // GetDockerDB 获取docker数据库
 func GetDockerDB() *gorm.DB {
 	return InitDockerDB()
-}
-
-// Init 初始化数据库
-func (db *Database) Init() {
-	DB = &Database{
-		Default: GetDefaultDB(),
-		Docker:  GetDockerDB(),
-	}
 }
 
 // Close 关闭数据库链接
