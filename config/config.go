@@ -15,6 +15,7 @@ import (
 
 // Config 读取配置
 type Config struct {
+	// Name 配置文件路径
 	Name string
 }
 
