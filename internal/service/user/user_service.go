@@ -173,7 +173,7 @@ func (srv *userService) GetUserInfoByID(id uint64) (*model.UserInfo, error) {
 func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model.UserInfo, error) {
 	infos := make([]*model.UserInfo, 0)
 	// 批量获取用户信息
-	users, err := srv.userRepo.GetUsersByIds(userIDs)
+	users, err := srv.userRepo.GetUsersByIds(model.GetDB(), userIDs)
 	if err != nil {
 		return nil, err
 	}
