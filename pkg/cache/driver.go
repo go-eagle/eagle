@@ -23,7 +23,7 @@ func Init() {
 	cacheDriver := "redis"
 	cachePrefix := "snake"
 	fmt.Println("get prefix key1:", cachePrefix)
-	encoding := MsgPackEncoding{}
+	encoding := JSONEncoding{}
 
 	switch cacheDriver {
 	case memCacheDriver:
