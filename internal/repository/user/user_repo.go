@@ -16,9 +16,9 @@ type Repo interface {
 	Create(db *gorm.DB, user model.UserModel) (id uint64, err error)
 	Update(db *gorm.DB, id uint64, userMap map[string]interface{}) error
 	GetUserByID(db *gorm.DB, id uint64) (*model.UserModel, error)
+	GetUsersByIds(db *gorm.DB, ids []uint64) ([]*model.UserModel, error)
 	GetUserByPhone(db *gorm.DB, phone int) (*model.UserModel, error)
 	GetUserByEmail(db *gorm.DB, email string) (*model.UserModel, error)
-	GetUsersByIds(ids []uint64) ([]*model.UserModel, error)
 	IncrFollowCount(db *gorm.DB, userID uint64, step int) error
 	IncrFollowerCount(db *gorm.DB, userID uint64, step int) error
 	GetUserStatByID(db *gorm.DB, userID uint64) (*model.UserStatModel, error)
@@ -90,6 +90,33 @@ func (repo *userRepo) GetUserByID(db *gorm.DB, id uint64) (*model.UserModel, err
 	return data, nil
 }
 
+// GetUsersByIds 批量获取用户
+func (repo *userRepo) GetUsersByIds(db *gorm.DB, userIDs []uint64) ([]*model.UserModel, error) {
+	users := make([]*model.UserModel, 0)
+
+	// 从cache批量获取
+	userMap, err := repo.userCache.MultiGetUserCache(userIDs)
+	if err != nil {
+		return users, errors.Wrap(err, "[user_repo] multi get user cache data err")
+	}
+	if len(userMap) != len(userIDs) {
+		return users, errors.Wrap(err, "[user_repo] user cache count is not equal ids count")
+	}
+
+	// 查询未命中
+	for _, v := range userIDs {
+		_, ok := userMap[v]
+		if !ok {
+			userModel, err := repo.GetUserByID(db, v)
+			if err != nil {
+				continue
+			}
+			userMap[v] = userModel
+		}
+	}
+	return users, nil
+}
+
 // GetUserByPhone 根据手机号获取用户
 func (repo *userRepo) GetUserByPhone(db *gorm.DB, phone int) (*model.UserModel, error) {
 	user := model.UserModel{}
@@ -110,17 +137,6 @@ func (repo *userRepo) GetUserByEmail(db *gorm.DB, phone string) (*model.UserMode
 	}
 
 	return &user, nil
-}
-
-// GetUsersByIds 批量获取用户
-func (repo *userRepo) GetUsersByIds(ids []uint64) ([]*model.UserModel, error) {
-	users := make([]*model.UserModel, 0)
-	err := model.GetDB().Where("id in (?)", ids).Find(&users).Error
-	if err != nil {
-		return nil, errors.Wrap(err, "[user_repo] get user err by phone")
-	}
-
-	return users, nil
 }
 
 // IncrFollowCount 增加关注数
