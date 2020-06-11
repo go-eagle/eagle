@@ -1,3 +1,11 @@
+/**
+ *    ____          __
+ *   / __/__  ___ _/ /_____
+ *  _\ \/ _ \/ _ `/  '_/ -_)
+ * /___/_//_/\_,_/_/\_\\__/
+ *
+ * generate by http://patorjk.com/software/taag/#p=display&f=Small%20Slant&t=Snake
+ */
 package main
 
 import (
@@ -10,8 +18,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/1024casts/snake/pkg/cache"
-
 	// http pprof
 	_ "net/http/pprof"
 
@@ -23,6 +29,7 @@ import (
 	"github.com/1024casts/snake/config"
 	"github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/internal/model"
+	"github.com/1024casts/snake/pkg/cache"
 	"github.com/1024casts/snake/pkg/email"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/redis"
