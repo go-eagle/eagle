@@ -18,7 +18,7 @@
 - 文档使用 [Swagger](https://swagger.io/) 生成
 - 配置文件解析库 [Viper](https://github.com/spf13/viper)
 - 使用 [JWT](https://jwt.io/) 进行身份鉴权认证
-- 校验器 [validator](https://gopkg.in/go-playground/validator.v9)  也是 Gin 框架默认的校验器，当前最新是 v9 版本
+- 校验器使用 [validator](https://github.com/go-playground/validator)  也是 Gin 框架默认的校验器
 - 任务调度 [cron](https://github.com/robfig/cron)
 - 包管理工具 [Go Modules](https://github.com/golang/go/wiki/Modules)
 - 测试框架 [GoConvey](http://goconvey.co/)
@@ -58,7 +58,7 @@ git clone https://github.com/1024casts/snake
 
 ## 快速开始
 
-TIPS: 需要本地安装数据库和 Redis
+TIPS: 需要本地安装MySQL数据库和 Redis
 
 ```bash
 # 进入到下载目录
