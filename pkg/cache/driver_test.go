@@ -7,14 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInit(t *testing.T) {
-	asserts := assert.New(t)
-
-	asserts.NotPanics(func() {
-		Init()
-	})
-}
-
 func TestSet(t *testing.T) {
 	asserts := assert.New(t)
 
