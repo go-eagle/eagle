@@ -1,4 +1,4 @@
-# snake
+# 🐍 snake
 
  [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/1024casts/snake/Go?style=flat-square)](https://github.com/1024casts/snake)
  [![codecov](https://codecov.io/gh/1024casts/snake/branch/master/graph/badge.svg)](https://codecov.io/gh/1024casts/snake)
@@ -10,7 +10,7 @@
 
 一款适合于快速开发业务的 Go 框架，主要是提供 API 服务。
 
-## 技术栈
+## ✨ 技术栈
 
 - 框架路由使用 [Gin](https://github.com/gin-gonic/gin) 路由
 - 中间件使用 [Gin](https://github.com/gin-gonic/gin) 框架的中间件
@@ -28,7 +28,7 @@
 - 使用 shell(admin.sh) 脚本来管理进程
 - 使用 YAML 文件进行多环境配置
 
-## 目录结构
+## 📗 目录结构
 
 ```shell
 ├── Makefile                     # 项目管理文件
@@ -49,14 +49,14 @@
 └── scripts                      # 存放用于执行各种构建，安装，分析等操作的脚本
 ```
 
-## 下载安装
+## ⬇️ 下载安装
 
 ```bash
 # 进入到自己的开发目录，下载安装即可，可以不用是 GOPATH
 git clone https://github.com/1024casts/snake
 ```
 
-## 快速开始
+## 🛠️ 快速开始
 
 TIPS: 需要本地安装MySQL数据库和 Redis
 
@@ -74,7 +74,7 @@ make build
 ./scripts/admin.sh start
 ```
 
-## 常用命令
+## 💻 常用命令
 
 - make help 查看帮助
 - make dep 下载 Go 依赖包
@@ -83,7 +83,7 @@ make build
 - make test-coverage 生成测试覆盖
 - make lint 检查代码规范
 
-## 模块
+## 🏂 模块
 
 ### 用户模块
 
@@ -95,11 +95,11 @@ make build
 - 关注列表
 - 粉丝列表
 
-## 接口文档
+## 📝 接口文档
 
 `http://localhost:8080/swagger/index.html`
 
-## 开发规约
+## 📖 开发规约
 
 - [配置说明](https://github.com/1024casts/snake/blob/master/conf)
 - [错误码设计](https://github.com/1024casts/snake/tree/master/pkg/errno)
@@ -107,7 +107,7 @@ make build
 - [repository 的使用规则](https://github.com/1024casts/snake/blob/master/repository)
 - [cache 使用说明](https://github.com/1024casts/snake/blob/master/pkg/cache)
 
-## 部署
+## 🚀 部署
 
 ### 单独部署
 
@@ -164,18 +164,18 @@ stderr_logfile_backups=10
 supervisorctl restart snake
 ```
 
-## CHANGELOG
+## 📜 CHANGELOG
 
 - [更新日志](https://github.com/1024casts/snake/blob/master/CHANGELOG.md)
 
-## 谁在用
+## 🏘️ 谁在用
 
 - [1024课堂](https://1024casts.com)
 
-## Discussion
+## 💬 Discussion
 
 - Issue: https://github.com/1024casts/snake/issues
 
-## License
+## 📄 License
 
 MIT. See the [LICENSE](LICENSE) file for details.
