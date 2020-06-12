@@ -175,13 +175,13 @@ func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model
 	// 批量获取用户信息
 	users, err := srv.userRepo.GetUsersByIds(model.GetDB(), userIDs)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "[user_service] batch get user err")
 	}
 
 	// 获取当前用户信息
 	curUser, err := srv.userRepo.GetUserByID(model.GetDB(), userID)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "[user_service] get one user err")
 	}
 
 	// 保持原有id顺序
@@ -264,6 +264,7 @@ func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model
 	select {
 	case <-finished:
 	case err := <-errChan:
+		log.Warnf("[user_service] batch get user err chan: %v", err)
 		return nil, err
 	}
 
