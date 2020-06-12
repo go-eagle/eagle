@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -95,25 +96,27 @@ func (repo *userRepo) GetUsersByIds(db *gorm.DB, userIDs []uint64) ([]*model.Use
 	users := make([]*model.UserModel, 0)
 
 	// 从cache批量获取
-	userMap, err := repo.userCache.MultiGetUserCache(userIDs)
+	userCacheMap, err := repo.userCache.MultiGetUserCache(userIDs)
 	if err != nil {
 		return users, errors.Wrap(err, "[user_repo] multi get user cache data err")
 	}
-	if len(userMap) != len(userIDs) {
-		return users, errors.Wrap(err, "[user_repo] user cache count is not equal ids count")
-	}
+	fmt.Printf("user map: %#v", userCacheMap)
 
 	// 查询未命中
-	for _, v := range userIDs {
-		_, ok := userMap[v]
+	for _, userID := range userIDs {
+		idx := repo.userCache.GetCacheKey(userID)
+		userModel, ok := userCacheMap[idx]
+		fmt.Println("user: ", ok, userModel)
 		if !ok {
-			userModel, err := repo.GetUserByID(db, v)
+			userModel, err = repo.GetUserByID(db, userID)
 			if err != nil {
+				log.Warnf("get user model err: %v", err)
 				continue
 			}
-			userMap[v] = userModel
 		}
+		users = append(users, userModel)
 	}
+	fmt.Printf("users: %+v", users)
 	return users, nil
 }
 
@@ -165,7 +168,7 @@ func (repo *userRepo) IncrFollowerCount(db *gorm.DB, userID uint64, step int) er
 func (repo *userRepo) GetUserStatByID(db *gorm.DB, userID uint64) (*model.UserStatModel, error) {
 	userStat := model.UserStatModel{}
 	err := db.Where("user_id = ?", userID).First(&userStat).Error
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errors.Wrap(err, "[user_repo] get user stat err")
 	}
 
@@ -177,8 +180,8 @@ func (repo *userRepo) GetUserStatByIDs(db *gorm.DB, userID []uint64) (map[uint64
 	userStats := make([]*model.UserStatModel, 0)
 	retMap := make(map[uint64]*model.UserStatModel)
 
-	result := model.GetDB().Where("user_id in (?)", userID).Find(&userStats)
-	if err := result.Error; err != nil {
+	err := model.GetDB().Where("user_id in (?)", userID).Find(&userStats).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return retMap, errors.Wrap(err, "[user_repo] get user stat err")
 	}
 

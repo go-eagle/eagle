@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/1024casts/snake/pkg/redis"
+
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/cache"
 )
@@ -22,11 +24,20 @@ type Cache struct {
 
 // NewUserCache new一个用户cache
 func NewUserCache() *Cache {
-	// todo: cache.Init() 已经在main.go执行，这里应该不需要再初始化，待排查
-	cache.Init()
+	encoding := cache.JSONEncoding{}
+	cachePrefix := cache.PrefixCacheKey
+	// TODO: redis已经全局实例化，redis.Init() 已经在main.go执行，这里应该不需要再初始化，待排查
+	redis.Init()
 	return &Cache{
-		cache: cache.Client,
+		cache: cache.NewRedisCache(redis.Client, cachePrefix, encoding, func() interface{} {
+			return &model.UserModel{}
+		}),
 	}
+}
+
+// 获取cache key
+func (u *Cache) GetCacheKey(userID uint64) string {
+	return fmt.Sprintf(cache.PrefixCacheKey+":"+PrefixUserCacheKey, userID)
 }
 
 // SetUserCache 写入用户cache
@@ -53,13 +64,16 @@ func (u *Cache) GetUserCache(userID uint64) (userModel *model.UserModel, err err
 }
 
 // MultiGetUserCache 批量获取用户cache
-func (u *Cache) MultiGetUserCache(userIDs []uint64) (userMap map[uint64]*model.UserModel, err error) {
+func (u *Cache) MultiGetUserCache(userIDs []uint64) (map[string]*model.UserModel, error) {
 	var keys []string
 	for _, v := range userIDs {
 		cacheKey := fmt.Sprintf(PrefixUserCacheKey, v)
 		keys = append(keys, cacheKey)
 	}
-	err = u.cache.MultiGet(keys, userMap)
+
+	// 需要在这里make实例化，如果在返回参数里直接定义会报 nil map
+	userMap := make(map[string]*model.UserModel)
+	err := u.cache.MultiGet(keys, userMap)
 	if err != nil {
 		return nil, err
 	}
