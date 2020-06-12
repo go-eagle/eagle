@@ -19,17 +19,13 @@ type redisCache struct {
 	newObject         func() interface{}
 }
 
-const (
-	// DefaultExpireTime 默认过期时间
-	DefaultExpireTime = 60 * time.Second
-)
-
 // NewRedisCache new一个redis cache, client 参数是可传入的，这样方便进行单元测试
-func NewRedisCache(client *redis.Client, keyPrefix string, encoding Encoding) Driver {
+func NewRedisCache(client *redis.Client, keyPrefix string, encoding Encoding, newObject func() interface{}) Driver {
 	return &redisCache{
 		client:    client,
 		KeyPrefix: keyPrefix,
 		encoding:  encoding,
+		newObject: newObject,
 	}
 }
 
@@ -78,13 +74,13 @@ func (c *redisCache) Get(key string, val interface{}) error {
 	return nil
 }
 
-func (c *redisCache) MultiSet(valMap map[string]interface{}, expiration time.Duration) error {
-	if len(valMap) == 0 {
+func (c *redisCache) MultiSet(valueMap map[string]interface{}, expiration time.Duration) error {
+	if len(valueMap) == 0 {
 		return nil
 	}
 	// key-value是成对的，所以这里的容量是map的2倍
-	paris := make([]interface{}, 0, 2*len(valMap))
-	for key, value := range valMap {
+	paris := make([]interface{}, 0, 2*len(valueMap))
+	for key, value := range valueMap {
 		buf, err := Marshal(c.encoding, value)
 		if err != nil {
 			log.Warnf("marshal data err: %+v, value is %+v", err, value)
@@ -119,7 +115,7 @@ func (c *redisCache) MultiSet(valMap map[string]interface{}, expiration time.Dur
 	return nil
 }
 
-func (c *redisCache) MultiGet(keys []string, val interface{}) error {
+func (c *redisCache) MultiGet(keys []string, value interface{}) error {
 	if len(keys) == 0 {
 		return nil
 	}
@@ -136,11 +132,8 @@ func (c *redisCache) MultiGet(keys []string, val interface{}) error {
 		return errors.Wrapf(err, "redis MGet error, keys is %+v", keys)
 	}
 
-	// 简单的方式可以通过map返回
-	// valMap := make(map[string]interface{})
-
 	// 通过反射注入到map
-	valueMap := reflect.ValueOf(val)
+	valueMap := reflect.ValueOf(value)
 	for i, value := range values {
 		if value == nil {
 			continue
@@ -152,8 +145,7 @@ func (c *redisCache) MultiGet(keys []string, val interface{}) error {
 				keys[i], cacheKeys[i], reflect.TypeOf(value))
 			continue
 		}
-		// valMap[keys[i]] = object
-		valueMap.SetMapIndex(reflect.ValueOf(keys[i]), reflect.ValueOf(object))
+		valueMap.SetMapIndex(reflect.ValueOf(cacheKeys[i]), reflect.ValueOf(object))
 	}
 	return nil
 }
