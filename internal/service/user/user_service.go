@@ -33,10 +33,10 @@ type Service interface {
 	Register(ctx *gin.Context, username, email, password string) error
 	EmailLogin(ctx *gin.Context, email, password string) (tokenStr string, err error)
 	PhoneLogin(ctx *gin.Context, phone int, verifyCode int) (tokenStr string, err error)
-	GetUserByID(id uint64) (*model.UserModel, error)
+	GetUserByID(id uint64) (*model.UserBaseModel, error)
 	GetUserInfoByID(id uint64) (*model.UserInfo, error)
-	GetUserByPhone(phone int) (*model.UserModel, error)
-	GetUserByEmail(email string) (*model.UserModel, error)
+	GetUserByPhone(phone int) (*model.UserBaseModel, error)
+	GetUserByEmail(email string) (*model.UserBaseModel, error)
 	UpdateUser(id uint64, userMap map[string]interface{}) error
 	BatchGetUsers(userID uint64, userIDs []uint64) ([]*model.UserInfo, error)
 
@@ -74,7 +74,7 @@ func (srv *userService) Register(ctx *gin.Context, username, email, password str
 		return errors.Wrapf(err, "encrypt password err")
 	}
 
-	u := model.UserModel{
+	u := model.UserBaseModel{
 		Username:  username,
 		Password:  pwd,
 		Email:     email,
@@ -120,7 +120,7 @@ func (srv *userService) PhoneLogin(ctx *gin.Context, phone int, verifyCode int) 
 
 	// 否则新建用户信息, 并取得用户信息
 	if u.ID == 0 {
-		u := model.UserModel{
+		u := model.UserBaseModel{
 			Phone:    phone,
 			Username: strconv.Itoa(phone),
 		}
@@ -149,7 +149,7 @@ func (srv *userService) UpdateUser(id uint64, userMap map[string]interface{}) er
 }
 
 // GetUserByID 获取单条用户信息
-func (srv *userService) GetUserByID(id uint64) (*model.UserModel, error) {
+func (srv *userService) GetUserByID(id uint64) (*model.UserBaseModel, error) {
 	userModel, err := srv.userRepo.GetUserByID(model.GetDB(), id)
 	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by id: %d", id)
@@ -217,7 +217,7 @@ func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model
 	// 并行处理
 	for _, u := range users {
 		wg.Add(1)
-		go func(u *model.UserModel) {
+		go func(u *model.UserBaseModel) {
 			defer wg.Done()
 
 			userList.Lock.Lock()
@@ -276,7 +276,7 @@ func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model
 	return infos, nil
 }
 
-func (srv *userService) GetUserByPhone(phone int) (*model.UserModel, error) {
+func (srv *userService) GetUserByPhone(phone int) (*model.UserBaseModel, error) {
 	userModel, err := srv.userRepo.GetUserByPhone(model.GetDB(), phone)
 	if err != nil || gorm.IsRecordNotFoundError(err) {
 		return userModel, errors.Wrapf(err, "get user info err from db by phone: %d", phone)
@@ -285,7 +285,7 @@ func (srv *userService) GetUserByPhone(phone int) (*model.UserModel, error) {
 	return userModel, nil
 }
 
-func (srv *userService) GetUserByEmail(email string) (*model.UserModel, error) {
+func (srv *userService) GetUserByEmail(email string) (*model.UserBaseModel, error) {
 	userModel, err := srv.userRepo.GetUserByEmail(model.GetDB(), email)
 	if err != nil || gorm.IsRecordNotFoundError(err) {
 		return userModel, errors.Wrapf(err, "get user info err from db by email: %s", email)

@@ -9,8 +9,8 @@ import (
 	validator "github.com/go-playground/validator/v10"
 )
 
-// UserModel User represents a registered user.
-type UserModel struct {
+// UserBaseModel User represents a registered user.
+type UserBaseModel struct {
 	ID        uint64    `gorm:"primary_key;AUTO_INCREMENT;column:id" json:"id"`
 	Username  string    `json:"username" gorm:"column:username;not null" binding:"required" validate:"min=1,max=32"`
 	Password  string    `json:"password" gorm:"column:password;not null" binding:"required" validate:"min=5,max=128"`
@@ -23,7 +23,7 @@ type UserModel struct {
 }
 
 // Validate the fields.
-func (u *UserModel) Validate() error {
+func (u *UserBaseModel) Validate() error {
 	validate := validator.New()
 	return validate.Struct(u)
 }
@@ -46,7 +46,7 @@ type UserInfo struct {
 }
 
 // TableName 表名
-func (u *UserModel) TableName() string {
+func (u *UserBaseModel) TableName() string {
 	return "users"
 }
 
@@ -62,13 +62,13 @@ type Token struct {
 }
 
 // Compare with the plain text password. Returns true if it's the same as the encrypted one (in the `User` struct).
-func (u *UserModel) Compare(pwd string) (err error) {
+func (u *UserBaseModel) Compare(pwd string) (err error) {
 	err = auth.Compare(u.Password, pwd)
 	return
 }
 
 // Encrypt the user password.
-func (u *UserModel) Encrypt() (err error) {
+func (u *UserBaseModel) Encrypt() (err error) {
 	u.Password, err = auth.Encrypt(u.Password)
 	return
 }

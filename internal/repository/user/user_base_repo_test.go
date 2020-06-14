@@ -6,9 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-test/deep"
-
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
+	"github.com/go-test/deep"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -52,7 +51,7 @@ func TestInit(t *testing.T) {
 }
 
 func (s *Suite) Test_repository_Create() {
-	user := model.UserModel{
+	user := model.UserBaseModel{
 		Username:  "test-name",
 		Password:  "123456",
 		Phone:     123455678,
@@ -90,7 +89,7 @@ func (s *Suite) Test_repository_GetUserByID() {
 	res, err := s.repository.GetUserByID(s.db, id)
 
 	require.NoError(s.T(), err)
-	require.Nil(s.T(), deep.Equal(&model.UserModel{ID: id, Username: username}, res))
+	require.Nil(s.T(), deep.Equal(&model.UserBaseModel{ID: id, Username: username}, res))
 }
 
 func (s *Suite) Test_repository_GetUserByPhone() {
@@ -107,7 +106,7 @@ func (s *Suite) Test_repository_GetUserByPhone() {
 	res, err := s.repository.GetUserByPhone(s.db, phone)
 
 	require.NoError(s.T(), err)
-	require.Nil(s.T(), deep.Equal(&model.UserModel{ID: id, Username: username, Phone: phone}, res))
+	require.Nil(s.T(), deep.Equal(&model.UserBaseModel{ID: id, Username: username, Phone: phone}, res))
 }
 
 func (s *Suite) Test_repository_GetUserByEmail() {
@@ -124,5 +123,5 @@ func (s *Suite) Test_repository_GetUserByEmail() {
 	res, err := s.repository.GetUserByEmail(s.db, email)
 
 	require.NoError(s.T(), err)
-	require.Nil(s.T(), deep.Equal(&model.UserModel{ID: id, Username: username, Email: email}, res))
+	require.Nil(s.T(), deep.Equal(&model.UserBaseModel{ID: id, Username: username, Email: email}, res))
 }

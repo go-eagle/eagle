@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/1024casts/snake/pkg/redis"
-
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/cache"
+	"github.com/1024casts/snake/pkg/redis"
 )
 
 const (
-	// PrefixUserCacheKey cache前缀
-	PrefixUserCacheKey = "user:cache:%d"
+	// PrefixUserBaseCacheKey cache前缀
+	PrefixUserBaseCacheKey = "user:cache:%d"
 	// DefaultExpireTime 默认过期时间
 	DefaultExpireTime = time.Hour * 24
 )
@@ -30,22 +29,22 @@ func NewUserCache() *Cache {
 	redis.Init()
 	return &Cache{
 		cache: cache.NewRedisCache(redis.Client, cachePrefix, encoding, func() interface{} {
-			return &model.UserModel{}
+			return &model.UserBaseModel{}
 		}),
 	}
 }
 
-// GetCacheKey 获取cache key
-func (u *Cache) GetCacheKey(userID uint64) string {
-	return fmt.Sprintf(cache.PrefixCacheKey+":"+PrefixUserCacheKey, userID)
+// GetUserBaseCacheKey 获取cache key
+func (u *Cache) GetUserBaseCacheKey(userID uint64) string {
+	return fmt.Sprintf(cache.PrefixCacheKey+":"+PrefixUserBaseCacheKey, userID)
 }
 
-// SetUserCache 写入用户cache
-func (u *Cache) SetUserCache(userID uint64, user *model.UserModel) error {
+// SetUserBaseCache 写入用户cache
+func (u *Cache) SetUserBaseCache(userID uint64, user *model.UserBaseModel) error {
 	if user == nil || user.ID == 0 {
 		return nil
 	}
-	cacheKey := fmt.Sprintf(PrefixUserCacheKey, userID)
+	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 	err := u.cache.Set(cacheKey, user, DefaultExpireTime)
 	if err != nil {
 		return err
@@ -53,9 +52,9 @@ func (u *Cache) SetUserCache(userID uint64, user *model.UserModel) error {
 	return nil
 }
 
-// GetUserCache 获取用户cache
-func (u *Cache) GetUserCache(userID uint64) (userModel *model.UserModel, err error) {
-	cacheKey := fmt.Sprintf(PrefixUserCacheKey, userID)
+// GetUserBaseCache 获取用户cache
+func (u *Cache) GetUserBaseCache(userID uint64) (userModel *model.UserBaseModel, err error) {
+	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 	err = u.cache.Get(cacheKey, &userModel)
 	if err != nil {
 		return userModel, err
@@ -63,16 +62,16 @@ func (u *Cache) GetUserCache(userID uint64) (userModel *model.UserModel, err err
 	return userModel, nil
 }
 
-// MultiGetUserCache 批量获取用户cache
-func (u *Cache) MultiGetUserCache(userIDs []uint64) (map[string]*model.UserModel, error) {
+// MultiGetUserBaseCache 批量获取用户cache
+func (u *Cache) MultiGetUserBaseCache(userIDs []uint64) (map[string]*model.UserBaseModel, error) {
 	var keys []string
 	for _, v := range userIDs {
-		cacheKey := fmt.Sprintf(PrefixUserCacheKey, v)
+		cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, v)
 		keys = append(keys, cacheKey)
 	}
 
 	// 需要在这里make实例化，如果在返回参数里直接定义会报 nil map
-	userMap := make(map[string]*model.UserModel)
+	userMap := make(map[string]*model.UserBaseModel)
 	err := u.cache.MultiGet(keys, userMap)
 	if err != nil {
 		return nil, err
@@ -80,9 +79,9 @@ func (u *Cache) MultiGetUserCache(userIDs []uint64) (map[string]*model.UserModel
 	return userMap, nil
 }
 
-// DelUserCache 删除用户cache
-func (u *Cache) DelUserCache(userID uint64) error {
-	cacheKey := fmt.Sprintf(PrefixUserCacheKey, userID)
+// DelUserBaseCache 删除用户cache
+func (u *Cache) DelUserBaseCache(userID uint64) error {
+	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 	err := u.cache.Del(cacheKey)
 	if err != nil {
 		return err

@@ -6,8 +6,8 @@ import (
 
 // TransferUserInput 转换输入字段
 type TransferUserInput struct {
-	CurUser  *model.UserModel
-	User     *model.UserModel
+	CurUser  *model.UserBaseModel
+	User     *model.UserBaseModel
 	UserStat *model.UserStatModel
 	IsFollow int `json:"is_follow"`
 	IsFans   int `json:"is_fans"`
