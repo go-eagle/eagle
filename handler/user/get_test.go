@@ -8,10 +8,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/testutil"
-
-	"github.com/gin-gonic/gin"
 )
 
 // see: https://rshipp.com/go-api-integration-testing/
@@ -20,7 +20,7 @@ func TestGet(t *testing.T) {
 
 	// Test body will be here!
 	// Set up a test table.
-	userTests := []model.UserModel{
+	userTests := []model.UserBaseModel{
 		{
 			ID:       12,
 			Username: "user001",
@@ -68,7 +68,7 @@ func TestGet(t *testing.T) {
 		}
 
 		// Test that the updated star is correct.
-		returnedUser := model.UserModel{}
+		returnedUser := model.UserBaseModel{}
 		if err := json.Unmarshal(data, &returnedUser); err != nil {
 			t.Errorf("Returned user is invalid JSON. Got: %s", data)
 		}
