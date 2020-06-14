@@ -11,7 +11,7 @@ import (
 
 // UserModel User represents a registered user.
 type UserModel struct {
-	ID        uint64    `gorm:"primary_key;AUTO_INCREMENT;column:id" json:"-"`
+	ID        uint64    `gorm:"primary_key;AUTO_INCREMENT;column:id" json:"id"`
 	Username  string    `json:"username" gorm:"column:username;not null" binding:"required" validate:"min=1,max=32"`
 	Password  string    `json:"password" gorm:"column:password;not null" binding:"required" validate:"min=5,max=128"`
 	Phone     int       `gorm:"column:phone" json:"phone"`
