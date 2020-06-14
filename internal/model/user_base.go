@@ -47,7 +47,7 @@ type UserInfo struct {
 
 // TableName 表名
 func (u *UserBaseModel) TableName() string {
-	return "users"
+	return "user_base"
 }
 
 // UserList 用户列表结构体

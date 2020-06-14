@@ -109,9 +109,9 @@ UNLOCK TABLES;
 # Dump of table users
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `user_base`;
 
-CREATE TABLE `users` (
+CREATE TABLE `user_base` (
      `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
      `username` varchar(255) NOT NULL DEFAULT '',
      `password` varchar(60) NOT NULL DEFAULT '',
