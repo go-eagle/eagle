@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/pkg/errors"
 
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/log"
@@ -86,13 +87,12 @@ func (repo *userFollowRepo) GetFollowByUIds(userID uint64, followingUID []uint64
 	userFollowModel := make([]*model.UserFollowModel, 0)
 	retMap := make(map[uint64]*model.UserFollowModel)
 
-	result := model.GetDB().
+	err := model.GetDB().
 		Where("user_id=? AND followed_uid in (?) ", userID, followingUID).
-		Find(&userFollowModel)
+		Find(&userFollowModel).Error
 
-	if err := result.Error; err != nil {
-		log.Warnf("[user_follow] get user follow err, %v", err)
-		return retMap, err
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return retMap, errors.Wrap(err, "[user_follow] get user follow err")
 	}
 
 	for _, v := range userFollowModel {
@@ -104,19 +104,18 @@ func (repo *userFollowRepo) GetFollowByUIds(userID uint64, followingUID []uint64
 
 // 获取自己对关注列表的被关注信息
 func (repo *userFollowRepo) GetFansByUIds(userID uint64, followerUID []uint64) (map[uint64]*model.UserFansModel, error) {
-	userFollowModel := make([]*model.UserFansModel, 0)
+	userFansModel := make([]*model.UserFansModel, 0)
 	retMap := make(map[uint64]*model.UserFansModel)
 
-	result := model.GetDB().
+	err := model.GetDB().
 		Where("user_id=? AND follower_uid in (?) ", userID, followerUID).
-		Find(&userFollowModel)
+		Find(&userFansModel).Error
 
-	if err := result.Error; err != nil {
-		log.Warnf("[user_follow] get user fans err, %v", err)
-		return retMap, err
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return retMap, errors.Wrap(err, "[user_follow] get user fans err")
 	}
 
-	for _, v := range userFollowModel {
+	for _, v := range userFansModel {
 		retMap[v.UserID] = v
 	}
 
