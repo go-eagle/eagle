@@ -15,7 +15,9 @@ func Test_redisCache_SetGet(t *testing.T) {
 	// 获取redis客户端
 	redisClient := redis2.Client
 	// 实例化redis cache
-	cache := NewRedisCache(redisClient, "unit-test", JSONEncoding{})
+	cache := NewRedisCache(redisClient, "unit-test", JSONEncoding{}, func() interface{} {
+		return new(int64)
+	})
 
 	// test set
 	type setArgs struct {
