@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -77,7 +76,7 @@ func (repo *userRepo) GetUserByID(db *gorm.DB, id uint64) (*model.UserModel, err
 
 	// 从数据库中获取
 	data := &model.UserModel{}
-	err = db.Where(&model.UserModel{ID: id}).First(&data).Error
+	err = db.Where(&model.UserModel{ID: id}).First(data).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errors.Wrap(err, "[user_repo] get user data err")
 	}
@@ -100,13 +99,11 @@ func (repo *userRepo) GetUsersByIds(db *gorm.DB, userIDs []uint64) ([]*model.Use
 	if err != nil {
 		return users, errors.Wrap(err, "[user_repo] multi get user cache data err")
 	}
-	fmt.Printf("user map: %#v", userCacheMap)
 
 	// 查询未命中
 	for _, userID := range userIDs {
 		idx := repo.userCache.GetCacheKey(userID)
 		userModel, ok := userCacheMap[idx]
-		fmt.Println("user: ", ok, userModel)
 		if !ok {
 			userModel, err = repo.GetUserByID(db, userID)
 			if err != nil {
@@ -116,7 +113,6 @@ func (repo *userRepo) GetUsersByIds(db *gorm.DB, userIDs []uint64) ([]*model.Use
 		}
 		users = append(users, userModel)
 	}
-	fmt.Printf("users: %+v", users)
 	return users, nil
 }
 
