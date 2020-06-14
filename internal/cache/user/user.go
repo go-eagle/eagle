@@ -35,7 +35,7 @@ func NewUserCache() *Cache {
 	}
 }
 
-// 获取cache key
+// GetCacheKey 获取cache key
 func (u *Cache) GetCacheKey(userID uint64) string {
 	return fmt.Sprintf(cache.PrefixCacheKey+":"+PrefixUserCacheKey, userID)
 }
