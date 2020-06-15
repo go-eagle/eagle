@@ -38,6 +38,7 @@
 ├── docs                         # Swagger 文档，执行 swag init 生成的
 ├── handler                      # 类似 MVC 架构中的 C，用来读取输入，并将处理流程转发给实际的处理函数，最后返回结果
 ├── internal                     # 业务目录
+│   ├── cache                    # 基于业务封装的cache
 │   ├── idl                      # 数据结构转换
 │   ├── model                    # 数据库 model
 │   ├── repository               # 数据访问层
