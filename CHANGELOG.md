@@ -1,5 +1,11 @@
 ## Changelog
 
+### v1.1.1
+- 新增 在internal中新增cache目录，添加用户cache,供repository层进行调用
+- 新增 写入缓存时加锁，防止缓存击穿(大量请求落到db)
+- 优化 优化日志配置，针对warn和error级别的错误支持打印错误堆栈
+- 优化 将UserModel修改为UserBaseModel
+
 ### v1.1.0
 - 新增 添加internal目录，并将idl,model,repo,service目录移至该目录
 - 新增 增加常用的时间和slice函数，并分文件进行存储
