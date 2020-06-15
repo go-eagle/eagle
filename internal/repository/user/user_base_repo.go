@@ -1,7 +1,10 @@
 package user
 
 import (
+	"fmt"
 	"time"
+
+	"github.com/1024casts/snake/pkg/redis"
 
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -74,19 +77,31 @@ func (repo *userRepo) GetUserByID(db *gorm.DB, id uint64) (*model.UserBaseModel,
 		return userModel, nil
 	}
 
-	// 从数据库中获取
+	// 加锁，防止缓存击穿
+	key := fmt.Sprintf("uid:%d", id)
+	lock := redis.NewLock(redis.Client, key, 3*time.Second)
+	token := lock.GenToken()
+
+	isLock, err := lock.Lock(token)
+	if err != nil || !isLock {
+		return nil, errors.Wrap(err, "[user_repo] lock err")
+	}
+	defer lock.Unlock(token)
+
 	data := &model.UserBaseModel{}
-	err = db.Where(&model.UserBaseModel{ID: id}).First(data).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, errors.Wrap(err, "[user_repo] get user data err")
-	}
+	if isLock {
+		// 从数据库中获取
+		err = db.Where(&model.UserBaseModel{ID: id}).First(data).Error
+		if err != nil && err != gorm.ErrRecordNotFound {
+			return nil, errors.Wrap(err, "[user_repo] get user data err")
+		}
 
-	// 写入cache
-	err = repo.userCache.SetUserBaseCache(id, data)
-	if err != nil {
-		return data, errors.Wrap(err, "[user_repo] set user data err")
+		// 写入cache
+		err = repo.userCache.SetUserBaseCache(id, data)
+		if err != nil {
+			return data, errors.Wrap(err, "[user_repo] set user data err")
+		}
 	}
-
 	return data, nil
 }
 
