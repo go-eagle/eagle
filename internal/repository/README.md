@@ -13,19 +13,19 @@ Repository或者叫DAO，是数据访问层，负责访问 DB、MC、外部 HTTP
 
 建议：
  - 推荐使用编写原生SQL
- - 数使用连表查询，好处是易扩展，比如分库分表
+ - 禁止使用连表查询，好处是易扩展，比如分库分表
  - 逻辑部分在程序中进行处理
  
  一个业务一个目录，每一个repo go文件对应一个表操作，比如用户是在user目录下，涉及用户相关的都可以放到这里，  
  根据不同的模块分离到不同的文件，同时又避免了单个文件func太多的问题。比如：
-  - 用户基础服务- user_repo.go
+  - 用户基础服务- user_base_repo.go
   - 用户关注- user_follow_repo.go
   - 用户喜欢- user_like_repo.go
   - 用户评论- user_comment_repo.go
 
 ## 单元测试
 
-关于数据库的单元测试可以使用到的几个库：
+关于数据库的单元测试可以用到的几个库：
  - go-sqlmock https://github.com/DATA-DOG/go-sqlmock 主要用来和数据库的交互操作:增删改
  - GoMock https://github.com/golang/mock
 
