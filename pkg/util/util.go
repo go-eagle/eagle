@@ -6,6 +6,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"io"
+	"regexp"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -77,4 +78,14 @@ func Md5(str string) (string, error) {
 
 	// 注意：这里不能使用string将[]byte转为字符串，否则会显示乱码
 	return fmt.Sprintf("%x", h.Sum(nil)), nil
+}
+
+// RegexpReplace ...
+func RegexpReplace(reg, src, temp string) string {
+	result := []byte{}
+	pattern := regexp.MustCompile(reg)
+	for _, submatches := range pattern.FindAllStringSubmatchIndex(src, -1) {
+		result = pattern.ExpandString(result, temp, src, submatches)
+	}
+	return string(result)
 }
