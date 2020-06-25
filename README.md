@@ -32,18 +32,20 @@
 
 ```shell
 ├── Makefile                     # 项目管理文件
+├── build                        # 编译目录
+├── cmd                          # 脚手架目录
 ├── conf                         # 配置文件统一存放目录
 ├── config                       # 专门用来处理配置和配置文件的 Go package
 ├── db.sql                       # 在部署新环境时，可以登录 MySQL 客户端，执行 source db.sql 创建数据库和表
 ├── docs                         # Swagger 文档，执行 swag init 生成的
-├── handler                      # 类似 MVC 架构中的 C，用来读取输入，并将处理流程转发给实际的处理函数，最后返回结果
+├── handler                      # 控制器目录，用来读取输入、调用业务处理、返回结果
 ├── internal                     # 业务目录
 │   ├── cache                    # 基于业务封装的cache
 │   ├── idl                      # 数据结构转换
 │   ├── model                    # 数据库 model
 │   ├── repository               # 数据访问层
-│   └── service                  # 业务逻辑封装
-├── log                          # 存放日志的目录
+│   └── service                  # 业务逻辑层
+├── logs                         # 存放日志的目录
 ├── main.go                      # 项目入口文件
 ├── pkg                          # 一些封装好的 package
 ├── router                       # 路由及中间件目录
