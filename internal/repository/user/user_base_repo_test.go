@@ -20,7 +20,7 @@ type Suite struct {
 	db   *gorm.DB
 	mock sqlmock.Sqlmock
 
-	repository Repo
+	repository BaseRepo
 }
 
 func (s *Suite) SetupSuite() {
