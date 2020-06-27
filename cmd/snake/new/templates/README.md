@@ -28,11 +28,10 @@ export GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
 go get -u -v github.com/1024casts/snake/cmd/snake
 ```
 
-windows 用户:
+windows:
  会在 `${GOPATH}/src/bin` 目录下生成 `snake.exe` 文件,若想方便的在任何地方使用 `snake` 命令,请将该 命令配置在系统的环境变量中
-Linux 用户:
-Mac 用户 :
-直接使用
+Linux、Mac:
+可以直接使用 `snake`
 
 ## 使用方式
 
