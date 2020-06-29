@@ -1,4 +1,6 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
+github.com/1024casts/snake/cmd/snake v0.0.0-20200627132654-9c5f6130fe27 h1:jDydUoZJeJ1CiWACEOryzf84TnF+b7uGizmy8VDehEs=
+github.com/1024casts/snake/cmd/snake v0.0.0-20200627132654-9c5f6130fe27/go.mod h1:4opCP0IAdAfZ+GiVqMXjt0N+aRGSgyrnwtbwH8ZNiVA=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/DATA-DOG/go-sqlmock v1.3.3 h1:CWUqKXe0s8A2z6qCgkP4Kru7wC11YoAnoupUKFDnH08=
