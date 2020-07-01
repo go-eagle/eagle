@@ -61,6 +61,10 @@ git clone https://github.com/1024casts/snake
 
 ## 🛠️ 快速开始
 
+### 方式一
+
+直接Clone项目的方式，文件比较全
+
 TIPS: 需要本地安装MySQL数据库和 Redis
 
 ```bash
@@ -75,6 +79,21 @@ make build
 
 # 运行
 ./scripts/admin.sh start
+```
+
+### 方式二
+
+仅生成项目骨架
+
+```bash
+# 下载
+go get github.com/1024casts/snake/cmd/snake
+
+cd $GOPATH/src
+# 使用
+snake new snake-demo -d ./
+# 或者 
+snake new github.com/foo/bar -d ./
 ```
 
 ## 💻 常用命令
