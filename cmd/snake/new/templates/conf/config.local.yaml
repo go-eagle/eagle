@@ -11,9 +11,9 @@ tls:
 log:
   writers: file,stdout
   logger_level: DEBUG
-  logger_file: /data/logs/snake.log
-  logger_warn_file: /data/logs/snake.wf.log
-  logger_error_file: /data/logs/snake.err.log
+  logger_file: /data/log/snake.log
+  logger_warn_file: /data/log/snake.wf.log
+  logger_error_file: /data/log/snake.err.log
   log_format_text: true
   log_rolling_policy: daily
   log_rotate_date: 1
