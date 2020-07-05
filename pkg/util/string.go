@@ -1,6 +1,18 @@
 package util
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
+
+// IsEmpty 是否是空字符串
+func IsEmpty(s string) bool {
+	if s == "" {
+		return true
+	}
+
+	return strings.TrimSpace(s) == ""
+}
 
 // StringToUint64 字符串转uint64
 func StringToUint64(str string) (uint64, error) {
