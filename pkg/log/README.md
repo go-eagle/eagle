@@ -35,3 +35,4 @@ log.Warnf("params is empty")
  - [Logger interface for GO with zap and logrus implementation](https://www.mountedthoughts.com/golang-logger-interface/)
  - https://github.com/wzyonggege/logger
  - https://wisp888.github.io/golang-iris-%E5%AD%A6%E4%B9%A0%E4%BA%94-zap%E6%97%A5%E5%BF%97.html
+ - https://www.mountedthoughts.com/golang-logger-interface/
