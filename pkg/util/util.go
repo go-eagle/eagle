@@ -6,10 +6,12 @@ import (
 	"encoding/gob"
 	"fmt"
 	"io"
+	"math/rand"
 	"net"
 	"regexp"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -80,6 +82,22 @@ func Md5(str string) (string, error) {
 
 	// 注意：这里不能使用string将[]byte转为字符串，否则会显示乱码
 	return fmt.Sprintf("%x", h.Sum(nil)), nil
+}
+
+// RandomStr 随机字符串
+func RandomStr(n int) string {
+	var r = rand.New(rand.NewSource(time.Now().UnixNano()))
+	const pattern = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz"
+
+	salt := make([]byte, 0, n)
+	l := len(pattern)
+
+	for i := 0; i < n; i++ {
+		p := r.Intn(l)
+		salt = append(salt, pattern[p])
+	}
+
+	return string(salt)
 }
 
 // RegexpReplace ...

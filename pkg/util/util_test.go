@@ -33,3 +33,8 @@ func BenchmarkGenShortIDTimeConsuming(b *testing.B) {
 		GenShortID()
 	}
 }
+
+func TestRandomStr(t *testing.T) {
+	test := RandomStr(8)
+	t.Log(test)
+}
