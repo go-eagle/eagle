@@ -119,6 +119,9 @@ func Panicf(format string, args ...interface{}) {
 }
 
 // WithFields logger
+// output more field, eg:
+// 		contextLogger := log.WithFields(log.Fields{"key1": "value1"})
+// 		contextLogger.Info("print multi field")
 func WithFields(keyValues Fields) Logger {
 	return log.WithFields(keyValues)
 }
