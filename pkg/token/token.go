@@ -88,13 +88,13 @@ func Sign(ctx *gin.Context, c Context, secret string) (tokenString string, err e
 	}
 
 	// The token content.
-	//iss: （Issuer）签发者
-	//iat: （Issued At）签发时间，用Unix时间戳表示
-	//exp: （Expiration Time）过期时间，用Unix时间戳表示
-	//aud: （Audience）接收该JWT的一方
-	//sub: （Subject）该JWT的主题
-	//nbf: （Not Before）不要早于这个时间
-	//jti: （JWT ID）用于标识JWT的唯一ID
+	// iss: （Issuer）签发者
+	// iat: （Issued At）签发时间，用Unix时间戳表示
+	// exp: （Expiration Time）过期时间，用Unix时间戳表示
+	// aud: （Audience）接收该JWT的一方
+	// sub: （Subject）该JWT的主题
+	// nbf: （Not Before）不要早于这个时间
+	// jti: （JWT ID）用于标识JWT的唯一ID
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id":  c.UserID,
 		"username": c.Username,
