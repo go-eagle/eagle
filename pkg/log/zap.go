@@ -194,7 +194,7 @@ func (l *zapLogger) Fatalf(format string, args ...interface{}) {
 }
 
 func (l *zapLogger) Panicf(format string, args ...interface{}) {
-	l.sugaredLogger.Fatalf(format, args...)
+	l.sugaredLogger.Panicf(format, args...)
 }
 
 func (l *zapLogger) WithFields(fields Fields) Logger {
