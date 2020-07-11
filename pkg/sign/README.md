@@ -53,10 +53,10 @@ sign.Verifier 工具类，用来校验签名参数的格式和时间戳。它与
 ### Usage
 
 ```go
-requestUri := "/restful/api/numbers?appid=9d8a121ce581499d&nonce_str=ibuaiVcKdpRxkhJA&plate_number=豫A66666" +
+requestUri := "/restful/api/numbers?app_id=9d8a121ce581499d&nonce_str=ibuaiVcKdpRxkhJA&plate_number=豫A66666" +
 		"&time_stamp=1532585241&sign=072defd1a251dc58e4d1799e17ffe7a4"
 
-	// 第一步：创建GoVerifier校验类
+	// 第一步：创建Verifier校验类
 	verifier := NewVerifier()
 
 	// 假定从RequestUri中读取校验参数
@@ -79,14 +79,14 @@ requestUri := "/restful/api/numbers?appid=9d8a121ce581499d&nonce_str=ibuaiVcKdpR
 		t.Fatal(err)
 	}
 
-	// 第四步: 创建GoSigner来重现客户端的签名信息
-	signer := NewGoSignerMd5()
+	// 第四步: 创建Signer来重现客户端的签名信息
+	signer := NewSignerMd5()
 
-	// 第五步：从GoVerifier中读取所有请求参数
+	// 第五步：从Verifier中读取所有请求参数
 	signer.SetBody(verifier.GetBodyWithoutSign())
 
 	// 第六步：从数据库读取AppID对应的SecretKey
-	// appid := verifier.GetAppId()
+	// appId := verifier.GetAppId()
 	secretKey := "123abc456"
 
 	// 使用同样的WrapBody方式

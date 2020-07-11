@@ -1,65 +1,41 @@
 package sign
 
 const (
-	KeyNameTimeStamp = "time_stamp"
+	KeyNameTimeStamp = "timestamp"
 	KeyNameNonceStr  = "nonce_str"
 	KeyNameAppId     = "app_id"
 	KeyNameSign      = "sign"
 )
 
-var (
-	gKeyNameTimestamp = KeyNameTimeStamp
-	gKeyNameNonceStr  = KeyNameNonceStr
-	gKeyNameAppId     = KeyNameAppId
-	gKeyNameSign      = KeyNameSign
-)
-
-func SetKeyNameTimestamp(name string) {
-	gKeyNameTimestamp = name
-}
-
-func SetKeyNameNonceStr(name string) {
-	gKeyNameNonceStr = name
-}
-
-func SetKeyNameAppId(name string) {
-	gKeyNameAppId = name
-}
-
-func SetKeyNameSign(name string) {
-	gKeyNameSign = name
-}
-
-////
-
+// DefaultKeyName 签名需要用到的字段
 type DefaultKeyName struct {
-	keyNameTimestamp string
-	keyNameNonceStr  string
-	keyNameAppId     string
-	keyNameSign      string
+	Timestamp string
+	NonceStr  string
+	AppId     string
+	Sign      string
 }
 
 func newDefaultKeyName() *DefaultKeyName {
 	return &DefaultKeyName{
-		keyNameTimestamp: gKeyNameTimestamp,
-		keyNameNonceStr:  gKeyNameNonceStr,
-		keyNameAppId:     gKeyNameAppId,
-		keyNameSign:      gKeyNameSign,
+		Timestamp: KeyNameTimeStamp,
+		NonceStr:  KeyNameNonceStr,
+		AppId:     KeyNameAppId,
+		Sign:      KeyNameSign,
 	}
 }
 
 func (d *DefaultKeyName) SetKeyNameTimestamp(name string) {
-	d.keyNameTimestamp = name
+	d.Timestamp = name
 }
 
 func (d *DefaultKeyName) SetKeyNameNonceStr(name string) {
-	d.keyNameNonceStr = name
+	d.NonceStr = name
 }
 
 func (d *DefaultKeyName) SetKeyNameAppId(name string) {
-	d.keyNameAppId = name
+	d.AppId = name
 }
 
 func (d *DefaultKeyName) SetKeyNameSign(name string) {
-	d.keyNameSign = name
+	d.Sign = name
 }

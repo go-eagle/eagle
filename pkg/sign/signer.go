@@ -72,31 +72,31 @@ func (s *Signer) AddBodies(key string, value []string) *Signer {
 
 // SetTimeStamp 设置时间戳参数
 func (s *Signer) SetTimeStamp(ts int64) *Signer {
-	return s.AddBody(s.keyNameTimestamp, strconv.FormatInt(ts, 10))
+	return s.AddBody(s.Timestamp, strconv.FormatInt(ts, 10))
 }
 
 // GetTimeStamp 获取TimeStamp
 func (s *Signer) GetTimeStamp() string {
-	return s.body.Get(s.keyNameTimestamp)
+	return s.body.Get(s.Timestamp)
 }
 
 // SetNonceStr 设置随机字符串参数
 func (s *Signer) SetNonceStr(nonce string) *Signer {
-	return s.AddBody(s.keyNameNonceStr, nonce)
+	return s.AddBody(s.NonceStr, nonce)
 }
 
 // GetNonceStr 返回NonceStr字符串
 func (s *Signer) GetNonceStr() string {
-	return s.body.Get(s.keyNameNonceStr)
+	return s.body.Get(s.NonceStr)
 }
 
 // SetAppId 设置AppId参数
 func (s *Signer) SetAppId(appId string) *Signer {
-	return s.AddBody(s.keyNameAppId, appId)
+	return s.AddBody(s.AppId, appId)
 }
 
 func (s *Signer) GetAppId() string {
-	return s.body.Get(s.keyNameAppId)
+	return s.body.Get(s.AppId)
 }
 
 // RandNonceStr 自动生成16位随机字符串参数
@@ -145,7 +145,7 @@ func (s *Signer) MakeRawBodyString() string {
 	return s.bodyPrefix + s.splitChar + s.getSortedBodyString() + s.splitChar + s.bodySuffix
 }
 
-// GetSignedQuery 获取带签名参数的字符串
+// GetSignedQuery 获取带签名参数的查询字符串
 func (s *Signer) GetSignedQuery() string {
 	return s.MakeSignedQuery()
 }
@@ -154,7 +154,7 @@ func (s *Signer) GetSignedQuery() string {
 func (s *Signer) MakeSignedQuery() string {
 	body := s.getSortedBodyString()
 	sign := s.GetSignature()
-	return body + "&" + s.keyNameSign + "=" + sign
+	return body + "&" + s.Sign + "=" + sign
 }
 
 // GetSignature 获取签名
@@ -171,8 +171,6 @@ func (s *Signer) MakeSign() string {
 func (s *Signer) getSortedBodyString() string {
 	return SortKVPairs(s.body)
 }
-
-////
 
 // SortKVPairs 将Map的键值对，按字典顺序拼接成字符串
 func SortKVPairs(m url.Values) string {
