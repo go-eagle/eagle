@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/1024casts/snake/pkg/errno"
-
 	"github.com/gin-gonic/gin"
+
+	"github.com/1024casts/snake/pkg/errno"
 )
 
 // Response api的返回结构体
