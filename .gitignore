@@ -38,6 +38,8 @@ cover.out
 .idea
 .idea/*
 
+vendor
+
 # custom
 snake
 conf/config.yaml
