@@ -15,7 +15,6 @@ require (
 	github.com/go-redis/redis v6.15.8+incompatible
 	github.com/go-resty/resty/v2 v2.2.0
 	github.com/go-test/deep v1.0.6
-	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/golang/snappy v0.0.1
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/google/uuid v1.1.1
@@ -41,7 +40,6 @@ require (
 	github.com/tebeka/strftime v0.1.4 // indirect
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
 	github.com/toolkits/net v0.0.0-20160910085801-3f39ab6fe3ce
-	github.com/urfave/cli v1.20.0
 	github.com/vmihailenco/msgpack v4.0.4+incompatible
 	github.com/willf/pad v0.0.0-20190207183901-eccfe5d84172
 	github.com/yuin/gopher-lua v0.0.0-20191220021717-ab39c6098bdb // indirect
