@@ -8,7 +8,7 @@ Repository是DDD中的概念，强调Repository是受Domain(本项目主要是Se
 
 具体职责有：
  - SQL 拼接和 DB 访问逻辑
- - DB 的拆库折表逻辑
+ - DB 的拆库分表逻辑
  - DB 的缓存读写逻辑
  - HTTP 接口调用逻辑
 
