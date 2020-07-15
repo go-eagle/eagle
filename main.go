@@ -105,7 +105,6 @@ func main() {
 	}()
 
 	schedule.Init()
-	email.Init()
 
 	gracefulStop(srv)
 }
