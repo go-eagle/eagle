@@ -5,6 +5,7 @@
  - 面向接口编程
  - 依赖接口，不要依赖实现
  - 如果有事务处理，在这一层进行处理
+ - 如果是调用的第三方服务，请不要加cache, 避免缓存不一致(对方更新数据，这边无法知晓)
  
  ## Reference
  - https://github.com/qiangxue/go-rest-api
