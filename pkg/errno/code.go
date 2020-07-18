@@ -7,6 +7,7 @@ var (
 	InternalServerError = &Errno{Code: 10001, Message: "Internal server error"}
 	ErrBind             = &Errno{Code: 10002, Message: "Error occurred while binding the request body to the struct."}
 	ErrParam            = &Errno{Code: 10003, Message: "参数有误"}
+	ErrSignParam        = &Errno{Code: 10004, Message: "签名参数有误"}
 
 	ErrValidation         = &Errno{Code: 20001, Message: "Validation failed."}
 	ErrDatabase           = &Errno{Code: 20002, Message: "Database error."}
