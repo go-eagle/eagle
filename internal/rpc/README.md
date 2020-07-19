@@ -1,10 +1,19 @@
 ## rpc
 
-接口定义层，基于 protobuf 严格定义 RPC 接口路由、参数和文档。
+RPC client 接口定义层，基于 protobuf 严格定义 RPC 接口路由、参数和文档。
 
 ## 准备
 
 - 安装 protoc 编译器
+
+```bash
+$ PB_REL="https://github.com/protocolbuffers/protobuf/releases"
+$ curl -LO $PB_REL/download/v3.12.1/protoc-3.12.1-linux-x86_64.zip
+
+$ unzip protoc-3.12.1-linux-x86_64.zip -d /usr/local
+
+$ export PATH="$PATH:/usr/local/bin"
+```
 
 ## 目录结构
 
@@ -25,7 +34,7 @@ rpc/user # 业务服务
 
 服务接口使用 protobuf 描述。
 
-```go
+```proto
 syntax = "proto3";
 
 package user.v0; // 包名，与目录保持一致
@@ -96,7 +105,7 @@ go run cmd/snake/main.go rpc --server=foo --service=echo
 
 会自动生成
 
-```go
+```bash
 rpc
 └── foo
     └── v1
