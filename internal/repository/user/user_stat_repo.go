@@ -10,7 +10,7 @@ import (
 	"github.com/1024casts/snake/internal/model"
 )
 
-// Repo 定义用户仓库接口
+// StatRepo 定义用户仓库接口
 type StatRepo interface {
 	IncrFollowCount(db *gorm.DB, userID uint64, step int) error
 	IncrFollowerCount(db *gorm.DB, userID uint64, step int) error
@@ -23,7 +23,7 @@ type userStatRepo struct {
 	userCache *user.Cache
 }
 
-// NewUserRepo 实例化用户仓库
+// NewUserStatRepo 实例化用户仓库
 func NewUserStatRepo() StatRepo {
 	return &userStatRepo{
 		userCache: user.NewUserCache(),

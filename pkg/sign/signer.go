@@ -13,7 +13,7 @@ import (
 // CryptoFunc 签名加密函数
 type CryptoFunc func(secretKey string, args string) []byte
 
-// Signer
+// Signer define
 type Signer struct {
 	*DefaultKeyName
 
@@ -26,7 +26,7 @@ type Signer struct {
 	cryptoFunc CryptoFunc
 }
 
-// NewSigner
+// NewSigner 实例化 Signer
 func NewSigner(cryptoFunc CryptoFunc) *Signer {
 	return &Signer{
 		DefaultKeyName: newDefaultKeyName(),
@@ -65,6 +65,7 @@ func (s *Signer) AddBody(key string, value string) *Signer {
 	return s.AddBodies(key, []string{value})
 }
 
+// AddBodies add value to body
 func (s *Signer) AddBodies(key string, value []string) *Signer {
 	s.body[key] = value
 	return s
@@ -90,13 +91,14 @@ func (s *Signer) GetNonceStr() string {
 	return s.body.Get(s.NonceStr)
 }
 
-// SetAppId 设置AppId参数
-func (s *Signer) SetAppId(appId string) *Signer {
-	return s.AddBody(s.AppId, appId)
+// SetAppID 设置AppId参数
+func (s *Signer) SetAppID(appID string) *Signer {
+	return s.AddBody(s.AppID, appID)
 }
 
-func (s *Signer) GetAppId() string {
-	return s.body.Get(s.AppId)
+// GetAppID get app id
+func (s *Signer) GetAppID() string {
+	return s.body.Get(s.AppID)
 }
 
 // RandNonceStr 自动生成16位随机字符串参数
@@ -116,7 +118,7 @@ func (s *Signer) SetSignBodySuffix(suffix string) *Signer {
 	return s
 }
 
-// SetSplitChar设置前缀、后缀与签名体之间的分隔符号。默认为空字符串
+// SetSplitChar 设置前缀、后缀与签名体之间的分隔符号。默认为空字符串
 func (s *Signer) SetSplitChar(split string) *Signer {
 	s.splitChar = split
 	return s
@@ -162,7 +164,7 @@ func (s *Signer) GetSignature() string {
 	return s.MakeSign()
 }
 
-// GetSignature 获取签名
+// MakeSign 生成签名
 func (s *Signer) MakeSign() string {
 	sign := fmt.Sprintf("%x", s.cryptoFunc(s.secretKey, s.GetSignBodyString()))
 	return sign

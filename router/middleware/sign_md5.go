@@ -62,7 +62,7 @@ func verifySign(c *gin.Context) (map[string]string, error) {
 func genSign() string {
 	// todo: 读取配置
 	signer := sign.NewSignerMd5()
-	signer.SetAppId("123456")
+	signer.SetAppID("123456")
 	signer.SetTimeStamp(time.Now().Unix())
 	signer.SetNonceStr("supertempstr")
 	signer.SetAppSecretWrapBody("20200711")

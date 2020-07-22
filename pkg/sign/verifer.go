@@ -1,7 +1,6 @@
 package sign
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -10,6 +9,7 @@ import (
 	"github.com/1024casts/snake/pkg/util"
 )
 
+// Verifier define struct
 type Verifier struct {
 	*DefaultKeyName
 	body url.Values
@@ -17,6 +17,7 @@ type Verifier struct {
 	timeout time.Duration // 签名过期时间
 }
 
+// NewVerifier 实例化 Verifier
 func NewVerifier() *Verifier {
 	return &Verifier{
 		DefaultKeyName: newDefaultKeyName(),
@@ -55,11 +56,11 @@ func (v *Verifier) SetTimeout(timeout time.Duration) *Verifier {
 
 // MustString 获取字符串值
 func (v *Verifier) MustString(key string) string {
-	if ss := v.MustStrings(key); len(ss) == 0 {
+	ss := v.MustStrings(key)
+	if len(ss) == 0 {
 		return ""
-	} else {
-		return ss[0]
 	}
+	return ss[0]
 }
 
 // MustString 获取字符串值数组
@@ -77,7 +78,7 @@ func (v *Verifier) MustInt64(key string) int64 {
 func (v *Verifier) MustHasKeys(keys ...string) error {
 	for _, key := range keys {
 		if _, hit := v.body[key]; !hit {
-			return errors.New(fmt.Sprintf("KEY_MISSED:<%s>", key))
+			return fmt.Errorf("KEY_MISSED:<%s>", key)
 		}
 	}
 	return nil
@@ -85,35 +86,39 @@ func (v *Verifier) MustHasKeys(keys ...string) error {
 
 // MustHasKeys 必须包含除特定的[timestamp, nonce_str, sign, app_id]等之外的指定的字段参数
 func (v *Verifier) MustHasOtherKeys(keys ...string) error {
-	fields := []string{v.Timestamp, v.NonceStr, v.Sign, v.AppId}
+	fields := []string{v.Timestamp, v.NonceStr, v.Sign, v.AppID}
 	if len(keys) > 0 {
 		fields = append(fields, keys...)
 	}
 	return v.MustHasKeys(fields...)
 }
 
-// 检查时间戳有效期
+// CheckTimeStamp 检查时间戳有效期
 func (v *Verifier) CheckTimeStamp() error {
 	timestamp := v.GetTimestamp()
 	thatTime := time.Unix(timestamp, 0)
-	if time.Now().Sub(thatTime) > v.timeout {
-		return errors.New(fmt.Sprintf("TIMESTAMP_TIMEOUT:<%d>", timestamp))
+	if time.Since(thatTime) > v.timeout {
+		return fmt.Errorf("TIMESTAMP_TIMEOUT:<%d>", timestamp)
 	}
 	return nil
 }
 
-func (v *Verifier) GetAppId() string {
-	return v.MustString(v.AppId)
+// GetAppID 获取app id
+func (v *Verifier) GetAppID() string {
+	return v.MustString(v.AppID)
 }
 
+// GetNonceStr 获取随机字符串
 func (v *Verifier) GetNonceStr() string {
 	return v.MustString(v.NonceStr)
 }
 
+// GetSign 获取签名
 func (v *Verifier) GetSign() string {
 	return v.MustString(v.Sign)
 }
 
+// GetTimestamp 获取时间戳
 func (v *Verifier) GetTimestamp() int64 {
 	return v.MustInt64(v.Timestamp)
 }
@@ -129,6 +134,7 @@ func (v *Verifier) GetBodyWithoutSign() url.Values {
 	return out
 }
 
+// GetBody 获取body
 func (v *Verifier) GetBody() url.Values {
 	out := make(url.Values)
 	for k, val := range v.body {

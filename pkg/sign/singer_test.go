@@ -8,7 +8,7 @@ import (
 
 func TestSignMd5(t *testing.T) {
 	signer := NewSignerMd5()
-	signer.SetAppId("123456")
+	signer.SetAppID("123456")
 	signer.SetTimeStamp(1594458195)
 	signer.SetNonceStr("supertempstr")
 	signer.AddBody("city", "beijing")
@@ -23,7 +23,6 @@ func TestSignMd5(t *testing.T) {
 }
 
 func TestSigner_AddBody(t *testing.T) {
-
 	body := make(url.Values)
 	body["username"] = []string{"1024casts"}
 	body["tags"] = []string{"github", "gopher"}
@@ -31,14 +30,14 @@ func TestSigner_AddBody(t *testing.T) {
 	signer := NewSignerHmac()
 	signer.SetAppSecret("20200711")
 	signer.SetTimeStamp(1594458195)
-	signer.SetAppId("112233")
+	signer.SetAppID("112233")
 	signer.SetNonceStr("supertempstr")
 	for k, v := range body {
 		signer.AddBodies(k, v)
 	}
 
 	body.Add(KeyNameTimeStamp, "1594458195")
-	body.Add(KeyNameAppId, "snake")
+	body.Add(KeyNameAppID, "snake")
 	body.Add(KeyNameNonceStr, "snake_nonce")
 
 	fmt.Println("生成签字字符串：" + signer.GetSignBodyString())

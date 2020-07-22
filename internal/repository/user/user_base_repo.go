@@ -14,7 +14,7 @@ import (
 	"github.com/1024casts/snake/pkg/log"
 )
 
-// Repo 定义用户仓库接口
+// BaseRepo 定义用户仓库接口
 type BaseRepo interface {
 	Create(db *gorm.DB, user model.UserBaseModel) (id uint64, err error)
 	Update(db *gorm.DB, id uint64, userMap map[string]interface{}) error
