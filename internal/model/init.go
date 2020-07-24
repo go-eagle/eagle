@@ -61,7 +61,7 @@ func setupDB(db *gorm.DB) {
 	db.DB().SetMaxOpenConns(viper.GetInt("grom.max_open_conn"))
 	// 用于设置闲置的连接数.设置闲置的连接数则当开启的一个连接使用完成后可以放在池里等候下一次使用。
 	db.DB().SetMaxIdleConns(viper.GetInt("grom.max_idle_conn"))
-	db.DB().SetConnMaxLifetime(time.Minute * viper.GetDuration("grom.conn_max_lift_time"))
+	db.DB().SetConnMaxLifetime(time.Minute * viper.GetDuration("grom.conn_max_life_time"))
 }
 
 // GetDB 返回默认的数据库
