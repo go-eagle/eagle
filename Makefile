@@ -2,7 +2,7 @@ SHELL := /bin/bash
 BASEDIR = $(shell pwd)
 
 # build with verison infos
-versionDir = "snake/pkg/version"
+versionDir = "github.com/1024casts/snake/pkg/version"
 gitTag = $(shell if [ "`git describe --tags --abbrev=0 2>/dev/null`" != "" ];then git describe --tags --abbrev=0; else git log --pretty=format:'%h' -n 1; fi)
 buildDate = $(shell TZ=Asia/Shanghai date +%FT%T%z)
 gitCommit = $(shell git log --pretty=format:'%H' -n 1)
@@ -16,7 +16,7 @@ PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
 
 all: build
-build: dep ## Build the binary file
+build: ## Build the binary file
 	@go build -v -ldflags ${ldflags} .
 clean:
 	rm -f snake
@@ -51,6 +51,6 @@ help:
 	@echo "make ca - generate ca files"
 	@echo "make swag-init - gen swag doc"
 
-.PHONY: clean gotool ca help
+.PHONY: all build clean gotool ca help
 
 
