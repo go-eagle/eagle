@@ -118,7 +118,7 @@ func getJSONEncoder() zapcore.Encoder {
 		EncodeTime:     zapcore.ISO8601TimeEncoder,
 		NameKey:        "app",
 		CallerKey:      "file",
-		StacktraceKey:  "stacktrace",
+		StacktraceKey:  "trace",
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 		EncodeLevel:    zapcore.LowercaseLevelEncoder,
 		EncodeDuration: zapcore.MillisDurationEncoder,
