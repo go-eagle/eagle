@@ -9,26 +9,19 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"os"
-	"os/signal"
-	"syscall"
-	"time"
+
+	"github.com/1024casts/snake/pkg/config"
+	"github.com/1024casts/snake/pkg/snake"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
-	"github.com/1024casts/snake/config"
 	"github.com/1024casts/snake/handler"
-	"github.com/1024casts/snake/internal/model"
-	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/pkg/redis"
-	"github.com/1024casts/snake/pkg/schedule"
 	v "github.com/1024casts/snake/pkg/version"
 	routers "github.com/1024casts/snake/router"
 )
@@ -63,22 +56,19 @@ func main() {
 	}
 
 	// init config
-	if err := config.Init(*cfg); err != nil {
+	conf, err := config.InitConfig(*cfg)
+	if err != nil {
 		panic(err)
 	}
 
-	// init db
-	model.DB.Init()
-	defer model.DB.Close()
-
-	// init redis
-	redis.Init()
+	// init app
+	app := snake.New(conf)
 
 	// Set gin mode.
 	gin.SetMode(viper.GetString("run_mode"))
 
 	// Create the Gin engine.
-	router := gin.Default()
+	router := app.Router
 
 	// HealthCheck 健康检查路由
 	router.GET("/health", handler.HealthCheck)
@@ -88,45 +78,6 @@ func main() {
 	// API Routes.
 	routers.Load(router)
 
-	log.Infof("Start to listening the incoming requests on http address: %s", viper.GetString("addr"))
-	srv := &http.Server{
-		Addr:    viper.GetString("addr"),
-		Handler: router,
-	}
-	go func() {
-		// service connections
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s", err.Error())
-		}
-	}()
-
-	schedule.Init()
-
-	gracefulStop(srv)
-}
-
-// gracefulStop 优雅退出
-// 等待中断信号以超时 5 秒正常关闭服务器
-// 官方说明：https://github.com/gin-gonic/gin#graceful-restart-or-stop
-func gracefulStop(srv *http.Server) {
-	quit := make(chan os.Signal)
-	// kill 命令发送信号 syscall.SIGTERM
-	// kill -2 命令发送信号 syscall.SIGINT
-	// kill -9 命令发送信号 syscall.SIGKILL
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	log.Info("Shutdown Server ...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server Shutdown:", err)
-	}
-	// 5 秒后捕获 ctx.Done() 信号
-	select {
-	case <-ctx.Done():
-		log.Info("timeout of 5 seconds.")
-	default:
-	}
-	log.Info("Server exiting")
+	// start server
+	app.Run()
 }
