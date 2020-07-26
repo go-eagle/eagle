@@ -55,7 +55,7 @@ var Svc = NewUserService()
 type userService struct {
 	userRepo       user.BaseRepo
 	userFollowRepo user.FollowRepo
-	userStat       user.StatRepo
+	userStatRepo   user.StatRepo
 }
 
 // NewUserService 实例化一个userService
@@ -65,6 +65,7 @@ func NewUserService() Service {
 	return &userService{
 		userRepo:       user.NewUserRepo(),
 		userFollowRepo: user.NewUserFollowRepo(),
+		userStatRepo:   user.NewUserStatRepo(),
 	}
 }
 
@@ -210,7 +211,7 @@ func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model
 	}
 
 	// 获取用户统计
-	userStatMap, err := srv.userStat.GetUserStatByIDs(model.GetDB(), userIDs)
+	userStatMap, err := srv.userStatRepo.GetUserStatByIDs(model.GetDB(), userIDs)
 	if err != nil {
 		errChan <- err
 	}
@@ -349,14 +350,14 @@ func (srv *userService) AddUserFollow(userID uint64, followedUID uint64) error {
 	}
 
 	// 添加关注数
-	err = srv.userStat.IncrFollowCount(tx, userID, 1)
+	err = srv.userStatRepo.IncrFollowCount(tx, userID, 1)
 	if err != nil {
 		tx.Rollback()
 		return errors.Wrap(err, "update user follow count err")
 	}
 
 	// 添加粉丝数
-	err = srv.userStat.IncrFollowerCount(tx, followedUID, 1)
+	err = srv.userStatRepo.IncrFollowerCount(tx, followedUID, 1)
 	if err != nil {
 		return errors.Wrap(err, "update user fans count err")
 	}
@@ -395,14 +396,14 @@ func (srv *userService) CancelUserFollow(userID uint64, followedUID uint64) erro
 	}
 
 	// 减少关注数
-	err = srv.userStat.IncrFollowCount(tx, userID, -1)
+	err = srv.userStatRepo.IncrFollowCount(tx, userID, -1)
 	if err != nil {
 		tx.Rollback()
 		return errors.Wrap(err, "update user follow count err")
 	}
 
 	// 减少粉丝数
-	err = srv.userStat.IncrFollowerCount(tx, followedUID, -1)
+	err = srv.userStatRepo.IncrFollowerCount(tx, followedUID, -1)
 	if err != nil {
 		tx.Rollback()
 		return errors.Wrap(err, "update user fans count err")
