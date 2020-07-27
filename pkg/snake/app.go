@@ -21,9 +21,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// App app is singleton
-var App *Application
-
 // Application a container for your application.
 type Application struct {
 	Conf        *config.Config
