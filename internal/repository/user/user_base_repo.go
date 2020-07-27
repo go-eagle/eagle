@@ -75,7 +75,7 @@ func (repo *userRepo) GetUserByID(db *gorm.DB, id uint64) (*model.UserBaseModel,
 
 	// 加锁，防止缓存击穿
 	key := fmt.Sprintf("uid:%d", id)
-	lock := redis.NewLock(redis.Client, key, 3*time.Second)
+	lock := redis.NewLock(redis.RedisClient, key, 3*time.Second)
 	token := lock.GenToken()
 
 	isLock, err := lock.Lock(token)

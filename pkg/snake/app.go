@@ -21,6 +21,15 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	// ModeDebug debug mode
+	ModeDebug string = "debug"
+	// ModeRelease release mode
+	ModeRelease string = "release"
+	// ModeTest test mode
+	ModeTest string = "test"
+)
+
 // Application a container for your application.
 type Application struct {
 	Conf        *config.Config
@@ -38,7 +47,7 @@ func New(conf *config.Config) *Application {
 	app.DB = model.Init()
 
 	// init redis
-	redis2.Init()
+	app.RedisClient = redis2.Init()
 
 	// init router
 	app.Router = gin.Default()
@@ -48,6 +57,10 @@ func New(conf *config.Config) *Application {
 
 	// init schedule
 	schedule.Init()
+
+	if viper.GetString("run_mode") == ModeDebug {
+		app.Debug = true
+	}
 
 	return app
 }

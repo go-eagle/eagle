@@ -25,10 +25,9 @@ type Cache struct {
 func NewUserCache() *Cache {
 	encoding := cache.JSONEncoding{}
 	cachePrefix := cache.PrefixCacheKey
-	// TODO: redis已经全局实例化，redis.Init() 已经在main.go执行，这里应该不需要再初始化，待排查
 	redis.Init()
 	return &Cache{
-		cache: cache.NewRedisCache(redis.Client, cachePrefix, encoding, func() interface{} {
+		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, encoding, func() interface{} {
 			return &model.UserBaseModel{}
 		}),
 	}

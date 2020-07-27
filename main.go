@@ -68,7 +68,11 @@ func main() {
 	App := snake.New(conf)
 
 	// Set gin mode.
-	gin.SetMode(viper.GetString("run_mode"))
+	gin.SetMode(snake.ModeRelease)
+	if viper.GetString("run_mode") == snake.ModeDebug {
+		gin.SetMode(snake.ModeDebug)
+		App.DB.Debug()
+	}
 
 	// Create the Gin engine.
 	router := App.Router
