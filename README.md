@@ -162,6 +162,20 @@ http://127.0.0.1/health
 go build -o bin_snake
 ```
 
+如果应用有多台机器，可以在编译机器进行编译，然后使用rsync同步到对应的业务应用服务器
+
+> 以下内容可以整理为脚本
+
+```bash
+export GOROOT=/usr/local/go1.13.8
+export GOPATH=/data/build/test/src
+export GO111MODULE=on
+cd /data/build/test/src/github.com/1024casts/snake
+/usr/local/go1.13.8/bin/go build -o /data/build/bin/bin_snake -mod vendor main.go
+rsync -av /data/build/bin/ x.x.x.x:/home/go/snake
+supervisorctl restart snake
+```
+
 这里日志目录设定为 `/data/log`
 如果安装了 Supervisord，可以在配置文件中添加下面内容(默认：`/etc/supervisor/supervisord.conf`)：
 
@@ -169,7 +183,7 @@ go build -o bin_snake
 [program:snake]
 # environment=
 directory=/home/go/snake
-command=/home/go/bin_snake
+command=/home/go/snake/bin_snake
 autostart=true
 autorestart=true
 user=root
