@@ -31,9 +31,6 @@ var (
 	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
-// App is singleton
-var App *snake.Application
-
 // @title snake docs api
 // @version 1.0
 // @description snake demo
@@ -65,17 +62,17 @@ func main() {
 	}
 
 	// init app
-	App := snake.New(conf)
+	app := snake.New(conf)
 
 	// Set gin mode.
 	gin.SetMode(snake.ModeRelease)
 	if viper.GetString("run_mode") == snake.ModeDebug {
 		gin.SetMode(snake.ModeDebug)
-		App.DB.Debug()
+		app.DB.Debug()
 	}
 
 	// Create the Gin engine.
-	router := App.Router
+	router := app.Router
 
 	// HealthCheck 健康检查路由
 	router.GET("/health", handler.HealthCheck)
@@ -86,5 +83,5 @@ func main() {
 	routers.Load(router)
 
 	// start server
-	App.Run()
+	app.Run()
 }
