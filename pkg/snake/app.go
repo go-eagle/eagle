@@ -64,7 +64,6 @@ func New(conf *config.Config) *Application {
 	if viper.GetString("run_mode") == ModeDebug {
 		app.Debug = true
 	}
-	App = app
 
 	return app
 }
