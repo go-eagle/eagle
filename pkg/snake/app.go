@@ -30,6 +30,9 @@ const (
 	ModeTest string = "test"
 )
 
+// App is singleton
+var App *Application
+
 // Application a container for your application.
 type Application struct {
 	Conf        *config.Config
@@ -61,6 +64,7 @@ func New(conf *config.Config) *Application {
 	if viper.GetString("run_mode") == ModeDebug {
 		app.Debug = true
 	}
+	App = app
 
 	return app
 }
