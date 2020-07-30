@@ -1,6 +1,6 @@
 # repository
 
-Repository 或者叫 DAO，是数据访问层，负责访问 DB、MC、等接口，对上层屏蔽数据访问细节。  
+Repository 或者叫 DAO，是数据访问层，负责访问 DB、MC、外部 HTTP 等接口，对上层屏蔽数据访问细节。  
 后续更换、升级ORM引擎，不影响业务逻辑。能提高测试效率，单元测试时，用Mock对象代替实际的数据库存取，可以成倍地提高测试用例运行速度。    
 应用 Repository 模式所带来的好处，远高于实现这个模式所增加的代码。只要项目分层，都应当使用这个模式。 
 Repository是DDD中的概念，强调 Repository 是受Domain(本项目主要是Service)驱动的。
