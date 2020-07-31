@@ -3,8 +3,8 @@
 package testutil
 
 import (
-	"github.com/1024casts/snake/config"
 	"github.com/1024casts/snake/internal/model"
+	"github.com/1024casts/snake/pkg/config"
 
 	"github.com/jinzhu/gorm"
 )
@@ -17,11 +17,11 @@ type App struct {
 // Initialize 初始化
 func (app *App) Initialize() {
 	// init config
-	if err := config.Init("../../conf/config.sample.yaml"); err != nil {
+	if _, err := config.InitConfig("../../conf/config.sample.yaml"); err != nil {
 		panic(err)
 	}
 
 	// init db
-	model.DB.Init()
-	app.DB = model.DB.Default
+	model.Init()
+	app.DB = model.DB
 }

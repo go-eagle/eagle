@@ -18,7 +18,6 @@ require (
 	github.com/go-test/deep v1.0.6
 	github.com/golang/snappy v0.0.1
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
-	github.com/google/pprof v0.0.0-20200708004538-1a94d8640e99 // indirect
 	github.com/google/uuid v1.1.1
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/jinzhu/gorm v1.9.12
