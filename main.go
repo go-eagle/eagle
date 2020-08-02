@@ -19,14 +19,13 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/1024casts/snake/handler"
-	"github.com/1024casts/snake/pkg/config"
+	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/snake"
 	v "github.com/1024casts/snake/pkg/version"
 	routers "github.com/1024casts/snake/router"
 )
 
 var (
-	cfg     = pflag.StringP("config", "c", "", "snake config file path.")
 	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
@@ -55,17 +54,16 @@ func main() {
 	}
 
 	// init config
-	conf, err := config.InitConfig(*cfg)
-	if err != nil {
+	if err := conf.Init(); err != nil {
 		panic(err)
 	}
 
 	// init app
-	snake.App = snake.New(conf)
+	snake.App = snake.New()
 
 	// Set gin mode.
 	gin.SetMode(snake.ModeRelease)
-	if viper.GetString("run_mode") == snake.ModeDebug {
+	if viper.GetString("app.run_mode") == snake.ModeDebug {
 		gin.SetMode(snake.ModeDebug)
 		snake.App.DB.Debug()
 	}

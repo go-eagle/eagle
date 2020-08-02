@@ -3,12 +3,12 @@ package email
 import (
 	"testing"
 
-	"github.com/1024casts/snake/pkg/config"
+	"github.com/1024casts/snake/pkg/conf"
 )
 
 func TestSend(t *testing.T) {
 	// init config
-	if _, err := config.InitConfig("../../conf/config.sample.yaml"); err != nil {
+	if err := conf.Init(); err != nil {
 		panic(err)
 	}
 

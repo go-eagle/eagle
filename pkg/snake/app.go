@@ -8,12 +8,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/1024casts/snake/pkg/conf"
 	redis2 "github.com/1024casts/snake/pkg/redis"
 
 	"github.com/1024casts/snake/pkg/schedule"
 
 	"github.com/1024casts/snake/internal/model"
-	"github.com/1024casts/snake/pkg/config"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
@@ -35,7 +35,7 @@ var App *Application
 
 // Application a container for your application.
 type Application struct {
-	Conf        *config.Config
+	Conf        *conf.Config
 	DB          *gorm.DB
 	RedisClient *redis.Client
 	Router      *gin.Engine
@@ -43,7 +43,7 @@ type Application struct {
 }
 
 // New create a app
-func New(conf *config.Config) *Application {
+func New() *Application {
 	app := new(Application)
 
 	// init db
@@ -56,12 +56,12 @@ func New(conf *config.Config) *Application {
 	app.Router = gin.Default()
 
 	// init log
-	config.InitLog()
+	conf.InitLog()
 
 	// init schedule
 	schedule.Init()
 
-	if viper.GetString("run_mode") == ModeDebug {
+	if viper.GetString("app.run_mode") == ModeDebug {
 		app.Debug = true
 	}
 

@@ -4,7 +4,7 @@ package testutil
 
 import (
 	"github.com/1024casts/snake/internal/model"
-	"github.com/1024casts/snake/pkg/config"
+	"github.com/1024casts/snake/pkg/conf"
 
 	"github.com/jinzhu/gorm"
 )
@@ -17,7 +17,7 @@ type App struct {
 // Initialize 初始化
 func (app *App) Initialize() {
 	// init config
-	if _, err := config.InitConfig("../../conf/config.sample.yaml"); err != nil {
+	if err := conf.Init(); err != nil {
 		panic(err)
 	}
 
