@@ -13,15 +13,14 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/1024casts/snake/pkg/config"
-	"github.com/1024casts/snake/pkg/snake"
-
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
 	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/pkg/config"
+	"github.com/1024casts/snake/pkg/snake"
 	v "github.com/1024casts/snake/pkg/version"
 	routers "github.com/1024casts/snake/router"
 )
