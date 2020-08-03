@@ -32,10 +32,11 @@ redis:
   addr: "localhost:6379"
   password: "" # no password set
   db: 0 # use default DB
-  dial_timeout: 60   # 单位：秒
-  read_timeout: 2   # 单位：秒
-  write_timeout: 2  # 单位：秒
+  dial_timeout: 60s   # 单位：秒
+  read_timeout: 2s   # 单位：秒
+  write_timeout: 2s  # 单位：秒
   pool_size: 60
+  pool_timeout: 30s
 email:
   host: SMTP_HOST       # SMTP地址
   port: PORT            # 端口

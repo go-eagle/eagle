@@ -19,10 +19,14 @@ const Nil = redis.Nil
 // Init 实例化一个redis client
 func Init() *redis.Client {
 	RedisClient = redis.NewClient(&redis.Options{
-		Addr:     viper.GetString("redis.addr"),
-		Password: viper.GetString("redis.password"),
-		DB:       viper.GetInt("redis.db"),
-		PoolSize: viper.GetInt("redis.pool_size"),
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           viper.GetInt("redis.db"),
+		DialTimeout:  viper.GetDuration("redis.dial_timeout"),
+		ReadTimeout:  viper.GetDuration("redis.read_timeout"),
+		WriteTimeout: viper.GetDuration("redis.write_timeout"),
+		PoolSize:     viper.GetInt("redis.pool_size"),
+		PoolTimeout:  viper.GetDuration("redis.pool_timeout"),
 	})
 
 	fmt.Println("redis addr:", viper.GetString("redis.addr"))
