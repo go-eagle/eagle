@@ -21,6 +21,7 @@ func newRestyClient() Client {
 	return &restyClient{}
 }
 
+// Get request url by get method
 func (r restyClient) Get(url string, params map[string]string, duration time.Duration) ([]byte, error) {
 	client := resty.New()
 
@@ -44,6 +45,7 @@ func (r restyClient) Get(url string, params map[string]string, duration time.Dur
 	return resp.Body(), nil
 }
 
+// Post request url by post method
 func (r restyClient) Post(url string, requestBody string, duration time.Duration) ([]byte, error) {
 	client := resty.New()
 
@@ -63,4 +65,9 @@ func (r restyClient) Post(url string, requestBody string, duration time.Duration
 	}
 
 	return resp.Body(), nil
+}
+
+// PostJson request url by post method
+func (r restyClient) PostJson(url string, requestBody string, duration time.Duration) ([]byte, error) {
+	return r.Post(url, requestBody, duration)
 }
