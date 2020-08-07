@@ -214,6 +214,7 @@ supervisorctl restart snake
 ## 💬 Discussion
 
 - Issue: https://github.com/1024casts/snake/issues
+- QQ交流群：1074476202
 
 ## 📄 License
 
