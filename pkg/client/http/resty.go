@@ -10,10 +10,6 @@ import (
 
 // docs: https://github.com/go-resty/resty
 
-const (
-	headerDataType = "application/json"
-)
-
 type restyClient struct {
 }
 
@@ -22,7 +18,7 @@ func newRestyClient() Client {
 }
 
 // Get request url by get method
-func (r restyClient) Get(url string, params map[string]string, duration time.Duration) ([]byte, error) {
+func (r *restyClient) Get(url string, params map[string]string, duration time.Duration) ([]byte, error) {
 	client := resty.New()
 
 	if duration != 0 {
@@ -35,7 +31,7 @@ func (r restyClient) Get(url string, params map[string]string, duration time.Dur
 
 	resp, err := client.R().
 		SetHeaders(map[string]string{
-			"Content-Type": headerDataType,
+			"Content-Type": headerContentTypeJson,
 		}).
 		Get(url)
 	if err != nil {
@@ -46,7 +42,7 @@ func (r restyClient) Get(url string, params map[string]string, duration time.Dur
 }
 
 // Post request url by post method
-func (r restyClient) Post(url string, requestBody string, duration time.Duration) ([]byte, error) {
+func (r *restyClient) Post(url string, requestBody string, duration time.Duration) ([]byte, error) {
 	client := resty.New()
 
 	if duration != 0 {
@@ -56,7 +52,7 @@ func (r restyClient) Post(url string, requestBody string, duration time.Duration
 	cr := client.R().
 		SetBody(requestBody).
 		SetHeaders(map[string]string{
-			"Content-Type": headerDataType,
+			"Content-Type": headerContentTypeJson,
 		})
 
 	resp, err := cr.Post(url)
@@ -68,6 +64,6 @@ func (r restyClient) Post(url string, requestBody string, duration time.Duration
 }
 
 // PostJson request url by post method
-func (r restyClient) PostJson(url string, requestBody string, duration time.Duration) ([]byte, error) {
+func (r *restyClient) PostJson(url string, requestBody string, duration time.Duration) ([]byte, error) {
 	return r.Post(url, requestBody, duration)
 }

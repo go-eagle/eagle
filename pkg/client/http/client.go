@@ -8,8 +8,8 @@ import (
 
 // see: https://github.com/iiinsomnia/gochat/blob/master/utils/http.go
 
-// HTTPClient 禁止直接调用resty，统一使用HttpClient
-var HTTPClient = New("resty")
+// DefaultClient 禁止直接调用resty，统一使用HttpClient
+var DefaultClient = New("resty")
 
 // New 实例化一个client
 func New(typ string) Client {
