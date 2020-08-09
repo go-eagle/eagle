@@ -5,13 +5,14 @@ package http
 import (
 	"time"
 
+	"github.com/1024casts/snake/pkg/log"
+
 	"github.com/go-resty/resty/v2"
 )
 
 // docs: https://github.com/go-resty/resty
 
-type restyClient struct {
-}
+type restyClient struct{}
 
 func newRestyClient() Client {
 	return &restyClient{}
@@ -26,7 +27,7 @@ func (r *restyClient) Get(url string, params map[string]string, duration time.Du
 	}
 
 	if len(params) > 0 {
-		client.SetPathParams(params)
+		client.SetQueryParams(params)
 	}
 
 	resp, err := client.R().
@@ -35,6 +36,7 @@ func (r *restyClient) Get(url string, params map[string]string, duration time.Du
 		}).
 		Get(url)
 	if err != nil {
+		log.Warnf("get url: %s err: %s", url, err)
 		return nil, err
 	}
 
@@ -42,7 +44,7 @@ func (r *restyClient) Get(url string, params map[string]string, duration time.Du
 }
 
 // Post request url by post method
-func (r *restyClient) Post(url string, requestBody string, duration time.Duration) ([]byte, error) {
+func (r *restyClient) Post(url string, data []byte, duration time.Duration) ([]byte, error) {
 	client := resty.New()
 
 	if duration != 0 {
@@ -50,20 +52,16 @@ func (r *restyClient) Post(url string, requestBody string, duration time.Duratio
 	}
 
 	cr := client.R().
-		SetBody(requestBody).
+		SetBody(string(data)).
 		SetHeaders(map[string]string{
 			"Content-Type": headerContentTypeJson,
 		})
 
 	resp, err := cr.Post(url)
 	if err != nil {
+		log.Warnf("post url: %s err: %s", url, err)
 		return nil, err
 	}
 
 	return resp.Body(), nil
-}
-
-// PostJson request url by post method
-func (r *restyClient) PostJson(url string, requestBody string, duration time.Duration) ([]byte, error) {
-	return r.Post(url, requestBody, duration)
 }
