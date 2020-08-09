@@ -32,7 +32,7 @@ func (r *restyClient) Get(url string, params map[string]string, duration time.Du
 
 	resp, err := client.R().
 		SetHeaders(map[string]string{
-			"Content-Type": headerContentTypeJson,
+			"Content-Type": contentTypeJson,
 		}).
 		Get(url)
 	if err != nil {
@@ -54,7 +54,7 @@ func (r *restyClient) Post(url string, data []byte, duration time.Duration) ([]b
 	cr := client.R().
 		SetBody(string(data)).
 		SetHeaders(map[string]string{
-			"Content-Type": headerContentTypeJson,
+			"Content-Type": contentTypeJson,
 		})
 
 	resp, err := cr.Post(url)

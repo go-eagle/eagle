@@ -10,7 +10,7 @@ import (
 // see: https://github.com/iiinsomnia/gochat/blob/master/utils/http.go
 
 const (
-	headerContentTypeJson = "application/json"
+	contentTypeJson = "application/json"
 )
 
 // DefaultClient 默认的http client，基于resty库进行封装
