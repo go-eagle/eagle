@@ -26,6 +26,7 @@ import (
 )
 
 var (
+	cfg     = pflag.StringP("config", "c", "", "snake config file path.")
 	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
@@ -54,12 +55,12 @@ func main() {
 	}
 
 	// init config
-	if err := conf.Init(); err != nil {
+	if err := conf.Init(*cfg); err != nil {
 		panic(err)
 	}
 
 	// init app
-	snake.App = snake.New()
+	snake.App = snake.New(conf.Conf)
 
 	// Set gin mode.
 	gin.SetMode(snake.ModeRelease)

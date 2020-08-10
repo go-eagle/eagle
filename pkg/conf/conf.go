@@ -6,26 +6,18 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/pkg/errors"
-	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
 	"github.com/1024casts/snake/pkg/log"
 )
 
 var (
-	confPath *string
-
 	Conf *Config
 )
 
-// init init conf path
-func init() {
-	confPath = pflag.StringP("config", "c", "", "snake config file path.")
-}
-
 // Init init config
-func Init() error {
-	err := initConfig()
+func Init(confPath string) error {
+	err := initConfig(confPath)
 	if err != nil {
 		return err
 	}
@@ -33,9 +25,9 @@ func Init() error {
 }
 
 // initConfig init config from conf file
-func initConfig() error {
-	if *confPath != "" {
-		viper.SetConfigFile(*confPath) // 如果指定了配置文件，则解析指定的配置文件
+func initConfig(confPath string) error {
+	if confPath != "" {
+		viper.SetConfigFile(confPath) // 如果指定了配置文件，则解析指定的配置文件
 	} else {
 		viper.AddConfigPath("conf") // 如果没有指定配置文件，则解析默认的配置文件
 		viper.SetConfigName("config.local")

@@ -43,7 +43,7 @@ type Application struct {
 }
 
 // New create a app
-func New() *Application {
+func New(cfg *conf.Config) *Application {
 	app := new(Application)
 
 	// init db
