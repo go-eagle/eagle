@@ -1,6 +1,8 @@
 package user
 
 import (
+	"context"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/handler"
@@ -27,7 +29,7 @@ func Follow(c *gin.Context) {
 	}
 
 	// Get the user by the `user_id` from the database.
-	_, err := user.Svc.GetUserByID(req.UserID)
+	_, err := user.Svc.GetUserByID(context.TODO(), req.UserID)
 	if err != nil {
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
@@ -41,7 +43,7 @@ func Follow(c *gin.Context) {
 	}
 
 	// 检查是否已经关注过
-	isFollowed := user.Svc.IsFollowedUser(userID, req.UserID)
+	isFollowed := user.Svc.IsFollowedUser(context.TODO(), userID, req.UserID)
 	if isFollowed {
 		handler.SendResponse(c, errno.OK, nil)
 		return
@@ -49,7 +51,7 @@ func Follow(c *gin.Context) {
 
 	if isFollowed {
 		// 取消关注
-		err = user.Svc.CancelUserFollow(userID, req.UserID)
+		err = user.Svc.CancelUserFollow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] cancel user follow err: %v", err)
 			handler.SendResponse(c, errno.InternalServerError, nil)
@@ -57,7 +59,7 @@ func Follow(c *gin.Context) {
 		}
 	} else {
 		// 添加关注
-		err = user.Svc.AddUserFollow(userID, req.UserID)
+		err = user.Svc.AddUserFollow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] add user follow err: %v", err)
 			handler.SendResponse(c, errno.InternalServerError, nil)

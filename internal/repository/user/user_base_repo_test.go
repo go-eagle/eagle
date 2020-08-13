@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"database/sql"
 	"regexp"
 	"testing"
@@ -71,7 +72,7 @@ func (s *Suite) Test_repository_Create() {
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(newID))
 	s.mock.ExpectCommit()
 
-	_, err := s.repository.Create(s.db, user)
+	_, err := s.repository.Create(context.TODO(), s.db, user)
 
 	require.NoError(s.T(), err)
 }
@@ -86,7 +87,7 @@ func (s *Suite) Test_repository_GetUserByID() {
 		`SELECT * FROM "users" WHERE (id = $1)`)).
 		WithArgs(id).WillReturnRows(sqlmock.NewRows([]string{"id", "username"}).AddRow(id, username))
 
-	res, err := s.repository.GetUserByID(s.db, id)
+	res, err := s.repository.GetUserByID(context.TODO(), s.db, id)
 
 	require.NoError(s.T(), err)
 	require.Nil(s.T(), deep.Equal(&model.UserBaseModel{ID: id, Username: username}, res))
@@ -103,7 +104,7 @@ func (s *Suite) Test_repository_GetUserByPhone() {
 		`SELECT * FROM "users" WHERE (phone = $1)`)).
 		WithArgs(phone).WillReturnRows(sqlmock.NewRows([]string{"id", "username", "phone"}).AddRow(id, username, phone))
 
-	res, err := s.repository.GetUserByPhone(s.db, phone)
+	res, err := s.repository.GetUserByPhone(context.TODO(), s.db, phone)
 
 	require.NoError(s.T(), err)
 	require.Nil(s.T(), deep.Equal(&model.UserBaseModel{ID: id, Username: username, Phone: phone}, res))
@@ -120,7 +121,7 @@ func (s *Suite) Test_repository_GetUserByEmail() {
 		`SELECT * FROM "users" WHERE (email = $1)`)).
 		WithArgs(email).WillReturnRows(sqlmock.NewRows([]string{"id", "username", "email"}).AddRow(id, username, email))
 
-	res, err := s.repository.GetUserByEmail(s.db, email)
+	res, err := s.repository.GetUserByEmail(context.TODO(), s.db, email)
 
 	require.NoError(s.T(), err)
 	require.Nil(s.T(), deep.Equal(&model.UserBaseModel{ID: id, Username: username, Email: email}, res))

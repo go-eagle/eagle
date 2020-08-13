@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -12,10 +13,10 @@ import (
 
 // StatRepo 定义用户仓库接口
 type StatRepo interface {
-	IncrFollowCount(db *gorm.DB, userID uint64, step int) error
-	IncrFollowerCount(db *gorm.DB, userID uint64, step int) error
-	GetUserStatByID(db *gorm.DB, userID uint64) (*model.UserStatModel, error)
-	GetUserStatByIDs(db *gorm.DB, userID []uint64) (map[uint64]*model.UserStatModel, error)
+	IncrFollowCount(ctx context.Context, db *gorm.DB, userID uint64, step int) error
+	IncrFollowerCount(ctx context.Context, db *gorm.DB, userID uint64, step int) error
+	GetUserStatByID(ctx context.Context, db *gorm.DB, userID uint64) (*model.UserStatModel, error)
+	GetUserStatByIDs(ctx context.Context, db *gorm.DB, userID []uint64) (map[uint64]*model.UserStatModel, error)
 }
 
 // userRepo 用户仓库
@@ -31,7 +32,7 @@ func NewUserStatRepo() StatRepo {
 }
 
 // IncrFollowCount 增加关注数
-func (repo *userStatRepo) IncrFollowCount(db *gorm.DB, userID uint64, step int) error {
+func (repo *userStatRepo) IncrFollowCount(ctx context.Context, db *gorm.DB, userID uint64, step int) error {
 	err := db.Exec("insert into user_stat set user_id=?, follow_count=1, created_at=? on duplicate key update "+
 		"follow_count=follow_count+?, updated_at=?",
 		userID, time.Now(), step, time.Now()).Error
@@ -42,7 +43,7 @@ func (repo *userStatRepo) IncrFollowCount(db *gorm.DB, userID uint64, step int) 
 }
 
 // IncrFollowerCount 增加粉丝数
-func (repo *userStatRepo) IncrFollowerCount(db *gorm.DB, userID uint64, step int) error {
+func (repo *userStatRepo) IncrFollowerCount(ctx context.Context, db *gorm.DB, userID uint64, step int) error {
 	err := db.Exec("insert into user_stat set user_id=?, follower_count=1, created_at=? on duplicate key update "+
 		"follower_count=follower_count+?, updated_at=?",
 		userID, time.Now(), step, time.Now()).Error
@@ -53,7 +54,7 @@ func (repo *userStatRepo) IncrFollowerCount(db *gorm.DB, userID uint64, step int
 }
 
 // GetUserStatByID 获取用户统计数据
-func (repo *userStatRepo) GetUserStatByID(db *gorm.DB, userID uint64) (*model.UserStatModel, error) {
+func (repo *userStatRepo) GetUserStatByID(ctx context.Context, db *gorm.DB, userID uint64) (*model.UserStatModel, error) {
 	userStat := model.UserStatModel{}
 	err := db.Where("user_id = ?", userID).First(&userStat).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -64,7 +65,7 @@ func (repo *userStatRepo) GetUserStatByID(db *gorm.DB, userID uint64) (*model.Us
 }
 
 // GetUserStatByIDs 批量获取用户统计数据
-func (repo *userStatRepo) GetUserStatByIDs(db *gorm.DB, userID []uint64) (map[uint64]*model.UserStatModel, error) {
+func (repo *userStatRepo) GetUserStatByIDs(ctx context.Context, db *gorm.DB, userID []uint64) (map[uint64]*model.UserStatModel, error) {
 	userStats := make([]*model.UserStatModel, 0)
 	retMap := make(map[uint64]*model.UserStatModel)
 

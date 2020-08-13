@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -31,7 +32,7 @@ func Get(c *gin.Context) {
 	userID, _ := strconv.Atoi(userIDStr)
 
 	// Get the user by the `user_id` from the database.
-	u, err := user.Svc.GetUserByID(uint64(userID))
+	u, err := user.Svc.GetUserByID(context.TODO(), uint64(userID))
 	if err != nil {
 		log.Warnf("get user info err: %v", err)
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)

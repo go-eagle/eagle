@@ -1,11 +1,11 @@
 package user
 
 import (
+	"context"
 	"strconv"
 	"sync"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 
@@ -30,22 +30,22 @@ const (
 // Service 用户服务接口定义
 // 使用大写的service对外保留方法
 type Service interface {
-	Register(ctx *gin.Context, username, email, password string) error
-	EmailLogin(ctx *gin.Context, email, password string) (tokenStr string, err error)
-	PhoneLogin(ctx *gin.Context, phone int, verifyCode int) (tokenStr string, err error)
-	GetUserByID(id uint64) (*model.UserBaseModel, error)
-	GetUserInfoByID(id uint64) (*model.UserInfo, error)
-	GetUserByPhone(phone int) (*model.UserBaseModel, error)
-	GetUserByEmail(email string) (*model.UserBaseModel, error)
-	UpdateUser(id uint64, userMap map[string]interface{}) error
-	BatchGetUsers(userID uint64, userIDs []uint64) ([]*model.UserInfo, error)
+	Register(ctx context.Context, username, email, password string) error
+	EmailLogin(ctx context.Context, email, password string) (tokenStr string, err error)
+	PhoneLogin(ctx context.Context, phone int, verifyCode int) (tokenStr string, err error)
+	GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error)
+	GetUserInfoByID(ctx context.Context, id uint64) (*model.UserInfo, error)
+	GetUserByPhone(ctx context.Context, phone int) (*model.UserBaseModel, error)
+	GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error)
+	UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error
+	BatchGetUsers(ctx context.Context, userID uint64, userIDs []uint64) ([]*model.UserInfo, error)
 
 	// 关注
-	IsFollowedUser(userID uint64, followedUID uint64) bool
-	AddUserFollow(userID uint64, followedUID uint64) error
-	CancelUserFollow(userID uint64, followedUID uint64) error
-	GetFollowingUserList(userID uint64, lastID uint64, limit int) ([]*model.UserFollowModel, error)
-	GetFollowerUserList(userID uint64, lastID uint64, limit int) ([]*model.UserFansModel, error)
+	IsFollowedUser(ctx context.Context, userID uint64, followedUID uint64) bool
+	AddUserFollow(ctx context.Context, userID uint64, followedUID uint64) error
+	CancelUserFollow(ctx context.Context, userID uint64, followedUID uint64) error
+	GetFollowingUserList(ctx context.Context, userID uint64, lastID uint64, limit int) ([]*model.UserFollowModel, error)
+	GetFollowerUserList(ctx context.Context, userID uint64, lastID uint64, limit int) ([]*model.UserFansModel, error)
 }
 
 // Svc 直接初始化，可以避免在使用时再实例化
@@ -70,7 +70,7 @@ func NewUserService() Service {
 }
 
 // Register 注册用户
-func (srv *userService) Register(ctx *gin.Context, username, email, password string) error {
+func (srv *userService) Register(ctx context.Context, username, email, password string) error {
 	pwd, err := auth.Encrypt(password)
 	if err != nil {
 		return errors.Wrapf(err, "encrypt password err")
@@ -83,7 +83,7 @@ func (srv *userService) Register(ctx *gin.Context, username, email, password str
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
 	}
-	_, err = srv.userRepo.Create(model.GetDB(), u)
+	_, err = srv.userRepo.Create(ctx, model.GetDB(), u)
 	if err != nil {
 		return errors.Wrapf(err, "create user")
 	}
@@ -91,8 +91,8 @@ func (srv *userService) Register(ctx *gin.Context, username, email, password str
 }
 
 // EmailLogin 邮箱登录
-func (srv *userService) EmailLogin(ctx *gin.Context, email, password string) (tokenStr string, err error) {
-	u, err := srv.GetUserByEmail(email)
+func (srv *userService) EmailLogin(ctx context.Context, email, password string) (tokenStr string, err error) {
+	u, err := srv.GetUserByEmail(ctx, email)
 	if err != nil {
 		return "", errors.Wrapf(err, "get user info err by email")
 	}
@@ -113,9 +113,9 @@ func (srv *userService) EmailLogin(ctx *gin.Context, email, password string) (to
 }
 
 // PhoneLogin 邮箱登录
-func (srv *userService) PhoneLogin(ctx *gin.Context, phone int, verifyCode int) (tokenStr string, err error) {
+func (srv *userService) PhoneLogin(ctx context.Context, phone int, verifyCode int) (tokenStr string, err error) {
 	// 如果是已经注册用户，则通过手机号获取用户信息
-	u, err := srv.GetUserByPhone(phone)
+	u, err := srv.GetUserByPhone(ctx, phone)
 	if err != nil {
 		return "", errors.Wrapf(err, "[login] get u info err")
 	}
@@ -126,7 +126,7 @@ func (srv *userService) PhoneLogin(ctx *gin.Context, phone int, verifyCode int) 
 			Phone:    phone,
 			Username: strconv.Itoa(phone),
 		}
-		u.ID, err = srv.userRepo.Create(model.GetDB(), u)
+		u.ID, err = srv.userRepo.Create(ctx, model.GetDB(), u)
 		if err != nil {
 			return "", errors.Wrapf(err, "[login] create user err")
 		}
@@ -140,8 +140,8 @@ func (srv *userService) PhoneLogin(ctx *gin.Context, phone int, verifyCode int) 
 	return tokenStr, nil
 }
 
-func (srv *userService) UpdateUser(id uint64, userMap map[string]interface{}) error {
-	err := srv.userRepo.Update(model.GetDB(), id, userMap)
+func (srv *userService) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
+	err := srv.userRepo.Update(ctx, model.GetDB(), id, userMap)
 
 	if err != nil {
 		return err
@@ -151,8 +151,8 @@ func (srv *userService) UpdateUser(id uint64, userMap map[string]interface{}) er
 }
 
 // GetUserByID 获取单条用户信息
-func (srv *userService) GetUserByID(id uint64) (*model.UserBaseModel, error) {
-	userModel, err := srv.userRepo.GetUserByID(model.GetDB(), id)
+func (srv *userService) GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error) {
+	userModel, err := srv.userRepo.GetUserByID(ctx, model.GetDB(), id)
 	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by id: %d", id)
 	}
@@ -161,8 +161,8 @@ func (srv *userService) GetUserByID(id uint64) (*model.UserBaseModel, error) {
 }
 
 // GetUserInfoByID 获取组装好的用户数据
-func (srv *userService) GetUserInfoByID(id uint64) (*model.UserInfo, error) {
-	userInfos, err := srv.BatchGetUsers(id, []uint64{id})
+func (srv *userService) GetUserInfoByID(ctx context.Context, id uint64) (*model.UserInfo, error) {
+	userInfos, err := srv.BatchGetUsers(ctx, id, []uint64{id})
 	if err != nil {
 		return nil, err
 	}
@@ -172,16 +172,16 @@ func (srv *userService) GetUserInfoByID(id uint64) (*model.UserInfo, error) {
 // BatchGetUsers 批量获取用户信息
 // 1. 处理关注和被关注状态
 // 2. 获取关注和粉丝数据
-func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model.UserInfo, error) {
+func (srv *userService) BatchGetUsers(ctx context.Context, userID uint64, userIDs []uint64) ([]*model.UserInfo, error) {
 	infos := make([]*model.UserInfo, 0)
 	// 批量获取用户信息
-	users, err := srv.userRepo.GetUsersByIds(model.GetDB(), userIDs)
+	users, err := srv.userRepo.GetUsersByIds(ctx, model.GetDB(), userIDs)
 	if err != nil {
 		return nil, errors.Wrap(err, "[user_service] batch get user err")
 	}
 
 	// 获取当前用户信息
-	curUser, err := srv.userRepo.GetUserByID(model.GetDB(), userID)
+	curUser, err := srv.userRepo.GetUserByID(ctx, model.GetDB(), userID)
 	if err != nil {
 		return nil, errors.Wrap(err, "[user_service] get one user err")
 	}
@@ -199,19 +199,19 @@ func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model
 	finished := make(chan bool, 1)
 
 	// 获取自己对关注列表的关注状态
-	userFollowMap, err := srv.userFollowRepo.GetFollowByUIds(userID, userIDs)
+	userFollowMap, err := srv.userFollowRepo.GetFollowByUIds(ctx, userID, userIDs)
 	if err != nil {
 		errChan <- err
 	}
 
 	// 获取自己对关注列表的被关注状态
-	userFansMap, err := srv.userFollowRepo.GetFansByUIds(userID, userIDs)
+	userFansMap, err := srv.userFollowRepo.GetFansByUIds(ctx, userID, userIDs)
 	if err != nil {
 		errChan <- err
 	}
 
 	// 获取用户统计
-	userStatMap, err := srv.userStatRepo.GetUserStatByIDs(model.GetDB(), userIDs)
+	userStatMap, err := srv.userStatRepo.GetUserStatByIDs(ctx, model.GetDB(), userIDs)
 	if err != nil {
 		errChan <- err
 	}
@@ -278,8 +278,8 @@ func (srv *userService) BatchGetUsers(userID uint64, userIDs []uint64) ([]*model
 	return infos, nil
 }
 
-func (srv *userService) GetUserByPhone(phone int) (*model.UserBaseModel, error) {
-	userModel, err := srv.userRepo.GetUserByPhone(model.GetDB(), phone)
+func (srv *userService) GetUserByPhone(ctx context.Context, phone int) (*model.UserBaseModel, error) {
+	userModel, err := srv.userRepo.GetUserByPhone(ctx, model.GetDB(), phone)
 	if err != nil || gorm.IsRecordNotFoundError(err) {
 		return userModel, errors.Wrapf(err, "get user info err from db by phone: %d", phone)
 	}
@@ -287,8 +287,8 @@ func (srv *userService) GetUserByPhone(phone int) (*model.UserBaseModel, error) 
 	return userModel, nil
 }
 
-func (srv *userService) GetUserByEmail(email string) (*model.UserBaseModel, error) {
-	userModel, err := srv.userRepo.GetUserByEmail(model.GetDB(), email)
+func (srv *userService) GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error) {
+	userModel, err := srv.userRepo.GetUserByEmail(ctx, model.GetDB(), email)
 	if err != nil || gorm.IsRecordNotFoundError(err) {
 		return userModel, errors.Wrapf(err, "get user info err from db by email: %s", email)
 	}
@@ -297,7 +297,7 @@ func (srv *userService) GetUserByEmail(email string) (*model.UserBaseModel, erro
 }
 
 // 获取用户关注
-func (srv *userService) GetFollowUser(userID uint64, followedUID uint64) (*model.UserFollowModel, error) {
+func (srv *userService) GetFollowUser(ctx context.Context, userID uint64, followedUID uint64) (*model.UserFollowModel, error) {
 	userFollowModel := &model.UserFollowModel{}
 	result := model.GetDB().
 		Where("user_id=? AND followed_uid=? ", userID, followedUID).
@@ -307,7 +307,7 @@ func (srv *userService) GetFollowUser(userID uint64, followedUID uint64) (*model
 }
 
 // IsFollowedUser 是否关注过某用户
-func (srv *userService) IsFollowedUser(userID uint64, followedUID uint64) bool {
+func (srv *userService) IsFollowedUser(ctx context.Context, userID uint64, followedUID uint64) bool {
 	userFollowModel := &model.UserFollowModel{}
 	result := model.GetDB().
 		Where("user_id=? AND followed_uid=? ", userID, followedUID).
@@ -326,7 +326,7 @@ func (srv *userService) IsFollowedUser(userID uint64, followedUID uint64) bool {
 }
 
 // AddUserFollow 添加关注
-func (srv *userService) AddUserFollow(userID uint64, followedUID uint64) error {
+func (srv *userService) AddUserFollow(ctx context.Context, userID uint64, followedUID uint64) error {
 	db := model.GetDB()
 	tx := db.Begin()
 	defer func() {
@@ -336,28 +336,28 @@ func (srv *userService) AddUserFollow(userID uint64, followedUID uint64) error {
 	}()
 
 	// 添加到关注表
-	err := srv.userFollowRepo.CreateUserFollow(tx, userID, followedUID)
+	err := srv.userFollowRepo.CreateUserFollow(ctx, tx, userID, followedUID)
 	if err != nil {
 		tx.Rollback()
 		return errors.Wrap(err, "insert into user follow err")
 	}
 
 	// 添加到粉丝表
-	err = srv.userFollowRepo.CreateUserFans(tx, followedUID, userID)
+	err = srv.userFollowRepo.CreateUserFans(ctx, tx, followedUID, userID)
 	if err != nil {
 		tx.Rollback()
 		return errors.Wrap(err, "insert into user fans err")
 	}
 
 	// 添加关注数
-	err = srv.userStatRepo.IncrFollowCount(tx, userID, 1)
+	err = srv.userStatRepo.IncrFollowCount(ctx, tx, userID, 1)
 	if err != nil {
 		tx.Rollback()
 		return errors.Wrap(err, "update user follow count err")
 	}
 
 	// 添加粉丝数
-	err = srv.userStatRepo.IncrFollowerCount(tx, followedUID, 1)
+	err = srv.userStatRepo.IncrFollowerCount(ctx, tx, followedUID, 1)
 	if err != nil {
 		return errors.Wrap(err, "update user fans count err")
 	}
@@ -372,7 +372,7 @@ func (srv *userService) AddUserFollow(userID uint64, followedUID uint64) error {
 }
 
 // CancelUserFollow 取消用户关注
-func (srv *userService) CancelUserFollow(userID uint64, followedUID uint64) error {
+func (srv *userService) CancelUserFollow(ctx context.Context, userID uint64, followedUID uint64) error {
 	db := model.GetDB()
 	tx := db.Begin()
 	defer func() {
@@ -382,28 +382,28 @@ func (srv *userService) CancelUserFollow(userID uint64, followedUID uint64) erro
 	}()
 
 	// 删除关注
-	err := srv.userFollowRepo.UpdateUserFollowStatus(tx, userID, followedUID, FollowStatusDelete)
+	err := srv.userFollowRepo.UpdateUserFollowStatus(ctx, tx, userID, followedUID, FollowStatusDelete)
 	if err != nil {
 		tx.Rollback()
 		return errors.Wrap(err, "update user follow err")
 	}
 
 	// 删除粉丝
-	err = srv.userFollowRepo.UpdateUserFansStatus(tx, followedUID, userID, FollowStatusDelete)
+	err = srv.userFollowRepo.UpdateUserFansStatus(ctx, tx, followedUID, userID, FollowStatusDelete)
 	if err != nil {
 		tx.Rollback()
 		return errors.Wrap(err, "update user follow err")
 	}
 
 	// 减少关注数
-	err = srv.userStatRepo.IncrFollowCount(tx, userID, -1)
+	err = srv.userStatRepo.IncrFollowCount(ctx, tx, userID, -1)
 	if err != nil {
 		tx.Rollback()
 		return errors.Wrap(err, "update user follow count err")
 	}
 
 	// 减少粉丝数
-	err = srv.userStatRepo.IncrFollowerCount(tx, followedUID, -1)
+	err = srv.userStatRepo.IncrFollowerCount(ctx, tx, followedUID, -1)
 	if err != nil {
 		tx.Rollback()
 		return errors.Wrap(err, "update user fans count err")
@@ -419,11 +419,11 @@ func (srv *userService) CancelUserFollow(userID uint64, followedUID uint64) erro
 }
 
 // GetFollowingUserList 获取正在关注的用户列表
-func (srv *userService) GetFollowingUserList(userID uint64, lastID uint64, limit int) ([]*model.UserFollowModel, error) {
+func (srv *userService) GetFollowingUserList(ctx context.Context, userID uint64, lastID uint64, limit int) ([]*model.UserFollowModel, error) {
 	if lastID == 0 {
 		lastID = MaxID
 	}
-	userFollowList, err := srv.userFollowRepo.GetFollowingUserList(userID, lastID, limit)
+	userFollowList, err := srv.userFollowRepo.GetFollowingUserList(ctx, userID, lastID, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -432,11 +432,11 @@ func (srv *userService) GetFollowingUserList(userID uint64, lastID uint64, limit
 }
 
 // GetFollowerUserList 获取粉丝用户列表
-func (srv *userService) GetFollowerUserList(userID uint64, lastID uint64, limit int) ([]*model.UserFansModel, error) {
+func (srv *userService) GetFollowerUserList(ctx context.Context, userID uint64, lastID uint64, limit int) ([]*model.UserFansModel, error) {
 	if lastID == 0 {
 		lastID = MaxID
 	}
-	userFollowerList, err := srv.userFollowRepo.GetFollowerUserList(userID, lastID, limit)
+	userFollowerList, err := srv.userFollowRepo.GetFollowerUserList(ctx, userID, lastID, limit)
 	if err != nil {
 		return nil, err
 	}

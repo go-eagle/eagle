@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -16,12 +17,12 @@ import (
 
 // BaseRepo 定义用户仓库接口
 type BaseRepo interface {
-	Create(db *gorm.DB, user model.UserBaseModel) (id uint64, err error)
-	Update(db *gorm.DB, id uint64, userMap map[string]interface{}) error
-	GetUserByID(db *gorm.DB, id uint64) (*model.UserBaseModel, error)
-	GetUsersByIds(db *gorm.DB, ids []uint64) ([]*model.UserBaseModel, error)
-	GetUserByPhone(db *gorm.DB, phone int) (*model.UserBaseModel, error)
-	GetUserByEmail(db *gorm.DB, email string) (*model.UserBaseModel, error)
+	Create(ctx context.Context, db *gorm.DB, user model.UserBaseModel) (id uint64, err error)
+	Update(ctx context.Context, db *gorm.DB, id uint64, userMap map[string]interface{}) error
+	GetUserByID(ctx context.Context, db *gorm.DB, id uint64) (*model.UserBaseModel, error)
+	GetUsersByIds(ctx context.Context, db *gorm.DB, ids []uint64) ([]*model.UserBaseModel, error)
+	GetUserByPhone(ctx context.Context, db *gorm.DB, phone int) (*model.UserBaseModel, error)
+	GetUserByEmail(ctx context.Context, db *gorm.DB, email string) (*model.UserBaseModel, error)
 }
 
 // userRepo 用户仓库
@@ -37,7 +38,7 @@ func NewUserRepo() BaseRepo {
 }
 
 // Create 创建用户
-func (repo *userRepo) Create(db *gorm.DB, user model.UserBaseModel) (id uint64, err error) {
+func (repo *userRepo) Create(ctx context.Context, db *gorm.DB, user model.UserBaseModel) (id uint64, err error) {
 	err = db.Create(&user).Error
 	if err != nil {
 		return 0, errors.Wrap(err, "[user_repo] create user err")
@@ -47,8 +48,8 @@ func (repo *userRepo) Create(db *gorm.DB, user model.UserBaseModel) (id uint64, 
 }
 
 // Update 更新用户信息
-func (repo *userRepo) Update(db *gorm.DB, id uint64, userMap map[string]interface{}) error {
-	user, err := repo.GetUserByID(db, id)
+func (repo *userRepo) Update(ctx context.Context, db *gorm.DB, id uint64, userMap map[string]interface{}) error {
+	user, err := repo.GetUserByID(ctx, db, id)
 	if err != nil {
 		return errors.Wrap(err, "[user_repo] update user data err")
 	}
@@ -63,7 +64,7 @@ func (repo *userRepo) Update(db *gorm.DB, id uint64, userMap map[string]interfac
 }
 
 // GetUserByID 获取用户
-func (repo *userRepo) GetUserByID(db *gorm.DB, id uint64) (*model.UserBaseModel, error) {
+func (repo *userRepo) GetUserByID(ctx context.Context, db *gorm.DB, id uint64) (*model.UserBaseModel, error) {
 	// 从cache获取
 	userModel, err := repo.userCache.GetUserBaseCache(id)
 	if err != nil {
@@ -102,7 +103,7 @@ func (repo *userRepo) GetUserByID(db *gorm.DB, id uint64) (*model.UserBaseModel,
 }
 
 // GetUsersByIds 批量获取用户
-func (repo *userRepo) GetUsersByIds(db *gorm.DB, userIDs []uint64) ([]*model.UserBaseModel, error) {
+func (repo *userRepo) GetUsersByIds(ctx context.Context, db *gorm.DB, userIDs []uint64) ([]*model.UserBaseModel, error) {
 	users := make([]*model.UserBaseModel, 0)
 
 	// 从cache批量获取
@@ -116,7 +117,7 @@ func (repo *userRepo) GetUsersByIds(db *gorm.DB, userIDs []uint64) ([]*model.Use
 		idx := repo.userCache.GetUserBaseCacheKey(userID)
 		userModel, ok := userCacheMap[idx]
 		if !ok {
-			userModel, err = repo.GetUserByID(db, userID)
+			userModel, err = repo.GetUserByID(ctx, db, userID)
 			if err != nil {
 				log.Warnf("get user model err: %v", err)
 				continue
@@ -128,7 +129,7 @@ func (repo *userRepo) GetUsersByIds(db *gorm.DB, userIDs []uint64) ([]*model.Use
 }
 
 // GetUserByPhone 根据手机号获取用户
-func (repo *userRepo) GetUserByPhone(db *gorm.DB, phone int) (*model.UserBaseModel, error) {
+func (repo *userRepo) GetUserByPhone(ctx context.Context, db *gorm.DB, phone int) (*model.UserBaseModel, error) {
 	user := model.UserBaseModel{}
 	err := db.Where("phone = ?", phone).First(&user).Error
 	if err != nil {
@@ -139,7 +140,7 @@ func (repo *userRepo) GetUserByPhone(db *gorm.DB, phone int) (*model.UserBaseMod
 }
 
 // GetUserByEmail 根据邮箱获取手机号
-func (repo *userRepo) GetUserByEmail(db *gorm.DB, phone string) (*model.UserBaseModel, error) {
+func (repo *userRepo) GetUserByEmail(ctx context.Context, db *gorm.DB, phone string) (*model.UserBaseModel, error) {
 	user := model.UserBaseModel{}
 	err := db.Where("email = ?", phone).First(&user).Error
 	if err != nil {

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,7 @@ func FollowList(c *gin.Context) {
 	curUserID := handler.GetUserID(c)
 	log.Infof("cur uid: %d", curUserID)
 
-	_, err := user.Svc.GetUserByID(uint64(userID))
+	_, err := user.Svc.GetUserByID(context.TODO(), uint64(userID))
 	if err != nil {
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
@@ -37,7 +38,7 @@ func FollowList(c *gin.Context) {
 	lastID, _ := strconv.Atoi(lastIDStr)
 	limit := 10
 
-	userFollowList, err := user.Svc.GetFollowingUserList(uint64(userID), uint64(lastID), limit+1)
+	userFollowList, err := user.Svc.GetFollowingUserList(context.TODO(), uint64(userID), uint64(lastID), limit+1)
 	if err != nil {
 		log.Warnf("get following user list err: %+v", err)
 		handler.SendResponse(c, errno.InternalServerError, nil)
@@ -57,7 +58,7 @@ func FollowList(c *gin.Context) {
 		userIDs = append(userIDs, v.FollowedUID)
 	}
 
-	userOutList, err := user.Svc.BatchGetUsers(curUserID, userIDs)
+	userOutList, err := user.Svc.BatchGetUsers(context.TODO(), curUserID, userIDs)
 	if err != nil {
 		log.Warnf("batch get users err: %v", err)
 		handler.SendResponse(c, errno.InternalServerError, nil)
