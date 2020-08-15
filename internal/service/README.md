@@ -1,13 +1,16 @@
 # service
 
- - 业务逻辑层，处于 handler 层和 repository 层之间 
- - service 只能通过 repository 层获取数据
+ - 业务逻辑层，处于 `handler` 层和 `repository` 层之间 
+ - `service` 只能通过 `repository` 层获取数据
  - 面向接口编程
  - 依赖接口，不要依赖实现
  - 如果有事务处理，在这一层进行处理
- - 如果是调用的第三方服务，请不要加cache, 避免缓存不一致(对方更新数据，这边无法知晓)
+ - 如果是调用的第三方服务，请不要加 `cache`, 避免缓存不一致(对方更新数据，这边无法知晓)
+ - 由于 `service` 会被 `http` 或 `rpc` 调用，默认会提供 `http` 调用的，比如：`GetUserInfo()`，
+   如果 `rpc` 需要调用，可以对 `GetUserInfo()` 进行一层封装, 比如：`GetUser()`。
  
  ## Reference
+ 
  - https://github.com/qiangxue/go-rest-api
  - https://github.com/irahardianto/service-pattern-go
  - https://github.com/golang-standards/project-layout
