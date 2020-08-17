@@ -4,9 +4,10 @@
 - 新增 增加job目录，可以在 `cmd/job` 中定义具体任务
 - 优化 http client, 支持原生(raw)包方式请求和第三方库resty
 - 优化 snake new 命令，使用新的 main.go 文件
+- 优化 `service` 和 `repository` 公共方法增加首个参数 `ctx Context.context`
 
 ## v1.2.0
-- 优化 main.go文件，使用 App 全局化配置
+- 优化 main.go 文件，使用 App 全局化配置
 - 优化 将 config 目录移至到 pkg 目录，并将配置解析到结构体，方便全局直接使用
 - 新增 sign 包，用于url签名校验
 
