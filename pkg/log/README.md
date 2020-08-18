@@ -1,8 +1,9 @@
 # 说明
 
-本logger主要是对zap库的封装，便于使用。  
+本logger主要是对zap库的封装，便于使用。当然也可以根据接口使用其他日志库，比如 `logrus`。
 
 ## 日志功能
+
 - 将日志信息记录到日志文件里
 - 日志切割-能够根据日志文件大小或时间间隔进行切割
 - 支持不同的日志级别(eg：info,debug,warn,error,fatal)
@@ -28,7 +29,8 @@ log.Warnf("params is empty")
 这样做的好处是：避免相同日志在多个地方打印，让排查问题更简单。
 
 ## Reference
- - 日志基础库zap: https://github.com/uber-go/zap
+
+ - 日志基础库 zap: https://github.com/uber-go/zap
  - 日志分割库-按时间：https://github.com/lestrrat-go/file-rotatelogs
  - 日志分割库-按大小：https://github.com/natefinch/lumberjack 
  - [深度 | 从Go高性能日志库zap看如何实现高性能Go组件](https://mp.weixin.qq.com/s/i0bMh_gLLrdnhAEWlF-xDw)
