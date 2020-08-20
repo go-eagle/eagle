@@ -124,6 +124,10 @@ snake new github.com/foo/bar -d ./
 
 `http://localhost:8080/swagger/index.html`
 
+## 开发规范
+
+遵循: [Uber Go 语言编码规范](https://github.com/xxjwxc/uber_go_guide_cn)
+
 ## 📖 开发规约
 
 - [配置说明](https://github.com/1024casts/snake/blob/master/conf)
