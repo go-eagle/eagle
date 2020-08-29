@@ -11,7 +11,7 @@ log:
   logger_file: /data/log/snake.log   # 日志文件
   logger_warn_file: /data/log/snake.wf.log
   logger_error_file: /data/log/snake.err.log
-  log_format_text: true           # 日志的输出格式，json或者plaintext，true会输出成plaintext格式，false会输出成json格式
+  log_format_text: false          # 日志的输出格式，json或者plaintext，目前设置为false即可，暂时也只支持json格式
   log_rolling_policy: daily,      # rotate依据，可选的有：daily, hourly。如果选daily(默认)则根据天进行转存，如果是hourly则根据小时进行转存
   log_rotate_date: 1              # rotate转存时间，配合rollingPolicy: daily使用
   log_rotate_size: 1              # rotate转存大小，配合rollingPolicy: size使用
