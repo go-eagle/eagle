@@ -57,6 +57,21 @@ func StringSliceContains(ss []string, s string) bool {
 	return false
 }
 
+// IsInSlice 判断某一值是否在slice中
+// 因为使用了反射，所以时间开销比较大，使用中根据实际情况进行选择
+func IsInSlice(value interface{}, sli interface{}) bool {
+	switch reflect.TypeOf(sli).Kind() {
+	case reflect.Slice, reflect.Array:
+		s := reflect.ValueOf(sli)
+		for i := 0; i < s.Len(); i++ {
+			if reflect.DeepEqual(value, s.Index(i).Interface()) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // Uint64ShuffleSlice 对slice进行随机
 func Uint64ShuffleSlice(a []uint64) []uint64 {
 	rand.Seed(time.Now().UnixNano())

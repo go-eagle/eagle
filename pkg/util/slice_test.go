@@ -202,3 +202,35 @@ func TestStringSliceContains(t *testing.T) {
 		})
 	}
 }
+
+func TestIsInSlice(t *testing.T) {
+	type args struct {
+		value interface{}
+		sli   interface{}
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{"test int in slice", args{
+			value: 1,
+			sli:   []int{1, 2, 3},
+		}, true},
+		{"test int not in slice", args{
+			value: 4,
+			sli:   []int{1, 2, 3},
+		}, false},
+		{"test string in slice", args{
+			value: "golang",
+			sli:   []string{"golang", "mysql", "redis"},
+		}, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IsInSlice(tt.args.value, tt.args.sli); got != tt.want {
+				t.Errorf("IsInSlice() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
