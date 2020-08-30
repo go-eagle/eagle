@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/1024casts/snake/pkg/util"
+	"github.com/1024casts/snake/pkg/utils"
 )
 
 const (
@@ -40,7 +40,7 @@ func newZapLogger(cfg *Config) (Logger, error) {
 	var cores []zapcore.Core
 	var options []zap.Option
 	// 设置初始化字段
-	option := zap.Fields(zap.String("ip", util.GetLocalIP()), zap.String("app", viper.GetString("name")))
+	option := zap.Fields(zap.String("ip", utils.GetLocalIP()), zap.String("app", viper.GetString("name")))
 	options = append(options, option)
 
 	allLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {

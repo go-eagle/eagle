@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/1024casts/snake/pkg/util"
+	"github.com/1024casts/snake/pkg/utils"
 )
 
 // CryptoFunc 签名加密函数
@@ -103,7 +103,7 @@ func (s *Signer) GetAppID() string {
 
 // RandNonceStr 自动生成16位随机字符串参数
 func (s *Signer) RandNonceStr() *Signer {
-	return s.SetNonceStr(util.RandomStr(16))
+	return s.SetNonceStr(utils.RandomStr(16))
 }
 
 // SetSignBodyPrefix 设置签名字符串的前缀字符串

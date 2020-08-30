@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/1024casts/snake/pkg/util"
+	"github.com/1024casts/snake/pkg/utils"
 )
 
 // Verifier define struct
@@ -70,7 +70,7 @@ func (v *Verifier) MustStrings(key string) []string {
 
 // MustInt64 获取Int64值
 func (v *Verifier) MustInt64(key string) int64 {
-	n, _ := util.StringToInt64(v.MustString(key))
+	n, _ := utils.StringToInt64(v.MustString(key))
 	return n
 }
 
