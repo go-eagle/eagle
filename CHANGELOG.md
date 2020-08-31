@@ -5,6 +5,7 @@
 - 优化 http client, 支持原生(raw)包方式请求和第三方库resty
 - 优化 snake new 命令，使用新的 main.go 文件
 - 优化 `service` 和 `repository` 公共方法增加首个参数 `ctx Context.context`
+- 优化 修改目录 `pkg/util` 为 `pkg/utils`
 
 ## v1.2.0
 - 优化 main.go 文件，使用 App 全局化配置
