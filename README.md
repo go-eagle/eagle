@@ -221,6 +221,7 @@ supervisorctl restart snake
 ## 🏘️ 谁在用
 
 - [1024课堂](https://1024casts.com)
+- [FastIM](https://github.com/1024casts/fastim)
 
 ## 💬 Discussion
 
