@@ -12,7 +12,7 @@ func RequestID() gin.HandlerFunc {
 		// Check for incoming header, use it if exists
 		requestID := c.Request.Header.Get(utils.XRequestID)
 
-		// Create request id with UUID4
+		// Create request id with UUID
 		if requestID == "" {
 			requestID = utils.GenRequestID()
 		}
