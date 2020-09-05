@@ -3,7 +3,6 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/1024casts/snake/pkg/constvar"
 	"github.com/1024casts/snake/pkg/utils"
 )
 
@@ -11,18 +10,18 @@ import (
 func RequestID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Check for incoming header, use it if exists
-		requestID := c.Request.Header.Get(constvar.XRequestID)
+		requestID := c.Request.Header.Get(utils.XRequestID)
 
 		// Create request id with UUID4
 		if requestID == "" {
-			requestID = utils.GenUUID()
+			requestID = utils.GenRequestID()
 		}
 
 		// Expose it for use in the application
-		c.Set(constvar.XRequestID, requestID)
+		c.Set(utils.XRequestID, requestID)
 
 		// Set X-Request-ID header
-		c.Writer.Header().Set(constvar.XRequestID, requestID)
+		c.Writer.Header().Set(utils.XRequestID, requestID)
 		c.Next()
 	}
 }

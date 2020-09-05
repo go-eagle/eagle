@@ -8,7 +8,4 @@ const (
 
 	// DefaultAvatar 默认头像 key
 	DefaultAvatar = "default_avatar.png"
-
-	// XRequestID 全局唯一ID key
-	XRequestID = "X-Request-ID"
 )
