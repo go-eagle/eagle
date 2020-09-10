@@ -24,11 +24,15 @@ type FollowRepo interface {
 }
 
 // userFollowRepo 用户仓库
-type userFollowRepo struct{}
+type userFollowRepo struct {
+	db *gorm.DB
+}
 
 // NewUserFollowRepo 实例化用户仓库
-func NewUserFollowRepo() FollowRepo {
-	return &userFollowRepo{}
+func NewUserFollowRepo(db *gorm.DB) FollowRepo {
+	return &userFollowRepo{
+		db: db,
+	}
 }
 
 func (repo *userFollowRepo) CreateUserFollow(ctx context.Context, db *gorm.DB, userID, followedUID uint64) error {

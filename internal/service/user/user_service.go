@@ -62,10 +62,11 @@ type userService struct {
 // 通过 NewService 函数初始化 Service 接口
 // 依赖接口，不要依赖实现，面向接口编程
 func NewUserService() Service {
+	db := model.GetDB()
 	return &userService{
-		userRepo:       user.NewUserRepo(),
-		userFollowRepo: user.NewUserFollowRepo(),
-		userStatRepo:   user.NewUserStatRepo(),
+		userRepo:       user.NewUserRepo(db),
+		userFollowRepo: user.NewUserFollowRepo(db),
+		userStatRepo:   user.NewUserStatRepo(db),
 	}
 }
 
@@ -83,7 +84,7 @@ func (srv *userService) Register(ctx context.Context, username, email, password 
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
 	}
-	_, err = srv.userRepo.Create(ctx, model.GetDB(), u)
+	_, err = srv.userRepo.Create(ctx, u)
 	if err != nil {
 		return errors.Wrapf(err, "create user")
 	}
@@ -126,7 +127,7 @@ func (srv *userService) PhoneLogin(ctx context.Context, phone int, verifyCode in
 			Phone:    phone,
 			Username: strconv.Itoa(phone),
 		}
-		u.ID, err = srv.userRepo.Create(ctx, model.GetDB(), u)
+		u.ID, err = srv.userRepo.Create(ctx, u)
 		if err != nil {
 			return "", errors.Wrapf(err, "[login] create user err")
 		}
@@ -141,7 +142,7 @@ func (srv *userService) PhoneLogin(ctx context.Context, phone int, verifyCode in
 }
 
 func (srv *userService) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
-	err := srv.userRepo.Update(ctx, model.GetDB(), id, userMap)
+	err := srv.userRepo.Update(ctx, id, userMap)
 
 	if err != nil {
 		return err
@@ -152,7 +153,7 @@ func (srv *userService) UpdateUser(ctx context.Context, id uint64, userMap map[s
 
 // GetUserByID 获取单条用户信息
 func (srv *userService) GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error) {
-	userModel, err := srv.userRepo.GetUserByID(ctx, model.GetDB(), id)
+	userModel, err := srv.userRepo.GetUserByID(ctx, id)
 	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by id: %d", id)
 	}
@@ -175,13 +176,13 @@ func (srv *userService) GetUserInfoByID(ctx context.Context, id uint64) (*model.
 func (srv *userService) BatchGetUsers(ctx context.Context, userID uint64, userIDs []uint64) ([]*model.UserInfo, error) {
 	infos := make([]*model.UserInfo, 0)
 	// 批量获取用户信息
-	users, err := srv.userRepo.GetUsersByIds(ctx, model.GetDB(), userIDs)
+	users, err := srv.userRepo.GetUsersByIds(ctx, userIDs)
 	if err != nil {
 		return nil, errors.Wrap(err, "[user_service] batch get user err")
 	}
 
 	// 获取当前用户信息
-	curUser, err := srv.userRepo.GetUserByID(ctx, model.GetDB(), userID)
+	curUser, err := srv.userRepo.GetUserByID(ctx, userID)
 	if err != nil {
 		return nil, errors.Wrap(err, "[user_service] get one user err")
 	}
@@ -211,7 +212,7 @@ func (srv *userService) BatchGetUsers(ctx context.Context, userID uint64, userID
 	}
 
 	// 获取用户统计
-	userStatMap, err := srv.userStatRepo.GetUserStatByIDs(ctx, model.GetDB(), userIDs)
+	userStatMap, err := srv.userStatRepo.GetUserStatByIDs(ctx, userIDs)
 	if err != nil {
 		errChan <- err
 	}
@@ -279,7 +280,7 @@ func (srv *userService) BatchGetUsers(ctx context.Context, userID uint64, userID
 }
 
 func (srv *userService) GetUserByPhone(ctx context.Context, phone int) (*model.UserBaseModel, error) {
-	userModel, err := srv.userRepo.GetUserByPhone(ctx, model.GetDB(), phone)
+	userModel, err := srv.userRepo.GetUserByPhone(ctx, phone)
 	if err != nil || gorm.IsRecordNotFoundError(err) {
 		return userModel, errors.Wrapf(err, "get user info err from db by phone: %d", phone)
 	}
@@ -288,7 +289,7 @@ func (srv *userService) GetUserByPhone(ctx context.Context, phone int) (*model.U
 }
 
 func (srv *userService) GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error) {
-	userModel, err := srv.userRepo.GetUserByEmail(ctx, model.GetDB(), email)
+	userModel, err := srv.userRepo.GetUserByEmail(ctx, email)
 	if err != nil || gorm.IsRecordNotFoundError(err) {
 		return userModel, errors.Wrapf(err, "get user info err from db by email: %s", email)
 	}

@@ -15,18 +15,20 @@ import (
 type StatRepo interface {
 	IncrFollowCount(ctx context.Context, db *gorm.DB, userID uint64, step int) error
 	IncrFollowerCount(ctx context.Context, db *gorm.DB, userID uint64, step int) error
-	GetUserStatByID(ctx context.Context, db *gorm.DB, userID uint64) (*model.UserStatModel, error)
-	GetUserStatByIDs(ctx context.Context, db *gorm.DB, userID []uint64) (map[uint64]*model.UserStatModel, error)
+	GetUserStatByID(ctx context.Context, userID uint64) (*model.UserStatModel, error)
+	GetUserStatByIDs(ctx context.Context, userID []uint64) (map[uint64]*model.UserStatModel, error)
 }
 
-// userRepo 用户仓库
+// userBaseRepo 用户仓库
 type userStatRepo struct {
+	db        *gorm.DB
 	userCache *user.Cache
 }
 
 // NewUserStatRepo 实例化用户仓库
-func NewUserStatRepo() StatRepo {
+func NewUserStatRepo(db *gorm.DB) StatRepo {
 	return &userStatRepo{
+		db:        db,
 		userCache: user.NewUserCache(),
 	}
 }
@@ -54,9 +56,9 @@ func (repo *userStatRepo) IncrFollowerCount(ctx context.Context, db *gorm.DB, us
 }
 
 // GetUserStatByID 获取用户统计数据
-func (repo *userStatRepo) GetUserStatByID(ctx context.Context, db *gorm.DB, userID uint64) (*model.UserStatModel, error) {
+func (repo *userStatRepo) GetUserStatByID(ctx context.Context, userID uint64) (*model.UserStatModel, error) {
 	userStat := model.UserStatModel{}
-	err := db.Where("user_id = ?", userID).First(&userStat).Error
+	err := repo.db.Where("user_id = ?", userID).First(&userStat).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errors.Wrap(err, "[user_stat_repo] get user stat err")
 	}
@@ -65,11 +67,11 @@ func (repo *userStatRepo) GetUserStatByID(ctx context.Context, db *gorm.DB, user
 }
 
 // GetUserStatByIDs 批量获取用户统计数据
-func (repo *userStatRepo) GetUserStatByIDs(ctx context.Context, db *gorm.DB, userID []uint64) (map[uint64]*model.UserStatModel, error) {
+func (repo *userStatRepo) GetUserStatByIDs(ctx context.Context, userID []uint64) (map[uint64]*model.UserStatModel, error) {
 	userStats := make([]*model.UserStatModel, 0)
 	retMap := make(map[uint64]*model.UserStatModel)
 
-	err := db.Where("user_id in (?)", userID).Find(&userStats).Error
+	err := repo.db.Where("user_id in (?)", userID).Find(&userStats).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return retMap, errors.Wrap(err, "[user_stat_repo] get user stat err")
 	}

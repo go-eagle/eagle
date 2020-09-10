@@ -17,29 +17,31 @@ import (
 
 // BaseRepo 定义用户仓库接口
 type BaseRepo interface {
-	Create(ctx context.Context, db *gorm.DB, user model.UserBaseModel) (id uint64, err error)
-	Update(ctx context.Context, db *gorm.DB, id uint64, userMap map[string]interface{}) error
-	GetUserByID(ctx context.Context, db *gorm.DB, id uint64) (*model.UserBaseModel, error)
-	GetUsersByIds(ctx context.Context, db *gorm.DB, ids []uint64) ([]*model.UserBaseModel, error)
-	GetUserByPhone(ctx context.Context, db *gorm.DB, phone int) (*model.UserBaseModel, error)
-	GetUserByEmail(ctx context.Context, db *gorm.DB, email string) (*model.UserBaseModel, error)
+	Create(ctx context.Context, user model.UserBaseModel) (id uint64, err error)
+	Update(ctx context.Context, id uint64, userMap map[string]interface{}) error
+	GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error)
+	GetUsersByIds(ctx context.Context, ids []uint64) ([]*model.UserBaseModel, error)
+	GetUserByPhone(ctx context.Context, phone int) (*model.UserBaseModel, error)
+	GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error)
 }
 
-// userRepo 用户仓库
-type userRepo struct {
+// userBaseRepo 用户仓库
+type userBaseRepo struct {
+	db        *gorm.DB
 	userCache *user.Cache
 }
 
 // NewUserRepo 实例化用户仓库
-func NewUserRepo() BaseRepo {
-	return &userRepo{
+func NewUserRepo(db *gorm.DB) BaseRepo {
+	return &userBaseRepo{
+		db:        db,
 		userCache: user.NewUserCache(),
 	}
 }
 
 // Create 创建用户
-func (repo *userRepo) Create(ctx context.Context, db *gorm.DB, user model.UserBaseModel) (id uint64, err error) {
-	err = db.Create(&user).Error
+func (repo *userBaseRepo) Create(ctx context.Context, user model.UserBaseModel) (id uint64, err error) {
+	err = repo.db.Create(&user).Error
 	if err != nil {
 		return 0, errors.Wrap(err, "[user_repo] create user err")
 	}
@@ -48,8 +50,8 @@ func (repo *userRepo) Create(ctx context.Context, db *gorm.DB, user model.UserBa
 }
 
 // Update 更新用户信息
-func (repo *userRepo) Update(ctx context.Context, db *gorm.DB, id uint64, userMap map[string]interface{}) error {
-	user, err := repo.GetUserByID(ctx, db, id)
+func (repo *userBaseRepo) Update(ctx context.Context, id uint64, userMap map[string]interface{}) error {
+	user, err := repo.GetUserByID(ctx, id)
 	if err != nil {
 		return errors.Wrap(err, "[user_repo] update user data err")
 	}
@@ -60,11 +62,11 @@ func (repo *userRepo) Update(ctx context.Context, db *gorm.DB, id uint64, userMa
 		log.Warnf("[user_repo] delete user cache err: %v", err)
 	}
 
-	return db.Model(user).Updates(userMap).Error
+	return repo.db.Model(user).Updates(userMap).Error
 }
 
 // GetUserByID 获取用户
-func (repo *userRepo) GetUserByID(ctx context.Context, db *gorm.DB, id uint64) (*model.UserBaseModel, error) {
+func (repo *userBaseRepo) GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error) {
 	start := time.Now()
 	defer func() {
 		log.Infof("[repo] get user by id: %d cost: %d ns", id, time.Now().Sub(start).Nanoseconds())
@@ -92,7 +94,7 @@ func (repo *userRepo) GetUserByID(ctx context.Context, db *gorm.DB, id uint64) (
 	data := &model.UserBaseModel{}
 	if isLock {
 		// 从数据库中获取
-		err = db.Where(&model.UserBaseModel{ID: id}).First(data).Error
+		err = repo.db.Where(&model.UserBaseModel{ID: id}).First(data).Error
 		if err != nil && err != gorm.ErrRecordNotFound {
 			return nil, errors.Wrap(err, "[user_repo] get user data err")
 		}
@@ -107,7 +109,7 @@ func (repo *userRepo) GetUserByID(ctx context.Context, db *gorm.DB, id uint64) (
 }
 
 // GetUsersByIds 批量获取用户
-func (repo *userRepo) GetUsersByIds(ctx context.Context, db *gorm.DB, userIDs []uint64) ([]*model.UserBaseModel, error) {
+func (repo *userBaseRepo) GetUsersByIds(ctx context.Context, userIDs []uint64) ([]*model.UserBaseModel, error) {
 	users := make([]*model.UserBaseModel, 0)
 
 	// 从cache批量获取
@@ -121,7 +123,7 @@ func (repo *userRepo) GetUsersByIds(ctx context.Context, db *gorm.DB, userIDs []
 		idx := repo.userCache.GetUserBaseCacheKey(userID)
 		userModel, ok := userCacheMap[idx]
 		if !ok {
-			userModel, err = repo.GetUserByID(ctx, db, userID)
+			userModel, err = repo.GetUserByID(ctx, userID)
 			if err != nil {
 				log.Warnf("get user model err: %v", err)
 				continue
@@ -133,9 +135,9 @@ func (repo *userRepo) GetUsersByIds(ctx context.Context, db *gorm.DB, userIDs []
 }
 
 // GetUserByPhone 根据手机号获取用户
-func (repo *userRepo) GetUserByPhone(ctx context.Context, db *gorm.DB, phone int) (*model.UserBaseModel, error) {
+func (repo *userBaseRepo) GetUserByPhone(ctx context.Context, phone int) (*model.UserBaseModel, error) {
 	user := model.UserBaseModel{}
-	err := db.Where("phone = ?", phone).First(&user).Error
+	err := repo.db.Where("phone = ?", phone).First(&user).Error
 	if err != nil {
 		return nil, errors.Wrap(err, "[user_repo] get user err by phone")
 	}
@@ -144,9 +146,9 @@ func (repo *userRepo) GetUserByPhone(ctx context.Context, db *gorm.DB, phone int
 }
 
 // GetUserByEmail 根据邮箱获取手机号
-func (repo *userRepo) GetUserByEmail(ctx context.Context, db *gorm.DB, phone string) (*model.UserBaseModel, error) {
+func (repo *userBaseRepo) GetUserByEmail(ctx context.Context, phone string) (*model.UserBaseModel, error) {
 	user := model.UserBaseModel{}
-	err := db.Where("email = ?", phone).First(&user).Error
+	err := repo.db.Where("email = ?", phone).First(&user).Error
 	if err != nil {
 		return nil, errors.Wrap(err, "[user_repo] get user err by email")
 	}
