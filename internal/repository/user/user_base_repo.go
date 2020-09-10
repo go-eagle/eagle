@@ -65,6 +65,10 @@ func (repo *userRepo) Update(ctx context.Context, db *gorm.DB, id uint64, userMa
 
 // GetUserByID 获取用户
 func (repo *userRepo) GetUserByID(ctx context.Context, db *gorm.DB, id uint64) (*model.UserBaseModel, error) {
+	start := time.Now()
+	defer func() {
+		log.Infof("[repo] get user by id: %d cost: %d ns", id, time.Now().Sub(start).Nanoseconds())
+	}()
 	// 从cache获取
 	userModel, err := repo.userCache.GetUserBaseCache(id)
 	if err != nil {
