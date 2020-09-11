@@ -1,8 +1,10 @@
 package routers
 
 import (
+	"github.com/1024casts/snake/pkg/snake"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 
 	"github.com/swaggo/gin-swagger" //nolint: goimports
 	"github.com/swaggo/gin-swagger/swaggerFiles"
@@ -31,16 +33,21 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	// 静态资源，主要是图片
 	g.Static("/static", "./static")
 
-	// swagger api docs
-	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	// pprof router 性能分析路由
-	// 默认关闭，开发环境下可以打开
-	// 访问方式: HOST/debug/pprof
-	// 通过 HOST/debug/pprof/profile 生成profile
-	// 查看分析图 go tool pprof -http=:5000 profile
-	// see: https://github.com/gin-contrib/pprof
-	pprof.Register(g)
+	// 返回404，仅在test环境下开启，线上关闭
+	if viper.GetString("app.run_mode") == snake.ModeDebug {
+		// swagger api docs
+		g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+		// pprof router 性能分析路由
+		// 默认关闭，开发环境下可以打开
+		// 访问方式: HOST/debug/pprof
+		// 通过 HOST/debug/pprof/profile 生成profile
+		// 查看分析图 go tool pprof -http=:5000 profile
+		// see: https://github.com/gin-contrib/pprof
+		pprof.Register(g)
+	} else {
+		// disable swagger docs for release  env=release
+		g.GET("/swagger/*any", ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "env"))
+	}
 
 	// 认证相关路由
 	g.POST("/v1/register", user.Register)
