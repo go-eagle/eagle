@@ -12,6 +12,7 @@ import (
 	"github.com/1024casts/snake/internal/idl"
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/repository/user"
+	v0pb "github.com/1024casts/snake/internal/rpc/user/v0"
 	"github.com/1024casts/snake/pkg/auth"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/token"
@@ -27,12 +28,13 @@ const (
 	MaxID = 0xffffffffffff
 )
 
-// Service 用户服务接口定义
-// 使用大写的service对外保留方法
-type Service interface {
+// UserService 用户服务接口定义
+// 使用大写的UserService对外保留方法
+type UserService interface {
 	Register(ctx context.Context, username, email, password string) error
 	EmailLogin(ctx context.Context, email, password string) (tokenStr string, err error)
 	PhoneLogin(ctx context.Context, phone int, verifyCode int) (tokenStr string, err error)
+	LoginByPhone(ctx context.Context, req *v0pb.PhoneLoginRequest) (reply *v0pb.PhoneLoginReply, err error)
 	GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error)
 	GetUserInfoByID(ctx context.Context, id uint64) (*model.UserInfo, error)
 	GetUserByPhone(ctx context.Context, phone int) (*model.UserBaseModel, error)
@@ -61,7 +63,7 @@ type userService struct {
 // NewUserService 实例化一个userService
 // 通过 NewService 函数初始化 Service 接口
 // 依赖接口，不要依赖实现，面向接口编程
-func NewUserService() Service {
+func NewUserService() UserService {
 	db := model.GetDB()
 	return &userService{
 		userRepo:       user.NewUserRepo(db),
@@ -111,6 +113,12 @@ func (srv *userService) EmailLogin(ctx context.Context, email, password string) 
 	}
 
 	return tokenStr, nil
+}
+
+// LoginByPhone phone login, grpc wrapper
+func (srv *userService) LoginByPhone(ctx context.Context, req *v0pb.PhoneLoginRequest) (reply *v0pb.PhoneLoginReply, err error) {
+
+	return
 }
 
 // PhoneLogin 邮箱登录

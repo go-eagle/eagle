@@ -16,6 +16,7 @@ require (
 	github.com/go-redis/redis v6.15.8+incompatible
 	github.com/go-resty/resty/v2 v2.2.0
 	github.com/go-test/deep v1.0.6
+	github.com/golang/protobuf v1.4.2
 	github.com/golang/snappy v0.0.1
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/google/uuid v1.1.1
@@ -49,6 +50,8 @@ require (
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/sys v0.0.0-20200523222454-059865788121 // indirect
 	golang.org/x/tools v0.0.0-20200527183253-8e7acdbce89d // indirect
+	google.golang.org/grpc v1.27.0
+	google.golang.org/protobuf v1.23.0
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/mail.v2 v2.3.1 // indirect

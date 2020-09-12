@@ -4,7 +4,7 @@ RPC client 接口定义层，基于 protobuf 严格定义 RPC 接口路由、参
 
 ## 准备
 
-- 安装 protoc 编译器
+### 安装 protoc 编译器
 
 ```bash
 $ PB_REL="https://github.com/protocolbuffers/protobuf/releases"
@@ -14,6 +14,40 @@ $ unzip protoc-3.12.1-linux-x86_64.zip -d /usr/local
 
 $ export PATH="$PATH:/usr/local/bin"
 ```
+
+查看版本
+
+```bash
+protoc --version
+libprotoc 3.12.1
+```
+
+### 安装 protoc-gen-go 插件
+
+运行：
+
+```shell script
+go get -u github.com/golang/protobuf/{proto,protoc-gen-go}
+```
+
+编译后会安装 `protoc-gen-go` 到 `$GOBIN` 目录, 默认在 `$GOPATH/bin`.   
+该目录必须在系统的环境变量 `$PATH中`，这样在编译 `.proto` 文件时 `protocol` 编译器才能找到插件。
+
+### 安装 grpc-go
+
+grpc-go包含了Go的grpc库
+
+```
+$ go get -u google.golang.org/grpc@v1.27.0
+```
+
+### 编辑 proto 文件
+
+```shell script
+protoc -I . --go_out=plugins=grpc:. user.proto
+```
+
+会在 `user.proto.go` 里生成服务端和客户端的代码。
 
 ## 目录结构
 
@@ -26,8 +60,8 @@ $ export PATH="$PATH:/usr/local/bin"
 ```bash
 rpc/user # 业务服务
 └── v0   # 服务版本
-    ├── echo.pb.go     # protobuf message 定义代码[自动生成]
-    └── echo.proto     # protobuf 描述文件[业务方定义]
+    ├── user.pb.go     # protobuf message 定义代码[自动生成]
+    └── user.proto     # protobuf 描述文件[业务方定义]
 ```
 
 ## 定义接口
