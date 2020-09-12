@@ -54,10 +54,10 @@ test-coverage: ## Run tests with coverage
 test-view: ## view test result
 	@go tool cover -html=coverage.txt
 
-.PHONY: swag-init
-swag-init:
-	swag init
-	@echo "swag init done"
+.PHONY: gen-docs
+gen-docs:
+	@swag init
+	@echo "gen-docs done"
 	@echo "see docs by: http://localhost:8080/swagger/index.html"
 
 .PHONY: ca
@@ -70,6 +70,6 @@ help:
 	@echo "make clean - remove binary file and vim swp files"
 	@echo "make gotool - run go tool 'fmt' and 'vet'"
 	@echo "make ca - generate ca files"
-	@echo "make swag-init - gen swag doc"
+	@echo "make gen-docs - gen swag doc"
 
 

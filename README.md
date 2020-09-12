@@ -106,7 +106,7 @@ snake new github.com/foo/bar -d ./
 - make help 查看帮助
 - make dep 下载 Go 依赖包
 - make build 编译项目
-- make swag-init 生成接口文档
+- make gen-docs 生成接口文档
 - make test-coverage 生成测试覆盖
 - make lint 检查代码规范
 
