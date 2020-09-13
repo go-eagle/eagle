@@ -1,26 +1,26 @@
-package main
+package server
 
 import (
 	"flag"
 	"log"
 	"net"
 
-	"github.com/1024casts/snake/internal/service/user"
+	"google.golang.org/grpc"
 
 	pb "github.com/1024casts/snake/internal/rpc/user/v0"
-	"google.golang.org/grpc"
+	"github.com/1024casts/snake/internal/service"
 )
 
-func main() {
+func New(svc *service.Service) {
 	flag.Parse()
 
+	// todo: get addr from conf
 	lis, err := net.Listen("tcp", "127.0.0.1:1234")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	grpcServer := grpc.NewServer()
-	userService := user.NewUserService()
-	pb.RegisterUserServiceServer(grpcServer, userService)
+	pb.RegisterUserServiceServer(grpcServer, svc.UserSvc())
 	grpcServer.Serve(lis)
 }
