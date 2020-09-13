@@ -21,6 +21,7 @@ type FollowRepo interface {
 	GetFollowerUserList(ctx context.Context, userID, lastID uint64, limit int) ([]*model.UserFansModel, error)
 	GetFollowByUIds(ctx context.Context, userID uint64, followingUID []uint64) (map[uint64]*model.UserFollowModel, error)
 	GetFansByUIds(ctx context.Context, userID uint64, followerUID []uint64) (map[uint64]*model.UserFansModel, error)
+	Close()
 }
 
 // userFollowRepo 用户仓库
@@ -125,4 +126,9 @@ func (repo *userFollowRepo) GetFansByUIds(ctx context.Context, userID uint64, fo
 	}
 
 	return retMap, nil
+}
+
+// Close close db
+func (repo *userFollowRepo) Close() {
+	repo.db.Close()
 }

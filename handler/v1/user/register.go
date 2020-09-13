@@ -1,10 +1,10 @@
 package user
 
 import (
+	"github.com/1024casts/snake/internal/service"
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/handler"
-	"github.com/1024casts/snake/internal/service/user"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -41,7 +41,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	err := user.Svc.Register(c, req.Username, req.Email, req.Password)
+	err := service.Svc.UserSvc().Register(c, req.Username, req.Email, req.Password)
 	if err != nil {
 		log.Warnf("register err: %v", err)
 		handler.SendResponse(c, errno.ErrRegisterFailed, nil)

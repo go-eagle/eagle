@@ -17,6 +17,7 @@ type StatRepo interface {
 	IncrFollowerCount(ctx context.Context, db *gorm.DB, userID uint64, step int) error
 	GetUserStatByID(ctx context.Context, userID uint64) (*model.UserStatModel, error)
 	GetUserStatByIDs(ctx context.Context, userID []uint64) (map[uint64]*model.UserStatModel, error)
+	Close()
 }
 
 // userBaseRepo 用户仓库
@@ -81,4 +82,9 @@ func (repo *userStatRepo) GetUserStatByIDs(ctx context.Context, userID []uint64)
 	}
 
 	return retMap, nil
+}
+
+// Close close db
+func (repo *userStatRepo) Close() {
+	repo.db.Close()
 }

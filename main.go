@@ -19,6 +19,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/snake"
 	v "github.com/1024casts/snake/pkg/version"
@@ -28,6 +29,8 @@ import (
 var (
 	cfg     = pflag.StringP("config", "c", "", "snake config file path.")
 	version = pflag.BoolP("version", "v", false, "show version info.")
+
+	Svc *service.Service
 )
 
 // @title snake docs api
@@ -79,6 +82,15 @@ func main() {
 
 	// API Routes.
 	routers.Load(router)
+
+	// init service
+	svc := service.New()
+
+	// set global service
+	service.Svc = svc
+
+	// todo: start grpc server
+	//server.New(svc)
 
 	// start server
 	snake.App.Run()

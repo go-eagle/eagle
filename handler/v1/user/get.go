@@ -4,10 +4,11 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/1024casts/snake/internal/service"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/handler"
-	"github.com/1024casts/snake/internal/service/user"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -32,7 +33,7 @@ func Get(c *gin.Context) {
 	userID, _ := strconv.Atoi(userIDStr)
 
 	// Get the user by the `user_id` from the database.
-	u, err := user.Svc.GetUserByID(context.TODO(), uint64(userID))
+	u, err := service.Svc.UserSvc().GetUserByID(context.TODO(), uint64(userID))
 	if err != nil {
 		log.Warnf("get user info err: %v", err)
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)

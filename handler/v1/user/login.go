@@ -1,11 +1,11 @@
 package user
 
 import (
+	"github.com/1024casts/snake/internal/service"
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/handler"
 	"github.com/1024casts/snake/internal/model"
-	"github.com/1024casts/snake/internal/service/user"
 	"github.com/1024casts/snake/internal/service/vcode"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
@@ -36,7 +36,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	t, err := user.Svc.EmailLogin(c, req.Email, req.Password)
+	t, err := service.Svc.UserSvc().EmailLogin(c, req.Email, req.Password)
 	if err != nil {
 		log.Warnf("email login err: %v", err)
 		handler.SendResponse(c, errno.ErrEmailOrPassword, nil)
@@ -82,7 +82,7 @@ func PhoneLogin(c *gin.Context) {
 	}
 
 	// 登录
-	t, err := user.Svc.PhoneLogin(c, req.Phone, req.VerifyCode)
+	t, err := service.Svc.UserSvc().PhoneLogin(c, req.Phone, req.VerifyCode)
 	if err != nil {
 		handler.SendResponse(c, errno.ErrVerifyCode, nil)
 		return

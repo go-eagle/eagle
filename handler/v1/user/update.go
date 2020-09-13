@@ -4,8 +4,9 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/1024casts/snake/internal/service"
+
 	"github.com/1024casts/snake/handler"
-	"github.com/1024casts/snake/internal/service/user"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 
@@ -38,7 +39,7 @@ func Update(c *gin.Context) {
 	userMap := make(map[string]interface{})
 	userMap["avatar"] = req.Avatar
 	userMap["sex"] = req.Sex
-	err := user.Svc.UpdateUser(context.TODO(), uint64(userID), userMap)
+	err := service.Svc.UserSvc().UpdateUser(context.TODO(), uint64(userID), userMap)
 	if err != nil {
 		log.Warnf("[user] update user err, %v", err)
 		handler.SendResponse(c, errno.InternalServerError, nil)

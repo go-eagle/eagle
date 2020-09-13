@@ -4,10 +4,11 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/1024casts/snake/internal/service"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/handler"
-	"github.com/1024casts/snake/internal/service/user"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -28,7 +29,7 @@ func FollowList(c *gin.Context) {
 	curUserID := handler.GetUserID(c)
 	log.Infof("cur uid: %d", curUserID)
 
-	_, err := user.Svc.GetUserByID(context.TODO(), uint64(userID))
+	_, err := service.Svc.UserSvc().GetUserByID(context.TODO(), uint64(userID))
 	if err != nil {
 		handler.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
@@ -38,7 +39,7 @@ func FollowList(c *gin.Context) {
 	lastID, _ := strconv.Atoi(lastIDStr)
 	limit := 10
 
-	userFollowList, err := user.Svc.GetFollowingUserList(context.TODO(), uint64(userID), uint64(lastID), limit+1)
+	userFollowList, err := service.Svc.UserSvc().GetFollowingUserList(context.TODO(), uint64(userID), uint64(lastID), limit+1)
 	if err != nil {
 		log.Warnf("get following user list err: %+v", err)
 		handler.SendResponse(c, errno.InternalServerError, nil)
@@ -58,7 +59,7 @@ func FollowList(c *gin.Context) {
 		userIDs = append(userIDs, v.FollowedUID)
 	}
 
-	userOutList, err := user.Svc.BatchGetUsers(context.TODO(), curUserID, userIDs)
+	userOutList, err := service.Svc.UserSvc().BatchGetUsers(context.TODO(), curUserID, userIDs)
 	if err != nil {
 		log.Warnf("batch get users err: %v", err)
 		handler.SendResponse(c, errno.InternalServerError, nil)

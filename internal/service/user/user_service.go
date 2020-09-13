@@ -48,10 +48,9 @@ type UserService interface {
 	CancelUserFollow(ctx context.Context, userID uint64, followedUID uint64) error
 	GetFollowingUserList(ctx context.Context, userID uint64, lastID uint64, limit int) ([]*model.UserFollowModel, error)
 	GetFollowerUserList(ctx context.Context, userID uint64, lastID uint64, limit int) ([]*model.UserFansModel, error)
-}
 
-// Svc 直接初始化，可以避免在使用时再实例化
-var Svc = NewUserService()
+	Close()
+}
 
 // 用小写的 service 实现接口中定义的方法
 type userService struct {
@@ -451,4 +450,11 @@ func (srv *userService) GetFollowerUserList(ctx context.Context, userID uint64, 
 	}
 
 	return userFollowerList, nil
+}
+
+// Close close all user repo
+func (srv *userService) Close() {
+	srv.userRepo.Close()
+	srv.userFollowRepo.Close()
+	srv.userStatRepo.Close()
 }

@@ -23,6 +23,7 @@ type BaseRepo interface {
 	GetUsersByIds(ctx context.Context, ids []uint64) ([]*model.UserBaseModel, error)
 	GetUserByPhone(ctx context.Context, phone int) (*model.UserBaseModel, error)
 	GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error)
+	Close()
 }
 
 // userBaseRepo 用户仓库
@@ -154,4 +155,9 @@ func (repo *userBaseRepo) GetUserByEmail(ctx context.Context, phone string) (*mo
 	}
 
 	return &user, nil
+}
+
+// Close close db
+func (repo *userBaseRepo) Close() {
+	repo.db.Close()
 }

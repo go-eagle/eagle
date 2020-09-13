@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
+
 	// MySQL driver.
 	"github.com/jinzhu/gorm"
 	// GORM MySQL
@@ -43,21 +44,16 @@ func openDB(username, password, addr, name string) *gorm.DB {
 	db.Set("gorm:table_options", "CHARSET=utf8mb4")
 
 	// set for db connection
-	setupDB(db)
-
-	DB = db
-
-	return db
-}
-
-// setupDB 配置数据库
-func setupDB(db *gorm.DB) {
 	db.LogMode(viper.GetBool("mysql.show_log"))
 	// 用于设置最大打开的连接数，默认值为0表示不限制.设置最大的连接数，可以避免并发太高导致连接mysql出现too many connections的错误。
 	db.DB().SetMaxOpenConns(viper.GetInt("mysql.max_open_conn"))
 	// 用于设置闲置的连接数.设置闲置的连接数则当开启的一个连接使用完成后可以放在池里等候下一次使用。
 	db.DB().SetMaxIdleConns(viper.GetInt("mysql.max_idle_conn"))
 	db.DB().SetConnMaxLifetime(time.Minute * viper.GetDuration("mysql.conn_max_life_time"))
+
+	DB = db
+
+	return db
 }
 
 // GetDB 返回默认的数据库
