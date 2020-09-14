@@ -25,7 +25,6 @@ type Cache struct {
 func NewUserCache() *Cache {
 	encoding := cache.JSONEncoding{}
 	cachePrefix := cache.PrefixCacheKey
-	redis.Init()
 	return &Cache{
 		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, encoding, func() interface{} {
 			return &model.UserBaseModel{}
