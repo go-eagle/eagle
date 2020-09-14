@@ -78,6 +78,7 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, id uint64) (*model.Us
 		return nil, errors.Wrap(err, "[user_repo] get user cache data err")
 	}
 	if userModel != nil && userModel.ID > 0 {
+		log.Infof("get user base data from cache, uid: %d", id)
 		return userModel, nil
 	}
 
