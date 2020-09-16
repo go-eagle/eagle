@@ -81,6 +81,14 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, id uint64) (*model.Us
 		log.Infof("get user base data from cache, uid: %d", id)
 		return userModel, nil
 	}
+	// 防止缓存穿透，数据为空时缓存空对象，防止访问不存在的id而直接请求db
+	if userModel.ID == 0 {
+		err = repo.userCache.SetUserBaseCache(id, userModel)
+		if err != nil {
+			return userModel, errors.Wrap(err, "[user_repo] set user data err when userModel is empty")
+		}
+		return userModel, nil
+	}
 
 	// 加锁，防止缓存击穿
 	key := fmt.Sprintf("uid:%d", id)
