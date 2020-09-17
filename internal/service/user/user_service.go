@@ -28,6 +28,10 @@ const (
 	MaxID = 0xffffffffffff
 )
 
+// 用于触发编译期的接口的合理性检查机制
+// 如果userService没有实现UserService,会在编译期报错
+var _ UserService = (*userService)(nil)
+
 // UserService 用户服务接口定义
 // 使用大写的UserService对外保留方法
 type UserService interface {
