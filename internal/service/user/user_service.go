@@ -56,7 +56,7 @@ type UserService interface {
 	Close()
 }
 
-// 用小写的 service 实现接口中定义的方法
+// userService 用小写的 service 实现接口中定义的方法
 type userService struct {
 	userRepo       user.BaseRepo
 	userFollowRepo user.FollowRepo
@@ -152,6 +152,7 @@ func (srv *userService) PhoneLogin(ctx context.Context, phone int, verifyCode in
 	return tokenStr, nil
 }
 
+// UpdateUser update user info
 func (srv *userService) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
 	err := srv.userRepo.Update(ctx, id, userMap)
 
