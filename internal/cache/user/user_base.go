@@ -51,13 +51,13 @@ func (u *Cache) SetUserBaseCache(userID uint64, user *model.UserBaseModel) error
 }
 
 // GetUserBaseCache 获取用户cache
-func (u *Cache) GetUserBaseCache(userID uint64) (userModel *model.UserBaseModel, err error) {
+func (u *Cache) GetUserBaseCache(userID uint64) (data *model.UserBaseModel) {
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
-	err = u.cache.Get(cacheKey, &userModel)
+	err := u.cache.Get(cacheKey, &data)
 	if err != nil {
-		return userModel, err
+		return nil
 	}
-	return userModel, nil
+	return data
 }
 
 // MultiGetUserBaseCache 批量获取用户cache

@@ -68,26 +68,16 @@ func (repo *userBaseRepo) Update(ctx context.Context, id uint64, userMap map[str
 
 // GetUserByID 获取用户
 func (repo *userBaseRepo) GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error) {
+	var userBase *model.UserBaseModel
 	start := time.Now()
 	defer func() {
 		log.Infof("[repo] get user by id: %d cost: %d ns", id, time.Now().Sub(start).Nanoseconds())
 	}()
 	// 从cache获取
-	userModel, err := repo.userCache.GetUserBaseCache(id)
-	if err != nil {
-		return nil, errors.Wrap(err, "[user_repo] get user cache data err")
-	}
-	if userModel != nil && userModel.ID > 0 {
+	userBase = repo.userCache.GetUserBaseCache(id)
+	if userBase != nil {
 		log.Infof("get user base data from cache, uid: %d", id)
-		return userModel, nil
-	}
-	// 防止缓存穿透，数据为空时缓存空对象，防止访问不存在的id而直接请求db
-	if userModel.ID == 0 {
-		err = repo.userCache.SetUserBaseCache(id, userModel)
-		if err != nil {
-			return userModel, errors.Wrap(err, "[user_repo] set user data err when userModel is empty")
-		}
-		return userModel, nil
+		return userBase, nil
 	}
 
 	// 加锁，防止缓存击穿
@@ -101,10 +91,10 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, id uint64) (*model.Us
 	}
 	defer lock.Unlock(token)
 
-	data := &model.UserBaseModel{}
+	data := new(model.UserBaseModel)
 	if isLock {
 		// 从数据库中获取
-		err = repo.db.Where(&model.UserBaseModel{ID: id}).First(data).Error
+		err = repo.db.First(data, id).Error
 		if err != nil && err != gorm.ErrRecordNotFound {
 			return nil, errors.Wrap(err, "[user_repo] get user data err")
 		}
