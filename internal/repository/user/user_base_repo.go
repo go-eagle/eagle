@@ -87,7 +87,7 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, id uint64) (*model.Us
 
 	isLock, err := lock.Lock(token)
 	if err != nil || !isLock {
-		return nil, errors.Wrap(err, "[user_repo] lock err")
+		return nil, errors.Wrapf(err, "[user_repo] lock err, key: %s", key)
 	}
 	defer lock.Unlock(token)
 
