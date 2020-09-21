@@ -37,11 +37,11 @@ var _ UserService = (*userService)(nil)
 type UserService interface {
 	Register(ctx context.Context, username, email, password string) error
 	EmailLogin(ctx context.Context, email, password string) (tokenStr string, err error)
-	PhoneLogin(ctx context.Context, phone int, verifyCode int) (tokenStr string, err error)
+	PhoneLogin(ctx context.Context, phone int64, verifyCode int) (tokenStr string, err error)
 	LoginByPhone(ctx context.Context, req *v0pb.PhoneLoginRequest) (reply *v0pb.PhoneLoginReply, err error)
 	GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error)
 	GetUserInfoByID(ctx context.Context, id uint64) (*model.UserInfo, error)
-	GetUserByPhone(ctx context.Context, phone int) (*model.UserBaseModel, error)
+	GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error)
 	GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error)
 	UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error
 	BatchGetUsers(ctx context.Context, userID uint64, userIDs []uint64) ([]*model.UserInfo, error)
@@ -120,12 +120,19 @@ func (srv *userService) EmailLogin(ctx context.Context, email, password string) 
 
 // LoginByPhone phone login, grpc wrapper
 func (srv *userService) LoginByPhone(ctx context.Context, req *v0pb.PhoneLoginRequest) (reply *v0pb.PhoneLoginReply, err error) {
-
+	tokenStr, err := srv.PhoneLogin(ctx, req.Phone, int(req.VerifyCode))
+	if err != nil {
+		log.Warnf("[service.user] phone login err: %v, params: %v", err, req)
+	}
+	reply = &v0pb.PhoneLoginReply{
+		Ret: tokenStr,
+		Err: "",
+	}
 	return
 }
 
 // PhoneLogin 邮箱登录
-func (srv *userService) PhoneLogin(ctx context.Context, phone int, verifyCode int) (tokenStr string, err error) {
+func (srv *userService) PhoneLogin(ctx context.Context, phone int64, verifyCode int) (tokenStr string, err error) {
 	// 如果是已经注册用户，则通过手机号获取用户信息
 	u, err := srv.GetUserByPhone(ctx, phone)
 	if err != nil {
@@ -136,7 +143,7 @@ func (srv *userService) PhoneLogin(ctx context.Context, phone int, verifyCode in
 	if u.ID == 0 {
 		u := model.UserBaseModel{
 			Phone:    phone,
-			Username: strconv.Itoa(phone),
+			Username: strconv.Itoa(int(phone)),
 		}
 		u.ID, err = srv.userRepo.Create(ctx, u)
 		if err != nil {
@@ -291,7 +298,7 @@ func (srv *userService) BatchGetUsers(ctx context.Context, userID uint64, userID
 	return infos, nil
 }
 
-func (srv *userService) GetUserByPhone(ctx context.Context, phone int) (*model.UserBaseModel, error) {
+func (srv *userService) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error) {
 	userModel, err := srv.userRepo.GetUserByPhone(ctx, phone)
 	if err != nil || gorm.IsRecordNotFoundError(err) {
 		return userModel, errors.Wrapf(err, "get user info err from db by phone: %d", phone)

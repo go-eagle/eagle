@@ -25,11 +25,11 @@ const (
 type IVerifyCodeService interface {
 	// public func
 	GenLoginVCode(phone string) (int, error)
-	CheckLoginVCode(phone, vCode int) bool
-	GetLoginVCode(phone int) (int, error)
+	CheckLoginVCode(phone int64, vCode int) bool
+	GetLoginVCode(phone int64) (int, error)
 
 	// private func
-	isTestPhone(phone int) bool
+	isTestPhone(phone int64) bool
 }
 
 // vcodeService 校验码服务，生成校验码和获得校验码
@@ -62,12 +62,12 @@ func (srv *vcodeService) GenLoginVCode(phone string) (int, error) {
 }
 
 // 手机白名单
-var phoneWhiteLit = []int{
+var phoneWhiteLit = []int64{
 	13010102020,
 }
 
 // isTestPhone 这里可以添加测试号，直接通过
-func (srv *vcodeService) isTestPhone(phone int) bool {
+func (srv *vcodeService) isTestPhone(phone int64) bool {
 	for _, val := range phoneWhiteLit {
 		if val == phone {
 			return true
@@ -77,7 +77,7 @@ func (srv *vcodeService) isTestPhone(phone int) bool {
 }
 
 // CheckLoginVCode 验证校验码是否正确
-func (srv *vcodeService) CheckLoginVCode(phone, vCode int) bool {
+func (srv *vcodeService) CheckLoginVCode(phone int64, vCode int) bool {
 	if srv.isTestPhone(phone) {
 		return true
 	}
@@ -96,7 +96,7 @@ func (srv *vcodeService) CheckLoginVCode(phone, vCode int) bool {
 }
 
 // GetLoginVCode 获得校验码
-func (srv *vcodeService) GetLoginVCode(phone int) (int, error) {
+func (srv *vcodeService) GetLoginVCode(phone int64) (int, error) {
 	// 直接从redis里获取
 	key := fmt.Sprintf(verifyCodeRedisKey, phone)
 	vcode, err := redis.RedisClient.Get(key).Result()

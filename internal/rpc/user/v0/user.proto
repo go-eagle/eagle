@@ -9,8 +9,8 @@ service UserService{
 }
 
 message PhoneLoginRequest {
-    string Phone = 1;
-    string VerifyCode = 2;
+    int64 Phone = 1;
+    int32 VerifyCode = 2;
 }
 
 message PhoneLoginReply {

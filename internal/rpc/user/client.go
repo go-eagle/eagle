@@ -19,9 +19,9 @@ func main() {
 
 	userClient := pb.NewUserServiceClient(conn)
 	userReq := &pb.PhoneLoginRequest{
-		Phone:      "",
-		VerifyCode: "",
+		Phone:      13010102020,
+		VerifyCode: 123456,
 	}
 	reply, _ := userClient.LoginByPhone(context.Background(), userReq)
-	fmt.Printf("UserService LoginByPhone : %s", reply.Ret)
+	fmt.Printf("UserService LoginByPhone : %+v", reply)
 }

@@ -21,7 +21,7 @@ type BaseRepo interface {
 	Update(ctx context.Context, id uint64, userMap map[string]interface{}) error
 	GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error)
 	GetUsersByIds(ctx context.Context, ids []uint64) ([]*model.UserBaseModel, error)
-	GetUserByPhone(ctx context.Context, phone int) (*model.UserBaseModel, error)
+	GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error)
 	GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error)
 	Close()
 }
@@ -135,7 +135,7 @@ func (repo *userBaseRepo) GetUsersByIds(ctx context.Context, userIDs []uint64) (
 }
 
 // GetUserByPhone 根据手机号获取用户
-func (repo *userBaseRepo) GetUserByPhone(ctx context.Context, phone int) (*model.UserBaseModel, error) {
+func (repo *userBaseRepo) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error) {
 	user := model.UserBaseModel{}
 	err := repo.db.Where("phone = ?", phone).First(&user).Error
 	if err != nil {

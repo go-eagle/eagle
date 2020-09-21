@@ -1,7 +1,6 @@
 package server
 
 import (
-	"flag"
 	"log"
 	"net"
 
@@ -11,9 +10,8 @@ import (
 	"github.com/1024casts/snake/internal/service"
 )
 
+// New new grpc server
 func New(svc *service.Service) {
-	flag.Parse()
-
 	// todo: get addr from conf
 	lis, err := net.Listen("tcp", "127.0.0.1:1234")
 	if err != nil {
@@ -22,5 +20,9 @@ func New(svc *service.Service) {
 
 	grpcServer := grpc.NewServer()
 	pb.RegisterUserServiceServer(grpcServer, svc.UserSvc())
-	grpcServer.Serve(lis)
+	err = grpcServer.Serve(lis)
+	if err != nil {
+		log.Fatalf("failed to serve grpc server: %v", err)
+	}
+	log.Println("serve grpc server is success, port:1234")
 }
