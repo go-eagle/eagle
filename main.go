@@ -13,13 +13,14 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/1024casts/snake/internal/server"
+
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
 	"github.com/1024casts/snake/handler"
-	"github.com/1024casts/snake/internal/server"
 	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/snake"
@@ -90,8 +91,8 @@ func main() {
 	// set global service
 	service.Svc = svc
 
-	// todo: start grpc server
-	server.New(svc)
+	// start grpc server
+	go server.New(svc)
 
 	// start server
 	snake.App.Run()
