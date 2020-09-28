@@ -67,6 +67,8 @@ func (repo *userBaseRepo) Update(ctx context.Context, id uint64, userMap map[str
 }
 
 // GetUserByID 获取用户
+// 缓存的更新策略使用 Cache Aside Pattern
+// see: https://coolshell.cn/articles/17416.html
 func (repo *userBaseRepo) GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error) {
 	var userBase *model.UserBaseModel
 	start := time.Now()
