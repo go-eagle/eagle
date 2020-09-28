@@ -69,42 +69,48 @@ func (repo *userBaseRepo) Update(ctx context.Context, id uint64, userMap map[str
 // GetUserByID 获取用户
 // 缓存的更新策略使用 Cache Aside Pattern
 // see: https://coolshell.cn/articles/17416.html
-func (repo *userBaseRepo) GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error) {
-	var userBase *model.UserBaseModel
+func (repo *userBaseRepo) GetUserByID(ctx context.Context, uid uint64) (userBase *model.UserBaseModel, err error) {
+	//var userBase *model.UserBaseModel
 	start := time.Now()
 	defer func() {
-		log.Infof("[repo] get user by id: %d cost: %d ns", id, time.Now().Sub(start).Nanoseconds())
+		log.Infof("[repo.user_base] get user by uid: %d cost: %d ns", uid, time.Now().Sub(start).Nanoseconds())
 	}()
 	// 从cache获取
-	userBase = repo.userCache.GetUserBaseCache(id)
+	userBase, err = repo.userCache.GetUserBaseCache(uid)
+	if err != nil {
+		// if cache error return, don't request to db
+		log.Warnf("[repo.user_base] get user by uid err: %v, uid: %d", err, uid)
+		return
+	}
+	// hit cache
 	if userBase != nil {
-		log.Infof("get user base data from cache, uid: %d", id)
-		return userBase, nil
+		log.Infof("[repo.user_base] get user base data from cache, uid: %d", uid)
+		return
 	}
 
 	// 加锁，防止缓存击穿
-	key := fmt.Sprintf("uid:%d", id)
+	key := fmt.Sprintf("uid:%d", uid)
 	lock := redis.NewLock(redis.RedisClient, key, 3*time.Second)
 	token := lock.GenToken()
 
 	isLock, err := lock.Lock(token)
 	if err != nil || !isLock {
-		return nil, errors.Wrapf(err, "[user_repo] lock err, key: %s", key)
+		return nil, errors.Wrapf(err, "[repo.user_base] lock err, key: %s", key)
 	}
 	defer lock.Unlock(token)
 
 	data := new(model.UserBaseModel)
 	if isLock {
 		// 从数据库中获取
-		err = repo.db.First(data, id).Error
+		err = repo.db.First(data, uid).Error
 		if err != nil && err != gorm.ErrRecordNotFound {
-			return nil, errors.Wrap(err, "[user_repo] get user data err")
+			return nil, errors.Wrap(err, "[repo.user_base] get user data err")
 		}
 
-		// 写入cache
-		err = repo.userCache.SetUserBaseCache(id, data)
+		// set cache
+		err = repo.userCache.SetUserBaseCache(uid, data)
 		if err != nil {
-			return data, errors.Wrap(err, "[user_repo] set user data err")
+			return data, errors.Wrap(err, "[repo.user_base] set user data err")
 		}
 	}
 	return data, nil
