@@ -60,6 +60,15 @@ func TestStringSliceEqual(t *testing.T) {
 	}
 }
 
+func TestSliceShuffle(t *testing.T) {
+	slice := []interface{}{"a", "b", "c", "d", "e", "f"}
+	SliceShuffle(slice)
+	t.Log(slice)
+	for _, v := range slice {
+		t.Log(v.(string))
+	}
+}
+
 func BenchmarkEqual(b *testing.B) {
 	sa := []string{"q", "w", "e", "r", "t"}
 	sb := []string{"q", "w", "a", "s", "z", "x"}

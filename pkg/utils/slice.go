@@ -36,6 +36,17 @@ func StringSliceEqual(a, b []string) bool {
 	return true
 }
 
+// SliceShuffle shuffle a slice
+func SliceShuffle(slice []interface{}) {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	for len(slice) > 0 {
+		n := len(slice)
+		randIndex := r.Intn(n)
+		slice[n-1], slice[randIndex] = slice[randIndex], slice[n-1]
+		slice = slice[:n-1]
+	}
+}
+
 // Uint64SliceReverse 对uint64 slice 反转
 func Uint64SliceReverse(a []uint64) []uint64 {
 	for i := len(a)/2 - 1; i >= 0; i-- {
