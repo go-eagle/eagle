@@ -69,6 +69,8 @@ type Config struct {
 	MySQL MySQLConfig
 	Redis RedisConfig
 	Cache CacheConfig
+
+	// here can add biz conf
 }
 
 // AppConfig
