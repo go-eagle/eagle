@@ -1,5 +1,12 @@
 ## Changelog
 
+## v1.2.2
+- 优化 `service` 和 `repository` 的db参数
+- 优化 `swagger` 文档和 `pprof` 性能分析路由仅在 `debug` 模式下开启
+- 优化 `service` 的定义及其在 `hanlder` 中的使用方式
+- 新增 GRPC的Server
+- 新增 `app` 目录, 将原有的 `handler` 目录迁移至 `app` 目录
+
 ## v1.2.1
 - 新增 增加job目录，可以在 `cmd/job` 中定义具体任务
 - 优化 http client, 支持原生(raw)包方式请求和第三方库resty
