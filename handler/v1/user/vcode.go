@@ -20,7 +20,7 @@ import (
 // @Param area_code query string true "区域码，比如86"
 // @Param phone query string true "手机号"
 // @Success 200 {object} handler.Response
-// @Router /users/vcode [get]
+// @Router /vcode [get]
 func VCode(c *gin.Context) {
 	// 验证区号和手机号是否为空
 	if c.Query("area_code") == "" {
