@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 
-	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/app/api"
 	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
@@ -30,7 +30,7 @@ func Update(c *gin.Context) {
 	var req UpdateRequest
 	if err := c.Bind(&req); err != nil {
 		log.Warnf("bind request param err: %+v", err)
-		handler.SendResponse(c, errno.ErrBind, nil)
+		api.SendResponse(c, errno.ErrBind, nil)
 		return
 	}
 	log.Infof("user update req: %#v", req)
@@ -41,9 +41,9 @@ func Update(c *gin.Context) {
 	err := service.Svc.UserSvc().UpdateUser(context.TODO(), uint64(userID), userMap)
 	if err != nil {
 		log.Warnf("[user] update user err, %v", err)
-		handler.SendResponse(c, errno.InternalServerError, nil)
+		api.SendResponse(c, errno.InternalServerError, nil)
 		return
 	}
 
-	handler.SendResponse(c, nil, userID)
+	api.SendResponse(c, nil, userID)
 }

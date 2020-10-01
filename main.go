@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
-	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/app/api"
 	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/snake"
@@ -78,7 +78,7 @@ func main() {
 	router := snake.App.Router
 
 	// HealthCheck 健康检查路由
-	router.GET("/health", handler.HealthCheck)
+	router.GET("/health", api.HealthCheck)
 	// metrics router 可以在 prometheus 中进行监控
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 

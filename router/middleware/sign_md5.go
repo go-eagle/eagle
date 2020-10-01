@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/app/api"
 	"github.com/1024casts/snake/pkg/errno"
 )
 
@@ -17,13 +17,13 @@ func SignMd5Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sn, err := verifySign(c)
 		if err != nil {
-			handler.SendResponse(c, errno.InternalServerError, nil)
+			api.SendResponse(c, errno.InternalServerError, nil)
 			c.Abort()
 			return
 		}
 
 		if sn != nil {
-			handler.SendResponse(c, errno.ErrSignParam, sn)
+			api.SendResponse(c, errno.ErrSignParam, sn)
 			c.Abort()
 			return
 		}

@@ -3,12 +3,11 @@ package user
 import (
 	"context"
 
-	"github.com/1024casts/snake/internal/service"
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 
-	"github.com/gin-gonic/gin"
-
-	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/app/api"
+	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -27,7 +26,7 @@ func Get(c *gin.Context) {
 
 	userID := cast.ToUint64(c.Param("id"))
 	if userID == 0 {
-		handler.SendResponse(c, errno.ErrParam, nil)
+		api.SendResponse(c, errno.ErrParam, nil)
 		return
 	}
 
@@ -35,9 +34,9 @@ func Get(c *gin.Context) {
 	u, err := service.Svc.UserSvc().GetUserByID(context.TODO(), userID)
 	if err != nil {
 		log.Warnf("get user info err: %v", err)
-		handler.SendResponse(c, errno.ErrUserNotFound, nil)
+		api.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
 	}
 
-	handler.SendResponse(c, nil, u)
+	api.SendResponse(c, nil, u)
 }

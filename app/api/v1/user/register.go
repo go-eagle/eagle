@@ -1,10 +1,10 @@
 package user
 
 import (
-	"github.com/1024casts/snake/internal/service"
 	"github.com/gin-gonic/gin"
 
-	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/app/api"
+	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -22,7 +22,7 @@ func Register(c *gin.Context) {
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Warnf("register bind param err: %v", err)
-		handler.SendResponse(c, errno.ErrBind, nil)
+		api.SendResponse(c, errno.ErrBind, nil)
 		return
 	}
 
@@ -30,23 +30,23 @@ func Register(c *gin.Context) {
 	// check param
 	if req.Username == "" || req.Email == "" || req.Password == "" {
 		log.Warnf("params is empty: %v", req)
-		handler.SendResponse(c, errno.ErrParam, nil)
+		api.SendResponse(c, errno.ErrParam, nil)
 		return
 	}
 
 	// 两次密码是否正确
 	if req.Password != req.ConfirmPassword {
 		log.Warnf("twice password is not same")
-		handler.SendResponse(c, errno.ErrTwicePasswordNotMatch, nil)
+		api.SendResponse(c, errno.ErrTwicePasswordNotMatch, nil)
 		return
 	}
 
 	err := service.Svc.UserSvc().Register(c, req.Username, req.Email, req.Password)
 	if err != nil {
 		log.Warnf("register err: %v", err)
-		handler.SendResponse(c, errno.ErrRegisterFailed, nil)
+		api.SendResponse(c, errno.ErrRegisterFailed, nil)
 		return
 	}
 
-	handler.SendResponse(c, nil, nil)
+	api.SendResponse(c, nil, nil)
 }

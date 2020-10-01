@@ -1,11 +1,11 @@
 package user
 
 import (
-	"github.com/1024casts/snake/internal/service"
 	"github.com/gin-gonic/gin"
 
-	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/app/api"
 	"github.com/1024casts/snake/internal/model"
+	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/internal/service/vcode"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
@@ -24,7 +24,7 @@ func Login(c *gin.Context) {
 	var req LoginCredentials
 	if err := c.Bind(&req); err != nil {
 		log.Warnf("email login bind param err: %v", err)
-		handler.SendResponse(c, errno.ErrBind, nil)
+		api.SendResponse(c, errno.ErrBind, nil)
 		return
 	}
 
@@ -32,18 +32,18 @@ func Login(c *gin.Context) {
 	// check param
 	if req.Email == "" || req.Password == "" {
 		log.Warnf("email or password is empty: %v", req)
-		handler.SendResponse(c, errno.ErrParam, nil)
+		api.SendResponse(c, errno.ErrParam, nil)
 		return
 	}
 
 	t, err := service.Svc.UserSvc().EmailLogin(c, req.Email, req.Password)
 	if err != nil {
 		log.Warnf("email login err: %v", err)
-		handler.SendResponse(c, errno.ErrEmailOrPassword, nil)
+		api.SendResponse(c, errno.ErrEmailOrPassword, nil)
 		return
 	}
 
-	handler.SendResponse(c, nil, model.Token{
+	api.SendResponse(c, nil, model.Token{
 		Token: t,
 	})
 }
@@ -63,7 +63,7 @@ func PhoneLogin(c *gin.Context) {
 	var req PhoneLoginCredentials
 	if err := c.Bind(&req); err != nil {
 		log.Warnf("phone login bind param err: %v", err)
-		handler.SendResponse(c, errno.ErrBind, nil)
+		api.SendResponse(c, errno.ErrBind, nil)
 		return
 	}
 
@@ -71,24 +71,24 @@ func PhoneLogin(c *gin.Context) {
 	// check param
 	if req.Phone == 0 || req.VerifyCode == 0 {
 		log.Warn("phone login bind param is empty")
-		handler.SendResponse(c, errno.ErrParam, nil)
+		api.SendResponse(c, errno.ErrParam, nil)
 		return
 	}
 
 	// 验证校验码
 	if !vcode.VCodeService.CheckLoginVCode(req.Phone, req.VerifyCode) {
-		handler.SendResponse(c, errno.ErrVerifyCode, nil)
+		api.SendResponse(c, errno.ErrVerifyCode, nil)
 		return
 	}
 
 	// 登录
 	t, err := service.Svc.UserSvc().PhoneLogin(c, req.Phone, req.VerifyCode)
 	if err != nil {
-		handler.SendResponse(c, errno.ErrVerifyCode, nil)
+		api.SendResponse(c, errno.ErrVerifyCode, nil)
 		return
 	}
 
-	handler.SendResponse(c, nil, model.Token{
+	api.SendResponse(c, nil, model.Token{
 		Token: t,
 	})
 }

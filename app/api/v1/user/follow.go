@@ -3,11 +3,10 @@ package user
 import (
 	"context"
 
-	"github.com/1024casts/snake/internal/service"
-
 	"github.com/gin-gonic/gin"
 
-	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/app/api"
+	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -25,28 +24,28 @@ func Follow(c *gin.Context) {
 	var req FollowRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Warnf("follow bind param err: %v", err)
-		handler.SendResponse(c, errno.ErrBind, nil)
+		api.SendResponse(c, errno.ErrBind, nil)
 		return
 	}
 
 	// Get the user by the `user_id` from the database.
 	_, err := service.Svc.UserSvc().GetUserByID(context.TODO(), req.UserID)
 	if err != nil {
-		handler.SendResponse(c, errno.ErrUserNotFound, nil)
+		api.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
 	}
 
-	userID := handler.GetUserID(c)
+	userID := api.GetUserID(c)
 	// 不能关注自己
 	if userID == req.UserID {
-		handler.SendResponse(c, errno.ErrUserNotFound, nil)
+		api.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
 	}
 
 	// 检查是否已经关注过
 	isFollowed := service.Svc.UserSvc().IsFollowedUser(context.TODO(), userID, req.UserID)
 	if isFollowed {
-		handler.SendResponse(c, errno.OK, nil)
+		api.SendResponse(c, errno.OK, nil)
 		return
 	}
 
@@ -55,7 +54,7 @@ func Follow(c *gin.Context) {
 		err = service.Svc.UserSvc().CancelUserFollow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] cancel user follow err: %v", err)
-			handler.SendResponse(c, errno.InternalServerError, nil)
+			api.SendResponse(c, errno.InternalServerError, nil)
 			return
 		}
 	} else {
@@ -63,10 +62,10 @@ func Follow(c *gin.Context) {
 		err = service.Svc.UserSvc().AddUserFollow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] add user follow err: %v", err)
-			handler.SendResponse(c, errno.InternalServerError, nil)
+			api.SendResponse(c, errno.InternalServerError, nil)
 			return
 		}
 	}
 
-	handler.SendResponse(c, nil, nil)
+	api.SendResponse(c, nil, nil)
 }
