@@ -2,15 +2,14 @@ package user
 
 import (
 	"context"
-	"strconv"
-
-	"github.com/1024casts/snake/internal/service"
-
-	"github.com/1024casts/snake/handler"
-	"github.com/1024casts/snake/pkg/errno"
-	"github.com/1024casts/snake/pkg/log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
+
+	"github.com/1024casts/snake/handler"
+	"github.com/1024casts/snake/internal/service"
+	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/log"
 )
 
 // Update 更新用户信息
@@ -25,7 +24,7 @@ import (
 // @Router /users/{id} [put]
 func Update(c *gin.Context) {
 	// Get the user id from the url parameter.
-	userID, _ := strconv.Atoi(c.Param("id"))
+	userID := cast.ToUint64(c.Param("id"))
 
 	// Binding the user data.
 	var req UpdateRequest
