@@ -84,6 +84,8 @@ func main() {
 
 	// API Routes.
 	routers.Load(router)
+	// WEB Routes
+	routers.LoadWebRouter(router)
 
 	// init service
 	svc := service.New()
