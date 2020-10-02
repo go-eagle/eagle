@@ -8,8 +8,10 @@ require (
 	github.com/alicebob/miniredis v2.5.0+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
+	github.com/foolin/gin-template v0.0.0-20190415034731-41efedfb393b
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gin-contrib/pprof v1.3.0
+	github.com/gin-contrib/static v0.0.0-20200916080430-d45d9a37d28e
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-mail/mail v2.3.1+incompatible
 	github.com/go-playground/validator/v10 v10.2.0
@@ -20,6 +22,7 @@ require (
 	github.com/golang/snappy v0.0.1
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/google/uuid v1.1.1
+	github.com/gorilla/sessions v1.2.1
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/jinzhu/gorm v1.9.12
 	github.com/kr/text v0.2.0 // indirect
