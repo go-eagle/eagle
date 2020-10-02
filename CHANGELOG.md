@@ -1,5 +1,8 @@
 ## Changelog
 
+## v1.2.3
+- 新增 Web 路由、控制器及模板
+
 ## v1.2.2
 - 优化 `service` 和 `repository` 的db参数
 - 优化 `swagger` 文档和 `pprof` 性能分析路由仅在 `debug` 模式下开启
