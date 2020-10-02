@@ -1,0 +1,56 @@
+
+<nav class="navbar topNav" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+{{/*        <a class="navbar-item" href="/">*/}}
+{{/*            <img src="/static/images/logo-640×160.png">*/}}
+{{/*        </a>*/}}
+
+        <div id="navbarBurger" class="navbar-burger burger" data-target="navMenuIndex">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <div id="navMenuIndex" class="navbar-menu">
+    <div class="navbar-start is-white">
+        <a class="navbar-item {{isActive .ctx "/"}}" href="/">
+            首页
+        </a>
+    </div>
+
+    <div class="navbar-end">
+        {{if .user_id}}
+            <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link">
+                    {{.user.Username}}
+                </a>
+
+                <div class="navbar-dropdown">
+                    <a class="navbar-item" href="/users/{{.user.Username}}">
+                        个人资料
+                    </a>
+                    <a class="navbar-item" href="/settings/basic">
+                        设置
+                    </a>
+                    <hr class="navbar-divider">
+                    <a class="navbar-item" href="/logout">
+                        退出
+                    </a>
+                </div>
+            </div>
+        {{else}}
+            <div class="navbar-item">
+                <div class="buttons">
+                    <a class="button is-link" href="/register">
+                        <strong>注册</strong>
+                    </a>
+                    <a class="button is-light" href="/login">
+                        登录
+                    </a>
+                </div>
+            </div>
+        {{end}}
+    </div>
+</div>
+</nav>

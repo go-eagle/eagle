@@ -1,0 +1,42 @@
+<footer class="footer">
+    <div class="container">
+        <div class="content has-text-centered">
+            <p>
+                snake © {{copy}}. All rights reserved.
+            </p>
+        </div>
+    </div>
+</footer>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/popper.js/1.14.6/umd/popper.min.js"></script>
+{{/*<script src="https://cdn.bootcss.com/vue/2.6.8/vue.min.js"></script>*/}}
+<script src="https://unpkg.com/vue"></script>
+<!-- Full bundle -->
+<script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="https://cdn.bootcss.com/limonte-sweetalert2/7.33.1/sweetalert2.min.js"></script>
+<script type="text/javascript">
+    Vue.prototype.$http = axios
+
+    // Functions
+    function getAll(selector) {
+        return Array.prototype.slice.call(document.querySelectorAll(selector), 0);
+    }
+
+    // Toggles
+    var $burgers = getAll('.burger');
+
+    if ($burgers.length > 0) {
+        $burgers.forEach(function ($el) {
+            $el.addEventListener('click', function () {
+                var target = $el.dataset.target;
+                var $target = document.getElementById(target);
+                $el.classList.toggle('is-active');
+                $target.classList.toggle('is-active');
+            });
+        });
+    }
+</script>

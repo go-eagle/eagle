@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ .title }} - snake</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+{{/*    <link href="https://cdn.bootcss.com/bulma/0.7.4/css/bulma.css" rel="stylesheet">*/}}
+    <link href="https://cdn.bootcss.com/font-awesome/5.8.1/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/limonte-sweetalert2/7.33.1/sweetalert2.min.css" rel="stylesheet">
+{{/*    <link href="/static/css/app.css" rel="stylesheet">*/}}
+{{/*    <link href="/static/css/bulma-debug.css" rel="stylesheet">*/}}
+{{/*    <link rel="shortcut icon" href="/static/images/favicon.ico" />*/}}
+    {{block "css" .}}
+    {{end}}
+</head>
+<body>
+    {{include "layouts/header"}}
+
+    {{template "content" .}}
+
+    {{include "layouts/footer"}}
+
+    {{block "js" .}}
+    {{end}}
+</body>
+</html>
