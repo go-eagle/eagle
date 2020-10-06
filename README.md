@@ -139,8 +139,8 @@ snake new github.com/foo/bar -d ./
 
 - [配置说明](https://github.com/1024casts/snake/blob/master/conf)
 - [错误码设计](https://github.com/1024casts/snake/tree/master/pkg/errno)
-- [service 的使用规则](https://github.com/1024casts/snake/blob/master/service)
-- [repository 的使用规则](https://github.com/1024casts/snake/blob/master/repository)
+- [service 的使用规则](https://github.com/1024casts/snake/blob/master/internal/service)
+- [repository 的使用规则](https://github.com/1024casts/snake/blob/master/internal/repository)
 - [cache 使用说明](https://github.com/1024casts/snake/blob/master/pkg/cache)
 
 ## 🚀 部署
