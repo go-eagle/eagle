@@ -149,7 +149,7 @@ snake new github.com/foo/bar -d ./
 
 上传到服务器后，直接运行命令即可
 
- ```bash
+```bash
 ./scripts/admin.sh start
 ```
 
