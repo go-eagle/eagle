@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/1024casts/snake/app/web"
+	webUser "github.com/1024casts/snake/app/web/user"
 	"github.com/1024casts/snake/pkg/flash"
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -67,6 +68,15 @@ func LoadWebRouter(g *gin.Engine) *gin.Engine {
 	})
 
 	router.GET("/", web.Index)
+
+	// login
+	router.GET("/login", webUser.GetLogin)
+	router.POST("/login", webUser.DoLogin)
+	router.GET("/logout", webUser.Logout)
+
+	// register
+	router.GET("/register", webUser.GetRegister)
+	router.POST("/register", webUser.DoRegister)
 
 	return router
 }

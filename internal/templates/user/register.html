@@ -1,0 +1,167 @@
+{{ define "css"}}
+    <style type="text/css">
+        body {
+            background: #e5e5e5;
+        }
+        .hero.is-success {
+            background: #F2F6FA;
+        }
+        .avatar {
+            margin-top: -70px;
+            padding-bottom: 20px;
+        }
+        .avatar img {
+            padding: 5px;
+            background: #fff;
+            border-radius: 50%;
+            -webkit-box-shadow: 0 2px 3px rgba(10,10,10,.1), 0 0 0 1px rgba(10,10,10,.1);
+            box-shadow: 0 2px 3px rgba(10,10,10,.1), 0 0 0 1px rgba(10,10,10,.1);
+        }
+    </style>
+{{ end }}
+
+{{ define "content"}}
+
+    <section class="hero is-success">
+        <div class="hero-body">
+            <div class="container">
+                <div class="column is-4 is-offset-4">
+                    <h3 class="title has-text-grey has-text-centered">注册</h3>
+                    <div class="box">
+                        {{include "partials/error"}}
+                        <form id="app" class="form-signin">
+                            <div class="field">
+                                <div class="control has-icons-left has-icons-right">
+                                    <input name="username" class="input is-medium" id="username" type="text" placeholder="用户名" v-model="username" autofocus="">
+                                    <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
+                                </div>
+                                <p class="help is-danger" id="username-tip" style="display: none"></p>
+                            </div>
+                            <div class="field">
+                                <div class="control has-icons-left has-icons-right">
+                                    <input name="email" class="input is-medium" id="email" type="email" placeholder="邮箱地址" v-model="email">
+                                    <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
+                                </div>
+                                <p class="help is-danger" id="email-tip" style="display: none"></p>
+                            </div>
+
+                            <div class="field">
+                                <div class="control has-icons-left has-icons-right">
+                                    <input name="password" class="input is-medium" id="password" type="password" placeholder="密码" v-model="password">
+                                    <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+                                </div>
+                                <p class="help is-danger" id="password-tip" style="display: none"></p>
+                            </div>
+                            <div class="field">
+                                <div class="control has-icons-left has-icons-right">
+                                    <input name="confirm_password" class="input is-medium" id="confirm_password" type="password" placeholder="确认密码" v-model="confirm_password">
+                                    <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+                                </div>
+                                <p class="help is-danger" id="confirm_password-tip" style="display: none"></p>
+                            </div>
+                            <button class="button is-block is-link is-large is-fullwidth loginBtn" @click="doRegister">注册</button>
+                        </form>
+                    </div>
+                    <p class="has-text-grey has-text-centered">
+                        <a href="/login">登录</a> &nbsp;·&nbsp;
+                        <a href="/password/reset">忘记密码</a> &nbsp;·&nbsp;
+                        <a href="/help">需要帮助？</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{{ end }}
+
+{{ define "js"}}
+    <script type="text/javascript">
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue!',
+                username: '',
+                email: '',
+                password: '',
+                confirm_password: ''
+            },
+            delimiters:['${', '}'],
+            methods: {
+                doRegister: function (e) {
+                    e.preventDefault();
+                    // init
+                    $("#username").removeClass("is-danger");
+                    $("#username-tip").hide();
+
+                    $("#email").removeClass("is-danger");
+                    $("#email-tip").hide();
+
+                    $("#password").removeClass("is-danger");
+                    $("#password-tip").hide();
+
+                    $("#confirm_password").removeClass("is-danger");
+                    $("#confirm_password-tip").hide();
+
+                    if (!this.username) {
+                        $("#username").addClass("is-danger");
+                        $("#username-tip").text("用户名不能为空").show();
+                        return false;
+                    }
+                    if (!this.email) {
+                        $("#email").addClass("is-danger");
+                        $("#email-tip").text("email不能为空").show();
+                        return false;
+                    } else if (!this.validEmail(this.email)) {
+                        $("#email").addClass("is-danger");
+                        $("#email-tip").text("Email填写有误").show();
+                        return false;
+                    }
+                    if (!this.password) {
+                        $("#password").addClass("is-danger");
+                        $("#password-tip").text("密码不能为空").show();
+                        return false;
+                    }
+                    if (!this.confirm_password) {
+                        $("#confirm_password").addClass("is-danger");
+                        $("#confirm_password-tip").text("确认密码不能为空").show();
+                        return false;
+                    }
+                    if (this.password !== this.confirm_password) {
+                        $("#confirm_password").addClass("is-danger");
+                        $("#confirm_password-tip").text("两次密码输入一致").show();
+                        return false;
+                    }
+
+                    var bodyFormData = new FormData();
+                    bodyFormData.set('username', this.username);
+                    bodyFormData.set('email', this.email);
+                    bodyFormData.set('password', this.password);
+                    bodyFormData.set('confirm_password', this.confirm_password);
+                    let config = {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    };
+                    this.$http.post("/register", bodyFormData, config).then((response) => {
+                        console.log(response);
+                        if (response.data.code === 0) {
+                            //window.location.href = "/login";
+                            // 给出去邮箱激活的提示
+                            swal("注册成功！快去邮箱激活吧~", "","success");
+                            return true;
+                        } else {
+                            swal("注册失败！再来一次~", "", "error");
+                            return false;
+                        }
+                    }).catch( error => {
+                        console.log(error);
+                    });
+                },
+                validEmail: function (email) {
+                    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    return re.test(email);
+                }
+            }
+        })
+    </script>
+{{ end }}
