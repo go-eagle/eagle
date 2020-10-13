@@ -36,14 +36,14 @@ func DoLogin(c *gin.Context) {
 	// Get the user information by the login username.
 	d, err := service.Svc.UserSvc().GetUserByEmail(c, u.Email)
 	if err != nil {
-		log.Warnf("[login] get user by email err: %v", err)
+		log.Warnf("[web.login] get user by email err: %v", err)
 		web.Response(c, errno.ErrUserNotFound, nil)
 		return
 	}
 
 	// Compare the login password with the user password.
 	if err := auth.Compare(d.Password, u.Password); err != nil {
-		log.Warnf("[login] compare user password err: %v", err)
+		log.Warnf("[web.login] compare user password err: %v", err)
 		web.Response(c, errno.ErrPasswordIncorrect, nil)
 		return
 	}
