@@ -26,9 +26,11 @@ func GetLogin(c *gin.Context) {
 // @Success 200 {string} json "{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MjgwMTY5MjIsImlkIjowLCJuYmYiOjE1MjgwMTY5MjIsInVzZXJuYW1lIjoiYWRtaW4ifQ.LjxrK9DuAwAzUD8-9v43NzWBN7HXsSLfebw92DKd1JQ"}}"
 // @Router /login [post]
 func DoLogin(c *gin.Context) {
+	log.Info("[web.login] User DoLogin function called.")
 	// Binding the data with the user struct.
 	var u LoginCredentials
 	if err := c.Bind(&u); err != nil {
+		log.Warnf("[web.login] bind err: %v", err)
 		web.Response(c, errno.ErrBind, nil)
 		return
 	}
