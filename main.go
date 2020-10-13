@@ -31,8 +31,6 @@ import (
 var (
 	cfg     = pflag.StringP("config", "c", "", "snake config file path.")
 	version = pflag.BoolP("version", "v", false, "show version info.")
-
-	Svc *service.Service
 )
 
 // @title snake docs api
