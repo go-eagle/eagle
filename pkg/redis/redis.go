@@ -33,8 +33,7 @@ func Init() *redis.Client {
 
 	_, err := RedisClient.Ping().Result()
 	if err != nil {
-		log.Errorf("[redis] redis ping err: %+v", err)
-		panic(err)
+		log.Panicf("[redis] redis ping err: %+v", err)
 	}
 	return RedisClient
 }
