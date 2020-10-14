@@ -40,7 +40,7 @@ func newZapLogger(cfg *Config) (Logger, error) {
 	var cores []zapcore.Core
 	var options []zap.Option
 	// 设置初始化字段
-	option := zap.Fields(zap.String("ip", utils.GetLocalIP()), zap.String("app", viper.GetString("name")))
+	option := zap.Fields(zap.String("ip", utils.GetLocalIP()), zap.String("app", viper.GetString("app.name")))
 	options = append(options, option)
 
 	allLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
