@@ -39,6 +39,7 @@ func openDB(username, password, addr, name string) *gorm.DB {
 	db, err := gorm.Open("mysql", config)
 	if err != nil {
 		log.Errorf("Database connection failed. Database name: %s, err: %+v", name, err)
+		panic(err)
 	}
 
 	db.Set("gorm:table_options", "CHARSET=utf8mb4")

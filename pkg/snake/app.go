@@ -44,6 +44,9 @@ type Application struct {
 func New(cfg *conf.Config) *Application {
 	app := new(Application)
 
+	// init log
+	conf.InitLog()
+
 	// init db
 	app.DB = model.Init()
 
@@ -52,9 +55,6 @@ func New(cfg *conf.Config) *Application {
 
 	// init router
 	app.Router = gin.Default()
-
-	// init log
-	conf.InitLog()
 
 	if viper.GetString("app.run_mode") == ModeDebug {
 		app.Debug = true
