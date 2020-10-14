@@ -57,6 +57,7 @@ func New(cfg *conf.Config) *Application {
 	app.Router = gin.Default()
 
 	if viper.GetString("app.run_mode") == ModeDebug {
+		app.DB.Debug()
 		app.Debug = true
 	}
 
