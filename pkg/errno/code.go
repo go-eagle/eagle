@@ -18,7 +18,7 @@ var (
 	ErrEncrypt               = &Errno{Code: 20101, Message: "Error occurred while encrypting the user password."}
 	ErrUserNotFound          = &Errno{Code: 20102, Message: "The user was not found."}
 	ErrTokenInvalid          = &Errno{Code: 20103, Message: "The token was invalid."}
-	ErrPasswordIncorrect     = &Errno{Code: 20104, Message: "The password was incorrect."}
+	ErrPasswordIncorrect     = &Errno{Code: 20104, Message: "账号或密码错误"}
 	ErrAreaCodeEmpty         = &Errno{Code: 20105, Message: "手机区号不能为空"}
 	ErrPhoneEmpty            = &Errno{Code: 20106, Message: "手机号不能为空"}
 	ErrGenVCode              = &Errno{Code: 20107, Message: "生成验证码错误"}
