@@ -146,7 +146,7 @@ func (repo *userBaseRepo) GetUsersByIds(ctx context.Context, userIDs []uint64) (
 func (repo *userBaseRepo) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error) {
 	user := model.UserBaseModel{}
 	err := repo.db.Where("phone = ?", phone).First(&user).Error
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errors.Wrap(err, "[user_repo] get user err by phone")
 	}
 
@@ -157,7 +157,7 @@ func (repo *userBaseRepo) GetUserByPhone(ctx context.Context, phone int64) (*mod
 func (repo *userBaseRepo) GetUserByEmail(ctx context.Context, phone string) (*model.UserBaseModel, error) {
 	user := model.UserBaseModel{}
 	err := repo.db.Where("email = ?", phone).First(&user).Error
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errors.Wrap(err, "[user_repo] get user err by email")
 	}
 

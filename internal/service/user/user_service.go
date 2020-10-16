@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 
 	"github.com/1024casts/snake/internal/idl"
@@ -300,7 +299,7 @@ func (srv *userService) BatchGetUsers(ctx context.Context, userID uint64, userID
 
 func (srv *userService) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error) {
 	userModel, err := srv.userRepo.GetUserByPhone(ctx, phone)
-	if err != nil || gorm.IsRecordNotFoundError(err) {
+	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by phone: %d", phone)
 	}
 
@@ -309,7 +308,7 @@ func (srv *userService) GetUserByPhone(ctx context.Context, phone int64) (*model
 
 func (srv *userService) GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error) {
 	userModel, err := srv.userRepo.GetUserByEmail(ctx, email)
-	if err != nil || gorm.IsRecordNotFoundError(err) {
+	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by email: %s", email)
 	}
 
