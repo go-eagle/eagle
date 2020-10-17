@@ -51,6 +51,7 @@ func (u *Cache) SetUserBaseCache(userID uint64, user *model.UserBaseModel) error
 }
 
 // GetUserBaseCache 获取用户cache
+// todo: 如果数据量大，可以考虑增加本地缓存
 func (u *Cache) GetUserBaseCache(userID uint64) (data *model.UserBaseModel, err error) {
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 	err = u.cache.Get(cacheKey, &data)
