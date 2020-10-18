@@ -133,7 +133,7 @@
                             window.location.href = "/";
                             return true;
                         } else {
-                            alert("login error");
+                            alert(response.data.message);
                             return false;
                         }
                     }).catch(error => {
