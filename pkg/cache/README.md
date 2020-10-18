@@ -33,6 +33,7 @@ NoSQL的主要有: redis
 
 ## Reference
 - ristretto：https://github.com/dgraph-io/ristretto (号称最快的本地缓存)
+- [Ristretto简介：高性能Go缓存](https://www.yuque.com/kshare/2020/ade1d9b5-5925-426a-9566-3a5587af2181)
 - bigcache: https://github.com/allegro/bigcache
 - freecache: https://github.com/coocood/freecache
 - concurrent_map: https://github.com/easierway/concurrent_map
