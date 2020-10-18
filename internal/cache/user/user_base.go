@@ -18,7 +18,8 @@ const (
 
 // Cache cache
 type Cache struct {
-	cache cache.Driver
+	cache      cache.Driver
+	localCache cache.Driver
 }
 
 // NewUserCache new一个用户cache
