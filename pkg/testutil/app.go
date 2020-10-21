@@ -17,7 +17,8 @@ type App struct {
 // Initialize 初始化
 func (app *App) Initialize() {
 	// init config
-	if err := conf.Init(); err != nil {
+	cfg := "./conf/config.sample.yaml"
+	if err := conf.Init(cfg); err != nil {
 		panic(err)
 	}
 
