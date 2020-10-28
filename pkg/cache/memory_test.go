@@ -1,77 +1,61 @@
 package cache
 
 import (
-	"reflect"
 	"testing"
-	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func Test_memoryCache_SetGet(t *testing.T) {
-	// 实例化memory cache
-	cache := NewMemoryCache("memory-unit-test", JSONEncoding{})
+func Test_NewMemoryCache(t *testing.T) {
+	asserts := assert.New(t)
 
-	// test set
-	type setArgs struct {
-		key        string
-		value      interface{}
-		expiration time.Duration
-	}
+	client := NewMemoryCache("memory-unit-test", JSONEncoding{})
+	asserts.NotNil(client)
+}
 
-	setTests := []struct {
-		name    string
-		cache   Driver
-		args    setArgs
-		wantErr bool
-	}{
-		{
-			"test memory set",
-			cache,
-			setArgs{"key-001", "{\"username\":\"snake\"}", 60 * time.Second},
-			false,
-		},
-	}
+func TestMemoStore_Set(t *testing.T) {
+	asserts := assert.New(t)
 
-	for _, tt := range setTests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := tt.cache
-			if err := c.Set(tt.args.key, tt.args.value, tt.args.expiration); (err != nil) != tt.wantErr {
-				t.Errorf("Set() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+	store := NewMemoryCache("unit-test", JSONEncoding{})
+	err := store.Set("test-key", "test-val", -1)
+	asserts.NoError(err)
 
-	// test get
-	type args struct {
-		key string
+	val, ok := store.Store.Load("unit-test:test-key")
+	asserts.True(ok)
+	asserts.Equal("test-val", val.(itemWithTTL).value)
+
+	store.GarbageCollect()
+}
+
+func TestMemoStore_Get(t *testing.T) {
+	asserts := assert.New(t)
+	store := NewMemoryCache("unit-test", JSONEncoding{})
+
+	// 正常情况
+	{
+		var val string
+		err := store.Set("test-key", "test-val", -1)
+		asserts.NoError(err)
+		err = store.Get("test-key", &val)
+		t.Log("val.......", val)
+		asserts.NoError(err)
+		asserts.Equal("test-val", val)
 	}
 
-	tests := []struct {
-		name    string
-		cache   Driver
-		args    args
-		wantVal interface{}
-		wantErr bool
-	}{
-		{
-			"test memory get",
-			cache,
-			args{"key-001"},
-			"{\"username\":\"snake\"}",
-			false,
-		},
+	// Key不存在
+	{
+		var val string
+		err := store.Get("something", val)
+		asserts.Error(err)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := tt.cache
-			var gotVal interface{}
-			err := c.Get(tt.args.key, &gotVal)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(gotVal, tt.wantVal) {
-				t.Errorf("Get() gotVal = %v, want %v", gotVal, tt.wantVal)
-			}
-		})
+
+	// 过期
+	{
+		var val string
+		err := store.Set("test-key", "test-val", 1)
+		asserts.NoError(err)
+		err = store.Get("test-key", val)
+		asserts.NotEmpty(val)
 	}
+
 }
