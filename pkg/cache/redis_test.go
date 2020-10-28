@@ -13,7 +13,7 @@ func Test_redisCache_SetGet(t *testing.T) {
 	redis2.InitTestRedis()
 
 	// 获取redis客户端
-	redisClient := redis2.Client
+	redisClient := redis2.RedisClient
 	// 实例化redis cache
 	cache := NewRedisCache(redisClient, "unit-test", JSONEncoding{}, func() interface{} {
 		return new(int64)
