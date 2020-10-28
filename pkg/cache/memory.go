@@ -89,8 +89,7 @@ func (m *memoryCache) Get(key string, val interface{}) error {
 	if err != nil {
 		return errors.Wrapf(err, "build cache key err, key is %+v", key)
 	}
-	var ok bool
-	val, ok = getValue(m.Store.Load(cacheKey))
+	val, ok := getValue(m.Store.Load(cacheKey))
 	if !ok {
 		return errors.New("memory get value err")
 	}
