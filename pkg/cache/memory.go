@@ -1,6 +1,8 @@
 package cache
 
 import (
+	"encoding/json"
+	"reflect"
 	"sync"
 	"time"
 
@@ -43,7 +45,7 @@ func newItem(value interface{}, expires time.Duration) itemWithTTL {
 }
 
 // getValue 从itemWithTTL中取值
-func getValue(item interface{}, ok bool) (interface{}, bool) {
+func getValue(item interface{}, ok bool) ([]byte, bool) {
 	if !ok {
 		return nil, false
 	}
@@ -57,7 +59,12 @@ func getValue(item interface{}, ok bool) (interface{}, bool) {
 		return nil, false
 	}
 
-	return itemObj.value, true
+	data, err := json.Marshal(itemObj.value)
+	if err != nil {
+		return nil, false
+	}
+
+	return data, true
 }
 
 // Set data
@@ -76,9 +83,14 @@ func (m memoryCache) Get(key string, val interface{}) error {
 	if err != nil {
 		return errors.Wrapf(err, "build cache key err, key is %+v", key)
 	}
-	val, ok := getValue(m.client.Load(cacheKey))
+	data, ok := getValue(m.client.Load(cacheKey))
 	if !ok {
-		return errors.New("memory get value err")
+		return nil
+	}
+	err = Unmarshal(m.encoding, data, val)
+	if err != nil {
+		return errors.Wrapf(err, "unmarshal data error, key=%s, cacheKey=%s type=%v, json is %+v ",
+			key, cacheKey, reflect.TypeOf(val), string(data))
 	}
 	return nil
 }
