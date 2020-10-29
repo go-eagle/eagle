@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"reflect"
 	"sync"
 	"time"
 
@@ -27,11 +28,11 @@ func NewMemoryCache(keyPrefix string, encoding Encoding) *memoryCache {
 // item 存储的对象
 type itemWithTTL struct {
 	expires int64
-	value   interface{}
+	value   []byte
 }
 
 // newItem 返回带有效期的value
-func newItem(value interface{}, expires int) itemWithTTL {
+func newItem(value []byte, expires int) itemWithTTL {
 	expires64 := int64(expires)
 	if expires > 0 {
 		expires64 = time.Now().Unix() + expires64
@@ -43,7 +44,7 @@ func newItem(value interface{}, expires int) itemWithTTL {
 }
 
 // getValue 从itemWithTTL中取值
-func getValue(item interface{}, ok bool) (interface{}, bool) {
+func getValue(item interface{}, ok bool) ([]byte, bool) {
 	if !ok {
 		return nil, false
 	}
@@ -75,11 +76,15 @@ func (m *memoryCache) GarbageCollect() {
 
 // Set data
 func (m *memoryCache) Set(key string, val interface{}, expiration int) error {
+	buf, err := Marshal(m.encoding, val)
+	if err != nil {
+		return errors.Wrapf(err, "marshal data err, value is %+v", val)
+	}
 	cacheKey, err := BuildCacheKey(m.KeyPrefix, key)
 	if err != nil {
 		return errors.Wrapf(err, "build cache key err, key is %+v", key)
 	}
-	m.Store.Store(cacheKey, newItem(val, expiration))
+	m.Store.Store(cacheKey, newItem(buf, expiration))
 	return nil
 }
 
@@ -89,9 +94,14 @@ func (m *memoryCache) Get(key string, val interface{}) error {
 	if err != nil {
 		return errors.Wrapf(err, "build cache key err, key is %+v", key)
 	}
-	val, ok := getValue(m.Store.Load(cacheKey))
+	data, ok := getValue(m.Store.Load(cacheKey))
 	if !ok {
-		return errors.New("memory get value err")
+		return nil
+	}
+	err = Unmarshal(m.encoding, data, val)
+	if err != nil {
+		return errors.Wrapf(err, "unmarshal data error, key=%s, cacheKey=%s type=%v, json is %+v ",
+			key, cacheKey, reflect.TypeOf(val), string(data))
 	}
 	return nil
 }
