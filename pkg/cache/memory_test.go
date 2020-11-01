@@ -19,12 +19,6 @@ func TestMemoStore_Set(t *testing.T) {
 	store := NewMemoryCache("unit-test", JSONEncoding{})
 	err := store.Set("test-key", "test-val", -1)
 	asserts.NoError(err)
-
-	_, ok := store.Store.Load("unit-test:test-key")
-	asserts.True(ok)
-	//asserts.Equal("test-val", val.(itemWithTTL).value)
-
-	store.GarbageCollect()
 }
 
 func TestMemoStore_Get(t *testing.T) {
@@ -41,21 +35,4 @@ func TestMemoStore_Get(t *testing.T) {
 		asserts.NoError(err)
 		asserts.Equal("test-val", val)
 	}
-
-	//// Key不存在
-	//{
-	//	var val string
-	//	err := store.Get("something", val)
-	//	asserts.Error(err)
-	//}
-	//
-	//// 过期
-	//{
-	//	var val string
-	//	err := store.Set("test-key", "test-val", 1)
-	//	asserts.NoError(err)
-	//	err = store.Get("test-key", val)
-	//	asserts.NotEmpty(val)
-	//}
-
 }

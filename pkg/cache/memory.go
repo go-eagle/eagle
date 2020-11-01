@@ -17,7 +17,7 @@ type memoryCache struct {
 }
 
 // NewMemoryCache 实例化一个内存cache
-func NewMemoryCache(keyPrefix string, encoding Encoding) *memoryCache {
+func NewMemoryCache(keyPrefix string, encoding Encoding) Driver {
 	return &memoryCache{
 		Store:     &sync.Map{},
 		KeyPrefix: keyPrefix,
@@ -32,7 +32,7 @@ type itemWithTTL struct {
 }
 
 // newItem 返回带有效期的value
-func newItem(value []byte, expires int) itemWithTTL {
+func newItem(value []byte, expires time.Duration) itemWithTTL {
 	expires64 := int64(expires)
 	if expires > 0 {
 		expires64 = time.Now().Unix() + expires64
@@ -54,6 +54,7 @@ func getValue(item interface{}, ok bool) ([]byte, bool) {
 		return nil, false
 	}
 
+	// 过期返回空
 	if itemObj.expires > 0 && itemObj.expires < time.Now().Unix() {
 		return nil, false
 	}
@@ -61,7 +62,7 @@ func getValue(item interface{}, ok bool) ([]byte, bool) {
 	return itemObj.value, true
 }
 
-// GarbageCollect 回收已过期的缓存
+// GarbageCollect 回收已过期的缓存，可以通过定时任务来触发
 func (m *memoryCache) GarbageCollect() {
 	m.Store.Range(func(key, value interface{}) bool {
 		if item, ok := value.(itemWithTTL); ok {
@@ -75,7 +76,7 @@ func (m *memoryCache) GarbageCollect() {
 }
 
 // Set data
-func (m *memoryCache) Set(key string, val interface{}, expiration int) error {
+func (m *memoryCache) Set(key string, val interface{}, expiration time.Duration) error {
 	buf, err := Marshal(m.encoding, val)
 	if err != nil {
 		return errors.Wrapf(err, "marshal data err, value is %+v", val)
