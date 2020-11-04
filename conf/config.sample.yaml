@@ -27,16 +27,17 @@ mysql:
   conn_max_life_time: 60          # 连接重用的最大时间，单位分钟
 cache:
   driver: "redis"                 # 缓存驱动，可以选memory、redis, 默认redis
-  prefix: "snake:"                 # cache key前缀，一般为项目名称即可
+  prefix: "snake:"                # cache key前缀，一般为项目名称即可
 redis:
   addr: "localhost:6379"
   password: "" # no password set
   db: 0 # use default DB
-  dial_timeout: 60s   # 单位：秒
-  read_timeout: 2s   # 单位：秒
-  write_timeout: 2s  # 单位：秒
-  pool_size: 60
-  pool_timeout: 30s
+  min_idle_conn: 30               # maxIdle设置高点，可以保证突发流量情况下，能够有足够的连接去获取redis，不用在高流量情况下建立连接
+  dial_timeout: "60s"
+  read_timeout: "500ms"
+  write_timeout: "500ms"
+  pool_size: 500
+  pool_timeout: "60s"
 email:
   host: SMTP_HOST       # SMTP地址
   port: PORT            # 端口

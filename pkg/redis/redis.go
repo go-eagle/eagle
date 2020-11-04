@@ -22,6 +22,7 @@ func Init() *redis.Client {
 		Addr:         viper.GetString("redis.addr"),
 		Password:     viper.GetString("redis.password"),
 		DB:           viper.GetInt("redis.db"),
+		MinIdleConns: viper.GetInt("redis.min_idle.conn"),
 		DialTimeout:  viper.GetDuration("redis.dial_timeout"),
 		ReadTimeout:  viper.GetDuration("redis.read_timeout"),
 		WriteTimeout: viper.GetDuration("redis.write_timeout"),
