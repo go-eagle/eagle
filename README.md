@@ -8,16 +8,19 @@
  [![gitmoji](https://img.shields.io/badge/gitmoji-%20%F0%9F%98%9C%20%F0%9F%98%8D-FFDD67.svg?style=flat-square)](https://github.com/carloscuesta/gitmoji)
  [![License](https://img.shields.io/github/license/1024casts/snake?style=flat-square)](/LICENSE)
 
-一款适合于快速开发业务的 Go 框架，主要是提供 API 服务。
+一款适合于快速开发业务的 Go 框架，可快速构建 API 服务 或 Web 网站。
 
-**Pro Tip:** 每个目录下基本都有 `README`，让框架使用起来更轻松 ^_^
+**Pro Tip:** 每个目录下基本都有 `README`，可以让框架使用起来更轻松 ^_^
 
-项目中用到的设计思想和原则，满足 "高内聚、低耦合"，主要遵从下面几个原则
+## 设计思想和原则
+
+框架中用到的设计思想和原则，尽量满足 "高内聚、低耦合"，主要遵从下面几个原则
 - 1. 单一职责原则
 - 2. 基于接口而非实现编程
 - 3. 依赖注入
 - 4. 多用组合
 - 5. 迪米特法则
+
 > 迪米特法则: 不该有直接依赖关系的类之间，不要有依赖；有依赖关系的类之间，尽量只依赖必要的接口
 
 ## ✨ 技术栈
