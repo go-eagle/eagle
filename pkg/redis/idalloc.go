@@ -3,7 +3,6 @@ package redis
 import (
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/go-redis/redis"
 	"github.com/pkg/errors"
@@ -12,17 +11,18 @@ import (
 
 // IdAlloc id生成器
 type IdAlloc struct {
-	// key 为业务key, 比如生成用户id, 可以传入user_id
-	key         string
+	// key 为业务key, 由业务前缀+功能前缀+具体场景id组成
+	// 比如生成用户id, 可以传入user_id， 完整示例: snake:idalloc:user_id
+	key string
+	// redis 实例，最好使用和业务独立的实例，最好可以部署集群，让 id alloc做到高可用
 	redisClient *redis.Client
 }
 
-// New 实例化
-func New(conn *redis.Client, key string, defaultTimeout time.Duration) *Lock {
-	return &Lock{
+// New create a id alloc instance
+func New(conn *redis.Client, key string) *IdAlloc {
+	return &IdAlloc{
 		key:         key,
 		redisClient: conn,
-		timeout:     defaultTimeout,
 	}
 }
 
@@ -50,7 +50,7 @@ func (ia *IdAlloc) GetCurrentID() (int64, error) {
 	return int64(id), nil
 }
 
-// GetKey 获取key, 由业务前缀+功能前缀+具体场景id组成
+// GetKey 获取key
 func (ia *IdAlloc) GetKey() string {
 	keyPrefix := viper.GetString("name")
 	lockKey := "idalloc"
