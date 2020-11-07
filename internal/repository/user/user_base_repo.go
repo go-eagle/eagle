@@ -94,6 +94,7 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, uid uint64) (userBase
 	token := lock.GenToken()
 
 	isLock, err := lock.Lock(token)
+	// 如果已经被lock，则立即返回false不会等待，达到忽略操作的效果
 	if err != nil || !isLock {
 		return nil, errors.Wrapf(err, "[repo.user_base] lock err, key: %s", key)
 	}
@@ -154,14 +155,14 @@ func (repo *userBaseRepo) GetUserByPhone(ctx context.Context, phone int64) (*mod
 }
 
 // GetUserByEmail 根据邮箱获取手机号
-func (repo *userBaseRepo) GetUserByEmail(ctx context.Context, phone string) (*model.UserBaseModel, error) {
-	user := model.UserBaseModel{}
-	err := repo.db.Where("email = ?", phone).First(&user).Error
+func (repo *userBaseRepo) GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error) {
+	userBase := model.UserBaseModel{}
+	err := repo.db.Where("email = ?", email).First(&userBase).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errors.Wrap(err, "[user_repo] get user err by email")
 	}
 
-	return &user, nil
+	return &userBase, nil
 }
 
 // Close close db
