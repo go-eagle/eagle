@@ -9,6 +9,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	// LockKey redis lock key
+	LockKey = "redis:lock"
+)
+
 // Lock 定义lock结构体
 type Lock struct {
 	key         string
@@ -48,8 +53,7 @@ func (l *Lock) Unlock(token string) error {
 // GetKey 获取key
 func (l *Lock) GetKey() string {
 	keyPrefix := viper.GetString("name")
-	lockKey := "redis:lock"
-	return strings.Join([]string{keyPrefix, lockKey, l.key}, ":")
+	return strings.Join([]string{keyPrefix, LockKey, l.key}, ":")
 }
 
 // GenToken 生成token
