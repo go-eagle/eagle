@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/1024casts/snake/pkg/log"
+
 	"github.com/go-redis/redis"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -32,6 +34,11 @@ func (ia *IdAlloc) GetNewID(step int64) (int64, error) {
 	id, err := ia.redisClient.IncrBy(key, step).Result()
 	if err != nil {
 		return 0, errors.Wrapf(err, "redis incr err, key: %s", key)
+	}
+
+	if id == 0 {
+		log.Warnf("[redis.idalloc] %s GetNewID failed", ia.key)
+		return 0, errors.Wrapf(err, "[redis.idalloc] %s GetNewID failed", ia.key)
 	}
 	return id, nil
 }
