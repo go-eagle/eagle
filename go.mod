@@ -6,7 +6,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.3.3
 	github.com/alicebob/gopher-json v0.0.0-20180125190556-5a6b3ba71ee6 // indirect
 	github.com/alicebob/miniredis v2.5.0+incompatible
-	github.com/dgraph-io/ristretto v0.0.3 // indirect
+	github.com/dgraph-io/ristretto v0.0.3
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/foolin/gin-template v0.0.0-20190415034731-41efedfb393b
