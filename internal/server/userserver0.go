@@ -8,10 +8,11 @@ import (
 
 	pb "github.com/1024casts/snake/internal/rpc/user/v0"
 	"github.com/1024casts/snake/internal/service"
+	"github.com/1024casts/snake/pkg/conf"
 )
 
 // New new grpc server
-func New(svc *service.Service) {
+func New(c *conf.Config, svc *service.Service) {
 	// todo: get addr from conf
 	lis, err := net.Listen("tcp", "127.0.0.1:1234")
 	if err != nil {

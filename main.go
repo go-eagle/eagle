@@ -82,13 +82,13 @@ func main() {
 	routers.LoadWebRouter(router)
 
 	// init service
-	svc := service.New()
+	svc := service.New(conf.Conf)
 
 	// set global service
 	service.Svc = svc
 
 	// start grpc server
-	go server.New(svc)
+	go server.New(conf.Conf, svc)
 
 	// start server
 	snake.App.Run()

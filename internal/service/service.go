@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/1024casts/snake/internal/service/user"
+	"github.com/1024casts/snake/pkg/conf"
 )
 
 var (
@@ -11,12 +12,14 @@ var (
 
 // Service struct
 type Service struct {
+	c       *conf.Config
 	userSvc user.UserService
 }
 
 // New init service
-func New() (s *Service) {
+func New(c *conf.Config) (s *Service) {
 	s = &Service{
+		c:       c,
 		userSvc: user.NewUserService(),
 	}
 	return s
