@@ -38,7 +38,7 @@ func Update(c *gin.Context) {
 	userMap := make(map[string]interface{})
 	userMap["avatar"] = req.Avatar
 	userMap["sex"] = req.Sex
-	err := service.Svc.UserSvc().UpdateUser(context.TODO(), uint64(userID), userMap)
+	err := service.Svc.UserSvc().UpdateUser(context.TODO(), userID, userMap)
 	if err != nil {
 		log.Warnf("[user] update user err, %v", err)
 		api.SendResponse(c, errno.InternalServerError, nil)

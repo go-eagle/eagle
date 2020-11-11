@@ -8,6 +8,6 @@ import (
 // HmacSign hmac
 func HmacSign(secretKey, body string) []byte {
 	m := hmac.New(sha1.New, []byte(secretKey))
-	m.Write([]byte(body))
+	_, _ = m.Write([]byte(body))
 	return m.Sum(nil)
 }

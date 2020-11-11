@@ -7,8 +7,9 @@ import (
 )
 
 func TestSend(t *testing.T) {
+	cfg := ""
 	// init config
-	if err := conf.Init(); err != nil {
+	if err := conf.Init(cfg); err != nil {
 		panic(err)
 	}
 

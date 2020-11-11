@@ -34,13 +34,13 @@ func SignMd5Middleware() gin.HandlerFunc {
 
 // verifySign 验证签名
 func verifySign(c *gin.Context) (map[string]string, error) {
-	requestUri := c.Request.RequestURI
+	requestURI := c.Request.RequestURI
 	// 创建Verify校验器
 	verifier := sign.NewVerifier()
 	sn := verifier.GetSign()
 
 	// 假定从RequestUri中读取校验参数
-	if err := verifier.ParseQuery(requestUri); nil != err {
+	if err := verifier.ParseQuery(requestURI); nil != err {
 		return nil, err
 	}
 

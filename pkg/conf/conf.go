@@ -12,6 +12,7 @@ import (
 )
 
 var (
+	// Conf app global config
 	Conf *Config
 )
 
@@ -73,16 +74,16 @@ type Config struct {
 	// here can add biz conf
 }
 
-// AppConfig
+// AppConfig app config
 type AppConfig struct {
 	Name      string
 	RunMode   string
 	Addr      string
-	Url       string
+	URL       string
 	JwtSecret string
 }
 
-// LogConfig
+// LogConfig log config
 type LogConfig struct {
 	Writers          string
 	LoggerLevel      string
@@ -96,7 +97,7 @@ type LogConfig struct {
 	LogBackupCount   int
 }
 
-// MySQLConfig
+// MySQLConfig mysql config
 type MySQLConfig struct {
 	Name            string
 	Addr            string
@@ -108,7 +109,7 @@ type MySQLConfig struct {
 	ConnMaxLifeTime int
 }
 
-// RedisConfig
+// RedisConfig redis config
 type RedisConfig struct {
 	Addr         string
 	Password     string
@@ -119,13 +120,13 @@ type RedisConfig struct {
 	PoolSize     int
 }
 
-// CacheConfig
+// CacheConfig define cache config struct
 type CacheConfig struct {
 	Driver string
 	Prefix string
 }
 
-// init log
+// InitLog init log
 func InitLog() {
 	config := log.Config{
 		Writers:          viper.GetString("log.writers"),

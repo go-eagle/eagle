@@ -3,17 +3,17 @@ package user
 import (
 	"net/http"
 
-	"github.com/1024casts/snake/app/web"
+	"github.com/gin-gonic/gin"
 
+	"github.com/1024casts/snake/app/web"
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/errno"
-
 	"github.com/1024casts/snake/pkg/flash"
 	"github.com/1024casts/snake/pkg/log"
-	"github.com/gin-gonic/gin"
 )
 
+// GetRegister register as a new user
 func GetRegister(c *gin.Context) {
 	c.HTML(http.StatusOK, "user/register", gin.H{
 		"title": "注册",
@@ -21,6 +21,7 @@ func GetRegister(c *gin.Context) {
 	})
 }
 
+// DoRegister submit register
 func DoRegister(c *gin.Context) {
 	log.Info("User Register function called.")
 	var r RegisterRequest
@@ -57,6 +58,6 @@ func DoRegister(c *gin.Context) {
 
 	// Show the user information.
 	web.Response(c, nil, RegisterResponse{
-		Id: u.ID,
+		ID: u.ID,
 	})
 }

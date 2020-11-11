@@ -31,7 +31,9 @@ func (r *rawClient) Get(url string, params map[string]string, duration time.Dura
 		log.Warnf("get url:%s, err: %s", url, err)
 		return target, err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -51,13 +53,15 @@ func (r *rawClient) Get(url string, params map[string]string, duration time.Dura
 func (r *rawClient) Post(url string, data []byte, duration time.Duration) ([]byte, error) {
 	client := http.Client{Timeout: duration}
 	var target []byte
-	resp, err := client.Post(url, contentTypeJson, bytes.NewBuffer(data))
+	resp, err := client.Post(url, contentTypeJSON, bytes.NewBuffer(data))
 	if err != nil {
 		log.Warnf("post url:%s, err: %s", url, err)
 		return target, err
 	}
 
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

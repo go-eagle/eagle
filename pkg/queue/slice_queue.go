@@ -2,11 +2,13 @@ package queue
 
 import "sync"
 
+// SliceQueue slice queue
 type SliceQueue struct {
 	data []interface{}
 	mu   sync.Mutex
 }
 
+// NewSliceQueue create a slice queue
 func NewSliceQueue(n int) (q *SliceQueue) {
 	return &SliceQueue{data: make([]interface{}, 0, n)}
 }

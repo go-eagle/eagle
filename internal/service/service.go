@@ -13,7 +13,7 @@ var (
 // Service struct
 type Service struct {
 	c       *conf.Config
-	userSvc user.UserService
+	userSvc user.IUserService
 }
 
 // New init service
@@ -26,7 +26,7 @@ func New(c *conf.Config) (s *Service) {
 }
 
 // UserSvc return user service
-func (s *Service) UserSvc() user.UserService {
+func (s *Service) UserSvc() user.IUserService {
 	return s.userSvc
 }
 

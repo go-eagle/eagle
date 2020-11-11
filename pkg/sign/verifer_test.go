@@ -6,14 +6,14 @@ import (
 )
 
 func TestVerify_ParseQuery(t *testing.T) {
-	requestUri := "/restful/api/numbers?app_id=9d8a121ce581499d&nonce_str=tempstring&city=beijing" +
+	requestURI := "/restful/api/numbers?app_id=9d8a121ce581499d&nonce_str=tempstring&city=beijing" +
 		"&timestamp=1532585241&sign=0f5b8c97920bc95f1a8b893f41b42d9e"
 
 	// 第一步：创建Verify校验类
 	verifier := NewVerifier()
 
 	// 假定从RequestUri中读取校验参数
-	if err := verifier.ParseQuery(requestUri); nil != err {
+	if err := verifier.ParseQuery(requestURI); nil != err {
 		t.Fatal(err)
 	}
 

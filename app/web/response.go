@@ -12,12 +12,14 @@ import (
 	"github.com/1024casts/snake/pkg/log"
 )
 
+// Resp web response struct
 type Resp struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 }
 
+// Response json response
 func Response(c *gin.Context, err error, data interface{}) {
 	code, message := errno.DecodeErr(err)
 
@@ -27,22 +29,22 @@ func Response(c *gin.Context, err error, data interface{}) {
 		Message: message,
 		Data:    data,
 	})
-
-	return
 }
 
+// Redirect redirect to another path
 func Redirect(c *gin.Context, redirectPath, errMsg string) {
 	flash.SetMessage(c.Writer, errMsg)
 	c.Redirect(http.StatusMovedPermanently, redirectPath)
 	c.Abort()
 }
 
-// It is recommended to use an authentication key with 32 or 64 bytes.
+// Store It is recommended to use an authentication key with 32 or 64 bytes.
 // The encryption key, if set, must be either 16, 24, or 32 bytes to select
 // AES-128, AES-192, or AES-256 modes.
 var Store = sessions.NewCookieStore([]byte(viper.GetString("cookie.secret")))
 
-func SetLoginCookie(ctx *gin.Context, userId uint64) {
+// SetLoginCookie set login cookie to session
+func SetLoginCookie(ctx *gin.Context, userID uint64) {
 	Store.Options.HttpOnly = true
 
 	session := GetCookieSession(ctx)
@@ -59,7 +61,7 @@ func SetLoginCookie(ctx *gin.Context, userId uint64) {
 		session.Options.MaxAge = 86400 * 30
 	}
 
-	session.Values["user_id"] = userId
+	session.Values["user_id"] = userID
 
 	req := Request(ctx)
 	resp := ResponseWriter(ctx)
@@ -69,6 +71,7 @@ func SetLoginCookie(ctx *gin.Context, userId uint64) {
 	}
 }
 
+// GetCookieSession get cookie
 func GetCookieSession(ctx *gin.Context) *sessions.Session {
 	session, err := Store.Get(ctx.Request, viper.GetString("cookie.name"))
 	if err != nil {
@@ -77,10 +80,12 @@ func GetCookieSession(ctx *gin.Context) *sessions.Session {
 	return session
 }
 
+// Request return a request
 func Request(ctx *gin.Context) *http.Request {
 	return ctx.Request
 }
 
+// ResponseWriter return a response writer
 func ResponseWriter(ctx *gin.Context) http.ResponseWriter {
 	return ctx.Writer
 }

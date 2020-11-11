@@ -11,6 +11,7 @@ import (
 	"github.com/1024casts/snake/pkg/log"
 )
 
+// Logout user logout
 func Logout(c *gin.Context) {
 	// 删除cookie信息
 	session := web.GetCookieSession(c)
@@ -28,5 +29,4 @@ func Logout(c *gin.Context) {
 
 	// 重定向得到原页面
 	c.Redirect(http.StatusSeeOther, c.Request.Referer())
-	return
 }

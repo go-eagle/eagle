@@ -86,5 +86,5 @@ func (repo *userStatRepo) GetUserStatByIDs(ctx context.Context, userID []uint64)
 
 // Close close db
 func (repo *userStatRepo) Close() {
-	repo.db.Close()
+	_ = repo.db.Close()
 }

@@ -29,11 +29,11 @@ const (
 
 // 用于触发编译期的接口的合理性检查机制
 // 如果userService没有实现UserService,会在编译期报错
-var _ UserService = (*userService)(nil)
+var _ IUserService = (*userService)(nil)
 
-// UserService 用户服务接口定义
+// IUserService 用户服务接口定义
 // 使用大写的UserService对外保留方法
-type UserService interface {
+type IUserService interface {
 	Register(ctx context.Context, username, email, password string) error
 	EmailLogin(ctx context.Context, email, password string) (tokenStr string, err error)
 	PhoneLogin(ctx context.Context, phone int64, verifyCode int) (tokenStr string, err error)
@@ -65,7 +65,7 @@ type userService struct {
 // NewUserService 实例化一个userService
 // 通过 NewService 函数初始化 Service 接口
 // 依赖接口，不要依赖实现，面向接口编程
-func NewUserService() UserService {
+func NewUserService() IUserService {
 	db := model.GetDB()
 	return &userService{
 		userRepo:       user.NewUserRepo(db),

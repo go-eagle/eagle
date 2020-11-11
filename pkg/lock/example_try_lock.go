@@ -6,7 +6,8 @@ import (
 	"time"
 )
 
-func try() {
+// ExampleTry test try lock
+func ExampleTry() {
 	var mu Mutex
 	go func() { // 启动一个goroutine持有一段时间的锁
 		mu.Lock()

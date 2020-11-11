@@ -5,10 +5,12 @@ import (
 	"time"
 )
 
+// DelayJob delay job
 type DelayJob struct {
 	count int
 }
 
+// Run run job
 func (d *DelayJob) Run() {
 	time.Sleep(2 * time.Second)
 	d.count++

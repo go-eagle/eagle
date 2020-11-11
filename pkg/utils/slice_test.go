@@ -2,6 +2,8 @@ package utils
 
 import (
 	"reflect"
+	"strconv"
+	"sync"
 	"testing"
 )
 
@@ -247,7 +249,7 @@ func TestIsInSlice(t *testing.T) {
 // go test -bench="."
 // benchamark slice compare
 type Something struct {
-	roomId   int
+	roomID   int
 	roomName string
 }
 
@@ -261,7 +263,7 @@ func BenchmarkDefaultSlice(b *testing.B) {
 			for i := 0; i < 120; i++ {
 				output := make([]Something, 0)
 				output = append(output, Something{
-					roomId:   i,
+					roomID:   i,
 					roomName: strconv.Itoa(i),
 				})
 			}
@@ -282,7 +284,7 @@ func BenchmarkPreAllocSlice(b *testing.B) {
 			output := make([]Something, 0, 120)
 			for i := 0; i < 120; i++ {
 				output = append(output, Something{
-					roomId:   i,
+					roomID:   i,
 					roomName: strconv.Itoa(i),
 				})
 			}
@@ -290,7 +292,6 @@ func BenchmarkPreAllocSlice(b *testing.B) {
 		}(&wg)
 	}
 	wg.Wait()
-
 }
 
 // BenchmarkSyncPoolSlice 使用 sync pool
@@ -309,7 +310,7 @@ func BenchmarkSyncPoolSlice(b *testing.B) {
 			obj := SomethingPool.Get().(*[]Something)
 			for i := 0; i < 120; i++ {
 				some := *obj
-				some[i].roomId = i
+				some[i].roomID = i
 				some[i].roomName = strconv.Itoa(i)
 			}
 			SomethingPool.Put(obj)

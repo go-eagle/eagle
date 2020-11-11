@@ -73,6 +73,7 @@ func (repo *userFollowRepo) GetFollowingUserList(ctx context.Context, userID, la
 	return userFollowList, nil
 }
 
+// GetFollowerUserList get follower user list
 func (repo *userFollowRepo) GetFollowerUserList(ctx context.Context, userID, lastID uint64, limit int) ([]*model.UserFansModel, error) {
 	userFollowerList := make([]*model.UserFansModel, 0)
 	db := model.GetDB()
@@ -88,7 +89,7 @@ func (repo *userFollowRepo) GetFollowerUserList(ctx context.Context, userID, las
 	return userFollowerList, nil
 }
 
-// 获取自己对关注列表的关注信息
+// GetFollowByUIds 获取自己对关注列表的关注信息
 func (repo *userFollowRepo) GetFollowByUIds(ctx context.Context, userID uint64, followingUID []uint64) (map[uint64]*model.UserFollowModel, error) {
 	userFollowModel := make([]*model.UserFollowModel, 0)
 	retMap := make(map[uint64]*model.UserFollowModel)
@@ -108,7 +109,7 @@ func (repo *userFollowRepo) GetFollowByUIds(ctx context.Context, userID uint64, 
 	return retMap, nil
 }
 
-// 获取自己对关注列表的被关注信息
+// GetFansByUIds 获取自己对关注列表的被关注信息
 func (repo *userFollowRepo) GetFansByUIds(ctx context.Context, userID uint64, followerUID []uint64) (map[uint64]*model.UserFansModel, error) {
 	userFansModel := make([]*model.UserFansModel, 0)
 	retMap := make(map[uint64]*model.UserFansModel)
@@ -130,5 +131,5 @@ func (repo *userFollowRepo) GetFansByUIds(ctx context.Context, userID uint64, fo
 
 // Close close db
 func (repo *userFollowRepo) Close() {
-	repo.db.Close()
+	_ = repo.db.Close()
 }

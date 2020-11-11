@@ -152,7 +152,7 @@ func (s *Signer) GetSignedQuery() string {
 	return s.MakeSignedQuery()
 }
 
-// GetSignedQuery 获取带签名参数的字符串
+// MakeSignedQuery 获取带签名参数的字符串
 func (s *Signer) MakeSignedQuery() string {
 	body := s.getSortedBodyString()
 	sign := s.GetSignature()

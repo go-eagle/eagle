@@ -11,8 +11,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-// IdAlloc id生成器
-type IdAlloc struct {
+// IDAlloc id生成器
+type IDAlloc struct {
 	// key 为业务key, 由业务前缀+功能前缀+具体场景id组成
 	// 比如生成用户id, 可以传入user_id， 完整示例: snake:idalloc:user_id
 	key string
@@ -21,15 +21,15 @@ type IdAlloc struct {
 }
 
 // New create a id alloc instance
-func New(conn *redis.Client, key string) *IdAlloc {
-	return &IdAlloc{
+func New(conn *redis.Client, key string) *IDAlloc {
+	return &IDAlloc{
 		key:         key,
 		redisClient: conn,
 	}
 }
 
 // GetNewID 生成id
-func (ia *IdAlloc) GetNewID(step int64) (int64, error) {
+func (ia *IDAlloc) GetNewID(step int64) (int64, error) {
 	key := ia.GetKey()
 	id, err := ia.redisClient.IncrBy(key, step).Result()
 	if err != nil {
@@ -44,7 +44,7 @@ func (ia *IdAlloc) GetNewID(step int64) (int64, error) {
 }
 
 // GetCurrentID 获取当前id
-func (ia *IdAlloc) GetCurrentID() (int64, error) {
+func (ia *IDAlloc) GetCurrentID() (int64, error) {
 	key := ia.GetKey()
 	ret, err := ia.redisClient.Get(key).Result()
 	if err != nil {
@@ -58,7 +58,7 @@ func (ia *IdAlloc) GetCurrentID() (int64, error) {
 }
 
 // GetKey 获取key
-func (ia *IdAlloc) GetKey() string {
+func (ia *IDAlloc) GetKey() string {
 	keyPrefix := viper.GetString("name")
 	lockKey := "idalloc"
 	return strings.Join([]string{keyPrefix, lockKey, ia.key}, ":")

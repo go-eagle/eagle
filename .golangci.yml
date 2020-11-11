@@ -228,7 +228,7 @@ linters:
     - deadcode
     - depguard
     - dogsled
-    - dupl
+#    - dupl
     - errcheck
     - gochecknoinits
     - goconst
@@ -236,11 +236,11 @@ linters:
     - gofmt
     - goimports
     - golint
-    - goprintffuncname
+#    - goprintffuncname
 #    - gosec
     - gosimple
     - govet
-    - ineffassign
+#    - ineffassign
     - interfacer
     - lll
     - misspell

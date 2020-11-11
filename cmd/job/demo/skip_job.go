@@ -6,10 +6,12 @@ import (
 	"time"
 )
 
+// SkipJob define a struct
 type SkipJob struct {
 	count int32
 }
 
+// Run run job
 func (d *SkipJob) Run() {
 	atomic.AddInt32(&d.count, 1)
 	log.Printf("%d: hello world\n", d.count)

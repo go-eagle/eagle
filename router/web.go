@@ -44,9 +44,8 @@ func LoadWebRouter(g *gin.Engine) *gin.Engine {
 			"isActive": func(ctx *gin.Context, currentUri string) string {
 				if ctx.Request.RequestURI == currentUri {
 					return "is-active"
-				} else {
-					return ""
 				}
+				return ""
 			},
 			// 全局消息
 			"flashMessage": func(ctx *gin.Context) string {

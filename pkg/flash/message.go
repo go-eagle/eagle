@@ -12,6 +12,7 @@ import (
 
 var flashName = "flash"
 
+// HasFlash check if have message
 func HasFlash(r *http.Request) bool {
 	c, err := r.Cookie(flashName)
 	if err != nil {
@@ -23,13 +24,10 @@ func HasFlash(r *http.Request) bool {
 		}
 	}
 	log.Warnf("[flash] read cookie err: %v", err)
-	if c.Value != "" {
-		return true
-	}
-
-	return false
+	return c.Value != ""
 }
 
+// SetMessage set message
 func SetMessage(w http.ResponseWriter, msg string) {
 	log.Info("[flash] begin set message...")
 	expire := time.Now().Add(3 * time.Second)
@@ -44,6 +42,7 @@ func SetMessage(w http.ResponseWriter, msg string) {
 	http.SetCookie(w, &c)
 }
 
+// GetMessage get message
 func GetMessage(w http.ResponseWriter, r *http.Request) ([]byte, error) {
 	log.Info("[flash] begin get message...")
 	c, err := r.Cookie(flashName)

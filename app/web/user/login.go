@@ -11,6 +11,7 @@ import (
 	"github.com/1024casts/snake/pkg/log"
 )
 
+// GetLogin show login page
 func GetLogin(c *gin.Context) {
 	c.HTML(http.StatusOK, "user/login", gin.H{
 		"title": "登录",
@@ -18,11 +19,12 @@ func GetLogin(c *gin.Context) {
 	})
 }
 
+// DoLogin perform login
 // @Summary Login generates the authentication token
 // @Produce  json
 // @Param username body string true "Username"
 // @Param password body string true "Password"
-// @Success 200 {string} json "{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MjgwMTY5MjIsImlkIjowLCJuYmYiOjE1MjgwMTY5MjIsInVzZXJuYW1lIjoiYWRtaW4ifQ.LjxrK9DuAwAzUD8-9v43NzWBN7HXsSLfebw92DKd1JQ"}}"
+// @Success 200 {string} json "{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR7HXsSLfebw92DKd1JQ"}}"
 // @Router /login [post]
 func DoLogin(c *gin.Context) {
 	log.Info("[web.login] User DoLogin function called.")

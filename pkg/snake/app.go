@@ -9,14 +9,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/1024casts/snake/pkg/conf"
-	redis2 "github.com/1024casts/snake/pkg/redis"
-
-	"github.com/1024casts/snake/internal/model"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
+
+	"github.com/1024casts/snake/internal/model"
+	"github.com/1024casts/snake/pkg/conf"
+	redis2 "github.com/1024casts/snake/pkg/redis"
 )
 
 const (

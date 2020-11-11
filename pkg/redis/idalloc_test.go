@@ -17,7 +17,7 @@ func TestNew(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *IdAlloc
+		want *IDAlloc
 	}{
 		{
 			name: "test new id alloc",
@@ -25,7 +25,7 @@ func TestNew(t *testing.T) {
 				conn: RedisClient,
 				key:  "test_id",
 			},
-			want: &IdAlloc{
+			want: &IDAlloc{
 				key:         "test_id",
 				redisClient: RedisClient,
 			},
@@ -55,7 +55,7 @@ func TestIdAlloc_GetCurrentID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ia := &IdAlloc{
+			ia := &IDAlloc{
 				key:         tt.fields.key,
 				redisClient: tt.fields.redisClient,
 			}
@@ -85,7 +85,7 @@ func TestIdAlloc_GetKey(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ia := &IdAlloc{
+			ia := &IDAlloc{
 				key:         tt.fields.key,
 				redisClient: tt.fields.redisClient,
 			}
@@ -115,7 +115,7 @@ func TestIdAlloc_GetNewID(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ia := &IdAlloc{
+			ia := &IDAlloc{
 				key:         tt.fields.key,
 				redisClient: tt.fields.redisClient,
 			}

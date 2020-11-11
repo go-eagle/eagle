@@ -16,10 +16,12 @@ func main() {
 	serviceAddress := "127.0.0.1:1234"
 	conn, err := grpc.Dial(serviceAddress, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		fmt.Sprintf("grpc dial err: %v", err)
+		fmt.Printf("grpc dial err: %v", err)
 		panic("grpc dial err")
 	}
-	defer conn.Close()
+	defer func() {
+		_ = conn.Close()
+	}()
 
 	userClient := pb.NewUserServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)

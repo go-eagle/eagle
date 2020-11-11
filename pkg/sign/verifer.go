@@ -27,11 +27,11 @@ func NewVerifier() *Verifier {
 }
 
 // ParseQuery 将参数字符串解析成参数列表
-func (v *Verifier) ParseQuery(requestUri string) error {
+func (v *Verifier) ParseQuery(requestURI string) error {
 	requestQuery := ""
-	idx := strings.Index(requestUri, "?")
+	idx := strings.Index(requestURI, "?")
 	if idx > 0 {
-		requestQuery = requestUri[idx+1:]
+		requestQuery = requestURI[idx+1:]
 	}
 	query, err := url.ParseQuery(requestQuery)
 	if nil != err {
@@ -63,7 +63,7 @@ func (v *Verifier) MustString(key string) string {
 	return ss[0]
 }
 
-// MustString 获取字符串值数组
+// MustStrings 获取字符串值数组
 func (v *Verifier) MustStrings(key string) []string {
 	return v.body[key]
 }
@@ -84,7 +84,7 @@ func (v *Verifier) MustHasKeys(keys ...string) error {
 	return nil
 }
 
-// MustHasKeys 必须包含除特定的[timestamp, nonce_str, sign, app_id]等之外的指定的字段参数
+// MustHasOtherKeys 必须包含除特定的[timestamp, nonce_str, sign, app_id]等之外的指定的字段参数
 func (v *Verifier) MustHasOtherKeys(keys ...string) error {
 	fields := []string{v.Timestamp, v.NonceStr, v.Sign, v.AppID}
 	if len(keys) > 0 {

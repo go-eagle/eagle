@@ -1,10 +1,14 @@
 package sign
 
 const (
+	// KeyNameTimeStamp 时间戳字段名
 	KeyNameTimeStamp = "timestamp"
-	KeyNameNonceStr  = "nonce_str"
-	KeyNameAppID     = "app_id"
-	KeyNameSign      = "sign"
+	// KeyNameNonceStr temp str field
+	KeyNameNonceStr = "nonce_str"
+	// KeyNameAppID app id field
+	KeyNameAppID = "app_id"
+	// KeyNameSign sign field
+	KeyNameSign = "sign"
 )
 
 // DefaultKeyName 签名需要用到的字段

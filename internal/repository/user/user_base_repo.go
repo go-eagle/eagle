@@ -73,7 +73,7 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, uid uint64) (userBase
 	//var userBase *model.UserBaseModel
 	start := time.Now()
 	defer func() {
-		log.Infof("[repo.user_base] get user by uid: %d cost: %d ns", uid, time.Now().Sub(start).Nanoseconds())
+		log.Infof("[repo.user_base] get user by uid: %d cost: %d ns", uid, time.Since(start).Nanoseconds())
 	}()
 	// 从cache获取
 	userBase, err = repo.userCache.GetUserBaseCache(uid)
@@ -98,7 +98,9 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, uid uint64) (userBase
 	if err != nil || !isLock {
 		return nil, errors.Wrapf(err, "[repo.user_base] lock err, key: %s", key)
 	}
-	defer lock.Unlock(token)
+	defer func() {
+		_ = lock.Unlock(token)
+	}()
 
 	data := new(model.UserBaseModel)
 	if isLock {
@@ -167,5 +169,5 @@ func (repo *userBaseRepo) GetUserByEmail(ctx context.Context, email string) (*mo
 
 // Close close db
 func (repo *userBaseRepo) Close() {
-	repo.db.Close()
+	_ = repo.db.Close()
 }
