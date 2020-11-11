@@ -128,11 +128,12 @@ find rpc -name '*.proto' -exec protoc --twirp_out=. --go_out=. {} \;
 
 ## 实现接口
 
-请参考 [server/README.me](https://github.com/1024casts/snake/tree/master/internal/server/README.MD)
+请参考 [server/README.md](https://github.com/1024casts/snake/tree/master/internal/server/README.md)
 
 ## 自动注册
 
 snake 提供的脚手架可以自动生成 proto 模版、server 模版，并注册路由。 运行以下命令：
+
 ```bash
 go run cmd/snake/main.go rpc --server=foo --service=echo
 ```
