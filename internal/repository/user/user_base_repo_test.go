@@ -63,7 +63,7 @@ func (s *Suite) Test_repository_Create() {
 		UpdatedAt: time.Now(),
 	}
 
-	const sqlInsert = `INSERT INTO "users" ("username","password","phone","email","avatar","sex","created_at","updated_at") VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING "users"."id"`
+	const sqlInsert = `INSERT INTO "user_base" ("username","password","phone","email","avatar","sex","created_at","updated_at") VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING "user_base"."id"`
 	const newID = 1
 
 	s.mock.ExpectBegin()
@@ -84,7 +84,7 @@ func (s *Suite) Test_repository_GetUserByID() {
 	)
 
 	s.mock.ExpectQuery(regexp.QuoteMeta(
-		`SELECT * FROM "users" WHERE (id = $1)`)).
+		`SELECT * FROM "user_base" WHERE (id = $1)`)).
 		WithArgs(id).WillReturnRows(sqlmock.NewRows([]string{"id", "username"}).AddRow(id, username))
 
 	res, err := s.repository.GetUserByID(context.TODO(), id)
@@ -101,7 +101,7 @@ func (s *Suite) Test_repository_GetUserByPhone() {
 	)
 
 	s.mock.ExpectQuery(regexp.QuoteMeta(
-		`SELECT * FROM "users" WHERE (phone = $1)`)).
+		`SELECT * FROM "user_base" WHERE (phone = $1)`)).
 		WithArgs(phone).WillReturnRows(sqlmock.NewRows([]string{"id", "username", "phone"}).AddRow(id, username, phone))
 
 	res, err := s.repository.GetUserByPhone(context.TODO(), phone)
@@ -118,7 +118,7 @@ func (s *Suite) Test_repository_GetUserByEmail() {
 	)
 
 	s.mock.ExpectQuery(regexp.QuoteMeta(
-		`SELECT * FROM "users" WHERE (email = $1)`)).
+		`SELECT * FROM "user_base" WHERE (email = $1)`)).
 		WithArgs(email).WillReturnRows(sqlmock.NewRows([]string{"id", "username", "email"}).AddRow(id, username, email))
 
 	res, err := s.repository.GetUserByEmail(context.TODO(), email)
