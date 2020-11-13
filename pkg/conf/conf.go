@@ -114,10 +114,12 @@ type RedisConfig struct {
 	Addr         string
 	Password     string
 	Db           int
+	minIdleConn  int
 	DialTimeout  int
 	ReadTimeout  int
 	WriteTimeout int
 	PoolSize     int
+	poolTimeout  int
 }
 
 // CacheConfig define cache config struct
