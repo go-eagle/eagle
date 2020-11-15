@@ -9,6 +9,7 @@ import (
 	"github.com/dgraph-io/ristretto"
 )
 
+// ristrettoCache local cache struct
 type ristrettoCache struct {
 	Store     *ristretto.Cache
 	KeyPrefix string
@@ -30,7 +31,7 @@ func NewRistrettoCache(keyPrefix string, encoding Encoding) Driver {
 	}
 }
 
-// Set add
+// Set add cache
 func (r ristrettoCache) Set(key string, val interface{}, expiration time.Duration) error {
 	buf, err := Marshal(r.encoding, val)
 	if err != nil {
