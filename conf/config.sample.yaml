@@ -33,11 +33,11 @@ redis:
   password: "" # no password set
   db: 0 # use default DB
   min_idle_conn: 30               # maxIdle设置高点，可以保证突发流量情况下，能够有足够的连接去获取redis，不用在高流量情况下建立连接
-  dial_timeout: "60s"
-  read_timeout: "500ms"
-  write_timeout: "500ms"
+  dial_timeout: 60s
+  read_timeout: 500ms
+  write_timeout: 500ms
   pool_size: 500
-  pool_timeout: "60s"
+  pool_timeout: 60s
 email:
   host: SMTP_HOST       # SMTP地址
   port: PORT            # 端口
