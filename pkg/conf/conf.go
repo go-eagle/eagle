@@ -3,6 +3,7 @@ package conf
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/pkg/errors"
@@ -111,15 +112,15 @@ type MySQLConfig struct {
 
 // RedisConfig redis config
 type RedisConfig struct {
-	Addr         string
-	Password     string
-	Db           int
-	minIdleConn  int
-	DialTimeout  int
-	ReadTimeout  int
-	WriteTimeout int
-	PoolSize     int
-	poolTimeout  int
+	Addr         string        `mapstructure:"addr"`
+	Password     string        `mapstructure:"password"`
+	Db           int           `mapstructure:"db"`
+	MinIdleConn  int           `mapstructure:"min_idle_conn"`
+	DialTimeout  time.Duration `mapstructure:"dial_timeout"`
+	ReadTimeout  time.Duration `mapstructure:"read_timeout"`
+	WriteTimeout time.Duration `mapstructure:"write_timeout"`
+	PoolSize     int           `mapstructure:"pool_size"`
+	PoolTimeout  time.Duration `mapstructure:"pool_timeout"`
 }
 
 // CacheConfig define cache config struct

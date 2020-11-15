@@ -11,6 +11,7 @@ import (
 	// GORM MySQL
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
+	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -18,7 +19,7 @@ import (
 var DB *gorm.DB
 
 // Init 初始化数据库
-func Init() *gorm.DB {
+func Init(cfg *conf.Config) *gorm.DB {
 	return openDB(viper.GetString("mysql.username"),
 		viper.GetString("mysql.password"),
 		viper.GetString("mysql.addr"),

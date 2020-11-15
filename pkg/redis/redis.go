@@ -7,6 +7,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/spf13/viper"
 
+	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -17,17 +18,18 @@ var RedisClient *redis.Client
 const Nil = redis.Nil
 
 // Init 实例化一个redis client
-func Init() *redis.Client {
+func Init(cfg *conf.Config) *redis.Client {
+	c := cfg.Redis
 	RedisClient = redis.NewClient(&redis.Options{
-		Addr:         viper.GetString("redis.addr"),
-		Password:     viper.GetString("redis.password"),
-		DB:           viper.GetInt("redis.db"),
-		MinIdleConns: viper.GetInt("redis.min_idle_conn"),
-		DialTimeout:  viper.GetDuration("redis.dial_timeout"),
-		ReadTimeout:  viper.GetDuration("redis.read_timeout"),
-		WriteTimeout: viper.GetDuration("redis.write_timeout"),
-		PoolSize:     viper.GetInt("redis.pool_size"),
-		PoolTimeout:  viper.GetDuration("redis.pool_timeout"),
+		Addr:         c.Addr,
+		Password:     c.Password,
+		DB:           c.Db,
+		MinIdleConns: c.MinIdleConn,
+		DialTimeout:  c.DialTimeout,
+		ReadTimeout:  c.ReadTimeout,
+		WriteTimeout: c.WriteTimeout,
+		PoolSize:     c.PoolSize,
+		PoolTimeout:  c.PoolTimeout,
 	})
 
 	fmt.Println("redis addr:", viper.GetString("redis.addr"))

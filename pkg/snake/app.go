@@ -48,10 +48,10 @@ func New(cfg *conf.Config) *Application {
 	conf.InitLog()
 
 	// init db
-	app.DB = model.Init()
+	app.DB = model.Init(cfg)
 
 	// init redis
-	app.RedisClient = redis2.Init()
+	app.RedisClient = redis2.Init(cfg)
 
 	// init router
 	app.Router = gin.Default()
