@@ -17,14 +17,14 @@ log:
   log_rotate_size: 1              # rotate转存大小，配合rollingPolicy: size使用
   log_backup_count: 7             # 当日志文件达到转存标准时，log系统会将该日志文件进行压缩备份，这里指定了备份文件的最大个数。
 mysql:
-  name: snake
-  addr: 127.0.0.1:3306 # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
+  name: snake                     # 数据库名称
+  addr: 127.0.0.1:3306            # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
   username: root
   password: 123456
   show_log: true                  # 是否打印SQL日志
   max_idle_conn: 10               # 最大闲置的连接数
   max_open_conn: 60               # 最大打开的连接数, 需要小于数据库配置中的max_connections数
-  conn_max_life_time: 60          # 连接重用的最大时间，单位分钟
+  conn_max_life_time: 60m         # 连接重用的最大时间
 cache:
   driver: "redis"                 # 缓存驱动，可以选memory、redis, 默认redis
   prefix: "snake:"                # cache key前缀，一般为项目名称即可

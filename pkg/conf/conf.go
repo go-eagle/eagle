@@ -100,14 +100,14 @@ type LogConfig struct {
 
 // MySQLConfig mysql config
 type MySQLConfig struct {
-	Name            string
-	Addr            string
-	UserName        string
-	Password        string
-	ShowLog         bool
-	MaxIdleConn     int
-	MaxOpenConn     int
-	ConnMaxLifeTime int
+	Name            string        `mapstructure:"name"`
+	Addr            string        `mapstructure:"addr"`
+	UserName        string        `mapstructure:"username"`
+	Password        string        `mapstructure:"password"`
+	ShowLog         bool          `mapstructure:"show_log"`
+	MaxIdleConn     int           `mapstructure:"max_idle_conn"`
+	MaxOpenConn     int           `mapstructure:"max_open_conn"`
+	ConnMaxLifeTime time.Duration `mapstructure:"conn_max_life_time"`
 }
 
 // RedisConfig redis config
