@@ -24,7 +24,7 @@ mysql:
   show_log: true                  # 是否打印SQL日志
   max_idle_conn: 10               # 最大闲置的连接数
   max_open_conn: 60               # 最大打开的连接数, 需要小于数据库配置中的max_connections数
-  conn_max_life_time: 60m         # 连接重用的最大时间
+  conn_max_life_time: 60m         # 单个连接最大存活时间，建议设置比数据库超时时长(wait_timeout)稍小一些
 cache:
   driver: "redis"                 # 缓存驱动，可以选memory、redis, 默认redis
   prefix: "snake:"                # cache key前缀，一般为项目名称即可
