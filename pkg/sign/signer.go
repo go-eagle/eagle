@@ -48,6 +48,11 @@ func NewSignerHmac() *Signer {
 	return NewSigner(HmacSign)
 }
 
+// NewSignerAes aes对称加密算法
+func NewSignerAes() *Signer {
+	return NewSigner(AesSign)
+}
+
 // SetBody 设置整个参数体Body对象。
 func (s *Signer) SetBody(body url.Values) {
 	for k, v := range body {
