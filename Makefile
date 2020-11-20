@@ -41,6 +41,15 @@ dep: ## Get the dependencies
 lint: ## Lint Golang files
 	@golint -set_exit_status ${PKG_LIST}
 
+.PHONY: ci-lint-prepare
+ci-lint-prepare:
+	@echo "Installing golangci-lint"
+    @curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s latest
+
+.PHONY: ci-lint
+ci-lint:
+	@./bin/golangci-lint run ./...
+
 .PHONY: test
 test: ## Run unittests
 	@go test -short ${PKG_LIST}
