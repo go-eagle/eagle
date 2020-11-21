@@ -12,7 +12,7 @@ import (
 )
 
 // New new grpc server
-func New(c *conf.Config, svc *service.Service) {
+func New(c *conf.Config, svc *service.Service) *grpc.Server {
 	// todo: get addr from conf
 	lis, err := net.Listen("tcp", "127.0.0.1:1234")
 	if err != nil {
@@ -26,4 +26,6 @@ func New(c *conf.Config, svc *service.Service) {
 		log.Fatalf("failed to serve grpc server: %v", err)
 	}
 	log.Println("serve grpc server is success, port:1234")
+
+	return grpcServer
 }
