@@ -15,14 +15,13 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/1024casts/snake/internal/server"
-
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
 	"github.com/1024casts/snake/app/api"
+	rpc "github.com/1024casts/snake/internal/server"
 	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/snake"
@@ -94,7 +93,7 @@ func main() {
 	// start grpc server
 	var rpcSrv *grpc.Server
 	go func() {
-		rpcSrv = server.New(conf.Conf, svc)
+		rpcSrv = rpc.New(conf.Conf, svc)
 		snake.App.RpcSrv = rpcSrv
 	}()
 
