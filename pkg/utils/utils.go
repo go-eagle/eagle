@@ -7,16 +7,12 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
-	"net"
 	"regexp"
-	"strings"
-	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/teris-io/shortid"
-	tnet "github.com/toolkits/net"
 )
 
 // GenShortID 生成一个id
@@ -43,24 +39,6 @@ func GetRequestID(c *gin.Context) string {
 		return requestID
 	}
 	return ""
-}
-
-var (
-	once     sync.Once
-	clientIP = "127.0.0.1"
-)
-
-// GetLocalIP 获取本地内网IP
-func GetLocalIP() string {
-	once.Do(func() {
-		ips, _ := tnet.IntranetIP()
-		if len(ips) > 0 {
-			clientIP = ips[0]
-		} else {
-			clientIP = "127.0.0.1"
-		}
-	})
-	return clientIP
 }
 
 // GetBytes interface 转 byte
@@ -111,39 +89,4 @@ func RegexpReplace(reg, src, temp string) string {
 		result = pattern.ExpandString(result, temp, src, submatches)
 	}
 	return string(result)
-}
-
-// GetRealIP get user real ip
-func GetRealIP(ctx *gin.Context) (ip string) {
-	var header = ctx.Request.Header
-	var index int
-	if ip = header.Get("X-Forwarded-For"); ip != "" {
-		index = strings.IndexByte(ip, ',')
-		if index < 0 {
-			return ip
-		}
-		if ip = ip[:index]; ip != "" {
-			return ip
-		}
-	}
-	if ip = header.Get("X-Real-Ip"); ip != "" {
-		index = strings.IndexByte(ip, ',')
-		if index < 0 {
-			return ip
-		}
-		if ip = ip[:index]; ip != "" {
-			return ip
-		}
-	}
-	if ip = header.Get("Proxy-Forwarded-For"); ip != "" {
-		index = strings.IndexByte(ip, ',')
-		if index < 0 {
-			return ip
-		}
-		if ip = ip[:index]; ip != "" {
-			return ip
-		}
-	}
-	ip, _, _ = net.SplitHostPort(ctx.Request.RemoteAddr)
-	return ip
 }
