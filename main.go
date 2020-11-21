@@ -13,6 +13,8 @@ import (
 	"fmt"
 	"os"
 
+	"google.golang.org/grpc"
+
 	"github.com/1024casts/snake/internal/server"
 
 	"github.com/gin-gonic/gin"
@@ -82,13 +84,21 @@ func main() {
 	routers.LoadWebRouter(router)
 
 	// init service
-	svc := service.New(conf.Conf)
+	var svc *service.Service
+	svc = service.New(conf.Conf)
 
 	// set global service
 	service.Svc = svc
+	snake.App.BizSvc = svc
 
 	// start grpc server
-	go server.New(conf.Conf, svc)
+	var rpcSrv *grpc.Server
+	go func() {
+		rpcSrv = server.New(conf.Conf, svc)
+		snake.App.RpcSrv = rpcSrv
+	}()
+
+	// here register to service discovery
 
 	// start server
 	snake.App.Run()

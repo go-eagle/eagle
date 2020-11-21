@@ -2,20 +2,21 @@ package snake
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
+	"google.golang.org/grpc"
 
 	"github.com/1024casts/snake/internal/model"
+	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/conf"
+	"github.com/1024casts/snake/pkg/log"
 	redis2 "github.com/1024casts/snake/pkg/redis"
 )
 
@@ -37,6 +38,8 @@ type Application struct {
 	DB          *gorm.DB
 	RedisClient *redis.Client
 	Router      *gin.Engine
+	BizSvc      *service.Service
+	RpcSrv      *grpc.Server
 	Debug       bool
 }
 
@@ -66,7 +69,7 @@ func New(cfg *conf.Config) *Application {
 
 // Run start a app
 func (a *Application) Run() {
-	log.Printf("Start to listening the incoming requests on http address: %s", viper.GetString("app.addr"))
+	log.Infof("Start to listening the incoming requests on http address: %s", viper.GetString("app.addr"))
 	srv := &http.Server{
 		Addr:    viper.GetString("app.addr"),
 		Handler: a.Router,
@@ -78,27 +81,42 @@ func (a *Application) Run() {
 		}
 	}()
 
-	gracefulStop(srv)
+	a.GracefulStop(srv)
 }
 
-// gracefulStop 优雅退出
-// 等待中断信号以超时 5 秒正常关闭服务器
-// 官方说明：https://github.com/gin-gonic/gin#graceful-shutdown-or-restart
-func gracefulStop(srv *http.Server) {
-	quit := make(chan os.Signal)
+// GracefulStop 优雅退出
+func (a *Application) GracefulStop(httpSrv *http.Server) {
+	quit := make(chan os.Signal, 1)
 	// kill (no param) default send syscall.SIGTERM
 	// kill -2 is syscall.SIGINT
 	// kill -9 is syscall.SIGKILL
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	log.Println("Shutting down server...")
+	signal.Notify(quit, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
+	for {
+		s := <-quit
+		log.Infof("[snake] Server receive a quit signal: %s", s.String())
+		switch s {
+		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
+			log.Info("[snake] Server is exiting")
 
-	// The context is used to inform the server it has 5 seconds to finish
-	// the request it is currently handling
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
+			// close rpc
+			if a.RpcSrv != nil {
+				a.RpcSrv.GracefulStop()
+			}
+
+			// close biz svc
+			a.BizSvc.Close()
+
+			// close http server
+			if httpSrv != nil {
+				if err := httpSrv.Shutdown(context.Background()); err != nil {
+					log.Fatalf("[snake] Server shutdown err: %s", err)
+				}
+			}
+			return
+		case syscall.SIGHUP:
+			//todo: reload
+		default:
+			return
+		}
 	}
-	log.Println("Server exiting")
 }
