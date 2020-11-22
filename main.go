@@ -75,6 +75,7 @@ func main() {
 	// HealthCheck 健康检查路由
 	router.GET("/health", api.HealthCheck)
 	// metrics router 可以在 prometheus 中进行监控
+	// 通过 grafana 可视化查看 prometheus 的监控数据，使用插件6671查看
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	// API Routes.
