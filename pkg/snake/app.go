@@ -38,8 +38,8 @@ type Application struct {
 	DB          *gorm.DB
 	RedisClient *redis.Client
 	Router      *gin.Engine
-	BizSvc      *service.Service
-	RpcSrv      *grpc.Server
+	BizService  *service.Service
+	RpcServer   *grpc.Server
 	Debug       bool
 }
 
@@ -99,12 +99,12 @@ func (a *Application) GracefulStop(httpSrv *http.Server) {
 			log.Info("[snake] Server is exiting")
 
 			// close rpc
-			if a.RpcSrv != nil {
-				a.RpcSrv.GracefulStop()
+			if a.RpcServer != nil {
+				a.RpcServer.GracefulStop()
 			}
 
 			// close biz svc
-			a.BizSvc.Close()
+			a.BizService.Close()
 
 			// close http server
 			if httpSrv != nil {

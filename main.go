@@ -89,13 +89,13 @@ func main() {
 
 	// set global service
 	service.Svc = svc
-	snake.App.BizSvc = svc
+	snake.App.BizService = svc
 
 	// start grpc server
 	var rpcSrv *grpc.Server
 	go func() {
 		rpcSrv = rpc.New(conf.Conf, svc)
-		snake.App.RpcSrv = rpcSrv
+		snake.App.RpcServer = rpcSrv
 	}()
 
 	// here register to service discovery
