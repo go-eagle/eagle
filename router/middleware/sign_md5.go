@@ -2,14 +2,14 @@ package middleware
 
 import (
 	"errors"
+	"fmt"
 	"time"
-
-	"github.com/1024casts/snake/pkg/sign"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/app/api"
 	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/sign"
 )
 
 // SignMd5Middleware md5 签名校验中间件
@@ -46,13 +46,13 @@ func verifySign(c *gin.Context) (map[string]string, error) {
 
 	// 检查时间戳是否超时。
 	if err := verifier.CheckTimeStamp(); nil != err {
-		return nil, err
+		return nil, errors.New(fmt.Sprintf("%s error", sign.KeyNameTimeStamp))
 	}
 
 	// 验证签名
 	localSign := genSign()
 	if sn == "" || sn != localSign {
-		return nil, errors.New("sign error")
+		return nil, errors.New(fmt.Sprintf("%s error", sign.KeyNameSign))
 	}
 
 	return nil, nil
