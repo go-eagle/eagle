@@ -97,7 +97,7 @@ func (v *Verifier) MustHasOtherKeys(keys ...string) error {
 func (v *Verifier) CheckTimeStamp() error {
 	timestamp := v.GetTimestamp()
 	thatTime := time.Unix(timestamp, 0)
-	if time.Since(thatTime) > v.timeout {
+	if timestamp > time.Now().Unix() || time.Since(thatTime) > v.timeout {
 		return fmt.Errorf("TIMESTAMP_TIMEOUT:<%d>", timestamp)
 	}
 	return nil
