@@ -15,7 +15,7 @@ func RequestID() gin.HandlerFunc {
 		// Create request id with UUID
 		if requestID == "" {
 			requestID = utils.GenRequestID()
-			ctx := utils.GetRequestIDContext(c.Request.Context(), requestID)
+			ctx := utils.NewRequestIDContext(c.Request.Context(), requestID)
 			c.Request = c.Request.WithContext(ctx)
 		}
 

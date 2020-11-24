@@ -20,13 +20,13 @@ func GenRequestID() string {
 	return reqID.String()
 }
 
-// GetRequestIDContext 注入到全局context
-func GetRequestIDContext(ctx context.Context, requestID string) context.Context {
+// NewRequestIDContext creates a context with request id
+func NewRequestIDContext(ctx context.Context, requestID string) context.Context {
 	return context.WithValue(ctx, ContextRequestIDKey, requestID)
 }
 
-// GetRequestID will get request id from a http request and return it as a string
-func GetRequestID(ctx context.Context) string {
+// GetRequestIDFromContext will get request id from a http request and return it as a string
+func GetRequestIDFromContext(ctx context.Context) string {
 	reqID := ctx.Value(ContextRequestIDKey)
 	if requestID, ok := reqID.(string); ok {
 		return requestID
