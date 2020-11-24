@@ -10,35 +10,12 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/teris-io/shortid"
 )
 
 // GenShortID 生成一个id
 func GenShortID() (string, error) {
 	return shortid.Generate()
-}
-
-// XRequestID 全局唯一ID key
-var XRequestID = "X-Request-ID"
-
-// GenRequestID 生成随机字符串，eg: 76d27e8c-a80e-48c8-ad20-e5562e0f67e4
-func GenRequestID() string {
-	u, _ := uuid.NewRandom()
-	return u.String()
-}
-
-// GetRequestID 获取请求中的request_id
-func GetRequestID(c *gin.Context) string {
-	v, ok := c.Get(XRequestID)
-	if !ok {
-		return ""
-	}
-	if requestID, ok := v.(string); ok {
-		return requestID
-	}
-	return ""
 }
 
 // GetBytes interface 转 byte
