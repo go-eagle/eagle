@@ -1,8 +1,6 @@
 package user
 
 import (
-	"context"
-
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 
@@ -31,7 +29,7 @@ func Get(c *gin.Context) {
 	}
 
 	// Get the user by the `user_id` from the database.
-	u, err := service.Svc.UserSvc().GetUserByID(context.TODO(), userID)
+	u, err := service.Svc.UserSvc().GetUserByID(c, userID)
 	if err != nil {
 		log.Warnf("get user info err: %v", err)
 		api.SendResponse(c, errno.ErrUserNotFound, nil)
