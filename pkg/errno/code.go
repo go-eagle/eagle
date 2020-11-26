@@ -2,6 +2,7 @@ package errno
 
 //nolint: golint
 var (
+	// 预定义错误
 	// Common errors
 	OK                  = &Errno{Code: 0, Message: "OK"}
 	InternalServerError = &Errno{Code: 10001, Message: "Internal server error"}
