@@ -109,7 +109,8 @@ func (srv *userService) EmailLogin(ctx context.Context, email, password string) 
 	}
 
 	// 签发签名 Sign the json web token.
-	tokenStr, err = token.Sign(ctx, token.Context{UserID: u.ID, Username: u.Username}, "")
+	payload := map[string]interface{}{"user_id": u.ID, "username": u.Username}
+	tokenStr, err = token.Sign(ctx, payload, "", 86400)
 	if err != nil {
 		return "", errors.Wrapf(err, "gen token sign err")
 	}
@@ -151,7 +152,8 @@ func (srv *userService) PhoneLogin(ctx context.Context, phone int64, verifyCode 
 	}
 
 	// 签发签名 Sign the json web token.
-	tokenStr, err = token.Sign(ctx, token.Context{UserID: u.ID, Username: u.Username}, "")
+	payload := map[string]interface{}{"user_id": u.ID, "username": u.Username}
+	tokenStr, err = token.Sign(ctx, payload, "", 86400)
 	if err != nil {
 		return "", errors.Wrapf(err, "[login] gen token sign err")
 	}

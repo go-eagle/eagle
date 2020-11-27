@@ -18,8 +18,8 @@ var (
 	ErrMissingHeader = errors.New("the length of the `Authorization` header is zero")
 )
 
-// Context is the context of the JSON web token.
-type Context struct {
+// Payload is the data of the JSON web token.
+type Payload struct {
 	UserID   uint64
 	Username string
 }
@@ -37,39 +37,39 @@ func secretFunc(secret string) jwt.Keyfunc {
 }
 
 // Parse validates the token with the specified secret,
-// and returns the context if the token was valid.
-func Parse(tokenString string, secret string) (*Context, error) {
-	ctx := &Context{}
+// and returns the payloads if the token was valid.
+func Parse(tokenString string, secret string) (*Payload, error) {
+	payloads := &Payload{}
 
 	// Parse the token.
 	token, err := jwt.Parse(tokenString, secretFunc(secret))
 
 	// Parse error.
 	if err != nil {
-		return ctx, err
+		return payloads, err
 
 		// Read the token if it's valid.
 	} else if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		ctx.UserID = uint64(claims["user_id"].(float64))
-		ctx.Username = claims["username"].(string)
-		return ctx, nil
+		payloads.UserID = uint64(claims["user_id"].(float64))
+		payloads.Username = claims["username"].(string)
+		return payloads, nil
 
 		// Other errors.
 	} else {
-		return ctx, err
+		return payloads, err
 	}
 }
 
 // ParseRequest gets the token from the header and
 // pass it to the Parse function to parses the token.
-func ParseRequest(c *gin.Context) (*Context, error) {
+func ParseRequest(c *gin.Context) (*Payload, error) {
 	header := c.Request.Header.Get("Authorization")
 
 	// Load the jwt secret from config
 	secret := viper.GetString("jwt_secret")
 
 	if len(header) == 0 {
-		return &Context{}, ErrMissingHeader
+		return &Payload{}, ErrMissingHeader
 	}
 
 	var t string
@@ -82,7 +82,7 @@ func ParseRequest(c *gin.Context) (*Context, error) {
 }
 
 // Sign signs the context with the specified secret.
-func Sign(ctx context.Context, c Context, secret string) (tokenString string, err error) {
+func Sign(ctx context.Context, payload map[string]interface{}, secret string, timeout int64) (tokenString string, err error) {
 	// Load the jwt secret from the Gin config if the secret isn't specified.
 	if secret == "" {
 		secret = viper.GetString("jwt_secret")
@@ -96,12 +96,18 @@ func Sign(ctx context.Context, c Context, secret string) (tokenString string, er
 	// sub: （Subject）该JWT的主题
 	// nbf: （Not Before）不要早于这个时间
 	// jti: （JWT ID）用于标识JWT的唯一ID
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id":  c.UserID,
-		"username": c.Username,
-		"nbf":      time.Now().Unix(),
-		"iat":      time.Now().Unix(),
-	})
+	now := time.Now().Unix()
+	claims := make(jwt.MapClaims)
+	claims["nbf"] = now
+	claims["iat"] = now
+	claims["exp"] = now + timeout
+
+	for k, v := range payload {
+		claims[k] = v
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
 	// Sign the token with the specified secret.
 	tokenString, err = token.SignedString([]byte(secret))
 
