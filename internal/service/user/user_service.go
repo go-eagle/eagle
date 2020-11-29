@@ -13,6 +13,7 @@ import (
 	"github.com/1024casts/snake/internal/repository/user"
 	v0pb "github.com/1024casts/snake/internal/rpc/user/v0"
 	"github.com/1024casts/snake/pkg/auth"
+	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/token"
 )
@@ -57,6 +58,7 @@ type IUserService interface {
 
 // userService 用小写的 service 实现接口中定义的方法
 type userService struct {
+	c              *conf.Config
 	userRepo       user.BaseRepo
 	userFollowRepo user.FollowRepo
 	userStatRepo   user.StatRepo
@@ -65,9 +67,10 @@ type userService struct {
 // NewUserService 实例化一个userService
 // 通过 NewService 函数初始化 Service 接口
 // 依赖接口，不要依赖实现，面向接口编程
-func NewUserService() IUserService {
+func NewUserService(c *conf.Config) IUserService {
 	db := model.GetDB()
 	return &userService{
+		c:              c,
 		userRepo:       user.NewUserRepo(db),
 		userFollowRepo: user.NewUserFollowRepo(db),
 		userStatRepo:   user.NewUserStatRepo(db),
@@ -110,7 +113,7 @@ func (srv *userService) EmailLogin(ctx context.Context, email, password string) 
 
 	// 签发签名 Sign the json web token.
 	payload := map[string]interface{}{"user_id": u.ID, "username": u.Username}
-	tokenStr, err = token.Sign(ctx, payload, "", 86400)
+	tokenStr, err = token.Sign(ctx, payload, srv.c.App.JwtSecret, 86400)
 	if err != nil {
 		return "", errors.Wrapf(err, "gen token sign err")
 	}
@@ -153,7 +156,7 @@ func (srv *userService) PhoneLogin(ctx context.Context, phone int64, verifyCode 
 
 	// 签发签名 Sign the json web token.
 	payload := map[string]interface{}{"user_id": u.ID, "username": u.Username}
-	tokenStr, err = token.Sign(ctx, payload, "", 86400)
+	tokenStr, err = token.Sign(ctx, payload, srv.c.App.JwtSecret, 86400)
 	if err != nil {
 		return "", errors.Wrapf(err, "[login] gen token sign err")
 	}

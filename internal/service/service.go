@@ -20,7 +20,7 @@ type Service struct {
 func New(c *conf.Config) (s *Service) {
 	s = &Service{
 		c:       c,
-		userSvc: user.NewUserService(),
+		userSvc: user.NewUserService(c),
 	}
 	return s
 }
