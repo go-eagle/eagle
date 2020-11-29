@@ -26,7 +26,7 @@ func (app *App) Initialize() {
 	conf.InitLog()
 
 	// init db
-	model.Init()
+	model.Init(conf.Conf)
 	app.DB = model.DB
 
 	redis.InitTestRedis()
