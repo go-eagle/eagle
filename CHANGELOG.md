@@ -4,9 +4,11 @@
 - 新增 Web 路由、控制器及模板
 - 新增 用户中心，包含注册、登录、粉丝列表、关注列表
 - 新增 sign签名增加aes对称加密算法
+- 新增 redis lock 新增了过期时间的设定
 - 优化 MySQL 和 Redis 配置从结构体中获取，替换从viper中获取
 - 优化 graceful stop 方法
 - 优化 token sign 方法支持自定义参数payload
+- 优化 redis lock, 将token收敛到包内进行处理，减少使用的心智负担
 
 ## v1.2.2
 - 优化 `service` 和 `repository` 的db参数
