@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: consul-server-http
+spec:
+  selector:
+    name: consul-server
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8500
+      targetPort: 8500
+      nodePort: 30098
+      name: consul-server-tcp

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: consul-server
+  labels:
+    name: consul-server
+spec:
+  serviceName: consul-server
+  selector:
+    matchLabels:
+      name: consul-server
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        name: consul-server
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: consul
+          image: consul:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            - "agent"
+            - "-server"
+            - "-bootstrap-expect=3"
+            - "-ui"
+            - "-data-dir=/consul/data"
+            - "-bind=0.0.0.0"
+            - "-client=0.0.0.0"
+            - "-advertise=$(POD_IP)"
+            - "-retry-join=consul-server-0.consul-server.$(NAMESPACE).svc.cluster.local"
+            - "-retry-join=consul-server-1.consul-server.$(NAMESPACE).svc.cluster.local"
+            - "-retry-join=consul-server-2.consul-server.$(NAMESPACE).svc.cluster.local"
+            - "-domain=cluster.local"
+            - "-disable-host-node-id"
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          ports:
+            - containerPort: 8500
+              name: http
+            - containerPort: 8400
+              name: rpc
+            - containerPort: 8443
+              name: https-port
