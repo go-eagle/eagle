@@ -5,6 +5,7 @@
 - 新增 用户中心，包含注册、登录、粉丝列表、关注列表
 - 新增 sign签名增加aes对称加密算法
 - 新增 redis lock 新增了过期时间的设定
+- 优化 用户关系模块使用独立 service
 - 优化 MySQL 和 Redis 配置从结构体中获取，替换从viper中获取
 - 优化 graceful stop 方法
 - 优化 token sign 方法支持自定义参数payload
