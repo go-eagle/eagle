@@ -7,7 +7,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "github.com/1024casts/snake/internal/rpc/user/v0"
+	"github.com/1024casts/snake/app/api/grpc/user/v1"
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -23,11 +23,11 @@ func main() {
 		_ = conn.Close()
 	}()
 
-	userClient := pb.NewUserServiceClient(conn)
+	userClient := v1.NewUserServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	userReq := &pb.PhoneLoginRequest{
+	userReq := &v1.PhoneLoginRequest{
 		Phone:      13010102020,
 		VerifyCode: 123456,
 	}

@@ -9,7 +9,7 @@ import (
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
 	"github.com/1024casts/snake/app/api"
-	"github.com/1024casts/snake/app/api/v1/user"
+	"github.com/1024casts/snake/app/api/http/v1/user"
 	"github.com/1024casts/snake/pkg/snake"
 
 	// import swagger handler

@@ -6,12 +6,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/1024casts/snake/app/api/grpc/user/v1"
+
 	"github.com/pkg/errors"
 
 	"github.com/1024casts/snake/internal/idl"
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/repository/user"
-	v0pb "github.com/1024casts/snake/internal/rpc/user/v0"
 	"github.com/1024casts/snake/pkg/auth"
 	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/log"
@@ -28,7 +29,7 @@ type IUserService interface {
 	Register(ctx context.Context, username, email, password string) error
 	EmailLogin(ctx context.Context, email, password string) (tokenStr string, err error)
 	PhoneLogin(ctx context.Context, phone int64, verifyCode int) (tokenStr string, err error)
-	LoginByPhone(ctx context.Context, req *v0pb.PhoneLoginRequest) (reply *v0pb.PhoneLoginReply, err error)
+	LoginByPhone(ctx context.Context, req *v1.PhoneLoginRequest) (reply *v1.PhoneLoginReply, err error)
 	GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error)
 	GetUserInfoByID(ctx context.Context, id uint64) (*model.UserInfo, error)
 	GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error)
@@ -105,12 +106,12 @@ func (srv *userService) EmailLogin(ctx context.Context, email, password string) 
 }
 
 // LoginByPhone phone login, grpc wrapper
-func (srv *userService) LoginByPhone(ctx context.Context, req *v0pb.PhoneLoginRequest) (reply *v0pb.PhoneLoginReply, err error) {
+func (srv *userService) LoginByPhone(ctx context.Context, req *v1.PhoneLoginRequest) (reply *v1.PhoneLoginReply, err error) {
 	tokenStr, err := srv.PhoneLogin(ctx, req.Phone, int(req.VerifyCode))
 	if err != nil {
 		log.Warnf("[service.user] phone login err: %v, params: %v", err, req)
 	}
-	reply = &v0pb.PhoneLoginReply{
+	reply = &v1.PhoneLoginReply{
 		Ret: tokenStr,
 		Err: "",
 	}

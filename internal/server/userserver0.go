@@ -6,7 +6,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "github.com/1024casts/snake/internal/rpc/user/v0"
+	"github.com/1024casts/snake/app/api/grpc/user/v1"
 	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/conf"
 )
@@ -20,7 +20,7 @@ func New(c *conf.Config, svc *service.Service) *grpc.Server {
 	}
 
 	grpcServer := grpc.NewServer()
-	pb.RegisterUserServiceServer(grpcServer, svc.UserSvc())
+	v1.RegisterUserServiceServer(grpcServer, svc.UserSvc())
 	err = grpcServer.Serve(lis)
 	if err != nil {
 		log.Fatalf("failed to serve grpc server: %v", err)
