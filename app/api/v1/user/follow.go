@@ -43,7 +43,7 @@ func Follow(c *gin.Context) {
 	}
 
 	// 检查是否已经关注过
-	isFollowed := service.Svc.UserSvc().IsFollowedUser(context.TODO(), userID, req.UserID)
+	isFollowed := service.Svc.RelationSvc().IsFollowing(context.TODO(), userID, req.UserID)
 	if isFollowed {
 		api.SendResponse(c, errno.OK, nil)
 		return
@@ -51,7 +51,7 @@ func Follow(c *gin.Context) {
 
 	if isFollowed {
 		// 取消关注
-		err = service.Svc.UserSvc().CancelUserFollow(context.TODO(), userID, req.UserID)
+		err = service.Svc.RelationSvc().Unfollow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] cancel user follow err: %v", err)
 			api.SendResponse(c, errno.InternalServerError, nil)
@@ -59,7 +59,7 @@ func Follow(c *gin.Context) {
 		}
 	} else {
 		// 添加关注
-		err = service.Svc.UserSvc().AddUserFollow(context.TODO(), userID, req.UserID)
+		err = service.Svc.RelationSvc().Follow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] add user follow err: %v", err)
 			api.SendResponse(c, errno.InternalServerError, nil)

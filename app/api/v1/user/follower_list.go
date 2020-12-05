@@ -37,7 +37,7 @@ func FollowerList(c *gin.Context) {
 	lastID, _ := strconv.Atoi(lastIDStr)
 	limit := 10
 
-	userFollowerList, err := service.Svc.UserSvc().GetFollowerUserList(context.TODO(), uint64(userID), uint64(lastID), limit+1)
+	userFollowerList, err := service.Svc.RelationSvc().GetFollowerUserList(context.TODO(), uint64(userID), uint64(lastID), limit+1)
 	if err != nil {
 		log.Warnf("get follower user list err: %+v", err)
 		api.SendResponse(c, errno.InternalServerError, nil)
