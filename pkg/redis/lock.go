@@ -57,9 +57,9 @@ func (l *Lock) Unlock() error {
 	return nil
 }
 
-// SetExpireTime set expire time
-func (l *Lock) SetExpireTime(ttl int64) error {
-	_, err := l.redisClient.Expire(l.key, time.Duration(time.Now().Unix()+ttl)).Result()
+// SetExpireTime set timeout time
+func (l *Lock) SetExpireTime(expiration time.Duration) error {
+	_, err := l.redisClient.Expire(l.key, expiration).Result()
 	return err
 }
 
