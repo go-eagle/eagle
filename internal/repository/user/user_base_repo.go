@@ -91,6 +91,8 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, uid uint64) (userBase
 	// 加锁，防止缓存击穿
 	key := fmt.Sprintf("uid:%d", uid)
 	lock := redis.NewLock(redis.RedisClient, key)
+	// here 可以设置过期时间
+	// lock.SetExpireTime(1 * time.Second)
 	isLock, err := lock.Lock()
 	// 如果已经被lock，则立即返回false不会等待，达到忽略操作的效果
 	if err != nil || !isLock {
