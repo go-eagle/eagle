@@ -58,9 +58,9 @@ func (l *Lock) Unlock() error {
 }
 
 // SetExpireTime set timeout time
-func (l *Lock) SetExpireTime(expiration time.Duration) error {
-	_, err := l.redisClient.Expire(l.key, expiration).Result()
-	return err
+func (l *Lock) SetExpireTime(expiration time.Duration) {
+	_, _ = l.redisClient.Expire(l.key, expiration).Result()
+	return
 }
 
 // GetKey 获取key
