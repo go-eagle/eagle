@@ -4,11 +4,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/1024casts/snake/pkg/conf"
+
 	"github.com/1024casts/snake/pkg/log"
 
 	"github.com/go-redis/redis"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 )
 
 // IDAlloc id生成器
@@ -59,7 +60,7 @@ func (ia *IDAlloc) GetCurrentID() (int64, error) {
 
 // GetKey 获取key
 func (ia *IDAlloc) GetKey() string {
-	keyPrefix := viper.GetString("name")
+	keyPrefix := conf.Conf.App.Name
 	lockKey := "idalloc"
 	return strings.Join([]string{keyPrefix, lockKey, ia.key}, ":")
 }

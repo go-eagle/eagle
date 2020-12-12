@@ -14,7 +14,7 @@ import (
 // New new grpc server
 func New(c *conf.Config, svc *service.Service) *grpc.Server {
 	// todo: get addr from conf
-	lis, err := net.Listen("tcp", "127.0.0.1:1234")
+	lis, err := net.Listen("tcp", "127.0.0.1:12345")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

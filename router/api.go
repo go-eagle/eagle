@@ -1,10 +1,9 @@
 package routers
 
 import (
+	"github.com/1024casts/snake/pkg/conf"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
-
 	"github.com/swaggo/gin-swagger" //nolint: goimports
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 
@@ -35,7 +34,7 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.Static("/static", "./static")
 
 	// 返回404，仅在test环境下开启，线上关闭
-	if viper.GetString("app.run_mode") == snake.ModeDebug {
+	if conf.Conf.App.RunMode == snake.ModeDebug {
 		// swagger api docs
 		g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		// pprof router 性能分析路由

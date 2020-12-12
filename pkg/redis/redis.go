@@ -3,12 +3,10 @@ package redis
 import (
 	"fmt"
 
-	"github.com/alicebob/miniredis"
-	"github.com/go-redis/redis"
-	"github.com/spf13/viper"
-
 	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/log"
+	"github.com/alicebob/miniredis"
+	"github.com/go-redis/redis"
 )
 
 // RedisClient redis 客户端
@@ -32,7 +30,7 @@ func Init(cfg *conf.Config) *redis.Client {
 		PoolTimeout:  c.PoolTimeout,
 	})
 
-	fmt.Println("redis addr:", viper.GetString("redis.addr"))
+	fmt.Println("redis addr:", cfg.Redis.Addr)
 
 	_, err := RedisClient.Ping().Result()
 	if err != nil {

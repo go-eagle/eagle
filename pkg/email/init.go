@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/spf13/viper"
+	"github.com/1024casts/snake/pkg/conf"
 
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -32,14 +32,14 @@ func Init() {
 	}
 
 	client := NewSMTPClient(SMTPConfig{
-		Name:      viper.GetString("email.name"),
-		Address:   viper.GetString("email.address"),
-		ReplyTo:   viper.GetString("email.reply_to"),
-		Host:      viper.GetString("email.host"),
-		Port:      viper.GetInt("email.port"),
-		Username:  viper.GetString("email.username"),
-		Password:  viper.GetString("email.password"),
-		Keepalive: viper.GetInt("email.keepalive"),
+		Name:      conf.Conf.Email.Name,
+		Address:   conf.Conf.Email.Address,
+		ReplyTo:   conf.Conf.Email.ReplyTo,
+		Host:      conf.Conf.Email.Host,
+		Port:      conf.Conf.Email.Port,
+		Username:  conf.Conf.Email.Username,
+		Password:  conf.Conf.Email.Password,
+		Keepalive: conf.Conf.Email.KeepAlive,
 	})
 
 	Client = client

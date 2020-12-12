@@ -71,31 +71,34 @@ type Config struct {
 	MySQL MySQLConfig
 	Redis RedisConfig
 	Cache CacheConfig
+	Email EmailConfig
+	QiNiu QiNiuConfig
 
 	// here can add biz conf
+
 }
 
 // AppConfig app config
 type AppConfig struct {
-	Name      string
-	RunMode   string
-	Addr      string
-	URL       string
-	JwtSecret string
+	Name      string `mapstructure:"name"`
+	RunMode   string `mapstructure:"run_mode"`
+	Addr      string `mapstructure:"addr"`
+	URL       string `mapstructure:"url"`
+	JwtSecret string `mapstructure:"jwt_secret"`
 }
 
 // LogConfig log config
 type LogConfig struct {
-	Writers          string
-	LoggerLevel      string
-	LoggerFile       string
-	LoggerWarnFile   string
-	LoggerErrorFile  string
-	LogFormatText    bool
-	LogRollingPolicy string
-	LogRotateDate    int
-	LogRotateSize    int
-	LogBackupCount   int
+	Writers          string `mapstructure:"writers"`
+	LoggerLevel      string `mapstructure:"logger_level"`
+	LoggerFile       string `mapstructure:"logger_file"`
+	LoggerWarnFile   string `mapstructure:"logger_warn_file"`
+	LoggerErrorFile  string `mapstructure:"logger_error_file"`
+	LogFormatText    bool   `mapstructure:"log_format_text"`
+	LogRollingPolicy string `mapstructure:"log_rolling_policy"`
+	LogRotateDate    int    `mapstructure:"log_rotate_date"`
+	LogRotateSize    int    `mapstructure:"log_rotate_size"`
+	LogBackupCount   uint   `mapstructure:"log_backup_count"`
 }
 
 // MySQLConfig mysql config
@@ -129,19 +132,40 @@ type CacheConfig struct {
 	Prefix string
 }
 
+// EmailConfig email config
+type EmailConfig struct {
+	Host      string `mapstructure:"host"`
+	Port      int    `mapstructure:"port"`
+	Username  string `mapstructure:"username"`
+	Password  string `mapstructure:"password"`
+	Name      string `mapstructure:"name"`
+	Address   string `mapstructure:"address"`
+	ReplyTo   string `mapstructure:"reply_to"`
+	KeepAlive int    `mapstructure:"keep_alive"`
+}
+
+// QiNiuConfig qiniu config
+type QiNiuConfig struct {
+	AccessKey   string `mapstructure:"access_key"`
+	SecretKey   string `mapstructure:"secret_key"`
+	SignatureID string `mapstructure:"signature_id"`
+	TemplateID  string `mapstructure:"template_id"`
+}
+
 // InitLog init log
-func InitLog() {
+func InitLog(cfg *Config) {
+	c := cfg.Log
 	config := log.Config{
-		Writers:          viper.GetString("log.writers"),
-		LoggerLevel:      viper.GetString("log.logger_level"),
-		LoggerFile:       viper.GetString("log.logger_file"),
-		LoggerWarnFile:   viper.GetString("log.logger_warn_file"),
-		LoggerErrorFile:  viper.GetString("log.logger_error_file"),
-		LogFormatText:    viper.GetBool("log.log_format_text"),
-		LogRollingPolicy: viper.GetString("log.log_rolling_policy"),
-		LogRotateDate:    viper.GetInt("log.log_rotate_date"),
-		LogRotateSize:    viper.GetInt("log.log_rotate_size"),
-		LogBackupCount:   viper.GetInt("log.log_backup_count"),
+		Writers:          c.Writers,
+		LoggerLevel:      c.LoggerLevel,
+		LoggerFile:       c.LoggerFile,
+		LoggerWarnFile:   c.LoggerWarnFile,
+		LoggerErrorFile:  c.LoggerErrorFile,
+		LogFormatText:    c.LogFormatText,
+		LogRollingPolicy: c.LogRollingPolicy,
+		LogRotateDate:    c.LogRotateDate,
+		LogRotateSize:    c.LogRotateSize,
+		LogBackupCount:   int(c.LogBackupCount),
 	}
 	err := log.NewLogger(&config, log.InstanceZapLogger)
 	if err != nil {

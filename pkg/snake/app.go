@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"github.com/jinzhu/gorm"
-	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
 	"github.com/1024casts/snake/internal/model"
@@ -48,7 +47,7 @@ func New(cfg *conf.Config) *Application {
 	app := new(Application)
 
 	// init log
-	conf.InitLog()
+	conf.InitLog(cfg)
 
 	// init db
 	app.DB = model.Init(cfg)
@@ -59,7 +58,7 @@ func New(cfg *conf.Config) *Application {
 	// init router
 	app.Router = gin.Default()
 
-	if viper.GetString("app.run_mode") == ModeDebug {
+	if cfg.App.RunMode == ModeDebug {
 		app.DB.Debug()
 		app.Debug = true
 	}
@@ -69,9 +68,9 @@ func New(cfg *conf.Config) *Application {
 
 // Run start a app
 func (a *Application) Run() {
-	log.Infof("Start to listening the incoming requests on http address: %s", viper.GetString("app.addr"))
+	log.Infof("Start to listening the incoming requests on http address: %s", conf.Conf.App.Addr)
 	srv := &http.Server{
-		Addr:    viper.GetString("app.addr"),
+		Addr:    conf.Conf.App.Addr,
 		Handler: a.Router,
 	}
 	go func() {

@@ -1,10 +1,10 @@
 package sms
 
 import (
+	"github.com/1024casts/snake/pkg/conf"
 	"github.com/pkg/errors"
 	"github.com/qiniu/api.v7/auth"
 	"github.com/qiniu/api.v7/sms"
-	"github.com/spf13/viper"
 )
 
 // ServiceSms 短信服务
@@ -39,15 +39,15 @@ func (srv *smsService) Send(phoneNumber string, verifyCode int) error {
 
 // _sendViaQiNiu 调用七牛短信服务
 func (srv *smsService) _sendViaQiNiu(phoneNumber string, verifyCode int) error {
-	accessKey := viper.GetString("qiniu.access_key")
-	secretKey := viper.GetString("qiniu.secret_key")
+	accessKey := conf.Conf.QiNiu.AccessKey
+	secretKey := conf.Conf.QiNiu.SecretKey
 
 	mac := auth.New(accessKey, secretKey)
 	manager := sms.NewManager(mac)
 
 	args := sms.MessagesRequest{
-		SignatureID: viper.GetString("qiniu.signature_id"),
-		TemplateID:  viper.GetString("qiniu.template_id"),
+		SignatureID: conf.Conf.QiNiu.SignatureID,
+		TemplateID:  conf.Conf.QiNiu.TemplateID,
 		Mobiles:     []string{phoneNumber},
 		Parameters: map[string]interface{}{
 			"code": verifyCode,

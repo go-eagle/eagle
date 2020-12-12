@@ -8,9 +8,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/1024casts/snake/pkg/conf"
+
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -66,7 +67,7 @@ func ParseRequest(c *gin.Context) (*Payload, error) {
 	header := c.Request.Header.Get("Authorization")
 
 	// Load the jwt secret from config
-	secret := viper.GetString("jwt_secret")
+	secret := conf.Conf.App.JwtSecret
 
 	if len(header) == 0 {
 		return &Payload{}, ErrMissingHeader

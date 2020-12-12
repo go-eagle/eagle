@@ -4,9 +4,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/1024casts/snake/pkg/conf"
+
 	"github.com/go-redis/redis"
 	"github.com/google/uuid"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -65,7 +66,7 @@ func (l *Lock) SetExpireTime(expiration time.Duration) {
 
 // GetKey 获取key
 func (l *Lock) GetKey() string {
-	keyPrefix := viper.GetString("name")
+	keyPrefix := conf.Conf.App.Name
 	return strings.Join([]string{keyPrefix, LockKey, l.key}, ":")
 }
 
