@@ -31,3 +31,8 @@ REST 风格虽然适用于很多传输协议，但在实际开发中，REST 由�
 接口的测试可以参考这几篇文章
  - https://rshipp.com/go-api-integration-testing/
  - https://github.com/quii/learn-go-with-tests
+ 
+## Reference
+
+- [Google API Design Guide](https://cloud.google.com/apis/design/)
+- [Google API Design Guide 中文版](https://www.bookstack.cn/read/API-design-guide/API-design-guide-README.md)

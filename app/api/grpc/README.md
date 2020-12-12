@@ -151,3 +151,7 @@ server
 └── fooserver1
     └── echo.go
 ```
+
+## Reference
+
+- [Proto 代码到底放哪里？](https://eddycjy.com/posts/where-is-proto/)
