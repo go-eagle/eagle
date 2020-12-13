@@ -23,17 +23,15 @@ func TestNew(t *testing.T) {
 			name: "test new id alloc",
 			args: args{
 				conn: RedisClient,
-				key:  "test_id",
 			},
 			want: &IDAlloc{
-				key:         "test_id",
 				redisClient: RedisClient,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := New(tt.args.conn, tt.args.key); !reflect.DeepEqual(got, tt.want) {
+			if got := NewIDAlloc(tt.args.conn); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("New() = %v, want %v", got, tt.want)
 			}
 		})
@@ -42,7 +40,6 @@ func TestNew(t *testing.T) {
 
 func TestIdAlloc_GetCurrentID(t *testing.T) {
 	type fields struct {
-		key         string
 		redisClient *redis.Client
 	}
 	tests := []struct {
@@ -56,10 +53,9 @@ func TestIdAlloc_GetCurrentID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ia := &IDAlloc{
-				key:         tt.fields.key,
 				redisClient: tt.fields.redisClient,
 			}
-			got, err := ia.GetCurrentID()
+			got, err := ia.GetCurrentID("user_id")
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetCurrentID() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -73,7 +69,6 @@ func TestIdAlloc_GetCurrentID(t *testing.T) {
 
 func TestIdAlloc_GetKey(t *testing.T) {
 	type fields struct {
-		key         string
 		redisClient *redis.Client
 	}
 	tests := []struct {
@@ -86,10 +81,9 @@ func TestIdAlloc_GetKey(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ia := &IDAlloc{
-				key:         tt.fields.key,
 				redisClient: tt.fields.redisClient,
 			}
-			if got := ia.GetKey(); got != tt.want {
+			if got := ia.GetKey("user_id"); got != tt.want {
 				t.Errorf("GetKey() = %v, want %v", got, tt.want)
 			}
 		})
@@ -116,10 +110,9 @@ func TestIdAlloc_GetNewID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ia := &IDAlloc{
-				key:         tt.fields.key,
 				redisClient: tt.fields.redisClient,
 			}
-			got, err := ia.GetNewID(tt.args.step)
+			got, err := ia.GetNewID("user_id", tt.args.step)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetNewID() error = %v, wantErr %v", err, tt.wantErr)
 				return
