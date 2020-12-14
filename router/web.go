@@ -4,15 +4,13 @@ import (
 	"html/template"
 	"time"
 
-	gintemplate "github.com/foolin/gin-template"
-	"github.com/gin-contrib/static"
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
-
 	"github.com/1024casts/snake/app/web"
 	webUser "github.com/1024casts/snake/app/web/user"
 	"github.com/1024casts/snake/pkg/flash"
 	"github.com/1024casts/snake/pkg/log"
+	gintemplate "github.com/foolin/gin-template"
+	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/gin"
 )
 
 // LoadWebRouter loads the middlewares, routes, handlers.
@@ -29,9 +27,7 @@ func LoadWebRouter(g *gin.Engine) *gin.Engine {
 		web.Error404(c)
 	})
 
-	router.Use(static.Serve("/static", static.LocalFile(viper.GetString("static"), false)))
-	router.Use(static.Serve("/uploads/avatar", static.LocalFile(viper.GetString("avatar"), false)))
-	router.Use(static.Serve("/uploads/images", static.LocalFile(viper.GetString("images"), false)))
+	router.Use(static.Serve("/static", static.LocalFile("./static", false)))
 
 	//new template engine
 	router.HTMLRender = gintemplate.New(gintemplate.TemplateConfig{

@@ -7,6 +7,7 @@ app:
   jwt_secret: Rtg8BPKNEf2mB4mgvKONGPZZQSaJWNLijxR42qRgq0iBb5
   jwt_timeout: 86400              # jwt有效时间, 单位秒
 log:
+  name: snake                     # 应用名称
   writers: file,stdout            # 有2个可选项：file,stdout, 可以两者同时选择输出位置，有2个可选项：file,stdout。选择file会将日志记录到logger_file指定的日志文件中，选择stdout会将日志输出到标准输出，当然也可以两者同时选择
   logger_level: DEBUG             # 日志级别，DEBUG, INFO, WARN, ERROR, FATAL
   logger_file: /data/log/snake.log   # 日志文件
@@ -48,8 +49,18 @@ email:
   address: SEND_EMAIL   # 发送者邮箱
   reply_to: EMAIL       # 回复地址
   keep_alive: 30         # 连接保持时长
+website:
+  name: snake
+  domain: http://snake.com
+  secret: abcdefg
+  static: /data/static
+cookie:
+  name: snake
+  domain: http://snake.com
+  secret: abcdefg
 qiniu:
   access_key: ACCESS_KEY
   secret_key: SECRET_KEY
+  cdn_url: http://cdn.snake.com
   signature_id: signature_id  # 短信签名id
   template_id: template_id    # 模板id

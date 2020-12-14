@@ -66,13 +66,15 @@ func watchConfig() {
 // include common and biz config
 type Config struct {
 	// common
-	App   AppConfig
-	Log   LogConfig
-	MySQL MySQLConfig
-	Redis RedisConfig
-	Cache CacheConfig
-	Email EmailConfig
-	QiNiu QiNiuConfig
+	App    AppConfig
+	Log    LogConfig
+	MySQL  MySQLConfig
+	Redis  RedisConfig
+	Cache  CacheConfig
+	Email  EmailConfig
+	Web    WebConfig
+	Cookie CookieConfig
+	QiNiu  QiNiuConfig
 
 	// here can add biz conf
 
@@ -89,6 +91,7 @@ type AppConfig struct {
 
 // LogConfig log config
 type LogConfig struct {
+	Name             string `mapstructure:"name"`
 	Writers          string `mapstructure:"writers"`
 	LoggerLevel      string `mapstructure:"logger_level"`
 	LoggerFile       string `mapstructure:"logger_file"`
@@ -144,10 +147,26 @@ type EmailConfig struct {
 	KeepAlive int    `mapstructure:"keep_alive"`
 }
 
+// WebConfig web config
+type WebConfig struct {
+	Name   string `mapstructure:"host"`
+	Domain string `mapstructure:"domain"`
+	Secret string `mapstructure:"secret"`
+	Static string `mapstructure:"static"`
+}
+
+// CookieConfig cookie config
+type CookieConfig struct {
+	Name   string `mapstructure:"host"`
+	Domain string `mapstructure:"domain"`
+	Secret string `mapstructure:"secret"`
+}
+
 // QiNiuConfig qiniu config
 type QiNiuConfig struct {
 	AccessKey   string `mapstructure:"access_key"`
 	SecretKey   string `mapstructure:"secret_key"`
+	CdnURL      string `mapstructure:"cdn_url"`
 	SignatureID string `mapstructure:"signature_id"`
 	TemplateID  string `mapstructure:"template_id"`
 }
@@ -156,6 +175,7 @@ type QiNiuConfig struct {
 func InitLog(cfg *Config) {
 	c := cfg.Log
 	config := log.Config{
+		Name:             c.Name,
 		Writers:          c.Writers,
 		LoggerLevel:      c.LoggerLevel,
 		LoggerFile:       c.LoggerFile,
@@ -165,7 +185,7 @@ func InitLog(cfg *Config) {
 		LogRollingPolicy: c.LogRollingPolicy,
 		LogRotateDate:    c.LogRotateDate,
 		LogRotateSize:    c.LogRotateSize,
-		LogBackupCount:   int(c.LogBackupCount),
+		LogBackupCount:   c.LogBackupCount,
 	}
 	err := log.NewLogger(&config, log.InstanceZapLogger)
 	if err != nil {

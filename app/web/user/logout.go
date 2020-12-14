@@ -3,12 +3,12 @@ package user
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/sessions"
-	"github.com/spf13/viper"
+	"github.com/1024casts/snake/pkg/conf"
 
 	"github.com/1024casts/snake/app/web"
 	"github.com/1024casts/snake/pkg/log"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 )
 
 // Logout user logout
@@ -16,7 +16,7 @@ func Logout(c *gin.Context) {
 	// 删除cookie信息
 	session := web.GetCookieSession(c)
 	session.Options = &sessions.Options{
-		Domain: viper.GetString("cookie.domain"),
+		Domain: conf.Conf.Cookie.Domain,
 		Path:   "/",
 		MaxAge: -1,
 	}

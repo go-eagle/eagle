@@ -3,13 +3,15 @@ package web
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/sessions"
 	"github.com/spf13/viper"
+
+	"github.com/1024casts/snake/pkg/conf"
 
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/flash"
 	"github.com/1024casts/snake/pkg/log"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 )
 
 // Resp web response struct
@@ -49,7 +51,7 @@ func SetLoginCookie(ctx *gin.Context, userID uint64) {
 
 	session := GetCookieSession(ctx)
 	session.Options = &sessions.Options{
-		Domain:   viper.GetString("cookie.domain"),
+		Domain:   conf.Conf.Cookie.Domain,
 		MaxAge:   86400,
 		Path:     "/",
 		HttpOnly: true,
@@ -73,7 +75,7 @@ func SetLoginCookie(ctx *gin.Context, userID uint64) {
 
 // GetCookieSession get cookie
 func GetCookieSession(ctx *gin.Context) *sessions.Session {
-	session, err := Store.Get(ctx.Request, viper.GetString("cookie.name"))
+	session, err := Store.Get(ctx.Request, conf.Conf.Cookie.Name)
 	if err != nil {
 		log.Warnf("[handler] store get err, %v", err)
 	}

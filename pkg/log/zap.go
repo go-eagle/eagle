@@ -7,7 +7,6 @@ import (
 	"time"
 
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
@@ -40,7 +39,7 @@ func newZapLogger(cfg *Config) (Logger, error) {
 	var cores []zapcore.Core
 	var options []zap.Option
 	// 设置初始化字段
-	option := zap.Fields(zap.String("ip", ip.GetLocalIP()), zap.String("app", viper.GetString("app.name")))
+	option := zap.Fields(zap.String("ip", ip.GetLocalIP()), zap.String("app", cfg.Name))
 	options = append(options, option)
 
 	allLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
@@ -55,11 +54,11 @@ func newZapLogger(cfg *Config) (Logger, error) {
 		}
 		if w == WriterFile {
 			infoFilename := cfg.LoggerFile
-			infoWrite := getLogWriterWithTime(infoFilename)
+			infoWrite := getLogWriterWithTime(cfg, infoFilename)
 			warnFilename := cfg.LoggerWarnFile
-			warnWrite := getLogWriterWithTime(warnFilename)
+			warnWrite := getLogWriterWithTime(cfg, warnFilename)
 			errorFilename := cfg.LoggerErrorFile
-			errorWrite := getLogWriterWithTime(errorFilename)
+			errorWrite := getLogWriterWithTime(cfg, errorFilename)
 
 			infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 				return lvl <= zapcore.InfoLevel
@@ -85,7 +84,7 @@ func newZapLogger(cfg *Config) (Logger, error) {
 		if w != WriterFile && w != WriterStdOut {
 			core := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel)
 			cores = append(cores, core)
-			allWriter := getLogWriterWithTime(cfg.LoggerFile)
+			allWriter := getLogWriterWithTime(cfg, cfg.LoggerFile)
 			core = zapcore.NewCore(encoder, zapcore.AddSync(allWriter), allLevel)
 			cores = append(cores, core)
 		}
@@ -127,10 +126,10 @@ func getJSONEncoder() zapcore.Encoder {
 }
 
 // getLogWriterWithTime 按时间(小时)进行切割
-func getLogWriterWithTime(filename string) io.Writer {
+func getLogWriterWithTime(cfg *Config, filename string) io.Writer {
 	logFullPath := filename
-	rotationPolicy := viper.Get("log.log_rolling_policy")
-	backupCount := viper.GetUint("log.log_backup_count")
+	rotationPolicy := cfg.LogRollingPolicy
+	backupCount := cfg.LogBackupCount
 	// 默认
 	rotateDuration := time.Hour * 24
 	if rotationPolicy == RotateTimeHourly {
