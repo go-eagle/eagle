@@ -65,3 +65,5 @@ require (
 	gopkg.in/mail.v2 v2.3.1 // indirect
 	honnef.co/go/tools v0.0.1-2020.1.3 // indirect
 )
+
+replace github.com/1024casts/snake => ./gin-project
