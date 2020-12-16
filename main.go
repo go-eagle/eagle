@@ -70,7 +70,7 @@ func main() {
 	// Create the Gin engine.
 	router := snake.App.Router
 
-	router.Use(static.ServeRoot("", conf.Conf.App.Root)) //添加root
+	router.Use(static.ServeRoot("/", conf.Conf.App.Root)) //添加root
 	// HealthCheck 健康检查路由
 	router.GET("/health", api.HealthCheck)
 	// metrics router 可以在 prometheus 中进行监控
