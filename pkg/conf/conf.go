@@ -87,6 +87,7 @@ type AppConfig struct {
 	Addr      string `mapstructure:"addr"`
 	URL       string `mapstructure:"url"`
 	JwtSecret string `mapstructure:"jwt_secret"`
+	Root      string `mapstructure:"root"`
 }
 
 // LogConfig log config
