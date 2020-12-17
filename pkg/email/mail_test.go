@@ -7,7 +7,6 @@ import (
 )
 
 func TestSend(t *testing.T) {
-
 	// init config
 	cfg := "../../conf/config.sample.yaml"
 	if err := conf.Init(cfg); err != nil {

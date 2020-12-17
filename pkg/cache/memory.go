@@ -32,43 +32,6 @@ func NewMemoryCache(keyPrefix string, encoding Encoding) Driver {
 	}
 }
 
-// item 存储的对象
-type itemWithTTL struct {
-	expires int64
-	value   []byte
-}
-
-// newItem 返回带有效期的value
-func newItem(value []byte, expires time.Duration) itemWithTTL {
-	expires64 := int64(expires)
-	if expires > 0 {
-		expires64 = time.Now().Unix() + expires64
-	}
-	return itemWithTTL{
-		value:   value,
-		expires: expires64,
-	}
-}
-
-// getValue 从itemWithTTL中取值
-func getValue(item interface{}, ok bool) ([]byte, bool) {
-	if !ok {
-		return nil, false
-	}
-
-	var itemObj itemWithTTL
-	if itemObj, ok = item.(itemWithTTL); !ok {
-		return nil, false
-	}
-
-	// 过期返回空
-	if itemObj.expires > 0 && itemObj.expires < time.Now().Unix() {
-		return nil, false
-	}
-
-	return itemObj.value, true
-}
-
 // Set add cache
 func (m *memoryCache) Set(key string, val interface{}, expiration time.Duration) error {
 	buf, err := Marshal(m.encoding, val)

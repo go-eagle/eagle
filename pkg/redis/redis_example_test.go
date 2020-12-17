@@ -25,7 +25,6 @@ func TestPipelineRedisData(t *testing.T) {
 	}
 	getRemotePipelineRedisData(ids)
 	fmt.Println("Test_PipelineRedisData cost: ", time.Since(t1))
-
 }
 
 func TestGoroutinePipelineRedisData(t *testing.T) {

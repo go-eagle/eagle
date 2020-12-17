@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"github.com/1024casts/snake/pkg/conf"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger" //nolint: goimports
@@ -9,6 +8,7 @@ import (
 
 	"github.com/1024casts/snake/app/api"
 	"github.com/1024casts/snake/app/api/http/v1/user"
+	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/snake"
 
 	// import swagger handler

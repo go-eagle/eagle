@@ -3,10 +3,10 @@ package utils
 import (
 	"strings"
 
-	"github.com/1024casts/snake/pkg/conf"
-
-	"github.com/1024casts/snake/pkg/constvar"
 	"github.com/qiniu/api.v7/storage"
+
+	"github.com/1024casts/snake/pkg/conf"
+	"github.com/1024casts/snake/pkg/constvar"
 )
 
 // GetDefaultAvatarURL 获取默认头像

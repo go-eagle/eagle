@@ -13,6 +13,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/spf13/pflag"
 	"google.golang.org/grpc"
 
 	"github.com/1024casts/snake/app/api"
@@ -22,9 +25,6 @@ import (
 	"github.com/1024casts/snake/pkg/snake"
 	v "github.com/1024casts/snake/pkg/version"
 	routers "github.com/1024casts/snake/router"
-	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/spf13/pflag"
 )
 
 var (
@@ -82,8 +82,7 @@ func main() {
 	routers.LoadWebRouter(router)
 
 	// init service
-	var svc *service.Service
-	svc = service.New(conf.Conf)
+	svc := service.New(conf.Conf)
 
 	// set global service
 	service.Svc = svc
@@ -93,7 +92,7 @@ func main() {
 	var rpcSrv *grpc.Server
 	go func() {
 		rpcSrv = rpc.New(conf.Conf, svc)
-		snake.App.RpcServer = rpcSrv
+		snake.App.RPCServer = rpcSrv
 	}()
 
 	// here register to service discovery

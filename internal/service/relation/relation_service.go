@@ -43,7 +43,7 @@ type relationService struct {
 	userStatRepo   user.StatRepo
 }
 
-// NewUserService 实例化一个userService
+// NewRelationService 实例化一个userService
 // 通过 NewService 函数初始化 Service 接口
 // 依赖接口，不要依赖实现，面向接口编程
 func NewRelationService(c *conf.Config) IRelationService {

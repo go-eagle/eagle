@@ -27,7 +27,7 @@ func GetLocalIP() string {
 	return clientIP
 }
 
-// InternalIP get internal ip.
+// GetInternalIP get internal ip.
 func GetInternalIP() string {
 	inters, err := net.Interfaces()
 	if err != nil {

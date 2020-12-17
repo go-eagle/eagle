@@ -10,7 +10,9 @@ import (
 )
 
 const (
-	PrefixCheckRepeat    = "CHECK_REPEAT"
+	// PrefixCheckRepeat check repeat key
+	PrefixCheckRepeat = "CHECK_REPEAT"
+	// RepeatDefaultTimeout define default timeout
 	RepeatDefaultTimeout = 60
 )
 

@@ -1,11 +1,11 @@
 package middleware
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 
 	"github.com/1024casts/snake/app/api"
 	"github.com/1024casts/snake/pkg/errno"
@@ -46,7 +46,7 @@ func verifySign(c *gin.Context) (map[string]string, error) {
 
 	// 检查时间戳是否超时。
 	if err := verifier.CheckTimeStamp(); nil != err {
-		return nil, errors.New(fmt.Sprintf("%s error", sign.KeyNameTimeStamp))
+		return nil, errors.Errorf("%s error", sign.KeyNameTimeStamp)
 	}
 
 	// 验证签名

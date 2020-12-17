@@ -60,12 +60,14 @@ func PrivateDecrypt(decryptStr string, path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	// 获取文件内容
 	info, _ := file.Stat()
 	buf := make([]byte, info.Size())
-	file.Read(buf)
+	_, _ = file.Read(buf)
 
 	// pem 解码
 	block, _ := pem.Decode(buf)

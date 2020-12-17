@@ -3,12 +3,12 @@ package user
 import (
 	"net/http"
 
-	"github.com/1024casts/snake/pkg/conf"
-
-	"github.com/1024casts/snake/app/web"
-	"github.com/1024casts/snake/pkg/log"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
+
+	"github.com/1024casts/snake/app/web"
+	"github.com/1024casts/snake/pkg/conf"
+	"github.com/1024casts/snake/pkg/log"
 )
 
 // Logout user logout

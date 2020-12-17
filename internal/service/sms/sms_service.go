@@ -1,10 +1,11 @@
 package sms
 
 import (
-	"github.com/1024casts/snake/pkg/conf"
 	"github.com/pkg/errors"
 	"github.com/qiniu/api.v7/auth"
 	"github.com/qiniu/api.v7/sms"
+
+	"github.com/1024casts/snake/pkg/conf"
 )
 
 // ServiceSms 短信服务

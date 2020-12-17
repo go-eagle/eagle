@@ -24,7 +24,7 @@ type Lock struct {
 	token       string
 	timeout     time.Duration
 	// todo: support retry
-	maxRetries int
+	// maxRetries int
 }
 
 // NewLock 实例化lock
@@ -61,7 +61,6 @@ func (l *Lock) Unlock() error {
 // SetExpireTime set timeout time
 func (l *Lock) SetExpireTime(expiration time.Duration) {
 	_, _ = l.redisClient.Expire(l.key, expiration).Result()
-	return
 }
 
 // GetKey 获取key

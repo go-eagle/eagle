@@ -1,4 +1,4 @@
-// 计数器，可以用于业务的各种模型统计使用
+// Package pkg 计数器，可以用于业务的各种模型统计使用
 // 场景：常用语重复策略，或者反作弊处理控制
 package pkg
 
@@ -6,14 +6,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/1024casts/snake/pkg/conf"
-
-	redis2 "github.com/1024casts/snake/pkg/redis"
 	"github.com/go-redis/redis"
+
+	"github.com/1024casts/snake/pkg/conf"
+	redis2 "github.com/1024casts/snake/pkg/redis"
 )
 
 const (
-	Prefix                = "COUNTER"
+	// PrefixCounter counter key
+	PrefixCounter = "COUNTER"
+	// DefaultStep default step key
 	DefaultStep           = 1
 	DefaultExpirationTime = 600 * time.Second
 )
@@ -33,7 +35,7 @@ func NewCounter() *Counter {
 // GetKey 获取key
 func (c *Counter) GetKey(key string) string {
 	keyPrefix := conf.Conf.App.Name
-	return strings.Join([]string{keyPrefix, Prefix, key}, ":")
+	return strings.Join([]string{keyPrefix, PrefixCounter, key}, ":")
 }
 
 // SetCounter set counter

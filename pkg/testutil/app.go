@@ -3,11 +3,12 @@
 package testutil
 
 import (
+	"github.com/jinzhu/gorm"
+
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/redis"
-	"github.com/jinzhu/gorm"
 )
 
 // App 结构体，主要是为了方便实例一个app

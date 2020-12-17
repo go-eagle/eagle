@@ -12,7 +12,6 @@ func TestNew(t *testing.T) {
 
 	type args struct {
 		conn *redis.Client
-		key  string
 	}
 	tests := []struct {
 		name string
