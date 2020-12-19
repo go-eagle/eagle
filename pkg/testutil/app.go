@@ -23,7 +23,7 @@ func (app *App) Initialize() {
 	}
 
 	// init log
-	conf.InitLog()
+	conf.InitLog(conf.Conf)
 
 	// init db
 	model.Init(conf.Conf)
