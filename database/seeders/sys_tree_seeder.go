@@ -1,5 +1,5 @@
 package seeders
 
-func run() {
+func test() {
 
 }
