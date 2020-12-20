@@ -88,6 +88,9 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, uid uint64) (userBase
 		return
 	}
 
+	// todo: use golang singleflight to replace redis lock
+	// todo: use timeout to get data from db
+
 	// 加锁，防止缓存击穿
 	key := fmt.Sprintf("uid:%d", uid)
 	lock := redis.NewLock(redis.RedisClient, key)
