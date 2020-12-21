@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/1024casts/snake/pkg/redis"
+	"golang.org/x/sync/singleflight"
 
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
@@ -88,36 +88,31 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, uid uint64) (userBase
 		return
 	}
 
-	// todo: use golang singleflight to replace redis lock
-	// todo: use timeout to get data from db
-
-	// 加锁，防止缓存击穿
-	key := fmt.Sprintf("uid:%d", uid)
-	lock := redis.NewLock(redis.RedisClient, key)
-	// here 可以设置过期时间
-	// lock.SetExpireTime(1 * time.Second)
-	isLock, err := lock.Lock()
-	// 如果已经被lock，则立即返回false不会等待，达到忽略操作的效果
-	if err != nil || !isLock {
-		return nil, errors.Wrapf(err, "[repo.user_base] lock err, key: %s", key)
-	}
-	defer func() {
-		_ = lock.Unlock()
-	}()
-
-	data := new(model.UserBaseModel)
-	if isLock {
+	// use sync/singleflight mode to get data
+	// why not use redis lock? see this topic: https://redis.io/topics/distlock
+	getDataFn := func() (interface{}, error) {
+		data := new(model.UserBaseModel)
 		// 从数据库中获取
+		// todo: use timeout to get data from db
 		err = repo.db.First(data, uid).Error
 		if err != nil && err != gorm.ErrRecordNotFound {
 			return nil, errors.Wrap(err, "[repo.user_base] get user data err")
 		}
+		return data, nil
+	}
 
-		// set cache
-		err = repo.userCache.SetUserBaseCache(uid, data)
-		if err != nil {
-			return data, errors.Wrap(err, "[repo.user_base] set user data err")
-		}
+	g := singleflight.Group{}
+	doKey := fmt.Sprintf("get_user_base_%d", uid)
+	val, err, _ := g.Do(doKey, getDataFn)
+	if err != nil {
+		return nil, errors.Wrap(err, "[repo.user_base] get user base err via single flight do")
+	}
+	data := val.(*model.UserBaseModel)
+
+	// set cache
+	err = repo.userCache.SetUserBaseCache(uid, data)
+	if err != nil {
+		return data, errors.Wrap(err, "[repo.user_base] set user data err")
 	}
 	return data, nil
 }
