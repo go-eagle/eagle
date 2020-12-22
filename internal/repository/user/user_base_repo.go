@@ -73,7 +73,7 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, uid uint64) (userBase
 	//var userBase *model.UserBaseModel
 	start := time.Now()
 	defer func() {
-		log.Infof("[repo.user_base] get user by uid: %d cost: %d ns", uid, time.Since(start).Nanoseconds())
+		log.Infof("[repo.user_base] get user by uid: %d cost: %d μs", uid, time.Since(start).Microseconds())
 	}()
 	// 从cache获取
 	userBase, err = repo.userCache.GetUserBaseCache(uid)
@@ -90,13 +90,21 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, uid uint64) (userBase
 
 	// use sync/singleflight mode to get data
 	// why not use redis lock? see this topic: https://redis.io/topics/distlock
+	// demo see: https://github.com/go-demo/singleflight-demo/blob/master/main.go
+	// https://juejin.cn/post/6844904084445593613
 	getDataFn := func() (interface{}, error) {
 		data := new(model.UserBaseModel)
 		// 从数据库中获取
 		// todo: use timeout to get data from db
 		err = repo.db.First(data, uid).Error
 		if err != nil && err != gorm.ErrRecordNotFound {
-			return nil, errors.Wrap(err, "[repo.user_base] get user data err")
+			return nil, errors.Wrap(err, "[repo.user_base] get user base data err")
+		}
+
+		// set cache
+		err = repo.userCache.SetUserBaseCache(uid, data)
+		if err != nil {
+			return data, errors.Wrap(err, "[repo.user_base] set user base data err")
 		}
 		return data, nil
 	}
@@ -109,11 +117,6 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, uid uint64) (userBase
 	}
 	data := val.(*model.UserBaseModel)
 
-	// set cache
-	err = repo.userCache.SetUserBaseCache(uid, data)
-	if err != nil {
-		return data, errors.Wrap(err, "[repo.user_base] set user data err")
-	}
 	return data, nil
 }
 
