@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"golang.org/x/sync/singleflight"
-
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"golang.org/x/sync/singleflight"
 
 	"github.com/1024casts/snake/internal/cache/user"
 	"github.com/1024casts/snake/internal/model"
@@ -44,7 +43,7 @@ func NewUserRepo(db *gorm.DB) BaseRepo {
 func (repo *userBaseRepo) Create(ctx context.Context, user model.UserBaseModel) (id uint64, err error) {
 	err = repo.db.Create(&user).Error
 	if err != nil {
-		return 0, errors.Wrap(err, "[user_repo] create user err")
+		return 0, errors.Wrap(err, "[repo.user_base] create user err")
 	}
 
 	return user.ID, nil
@@ -54,13 +53,13 @@ func (repo *userBaseRepo) Create(ctx context.Context, user model.UserBaseModel) 
 func (repo *userBaseRepo) Update(ctx context.Context, id uint64, userMap map[string]interface{}) error {
 	user, err := repo.GetUserByID(ctx, id)
 	if err != nil {
-		return errors.Wrap(err, "[user_repo] update user data err")
+		return errors.Wrap(err, "[repo.user_base] update user data err")
 	}
 
 	// 删除cache
 	err = repo.userCache.DelUserBaseCache(id)
 	if err != nil {
-		log.Warnf("[user_repo] delete user cache err: %v", err)
+		log.Warnf("[repo.user_base] delete user cache err: %v", err)
 	}
 
 	return repo.db.Model(user).Updates(userMap).Error
@@ -127,7 +126,7 @@ func (repo *userBaseRepo) GetUsersByIds(ctx context.Context, userIDs []uint64) (
 	// 从cache批量获取
 	userCacheMap, err := repo.userCache.MultiGetUserBaseCache(userIDs)
 	if err != nil {
-		return users, errors.Wrap(err, "[user_repo] multi get user cache data err")
+		return users, errors.Wrap(err, "[repo.user_base] multi get user cache data err")
 	}
 
 	// 查询未命中
@@ -137,7 +136,7 @@ func (repo *userBaseRepo) GetUsersByIds(ctx context.Context, userIDs []uint64) (
 		if !ok {
 			userModel, err = repo.GetUserByID(ctx, userID)
 			if err != nil {
-				log.Warnf("get user model err: %v", err)
+				log.Warnf("[repo.user_base] get user model err: %v", err)
 				continue
 			}
 		}
@@ -151,7 +150,7 @@ func (repo *userBaseRepo) GetUserByPhone(ctx context.Context, phone int64) (*mod
 	user := model.UserBaseModel{}
 	err := repo.db.Where("phone = ?", phone).First(&user).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, errors.Wrap(err, "[user_repo] get user err by phone")
+		return nil, errors.Wrap(err, "[repo.user_base] get user err by phone")
 	}
 
 	return &user, nil
@@ -162,7 +161,7 @@ func (repo *userBaseRepo) GetUserByEmail(ctx context.Context, email string) (*mo
 	userBase := model.UserBaseModel{}
 	err := repo.db.Where("email = ?", email).First(&userBase).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, errors.Wrap(err, "[user_repo] get user err by email")
+		return nil, errors.Wrap(err, "[repo.user_base] get user err by email")
 	}
 
 	return &userBase, nil
