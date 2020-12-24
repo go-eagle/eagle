@@ -9,10 +9,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"os"
-
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
@@ -23,13 +19,11 @@ import (
 	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/snake"
-	v "github.com/1024casts/snake/pkg/version"
 	routers "github.com/1024casts/snake/router"
 )
 
 var (
-	cfg     = pflag.StringP("config", "c", "", "snake config file path.")
-	version = pflag.BoolP("version", "v", false, "show version info.")
+	cfg = pflag.StringP("config", "c", "", "snake config file path.")
 )
 
 // @title snake docs api
@@ -44,17 +38,6 @@ var (
 // @BasePath /v1
 func main() {
 	pflag.Parse()
-	if *version {
-		ver := v.Get()
-		marshaled, err := json.MarshalIndent(&ver, "", "  ")
-		if err != nil {
-			fmt.Printf("%v\n", err)
-			os.Exit(1)
-		}
-
-		fmt.Println(string(marshaled))
-		return
-	}
 
 	// init config
 	if err := conf.Init(*cfg); err != nil {
