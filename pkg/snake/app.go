@@ -76,7 +76,7 @@ func (a *Application) Run() {
 	go func() {
 		// service connections
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s", err.Error())
+			log.Fatalf("listen, err: %s", err.Error())
 		}
 	}()
 
