@@ -1,8 +1,26 @@
 
+# 限流
 
-## 限流组件
+限流分为单机限流和分布式限流。
 
+单机限流一般分为 令牌桶算法和漏斗算法限流。
 
+## 限流算法
+
+### 令牌桶算法限流
+
+代码实现：[golang.org/x/time/rate](golang.org/x/time/rate)
+
+### 漏斗算法限流
+
+代码实现：[https://github.com/uber-go/ratelimit](https://github.com/uber-go/ratelimit)
+
+## 过载保护
+
+但是采用漏斗桶/令牌桶的缺点是太被动, 不能快速适应流量变化。  
+因此我们需要一种自适应的限流算法，即: 过载保护，根据系统当前的负载自动丢弃流量。
+
+可以参考 BBR算法实现： [https://github.com/go-kratos/kratos/blob/master/pkg/ratelimit/bbr/bbr.go](https://github.com/go-kratos/kratos/blob/master/pkg/ratelimit/bbr/bbr.go)
 
 ### Sentinel-golang 版本 
 
@@ -28,7 +46,6 @@ Sentinel Go 1.0 版本对齐了 Java 版本核心的高可用防护和容错能�
 等特性
 
 更多使用介绍看这里：[流控降级组件 Sentinel Go简介](https://mp.weixin.qq.com/s/j1kTArkROXlymghR1hkDFA)
-
 
 ## Reference
 
