@@ -10,6 +10,7 @@
 - 优化 graceful stop 方法
 - 优化 token sign 方法支持自定义参数payload
 - 优化 redis lock, 将token收敛到包内进行处理，减少使用的心智负担
+- 优化 数据获取，使用 singleflight，防止缓存击穿
 
 ## v1.2.2
 - 优化 `service` 和 `repository` 的db参数
