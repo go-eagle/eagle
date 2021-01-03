@@ -1,5 +1,10 @@
 package new
 
+var (
+	Project            ProjectInfo
+	DefaultProjectName = "snake-demo"
+)
+
 // ProjectInfo ...
 type ProjectInfo struct {
 	// project dir
@@ -8,8 +13,3 @@ type ProjectInfo struct {
 	Name      string
 	ModPrefix string
 }
-
-var (
-	project            ProjectInfo
-	DefaultProjectName = "snake-demo"
-)
