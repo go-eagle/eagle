@@ -1,13 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/1024casts/snake/cmd/snake/new"
 	"github.com/urfave/cli"
-)
 
-const Version = "0.1.0"
+	"github.com/urfave/cli/v2"
+)
 
 func main() {
 	app := cli.NewApp()
@@ -18,22 +18,50 @@ func main() {
 		{
 			Name:            "new",
 			Aliases:         []string{"n"},
-			Usage:           "Create Snake template project",
-			Action:          new.CreateProject,
-			SkipFlagParsing: false,
-			UsageText:       new.NewProjectHelpTemplate,
-			Flags: []cli.Flag{
-				&cli.StringFlag{
-					Name:        "d",
-					Value:       "",
-					Usage:       "Specify the directory of the project",
-					Destination: &new.Project.Path,
-				},
+			Usage:           "Create a new project",
+			Action:          newAction,
+			SkipFlagParsing: true,
+		},
+		{
+			Name:    "build",
+			Aliases: []string{"b"},
+			Usage:   "snake build",
+			Action:  buildAction,
+		},
+		{
+			Name:    "run",
+			Aliases: []string{"r"},
+			Usage:   "snake run",
+			Action:  runAction,
+		},
+		{
+			Name:            "tool",
+			Aliases:         []string{"t"},
+			Usage:           "snake tool",
+			Action:          toolAction,
+			SkipFlagParsing: true,
+		},
+		{
+			Name:    "version",
+			Aliases: []string{"v"},
+			Usage:   "snake version",
+			Action: func(c *cli.Context) error {
+				fmt.Println(getVersion())
+				return nil
 			},
+		},
+		{
+			Name:   "self-upgrade",
+			Usage:  "snake self-upgrade",
+			Action: upgradeAction,
 		},
 	}
 	err := app.Run(os.Args)
 	if err != nil {
 		panic(err)
 	}
+}
+
+func newAction(ctx *cli.Context) error {
+	return installAndRun("gen-project", ctx.Args().Slice())
 }
