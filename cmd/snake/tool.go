@@ -8,9 +8,16 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 	"time"
-	//"github.com/fatih/color"
+
+	"github.com/fatih/color"
+	"github.com/urfave/cli/v2"
+)
+
+const (
+	toolDoc = ""
 )
 
 // Tool is snake tool.
@@ -27,6 +34,62 @@ type Tool struct {
 	URL          string    `json:"url"`
 	Hidden       bool      `json:"hidden"`
 	requires     []*Tool
+}
+
+func toolAction(c *cli.Context) (err error) {
+	if c.NArg() == 0 {
+		sort.Slice(toolIndexs, func(i, j int) bool { return toolIndexs[i].BuildTime.After(toolIndexs[j].BuildTime) })
+		for _, t := range toolIndexs {
+			if t.Hidden {
+				continue
+			}
+			updateTime := t.BuildTime.Format("2006/01/02")
+			fmt.Printf("%s%s: %s Author(%s) [%s]\n", color.HiMagentaString(t.Name), getNotice(t), color.HiCyanString(t.Summary), t.Author, updateTime)
+		}
+		fmt.Println("\n安装工具: snake tool install demo")
+		fmt.Println("执行工具: snake tool demo")
+		fmt.Println("安装全部工具: snake tool install all")
+		fmt.Println("全部升级: snake tool upgrade all")
+		fmt.Println("\n详细文档：", toolDoc)
+		return
+	}
+	commond := c.Args().First()
+	switch commond {
+	case "upgrade":
+		upgradeAll()
+		return
+	case "install":
+		name := c.Args().Get(1)
+		if name == "all" {
+			installAll()
+		} else {
+			install(name)
+		}
+		return
+	case "check_install":
+		if e := checkInstall(c.Args().Get(1)); e != nil {
+			fmt.Fprintf(os.Stderr, fmt.Sprintf("%v\n", e))
+		}
+		return
+	}
+	if e := installAndRun(commond, c.Args().Slice()[1:]); e != nil {
+		fmt.Fprintf(os.Stderr, fmt.Sprintf("%v\n", e))
+	}
+	return
+}
+
+func getNotice(t *Tool) (notice string) {
+	if !t.supportOS() || t.Install == "" {
+		return
+	}
+	notice = color.HiGreenString("(未安装)")
+	if t.installed() {
+		notice = color.HiBlueString("(已安装)")
+		if t.needUpdated() {
+			notice = color.RedString("(有更新)")
+		}
+	}
+	return
 }
 
 func (t Tool) needUpdated() bool {
@@ -117,6 +180,54 @@ func installAndRun(name string, args []string) (err error) {
 		}
 	}
 	return fmt.Errorf("找不到%s", name)
+}
+
+func checkInstall(name string) (err error) {
+	for _, t := range toolList() {
+		if name == t.Name {
+			if !t.installed() || t.needUpdated() {
+				t.install()
+			}
+			return
+		}
+	}
+	return fmt.Errorf("找不到%s", name)
+}
+
+func upgradeAction(c *cli.Context) error {
+	install("kratos")
+	return nil
+}
+
+func install(name string) {
+	if name == "" {
+		fmt.Fprintf(os.Stderr, color.HiRedString("请填写要安装的工具名称\n"))
+		return
+	}
+	for _, t := range toolList() {
+		if name == t.Name {
+			t.install()
+			return
+		}
+	}
+	fmt.Fprintf(os.Stderr, color.HiRedString("安装失败 找不到 %s\n", name))
+	return
+}
+
+func installAll() {
+	for _, t := range toolList() {
+		if t.Install != "" {
+			t.install()
+		}
+	}
+}
+
+func upgradeAll() {
+	for _, t := range toolList() {
+		if t.needUpdated() {
+			t.install()
+		}
+	}
 }
 
 func gopath() (gp string) {
