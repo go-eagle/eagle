@@ -22,7 +22,7 @@ func buildAction(c *cli.Context) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	fmt.Printf("directory: %s\n", cmd.Dir)
-	fmt.Printf("kratos: %s\n", Version)
+	fmt.Printf("snake: %s\n", Version)
 	if err := cmd.Run(); err != nil {
 		panic(err)
 	}
