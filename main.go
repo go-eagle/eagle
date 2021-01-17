@@ -48,10 +48,11 @@ func main() {
 	gin.SetMode(conf.Conf.App.RunMode)
 
 	// init app
-	snake.App = snake.New(conf.Conf)
+	app := snake.New(conf.Conf)
+	snake.App = app
 
 	// Create the Gin engine.
-	router := snake.App.Router
+	router := app.Router
 
 	// HealthCheck 健康检查路由
 	router.GET("/health", api.HealthCheck)
@@ -81,5 +82,5 @@ func main() {
 	// here register to service discovery
 
 	// start server
-	snake.App.Run()
+	app.Run()
 }
