@@ -2,6 +2,7 @@ package snake
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -68,7 +69,7 @@ func New(cfg *conf.Config) *Application {
 
 // Run start a app
 func (a *Application) Run() {
-	log.Infof("Start to listening the incoming requests on http address: %s", conf.Conf.App.Addr)
+	fmt.Printf("Listening and serving HTTP on %s\n", conf.Conf.App.Addr)
 	srv := &http.Server{
 		Addr:    conf.Conf.App.Addr,
 		Handler: a.Router,
@@ -80,6 +81,7 @@ func (a *Application) Run() {
 		}
 	}()
 
+	// block process
 	a.GracefulStop(srv)
 }
 
