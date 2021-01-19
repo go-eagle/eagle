@@ -7,8 +7,6 @@ import (
 const (
 	// DefaultExpireTime 默认过期时间
 	DefaultExpireTime = 60 * time.Second
-	// PrefixCacheKey 业务cache key
-	PrefixCacheKey = "snake"
 )
 
 // Client 生成一个缓存客户端，其中keyPrefix 一般为业务前缀

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/dgraph-io/ristretto"
-
 	"github.com/pkg/errors"
 
 	"github.com/1024casts/snake/pkg/log"

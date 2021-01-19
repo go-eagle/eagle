@@ -11,7 +11,7 @@ import (
 
 const (
 	// PrefixUserBaseCacheKey cache前缀
-	PrefixUserBaseCacheKey = "user:cache:%d"
+	PrefixUserBaseCacheKey = "snake:user:cache:%d"
 	// DefaultExpireTime 默认过期时间
 	DefaultExpireTime = time.Hour * 24
 )
@@ -25,7 +25,7 @@ type Cache struct {
 // NewUserCache new一个用户cache
 func NewUserCache() *Cache {
 	encoding := cache.JSONEncoding{}
-	cachePrefix := cache.PrefixCacheKey
+	cachePrefix := ""
 	return &Cache{
 		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, encoding, func() interface{} {
 			return &model.UserBaseModel{}
@@ -35,7 +35,7 @@ func NewUserCache() *Cache {
 
 // GetUserBaseCacheKey 获取cache key
 func (u *Cache) GetUserBaseCacheKey(userID uint64) string {
-	return fmt.Sprintf(cache.PrefixCacheKey+":"+PrefixUserBaseCacheKey, userID)
+	return fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 }
 
 // SetUserBaseCache 写入用户cache
