@@ -96,8 +96,13 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, uid uint64) (userBase
 		// 从数据库中获取
 		// todo: use timeout to get data from db
 		err = repo.db.First(data, uid).Error
-		if err != nil && err != gorm.ErrRecordNotFound {
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.Wrap(err, "[repo.user_base] get user base data err")
+		}
+
+		// if data is empty, set empty/null cache to prevent cache penetration(缓存穿透)
+		if data.ID == 0 {
+			log.Warnf("[repo.user_base] get user base is empty, uid: %d", uid)
 		}
 
 		// set cache

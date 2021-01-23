@@ -11,7 +11,7 @@ import (
 
 const (
 	// PrefixUserBaseCacheKey cache前缀
-	PrefixUserBaseCacheKey = "snake:user:cache:%d"
+	PrefixUserBaseCacheKey = "snake:user:base:%d"
 	// DefaultExpireTime 默认过期时间
 	DefaultExpireTime = time.Hour * 24
 )
