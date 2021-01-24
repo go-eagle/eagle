@@ -1,10 +1,8 @@
 package redis
 
 import (
-	"strings"
+	"fmt"
 	"time"
-
-	"github.com/1024casts/snake/pkg/conf"
 
 	"github.com/go-redis/redis"
 	"github.com/google/uuid"
@@ -12,10 +10,18 @@ import (
 
 const (
 	// LockKey redis lock key
-	LockKey = "redis:lock"
+	LockKey = "snake:redis:lock:%s"
 	// DefaultTimeout default expire time
 	DefaultTimeout = 2 * time.Second
 )
+
+type Option func(*Lock)
+
+func Timeout(expiration time.Duration) Option {
+	return func(l *Lock) {
+		l.timeout = expiration
+	}
+}
 
 // Lock 定义lock结构体
 type Lock struct {
@@ -28,12 +34,17 @@ type Lock struct {
 }
 
 // NewLock 实例化lock
-func NewLock(conn *redis.Client, key string) *Lock {
-	return &Lock{
+func NewLock(conn *redis.Client, key string, options ...func(lock *Lock)) *Lock {
+	lock := Lock{
 		key:         key,
 		redisClient: conn,
 		timeout:     DefaultTimeout,
 	}
+
+	for _, option := range options {
+		option(&lock)
+	}
+	return &lock
 }
 
 // Lock 加锁
@@ -58,15 +69,9 @@ func (l *Lock) Unlock() error {
 	return nil
 }
 
-// SetExpireTime set timeout time
-func (l *Lock) SetExpireTime(expiration time.Duration) {
-	_, _ = l.redisClient.Expire(l.key, expiration).Result()
-}
-
 // GetKey 获取key
 func (l *Lock) GetKey() string {
-	keyPrefix := conf.Conf.App.Name
-	return strings.Join([]string{keyPrefix, LockKey, l.key}, ":")
+	return fmt.Sprintf(LockKey, l.key)
 }
 
 // getToken 生成token
