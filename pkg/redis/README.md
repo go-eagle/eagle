@@ -43,3 +43,8 @@ idleTimeout = "60s"
 - 对批量数据大量使用pipeline指令
 - 精简key字段
 - redis的value存储编解码改为msgpack
+
+## Pipeline
+- https://redis.io/topics/pipelining
+- [兼容go redis cluster的pipeline批量](http://xiaorui.cc/archives/5557)
+- https://www.tizi365.com/archives/309.html
