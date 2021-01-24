@@ -6,6 +6,7 @@
 - 新增 sign签名增加aes对称加密算法
 - 新增 redis lock 新增了过期时间的设定
 - 新增 基于prometheus的统计pkg
+- 新增 errGroup pkg
 - 优化 用户关系模块使用独立 service
 - 优化 MySQL 和 Redis 配置从结构体中获取，替换从viper中获取
 - 优化 graceful stop 方法
