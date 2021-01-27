@@ -16,7 +16,7 @@ import (
 // @Description 仅限邮箱登录
 // @Tags 用户
 // @Produce  json
-// @Param req body LoginCredentials true ""
+// @Param req body LoginCredentials true "username and password"
 // @Success 200 {string} json "{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik"}}"
 // @Router /login [post]
 func Login(c *gin.Context) {

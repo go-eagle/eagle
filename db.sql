@@ -127,10 +127,10 @@ CREATE TABLE `user_base` (
      UNIQUE KEY `uniq_phone` (`phone`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
 
-LOCK TABLES `users` WRITE;
+LOCK TABLES `user_base` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 
-INSERT INTO `users` (`id`, `username`, `password`, `avatar`, `phone`, `email`, `sex`, `deleted_at`, `created_at`, `updated_at`)
+INSERT INTO `user_base` (`id`, `username`, `password`, `avatar`, `phone`, `email`, `sex`, `deleted_at`, `created_at`, `updated_at`)
 VALUES
 (1,'test-name','$2a$10$WhJY.MCtsp5kmnyl/UAdQuWbbMzxvmLCPeDhcpxyL84lYey829/ym','/uploads/avatar.jpg',13010102020,'123@cc.com',1,NULL,'2020-02-09 10:23:33','2020-05-09 10:23:33'),
 (2,'admin','$2a$10$WhJY.MCtsp5kmnyl/UAdQuWbbMzxvmLCPeDhcpxyL84lYey829/ym','',1,'1234@cc.com',0,NULL,'2020-05-20 22:42:18','2020-05-20 22:42:18'),

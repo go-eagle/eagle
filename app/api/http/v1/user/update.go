@@ -19,8 +19,8 @@ import (
 // @Accept  json
 // @Produce  json
 // @Param id path uint64 true "The user's database id index num"
-// @Param user body model.UserModel true "The user info"
-// @Success 200 {object} handler.Response "{"code":0,"message":"OK","data":null}"
+// @Param user body model.UserBaseModel true "The user info"
+// @Success 200 {object} api.Response "{"code":0,"message":"OK","data":null}"
 // @Router /users/{id} [put]
 func Update(c *gin.Context) {
 	// Get the user id from the url parameter.

@@ -1,0 +1,304 @@
+basePath: /v1
+definitions:
+  api.Response:
+    properties:
+      code:
+        type: integer
+      data:
+        type: object
+      message:
+        type: string
+    type: object
+  model.UserBaseModel:
+    properties:
+      avatar:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      password:
+        type: string
+      phone:
+        type: integer
+      sex:
+        type: integer
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  model.UserFollow:
+    properties:
+      fans_num:
+        description: 粉丝数
+        type: integer
+      follow_num:
+        description: 关注数
+        type: integer
+      is_fans:
+        description: 是否是粉丝 1:是 0:否
+        type: integer
+      is_follow:
+        description: 是否关注 1:是 0:否
+        type: integer
+    type: object
+  model.UserInfo:
+    properties:
+      avatar:
+        type: string
+      id:
+        example: 1
+        type: integer
+      sex:
+        type: integer
+      user_follow:
+        $ref: '#/definitions/model.UserFollow'
+      username:
+        example: 张三
+        type: string
+    type: object
+  user.LoginCredentials:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  user.PhoneLoginCredentials:
+    properties:
+      phone:
+        example: 13010002000
+        type: integer
+      verify_code:
+        example: 120110
+        type: integer
+    required:
+    - phone
+    - verify_code
+    type: object
+  user.RegisterRequest:
+    properties:
+      confirm_password:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: 1024casts/snake
+    url: http://www.swagger.io/support
+  description: snake demo
+  title: snake docs api
+  version: "1.0"
+paths:
+  /Register:
+    post:
+      description: 用户注册
+      parameters:
+      - description: register infomation
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/user.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik"}}'
+          schema:
+            type: string
+      summary: 注册
+      tags:
+      - 用户
+  /login:
+    post:
+      parameters:
+      - description: Username
+        in: body
+        name: username
+        required: true
+        schema:
+          type: string
+      - description: Password
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR7HXsSLfebw92DKd1JQ"}}'
+          schema:
+            type: string
+      summary: Login generates the authentication token
+  /users/:id:
+    get:
+      consumes:
+      - application/json
+      description: Get an user by user id
+      parameters:
+      - description: 用户id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 用户信息
+          schema:
+            $ref: '#/definitions/model.UserInfo'
+      summary: 通过用户id获取用户信息
+      tags:
+      - 用户
+  /users/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update a user by ID
+      parameters:
+      - description: The user's database id index num
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: The user info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserBaseModel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":null}'
+          schema:
+            $ref: '#/definitions/api.Response'
+      summary: Update a user info by the user identifier
+      tags:
+      - 用户
+  /users/{id}/followers:
+    get:
+      consumes:
+      - application/json
+      description: Get an user by user id
+      parameters:
+      - description: 用户id
+        in: body
+        name: user_id
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 用户信息
+          schema:
+            $ref: '#/definitions/model.UserInfo'
+      summary: 通过用户id关注用户
+      tags:
+      - 用户
+  /users/{id}/following:
+    get:
+      consumes:
+      - application/json
+      description: Get an user by user id
+      parameters:
+      - description: 用户id
+        in: body
+        name: user_id
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 用户信息
+          schema:
+            $ref: '#/definitions/model.UserInfo'
+      summary: 正在关注的用户列表
+      tags:
+      - 用户
+  /users/follow:
+    post:
+      consumes:
+      - application/json
+      description: Get an user by user id
+      parameters:
+      - description: 用户id
+        in: body
+        name: user_id
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 用户信息
+          schema:
+            $ref: '#/definitions/model.UserInfo'
+      summary: 通过用户id关注/取消关注用户
+      tags:
+      - 用户
+  /users/login:
+    post:
+      description: 仅限手机登录
+      parameters:
+      - description: phone
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/user.PhoneLoginCredentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik"}}'
+          schema:
+            type: string
+      summary: 用户登录接口
+      tags:
+      - 用户
+  /vcode:
+    get:
+      consumes:
+      - application/json
+      description: Get an user by username
+      parameters:
+      - description: 区域码，比如86
+        in: query
+        name: area_code
+        required: true
+        type: string
+      - description: 手机号
+        in: query
+        name: phone
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+      summary: 根据手机号获取校验码
+      tags:
+      - 用户
+swagger: "2.0"

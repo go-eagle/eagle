@@ -79,7 +79,9 @@ git clone https://github.com/1024casts/snake
 # 进入到下载目录
 cd snake
 
+
 # 生成本地环境配置文件
+cd conf
 cp config.sample.yaml config.local.yaml
 
 # 编译

@@ -14,7 +14,7 @@ import (
 // @Description 用户注册
 // @Tags 用户
 // @Produce  json
-// @Param req body RegisterRequest true ""
+// @Param req body RegisterRequest true "register infomation"
 // @Success 200 {string} json "{"code":0,"message":"OK","data":{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6Ik"}}"
 // @Router /Register [post]
 func Register(c *gin.Context) {
