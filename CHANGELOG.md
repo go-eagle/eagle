@@ -14,7 +14,7 @@
 - 优化 redis lock, 将token收敛到包内进行处理，减少使用的心智负担
 - 优化 数据获取，使用 singleflight，防止缓存击穿
 - 优化 创建项目命令 `snake new`
-- 优化 cache key
+- 优化 移除cache prefix, 由用户自己定义
 
 ## v1.2.2
 - 优化 `service` 和 `repository` 的db参数
