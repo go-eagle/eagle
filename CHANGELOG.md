@@ -15,6 +15,7 @@
 - 优化 数据获取，使用 singleflight，防止缓存击穿
 - 优化 创建项目命令 `snake new`
 - 优化 移除cache prefix, 由用户自己定义
+- 优化 数据为空时缓存一分钟，防止缓存穿透
 
 ## v1.2.2
 - 优化 `service` 和 `repository` 的db参数

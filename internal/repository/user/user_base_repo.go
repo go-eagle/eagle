@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/1024casts/snake/pkg/cache"
+
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 	"golang.org/x/sync/singleflight"
@@ -100,13 +102,15 @@ func (repo *userBaseRepo) GetUserByID(ctx context.Context, uid uint64) (userBase
 			return nil, errors.Wrap(err, "[repo.user_base] get user base data err")
 		}
 
+		expireTime := user.DefaultExpireTime
 		// if data is empty, set empty/null cache to prevent cache penetration(缓存穿透)
 		if data.ID == 0 {
 			log.Warnf("[repo.user_base] get user base is empty, uid: %d", uid)
+			expireTime = cache.EmptyExpireTime
 		}
 
 		// set cache
-		err = repo.userCache.SetUserBaseCache(uid, data)
+		err = repo.userCache.SetUserBaseCache(uid, data, expireTime)
 		if err != nil {
 			return data, errors.Wrap(err, "[repo.user_base] set user base data err")
 		}

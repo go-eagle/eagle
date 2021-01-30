@@ -39,12 +39,12 @@ func (u *Cache) GetUserBaseCacheKey(userID uint64) string {
 }
 
 // SetUserBaseCache 写入用户cache
-func (u *Cache) SetUserBaseCache(userID uint64, user *model.UserBaseModel) error {
+func (u *Cache) SetUserBaseCache(userID uint64, user *model.UserBaseModel, duration time.Duration) error {
 	if user == nil || user.ID == 0 {
 		return nil
 	}
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
-	err := u.cache.Set(cacheKey, user, DefaultExpireTime)
+	err := u.cache.Set(cacheKey, user, duration)
 	if err != nil {
 		return err
 	}
