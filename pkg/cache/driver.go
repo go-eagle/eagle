@@ -5,6 +5,8 @@ import (
 )
 
 const (
+	// DefaultExpireTime 默认过期时间
+	DefaultExpireTime = time.Hour * 24
 	// EmptyExpireTime 结果为空时的过期时间 1分钟, 常用于数据为空时的缓存时间(缓存穿透)
 	EmptyExpireTime = time.Minute
 )
