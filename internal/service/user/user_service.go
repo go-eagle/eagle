@@ -75,7 +75,7 @@ func (srv *userService) Register(ctx context.Context, username, email, password 
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
 	}
-	_, err = srv.userRepo.Create(ctx, u)
+	_, err = srv.userRepo.CreateUser(ctx, u)
 	if err != nil {
 		return errors.Wrapf(err, "create user")
 	}
@@ -132,7 +132,7 @@ func (srv *userService) PhoneLogin(ctx context.Context, phone int64, verifyCode 
 			Phone:    phone,
 			Username: strconv.Itoa(int(phone)),
 		}
-		u.ID, err = srv.userRepo.Create(ctx, u)
+		u.ID, err = srv.userRepo.CreateUser(ctx, u)
 		if err != nil {
 			return "", errors.Wrapf(err, "[login] create user err")
 		}
@@ -149,7 +149,7 @@ func (srv *userService) PhoneLogin(ctx context.Context, phone int64, verifyCode 
 
 // UpdateUser update user info
 func (srv *userService) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
-	err := srv.userRepo.Update(ctx, id, userMap)
+	err := srv.userRepo.UpdateUser(ctx, id, userMap)
 
 	if err != nil {
 		return err
@@ -160,7 +160,7 @@ func (srv *userService) UpdateUser(ctx context.Context, id uint64, userMap map[s
 
 // GetUserByID 获取单条用户信息
 func (srv *userService) GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error) {
-	userModel, err := srv.userRepo.GetUserByID(ctx, id)
+	userModel, err := srv.userRepo.GetOneUser(ctx, id)
 	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by id: %d", id)
 	}
@@ -189,7 +189,7 @@ func (srv *userService) BatchGetUsers(ctx context.Context, userID uint64, userID
 	}
 
 	// 获取当前用户信息
-	curUser, err := srv.userRepo.GetUserByID(ctx, userID)
+	curUser, err := srv.userRepo.GetOneUser(ctx, userID)
 	if err != nil {
 		return nil, errors.Wrap(err, "[user_service] get one user err")
 	}

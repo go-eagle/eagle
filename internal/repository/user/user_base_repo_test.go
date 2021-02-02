@@ -72,7 +72,7 @@ func (s *Suite) Test_repository_Create() {
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(newID))
 	s.mock.ExpectCommit()
 
-	_, err := s.repository.Create(context.TODO(), user)
+	_, err := s.repository.CreateUser(context.TODO(), user)
 
 	require.NoError(s.T(), err)
 }
@@ -87,7 +87,7 @@ func (s *Suite) Test_repository_GetUserByID() {
 		`SELECT * FROM "user_base" WHERE (id = $1)`)).
 		WithArgs(id).WillReturnRows(sqlmock.NewRows([]string{"id", "username"}).AddRow(id, username))
 
-	res, err := s.repository.GetUserByID(context.TODO(), id)
+	res, err := s.repository.GetOneUser(context.TODO(), id)
 
 	require.NoError(s.T(), err)
 	require.Nil(s.T(), deep.Equal(&model.UserBaseModel{ID: id, Username: username}, res))

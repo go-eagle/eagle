@@ -18,9 +18,9 @@ import (
 
 // BaseRepo 定义用户仓库接口
 type BaseRepo interface {
-	Create(ctx context.Context, user model.UserBaseModel) (id uint64, err error)
-	Update(ctx context.Context, id uint64, userMap map[string]interface{}) error
-	GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error)
+	CreateUser(ctx context.Context, user model.UserBaseModel) (id uint64, err error)
+	UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error
+	GetOneUser(ctx context.Context, id uint64) (*model.UserBaseModel, error)
 	GetUsersByIds(ctx context.Context, ids []uint64) ([]*model.UserBaseModel, error)
 	GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error)
 	GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error)
@@ -42,7 +42,7 @@ func NewUserRepo(db *gorm.DB) BaseRepo {
 }
 
 // Create 创建用户
-func (repo *userBaseRepo) Create(ctx context.Context, user model.UserBaseModel) (id uint64, err error) {
+func (repo *userBaseRepo) CreateUser(ctx context.Context, user model.UserBaseModel) (id uint64, err error) {
 	err = repo.db.Create(&user).Error
 	if err != nil {
 		return 0, errors.Wrap(err, "[repo.user_base] create user err")
@@ -52,8 +52,8 @@ func (repo *userBaseRepo) Create(ctx context.Context, user model.UserBaseModel) 
 }
 
 // Update 更新用户信息
-func (repo *userBaseRepo) Update(ctx context.Context, id uint64, userMap map[string]interface{}) error {
-	user, err := repo.GetUserByID(ctx, id)
+func (repo *userBaseRepo) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
+	user, err := repo.GetOneUser(ctx, id)
 	if err != nil {
 		return errors.Wrap(err, "[repo.user_base] update user data err")
 	}
@@ -70,7 +70,7 @@ func (repo *userBaseRepo) Update(ctx context.Context, id uint64, userMap map[str
 // GetUserByID 获取用户
 // 缓存的更新策略使用 Cache Aside Pattern
 // see: https://coolshell.cn/articles/17416.html
-func (repo *userBaseRepo) GetUserByID(ctx context.Context, uid uint64) (userBase *model.UserBaseModel, err error) {
+func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserBaseModel, err error) {
 	//var userBase *model.UserBaseModel
 	start := time.Now()
 	defer func() {
@@ -143,7 +143,7 @@ func (repo *userBaseRepo) GetUsersByIds(ctx context.Context, userIDs []uint64) (
 		idx := repo.userCache.GetUserBaseCacheKey(userID)
 		userModel, ok := userCacheMap[idx]
 		if !ok {
-			userModel, err = repo.GetUserByID(ctx, userID)
+			userModel, err = repo.GetOneUser(ctx, userID)
 			if err != nil {
 				log.Warnf("[repo.user_base] get user model err: %v", err)
 				continue
