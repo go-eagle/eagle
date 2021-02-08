@@ -104,7 +104,7 @@ func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase 
 
 		expireTime := user.DefaultExpireTime
 		// if data is empty, set empty/null cache to prevent cache penetration(缓存穿透)
-		if data.ID == 0 {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			log.Warnf("[repo.user_base] get user base is empty, uid: %d", uid)
 			expireTime = cache.EmptyExpireTime
 		}
