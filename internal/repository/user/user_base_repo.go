@@ -16,6 +16,10 @@ import (
 	"github.com/1024casts/snake/pkg/log"
 )
 
+var (
+	ErrNotFound = gorm.ErrRecordNotFound
+)
+
 // BaseRepo 定义用户仓库接口
 type BaseRepo interface {
 	CreateUser(ctx context.Context, user model.UserBaseModel) (id uint64, err error)
@@ -79,38 +83,46 @@ func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase 
 	// 从cache获取
 	userBase, err = repo.userCache.GetUserBaseCache(uid)
 	if err != nil {
+		if err == cache.ErrPlaceholder {
+			return nil, ErrNotFound
+		} else if err != ErrNotFound {
+			// fail fast
+			return nil, err
+		}
 		// if cache error return, don't request to db
 		log.Warnf("[repo.user_base] get user by uid err: %v, uid: %d", err, uid)
 		return
 	}
 	// hit cache
 	if userBase != nil {
+		// add cache hit
+
 		log.Infof("[repo.user_base] get user base data from cache, uid: %d", uid)
 		return
 	}
 
 	// use sync/singleflight mode to get data
-	// why not use redis lock? see this topic: https://redis.io/topics/distlock
 	// demo see: https://github.com/go-demo/singleflight-demo/blob/master/main.go
 	// https://juejin.cn/post/6844904084445593613
 	getDataFn := func() (interface{}, error) {
 		data := new(model.UserBaseModel)
 		// 从数据库中获取
-		// todo: use timeout to get data from db
 		err = repo.db.First(data, uid).Error
-		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.Wrap(err, "[repo.user_base] get user base data err")
-		}
+		// if data is empty, set not found cache to prevent cache penetration(缓存穿透)
+		if errors.Is(err, ErrNotFound) {
+			err = repo.userCache.SetCacheWithNotFound(uid)
+			if err != nil {
+				log.Warnf("[repo.user_base] SetCacheWithNotFound err, uid: %d", uid)
+			}
+			return nil, ErrNotFound
+		} else if err != nil {
+			// add metric for db err
 
-		expireTime := user.DefaultExpireTime
-		// if data is empty, set empty/null cache to prevent cache penetration(缓存穿透)
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			log.Warnf("[repo.user_base] get user base is empty, uid: %d", uid)
-			expireTime = cache.EmptyExpireTime
+			return nil, err
 		}
 
 		// set cache
-		err = repo.userCache.SetUserBaseCache(uid, data, expireTime)
+		err = repo.userCache.SetUserBaseCache(uid, data, cache.DefaultExpireTime)
 		if err != nil {
 			return data, errors.Wrap(err, "[repo.user_base] set user base data err")
 		}
@@ -124,6 +136,8 @@ func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase 
 		return nil, errors.Wrap(err, "[repo.user_base] get user base err via single flight do")
 	}
 	data := val.(*model.UserBaseModel)
+
+	// add cache miss
 
 	return data, nil
 }

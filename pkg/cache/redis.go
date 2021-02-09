@@ -195,3 +195,7 @@ func (c *redisCache) Decr(key string, step int64) (int64, error) {
 	}
 	return affectRow, nil
 }
+
+func (c *redisCache) SetCacheWithNotFound(key string) error {
+	return c.client.Set(key, NotFoundPlaceholder, DefaultNotFoundExpireTime).Err()
+}

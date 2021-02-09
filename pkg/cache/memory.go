@@ -98,3 +98,7 @@ func (m *memoryCache) Incr(key string, step int64) (int64, error) {
 func (m *memoryCache) Decr(key string, step int64) (int64, error) {
 	panic("implement me")
 }
+
+func (m *memoryCache) SetCacheWithNotFound(key string) error {
+	panic("implement me")
+}

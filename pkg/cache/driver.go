@@ -1,14 +1,21 @@
 package cache
 
 import (
+	"errors"
 	"time"
 )
 
 const (
 	// DefaultExpireTime 默认过期时间
 	DefaultExpireTime = time.Hour * 24
-	// EmptyExpireTime 结果为空时的过期时间 1分钟, 常用于数据为空时的缓存时间(缓存穿透)
-	EmptyExpireTime = time.Minute
+	// DefaultNotFoundExpireTime 结果为空时的过期时间 1分钟, 常用于数据为空时的缓存时间(缓存穿透)
+	DefaultNotFoundExpireTime = time.Minute
+	// NotFoundPlaceholder .
+	NotFoundPlaceholder = "*"
+)
+
+var (
+	ErrPlaceholder = errors.New("cache: placeholder")
 )
 
 // Client 生成一个缓存客户端，其中keyPrefix 一般为业务前缀
@@ -23,6 +30,7 @@ type Driver interface {
 	Del(keys ...string) error
 	Incr(key string, step int64) (int64, error)
 	Decr(key string, step int64) (int64, error)
+	SetCacheWithNotFound(key string) error
 }
 
 // Set 数据
@@ -58,4 +66,8 @@ func Incr(key string, step int64) (int64, error) {
 // Decr 自减
 func Decr(key string, step int64) (int64, error) {
 	return Client.Decr(key, step)
+}
+
+func SetCacheWithNotFound(key string) error {
+	return Client.SetCacheWithNotFound(key)
 }

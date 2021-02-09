@@ -12,8 +12,6 @@ import (
 const (
 	// PrefixUserBaseCacheKey cache前缀, 规则：业务+模块+{ID}
 	PrefixUserBaseCacheKey = "snake:user:base:%d"
-	// DefaultExpireTime 默认过期时间
-	DefaultExpireTime = time.Hour * 24
 )
 
 // Cache cache
@@ -52,7 +50,6 @@ func (u *Cache) SetUserBaseCache(userID uint64, user *model.UserBaseModel, durat
 }
 
 // GetUserBaseCache 获取用户cache
-// todo: 如果数据量大，可以考虑增加本地缓存
 func (u *Cache) GetUserBaseCache(userID uint64) (data *model.UserBaseModel, err error) {
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 	err = u.cache.Get(cacheKey, &data)
@@ -83,6 +80,16 @@ func (u *Cache) MultiGetUserBaseCache(userIDs []uint64) (map[string]*model.UserB
 func (u *Cache) DelUserBaseCache(userID uint64) error {
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 	err := u.cache.Del(cacheKey)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// DelUserBaseCache 删除用户cache
+func (u *Cache) SetCacheWithNotFound(userID uint64) error {
+	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
+	err := u.cache.SetCacheWithNotFound(cacheKey)
 	if err != nil {
 		return err
 	}
