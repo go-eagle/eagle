@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/1024casts/snake/pkg/metric/prom"
+
 	"github.com/1024casts/snake/pkg/cache"
 
 	"github.com/jinzhu/gorm"
@@ -86,17 +88,13 @@ func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase 
 		if err == cache.ErrPlaceholder {
 			return nil, ErrNotFound
 		} else if err != ErrNotFound {
-			// fail fast
-			return nil, err
+			// fail fast, if cache error return, don't request to db
+			return nil, errors.Wrapf(err, "[repo.user_base] get user by uid: %d", uid)
 		}
-		// if cache error return, don't request to db
-		log.Warnf("[repo.user_base] get user by uid err: %v, uid: %d", err, uid)
-		return
 	}
-	// hit cache
+	// cache hit
 	if userBase != nil {
-		// add cache hit
-
+		prom.CacheHit.Incr("getOneUser")
 		log.Infof("[repo.user_base] get user base data from cache, uid: %d", uid)
 		return
 	}
@@ -116,15 +114,14 @@ func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase 
 			}
 			return nil, ErrNotFound
 		} else if err != nil {
-			// add metric for db err
-
-			return nil, err
+			prom.BusinessErrCount.Incr("db: getOneUser")
+			return nil, errors.Wrapf(err, "[repo.user_base] query db err")
 		}
 
 		// set cache
 		err = repo.userCache.SetUserBaseCache(uid, data, cache.DefaultExpireTime)
 		if err != nil {
-			return data, errors.Wrap(err, "[repo.user_base] set user base data err")
+			return data, errors.Wrap(err, "[repo.user_base] SetUserBaseCache err")
 		}
 		return data, nil
 	}
@@ -137,7 +134,8 @@ func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase 
 	}
 	data := val.(*model.UserBaseModel)
 
-	// add cache miss
+	// cache miss
+	prom.CacheMiss.Incr("getOneUser")
 
 	return data, nil
 }

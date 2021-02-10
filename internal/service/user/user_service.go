@@ -162,7 +162,7 @@ func (srv *userService) UpdateUser(ctx context.Context, id uint64, userMap map[s
 func (srv *userService) GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error) {
 	userModel, err := srv.userRepo.GetOneUser(ctx, id)
 	if err != nil {
-		return userModel, errors.Wrapf(err, "get user info err from db by id: %d", id)
+		return userModel, errors.Wrap(err, "")
 	}
 
 	return userModel, nil
