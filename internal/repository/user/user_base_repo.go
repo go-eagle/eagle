@@ -51,6 +51,7 @@ func NewUserRepo(db *gorm.DB) BaseRepo {
 func (repo *userBaseRepo) CreateUser(ctx context.Context, user model.UserBaseModel) (id uint64, err error) {
 	err = repo.db.Create(&user).Error
 	if err != nil {
+		prom.BusinessErrCount.Incr("mysql: CreateUser")
 		return 0, errors.Wrap(err, "[repo.user_base] create user err")
 	}
 
@@ -61,6 +62,7 @@ func (repo *userBaseRepo) CreateUser(ctx context.Context, user model.UserBaseMod
 func (repo *userBaseRepo) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
 	user, err := repo.GetOneUser(ctx, id)
 	if err != nil {
+		prom.BusinessErrCount.Incr("mysql: getOneUser")
 		return errors.Wrap(err, "[repo.user_base] update user data err")
 	}
 
@@ -70,7 +72,11 @@ func (repo *userBaseRepo) UpdateUser(ctx context.Context, id uint64, userMap map
 		log.Warnf("[repo.user_base] delete user cache err: %v", err)
 	}
 
-	return repo.db.Model(user).Updates(userMap).Error
+	err = repo.db.Model(user).Updates(userMap).Error
+	if err != nil {
+		prom.BusinessErrCount.Incr("mysql: UpdateUser")
+	}
+	return err
 }
 
 // GetUserByID 获取用户
@@ -114,7 +120,7 @@ func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase 
 			}
 			return nil, ErrNotFound
 		} else if err != nil {
-			prom.BusinessErrCount.Incr("db: getOneUser")
+			prom.BusinessErrCount.Incr("mysql: getOneUser")
 			return nil, errors.Wrapf(err, "[repo.user_base] query db err")
 		}
 
