@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 
 	"github.com/1024casts/snake/internal/cache/user"
 	"github.com/1024casts/snake/internal/model"
@@ -85,6 +85,4 @@ func (repo *userStatRepo) GetUserStatByIDs(ctx context.Context, userID []uint64)
 }
 
 // Close close db
-func (repo *userStatRepo) Close() {
-	_ = repo.db.Close()
-}
+func (repo *userStatRepo) Close() {}

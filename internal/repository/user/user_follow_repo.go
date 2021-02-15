@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/log"
@@ -130,6 +130,4 @@ func (repo *userFollowRepo) GetFansByUIds(ctx context.Context, userID uint64, fo
 }
 
 // Close close db
-func (repo *userFollowRepo) Close() {
-	_ = repo.db.Close()
-}
+func (repo *userFollowRepo) Close() {}

@@ -3,13 +3,12 @@ package relation
 import (
 	"context"
 
-	"github.com/1024casts/snake/pkg/constvar"
-
 	"github.com/pkg/errors"
 
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/repository/user"
 	"github.com/1024casts/snake/pkg/conf"
+	"github.com/1024casts/snake/pkg/constvar"
 	"github.com/1024casts/snake/pkg/log"
 )
 

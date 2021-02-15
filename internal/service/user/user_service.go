@@ -6,10 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/1024casts/snake/app/api/grpc/user/v1"
-
 	"github.com/pkg/errors"
 
+	"github.com/1024casts/snake/app/api/grpc/user/v1"
 	"github.com/1024casts/snake/internal/idl"
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/repository/user"

@@ -10,8 +10,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
-	"github.com/jinzhu/gorm"
 	"google.golang.org/grpc"
+	"gorm.io/gorm"
 
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/service"

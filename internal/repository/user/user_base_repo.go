@@ -5,17 +5,15 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/1024casts/snake/pkg/metric/prom"
-
-	"github.com/1024casts/snake/pkg/cache"
-
-	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 	"golang.org/x/sync/singleflight"
+	"gorm.io/gorm"
 
 	"github.com/1024casts/snake/internal/cache/user"
 	"github.com/1024casts/snake/internal/model"
+	"github.com/1024casts/snake/pkg/cache"
 	"github.com/1024casts/snake/pkg/log"
+	"github.com/1024casts/snake/pkg/metric/prom"
 )
 
 var (
@@ -195,6 +193,4 @@ func (repo *userBaseRepo) GetUserByEmail(ctx context.Context, email string) (*mo
 }
 
 // Close close db
-func (repo *userBaseRepo) Close() {
-	_ = repo.db.Close()
-}
+func (repo *userBaseRepo) Close() {}
