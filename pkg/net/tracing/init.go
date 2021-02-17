@@ -10,22 +10,28 @@ import (
 )
 
 // Init returns an instance of Jaeger Tracer.
-func Init(service string) (opentracing.Tracer, io.Closer) {
+func Init(serviceName string) (opentracing.Tracer, io.Closer) {
 	cfg := &config.Configuration{
-		ServiceName: service,
+		ServiceName: serviceName,
 
 		// "const" sampler is a binary sampling strategy: 0=never sample, 1=always sample.
 		Sampler: &config.SamplerConfig{
-			Type:  "const",
+			Type:  jaeger.SamplerTypeConst,
 			Param: 1,
 		},
 
 		// Log the emitted spans to stdout.
 		Reporter: &config.ReporterConfig{
 			LogSpans: true,
+			//LocalAgentHostPort:  "127.0.0.1:6381",
+			//BufferFlushInterval: 100 * time.Millisecond,
+			//CollectorEndpoint:   "http://127.0.0.1:14268/api/traces",   // for gorm
 		},
 	}
-	tracer, closer, err := cfg.NewTracer(config.Logger(jaeger.StdLogger))
+	tracer, closer, err := cfg.NewTracer(
+		config.Logger(jaeger.StdLogger),
+		config.ZipkinSharedRPCSpan(true),
+	)
 	if err != nil {
 		panic(fmt.Sprintf("ERROR: cannot init Jaeger: %v\n", err))
 	}
