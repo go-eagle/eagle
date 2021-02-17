@@ -24,7 +24,8 @@ func Load(g *gin.Engine, mw ...gin.HandlerFunc) *gin.Engine {
 	g.Use(middleware.Secure)
 	g.Use(middleware.Logging())
 	g.Use(middleware.RequestID())
-	g.Use(middleware.PromMiddleware(nil))
+	g.Use(middleware.Prom(nil))
+	g.Use(middleware.Trace())
 	g.Use(mw...)
 
 	// 404 Handler.
