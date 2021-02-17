@@ -134,8 +134,8 @@ func (po *PromOpts) checkLabel(label, pattern string) bool {
 	return !matched
 }
 
-// PromMiddleware returns a gin.HandlerFunc for exporting some Web metrics
-func PromMiddleware(promOpts *PromOpts) gin.HandlerFunc {
+// Prom returns a gin.HandlerFunc for exporting some Web metrics
+func Prom(promOpts *PromOpts) gin.HandlerFunc {
 	// make sure promOpts is not nil
 	if promOpts == nil {
 		promOpts = NewDefaultOpts()
