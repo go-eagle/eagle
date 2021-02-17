@@ -1,32 +1,33 @@
 package middleware
 
 import (
-	"github.com/1024casts/snake/pkg/net/tracing"
-	"github.com/1024casts/snake/pkg/snake"
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
-)
 
-var ParentSpan opentracing.Span
+	"github.com/1024casts/snake/pkg/net/tracing"
+)
 
 func Trace() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tracer, closer := tracing.Init(snake.App.Conf.App.Name)
+		tracer, closer := tracing.Init("snake")
 		defer closer.Close()
 
-		spCtx, err := tracing.Extract(tracer, c.Request)
+		// set into opentracing
+		opentracing.SetGlobalTracer(tracer)
+
+		parentSpanCtx, err := tracing.Extract(tracer, c.Request)
 		if err != nil {
-			ParentSpan = tracer.StartSpan(c.Request.URL.Path)
-			defer ParentSpan.Finish()
+			parentSpan := tracer.StartSpan(c.Request.URL.Path)
+			defer parentSpan.Finish()
 		} else {
-			ParentSpan = tracer.StartSpan(
+			childSpan := tracer.StartSpan(
 				c.Request.URL.Path,
-				opentracing.ChildOf(spCtx),
+				opentracing.ChildOf(parentSpanCtx),
 				opentracing.Tag{Key: string(ext.Component), Value: "HTTP"},
 				ext.SpanKindRPCServer,
 			)
-			defer ParentSpan.Finish()
+			defer childSpan.Finish()
 		}
 		c.Next()
 	}
