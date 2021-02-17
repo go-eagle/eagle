@@ -51,6 +51,9 @@ func main() {
 	app := snake.New(conf.Conf)
 	snake.App = app
 
+	// init db tracing plugin
+	//app.DB.Use(gormopentracing.New())
+
 	// Create the Gin engine.
 	router := app.Router
 
