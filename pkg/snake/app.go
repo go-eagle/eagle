@@ -36,7 +36,7 @@ var App *Application
 type Application struct {
 	Conf        *conf.Config
 	DB          *gorm.DB
-	RedisClient *redis.Client
+	RedisClient redis.UniversalClient
 	Router      *gin.Engine
 	BizService  *service.Service
 	RPCServer   *grpc.Server

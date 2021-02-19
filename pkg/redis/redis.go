@@ -1,26 +1,28 @@
 package redis
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/alicebob/miniredis"
 	"github.com/go-redis/redis"
+	apmgoredis "github.com/opentracing-contrib/goredis"
 
 	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/log"
 )
 
 // RedisClient redis 客户端
-var RedisClient *redis.Client
+var RedisClient redis.UniversalClient
 
 // Nil redis 返回为空
 const Nil = redis.Nil
 
 // Init 实例化一个redis client
-func Init(cfg *conf.Config) *redis.Client {
+func Init(cfg *conf.Config) redis.UniversalClient {
 	c := cfg.Redis
-	RedisClient = redis.NewClient(&redis.Options{
-		Addr:         c.Addr,
+	RedisClient = redis.NewUniversalClient(&redis.UniversalOptions{
+		Addrs:        []string{c.Addr},
 		Password:     c.Password,
 		DB:           c.Db,
 		MinIdleConns: c.MinIdleConn,
@@ -31,7 +33,8 @@ func Init(cfg *conf.Config) *redis.Client {
 		PoolTimeout:  c.PoolTimeout,
 	})
 
-	fmt.Println("redis addr:", cfg.Redis.Addr)
+	// TODO: 使用每一次请求的context
+	RedisClient = apmgoredis.Wrap(RedisClient).WithContext(context.Background())
 
 	_, err := RedisClient.Ping().Result()
 	if err != nil {
