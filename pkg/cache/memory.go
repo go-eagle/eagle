@@ -41,7 +41,7 @@ func (m *memoryCache) Set(key string, val interface{}, expiration time.Duration)
 	if err != nil {
 		return errors.Wrapf(err, "build cache key err, key is %+v", key)
 	}
-	m.Store.Set(cacheKey, buf, int64(expiration))
+	m.Store.SetWithTTL(cacheKey, buf, 0, expiration)
 	return nil
 }
 
