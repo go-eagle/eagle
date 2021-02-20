@@ -55,6 +55,9 @@ func (m *memoryCache) Get(key string, val interface{}) error {
 	if !ok {
 		return nil
 	}
+	if data == NotFoundPlaceholder {
+		return ErrPlaceholder
+	}
 	err = Unmarshal(m.encoding, data.([]byte), val)
 	if err != nil {
 		return errors.Wrapf(err, "unmarshal data error, key=%s, cacheKey=%s type=%v, json is %+v ",
