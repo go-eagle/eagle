@@ -100,5 +100,8 @@ func (m *memoryCache) Decr(key string, step int64) (int64, error) {
 }
 
 func (m *memoryCache) SetCacheWithNotFound(key string) error {
-	panic("implement me")
+	if m.Store.Set(key, NotFoundPlaceholder, int64(DefaultNotFoundExpireTime)) {
+		return nil
+	}
+	return ErrSetMemoryWithNotFound
 }

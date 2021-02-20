@@ -15,7 +15,8 @@ const (
 )
 
 var (
-	ErrPlaceholder = errors.New("cache: placeholder")
+	ErrPlaceholder           = errors.New("cache: placeholder")
+	ErrSetMemoryWithNotFound = errors.New("cache: set memory cache err for not found")
 )
 
 // Client 生成一个缓存客户端，其中keyPrefix 一般为业务前缀
