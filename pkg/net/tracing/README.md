@@ -159,7 +159,6 @@ span.LogFields(
 - https://www.jaegertracing.io/
 - https://github.com/jaegertracing/
 - https://github.com/opentracing-contrib?q=&type=&language=go
-- https://github.com/opentracing-contrib/echo/blob/master/middleware.go
 - https://logz.io/blog/go-instrumentation-distributed-tracing-jaeger/
 - https://github.com/albertteoh/jaeger-go-example
 - https://github.com/go-gorm/opentracing
