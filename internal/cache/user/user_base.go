@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -37,7 +38,7 @@ func (u *Cache) GetUserBaseCacheKey(userID uint64) string {
 }
 
 // SetUserBaseCache 写入用户cache
-func (u *Cache) SetUserBaseCache(userID uint64, user *model.UserBaseModel, duration time.Duration) error {
+func (u *Cache) SetUserBaseCache(ctx context.Context, userID uint64, user *model.UserBaseModel, duration time.Duration) error {
 	if user == nil || user.ID == 0 {
 		return nil
 	}
@@ -50,7 +51,7 @@ func (u *Cache) SetUserBaseCache(userID uint64, user *model.UserBaseModel, durat
 }
 
 // GetUserBaseCache 获取用户cache
-func (u *Cache) GetUserBaseCache(userID uint64) (data *model.UserBaseModel, err error) {
+func (u *Cache) GetUserBaseCache(ctx context.Context, userID uint64) (data *model.UserBaseModel, err error) {
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 	err = u.cache.Get(cacheKey, &data)
 	if err != nil {
@@ -60,7 +61,7 @@ func (u *Cache) GetUserBaseCache(userID uint64) (data *model.UserBaseModel, err 
 }
 
 // MultiGetUserBaseCache 批量获取用户cache
-func (u *Cache) MultiGetUserBaseCache(userIDs []uint64) (map[string]*model.UserBaseModel, error) {
+func (u *Cache) MultiGetUserBaseCache(ctx context.Context, userIDs []uint64) (map[string]*model.UserBaseModel, error) {
 	var keys []string
 	for _, v := range userIDs {
 		cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, v)
@@ -77,7 +78,7 @@ func (u *Cache) MultiGetUserBaseCache(userIDs []uint64) (map[string]*model.UserB
 }
 
 // DelUserBaseCache 删除用户cache
-func (u *Cache) DelUserBaseCache(userID uint64) error {
+func (u *Cache) DelUserBaseCache(ctx context.Context, userID uint64) error {
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 	err := u.cache.Del(cacheKey)
 	if err != nil {
@@ -87,7 +88,7 @@ func (u *Cache) DelUserBaseCache(userID uint64) error {
 }
 
 // DelUserBaseCache 删除用户cache
-func (u *Cache) SetCacheWithNotFound(userID uint64) error {
+func (u *Cache) SetCacheWithNotFound(ctx context.Context, userID uint64) error {
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 	err := u.cache.SetCacheWithNotFound(cacheKey)
 	if err != nil {

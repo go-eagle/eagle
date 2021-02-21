@@ -67,7 +67,7 @@ func (repo *userBaseRepo) UpdateUser(ctx context.Context, id uint64, userMap map
 	}
 
 	// 删除cache
-	err = repo.userCache.DelUserBaseCache(id)
+	err = repo.userCache.DelUserBaseCache(ctx, id)
 	if err != nil {
 		log.Warnf("[repo.user_base] delete user cache err: %v", err)
 	}
@@ -89,7 +89,7 @@ func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase 
 		log.Infof("[repo.user_base] get user by uid: %d cost: %d μs", uid, time.Since(start).Microseconds())
 	}()
 	// 从cache获取
-	userBase, err = repo.userCache.GetUserBaseCache(uid)
+	userBase, err = repo.userCache.GetUserBaseCache(ctx, uid)
 	if err != nil {
 		if err == cache.ErrPlaceholder {
 			return nil, ErrNotFound
@@ -114,7 +114,7 @@ func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase 
 		err = repo.db.First(data, uid).Error
 		// if data is empty, set not found cache to prevent cache penetration(缓存穿透)
 		if errors.Is(err, ErrNotFound) {
-			err = repo.userCache.SetCacheWithNotFound(uid)
+			err = repo.userCache.SetCacheWithNotFound(ctx, uid)
 			if err != nil {
 				log.Warnf("[repo.user_base] SetCacheWithNotFound err, uid: %d", uid)
 			}
@@ -125,7 +125,7 @@ func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase 
 		}
 
 		// set cache
-		err = repo.userCache.SetUserBaseCache(uid, data, cache.DefaultExpireTime)
+		err = repo.userCache.SetUserBaseCache(ctx, uid, data, cache.DefaultExpireTime)
 		if err != nil {
 			return data, errors.Wrap(err, "[repo.user_base] SetUserBaseCache err")
 		}
@@ -151,7 +151,7 @@ func (repo *userBaseRepo) GetUsersByIds(ctx context.Context, userIDs []uint64) (
 	users := make([]*model.UserBaseModel, 0)
 
 	// 从cache批量获取
-	userCacheMap, err := repo.userCache.MultiGetUserBaseCache(userIDs)
+	userCacheMap, err := repo.userCache.MultiGetUserBaseCache(ctx, userIDs)
 	if err != nil {
 		return users, errors.Wrap(err, "[repo.user_base] multi get user cache data err")
 	}
