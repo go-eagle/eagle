@@ -9,6 +9,102 @@
 docker run -d -p 6831:6831/udp -p 16686:16686 jaegertracing/all-in-one:latest
 ```
 
+
+## 主要使用步骤
+
+### 1、初始化 Jaeger 并将 tracer设为全局，方便后续调用
+
+```
+// initJaeger 将jaeger tracer设置为全局tracer
+func initJaeger(service string) (opentracing.Tracer, io.Closer) {
+	cfg := jaegercfg.Configuration{
+		// 将采样频率设置为1，每一个span都记录，方便查看测试结果
+		Sampler: &jaegercfg.SamplerConfig{
+			Type:  jaeger.SamplerTypeConst,
+			Param: 1,
+		},
+		Reporter: &jaegercfg.ReporterConfig{
+			LogSpans: true,
+			// 将span发往jaeger-collector的服务地址
+			CollectorEndpoint: "http://localhost:14268/api/traces",
+		},
+	}
+
+    tracer, closer, err := cfg.NewTracer(
+		config.Logger(jaeger.StdLogger),
+		config.ZipkinSharedRPCSpan(true),
+	)
+	if err != nil {
+		panic(fmt.Sprintf("ERROR: cannot init Jaeger: %v\n", err))
+	}
+	return tracer, closer
+}
+```
+
+### 2、在 main函数或者中间件中获取全局 tracer，创建 root span 并执行我们第一个服务(MyFirstSpan)
+
+```
+func main() {
+	closer := initJaeger("MyProcess")
+	defer closer.Close()
+	// 获取jaeger tracer
+	t := opentracing.GlobalTracer()
+	// 创建root span
+	sp := t.StartSpan("MyServer")
+	// main执行完结束这个span
+	defer sp.Finish()
+	// 将span传递给MyFirstSpan
+	ctx := opentracing.ContextWithSpan(context.Background(), sp)
+	MyFirstSpan(ctx)
+}
+```
+
+### 3、在 MyFirstSpan 中调用另一个服务(MySecondSpan)
+
+```
+func MyFirstSpan(ctx context.Context) {
+	// 开始一个span, 设置span的operation_name=MyFirstSpan
+	span, ctx := opentracing.StartSpanFromContext(ctx, "MyFirstSpan")
+	defer span.Finish()
+	// 将context传递给MySecondSpan
+	MySecondSpan(ctx)
+	// 假设执行了 http请求
+	span.SetTag("http_method", "GET")
+	span.SetTag("http_code", "200")
+	// 模拟执行耗时
+	time.Sleep(1 * time.Second)
+}
+```
+
+### 4、MySecondSpan:
+
+```
+func MySecondSpan(ctx context.Context) {
+	// 开始一个span，设置span的operation_name=MySecondSpan
+	span, ctx := opentracing.StartSpanFromContext(ctx, "MySecondSpan")
+	defer span.Finish()
+	// 模拟执行耗时
+	time.Sleep(2 * time.Second)
+	// 假设MySecondSpan发生了某些错误
+	err := errors.New("something wrong")
+	// 记录 log
+	span.LogFields(
+		log.String("event", "error"),
+		log.String("message", err.Error()),
+		log.Int64("error time ", time.Now().Unix()),
+	)
+	span.SetTag("error", true)
+}
+```
+
+### 5、执行完后在 127.0.0.1:16686 查看本次 tracer
+
+```
+![tracer demo](https://static001.geekbang.org/infoq/14/14e851a82437efd4b812375558f7178b.png)
+```
+
+## FAQ
+
 ## Reference
 
 - https://opentracing.io/guides/golang/quick-start/
@@ -19,4 +115,6 @@ docker run -d -p 6831:6831/udp -p 16686:16686 jaegertracing/all-in-one:latest
 - https://logz.io/blog/go-instrumentation-distributed-tracing-jaeger/
 - https://github.com/albertteoh/jaeger-go-example
 - https://github.com/go-gorm/opentracing
+- https://github.com/opentracing-contrib/go-gin/blob/master/examples/example_test.go
 - https://github.com/opentracing-contrib/goredis
+- https://xie.infoq.cn/article/6450b96c33298bab92ba6f3c2
