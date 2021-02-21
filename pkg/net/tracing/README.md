@@ -103,6 +103,26 @@ func MySecondSpan(ctx context.Context) {
 ![tracer demo](https://static001.geekbang.org/infoq/14/14e851a82437efd4b812375558f7178b.png)
 ```
 
+## 使用demo
+
+### go-redis 
+
+```
+    span := opentracing.SpanFromContext(c.Request.Context())
+	if span == nil {
+		api.SendResponse(c, errno.ErrUserNotFound, "span is nil")
+		return
+	}
+	err := tracing.Inject(span, c.Request)
+	if err != nil {
+		api.SendResponse(c, errno.ErrUserNotFound, err.Error())
+		return
+	}
+
+	_ = apmgoredis.Wrap(redis.RedisClient).WithContext(c.Request.Context()).Set("test", 1, 100000).Err()
+	_ = apmgoredis.Wrap(redis.RedisClient).WithContext(c.Request.Context()).Get("test").Err()
+```
+
 ## FAQ
 
 1、如何生成span
