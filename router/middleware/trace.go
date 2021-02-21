@@ -22,20 +22,11 @@ func Trace() gin.HandlerFunc {
 		opentracing.SetGlobalTracer(tracer)
 
 		var sp opentracing.Span
-		clientSpanCtx, err := tracing.Extract(tracer, c.Request)
-		if err != nil {
-			// root span
-			sp = tracer.StartSpan(c.Request.URL.Path)
-			sp.SetTag("error", err)
-		} else {
-			// child span
-			sp = tracer.StartSpan(
-				c.Request.URL.Path,
-				opentracing.ChildOf(clientSpanCtx),
-				opentracing.Tag{Key: string(ext.Component), Value: "HTTP"},
-				ext.SpanKindRPCServer,
-			)
-		}
+		carrier := opentracing.HTTPHeadersCarrier(c.Request.Header)
+		ctx, _ := tracer.Extract(opentracing.HTTPHeaders, carrier)
+		sp = tracer.StartSpan(c.Request.URL.Path, ext.RPCServerOption(ctx))
+		// or use under statement
+		// sp = tracing.StartSpanFromRequest(c.Request.URL.Path, tracer, c.Request)
 		defer sp.Finish()
 
 		// record HTTP method
@@ -44,6 +35,8 @@ func Trace() gin.HandlerFunc {
 		ext.HTTPUrl.Set(sp, c.Request.URL.String())
 		// record component name
 		// ext.Component.Set(sp, componentName)
+
+		c.Request = c.Request.WithContext(opentracing.ContextWithSpan(c.Request.Context(), sp))
 
 		c.Next()
 
