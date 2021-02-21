@@ -18,6 +18,9 @@ var RedisClient redis.UniversalClient
 // Nil redis 返回为空
 const Nil = redis.Nil
 
+// ErrRedisNotFound not exist in redis
+const ErrRedisNotFound = redis.Nil
+
 // Init 实例化一个redis client
 func Init(cfg *conf.Config) redis.UniversalClient {
 	c := cfg.Redis

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/1024casts/snake/pkg/redis"
+
 	"github.com/pkg/errors"
 	"golang.org/x/sync/singleflight"
 	"gorm.io/gorm"
@@ -91,7 +93,7 @@ func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase 
 	if err != nil {
 		if err == cache.ErrPlaceholder {
 			return nil, ErrNotFound
-		} else if err != ErrNotFound {
+		} else if err != redis.ErrRedisNotFound {
 			// fail fast, if cache error return, don't request to db
 			return nil, errors.Wrapf(err, "[repo.user_base] get user by uid: %d", uid)
 		}
