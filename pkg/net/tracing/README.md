@@ -105,6 +105,54 @@ func MySecondSpan(ctx context.Context) {
 
 ## FAQ
 
+1、如何生成span
+
+```
+var sp opentracing.Span
+carrier := opentracing.HTTPHeadersCarrier(c.Request.Header)
+ctx, _ := tracer.Extract(opentracing.HTTPHeaders, carrier)
+sp = tracer.StartSpan(c.Request.URL.Path, ext.RPCServerOption(ctx))
+defer sp.Finish()
+```
+
+2、如何注册span到下游
+
+```
+// 生成span
+span := opentracing.SpanFromContext(c.Request.Context())
+if span == nil {
+    api.SendResponse(c, errno.ErrUserNotFound, "span is nil")
+    return
+}
+// 注入
+err := tracing.Inject(span, c.Request)
+if err != nil {
+    api.SendResponse(c, errno.ErrUserNotFound, err.Error())
+    return
+}
+```
+
+3、如何记录tag
+
+```
+// record HTTP method
+ext.HTTPMethod.Set(sp, c.Request.Method)
+// record HTTP url
+ext.HTTPUrl.Set(sp, c.Request.URL.String())
+...
+```
+
+4、如果记录日志到span
+
+参考：github.com/opentracing/opentracing-go/span.go
+
+```
+span.LogFields(
+       log.String("event", "soft error"),
+       log.String("type", "cache timeout"),
+      log.Int("waited.millis", 1500))
+```
+
 ## Reference
 
 - https://opentracing.io/guides/golang/quick-start/
@@ -115,6 +163,7 @@ func MySecondSpan(ctx context.Context) {
 - https://logz.io/blog/go-instrumentation-distributed-tracing-jaeger/
 - https://github.com/albertteoh/jaeger-go-example
 - https://github.com/go-gorm/opentracing
+- https://github.com/opentracing-contrib/go-gin/blob/master/ginhttp/server.go
 - https://github.com/opentracing-contrib/go-gin/blob/master/examples/example_test.go
 - https://github.com/opentracing-contrib/goredis
 - https://xie.infoq.cn/article/6450b96c33298bab92ba6f3c2
