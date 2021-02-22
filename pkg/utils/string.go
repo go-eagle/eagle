@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"strconv"
 	"strings"
 )
@@ -12,6 +13,19 @@ func IsEmpty(s string) bool {
 	}
 
 	return strings.TrimSpace(s) == ""
+}
+
+// ConcatString 连接字符串
+// NOTE: 性能比fmt.Sprintf和+号要好
+func ConcatString(s ...string) string {
+	if len(s) == 0 {
+		return ""
+	}
+	var buffer bytes.Buffer
+	for _, i := range s {
+		buffer.WriteString(i)
+	}
+	return buffer.String()
 }
 
 // StringToUint64 字符串转uint64
