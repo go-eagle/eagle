@@ -178,6 +178,8 @@ span.LogFields(
 - https://opentracing.io/guides/golang/quick-start/
 - https://www.jaegertracing.io/
 - https://github.com/jaegertracing/
+- https://medium.com/opentracing/take-opentracing-for-a-hotrod-ride-f6e3141f7941
+- demo project: https://github.com/jaegertracing/jaeger/tree/master/examples/hotrod
 - https://github.com/opentracing-contrib?q=&type=&language=go
 - https://logz.io/blog/go-instrumentation-distributed-tracing-jaeger/
 - https://github.com/albertteoh/jaeger-go-example
