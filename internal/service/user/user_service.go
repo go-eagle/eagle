@@ -6,6 +6,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/opentracing/opentracing-go"
+
 	"github.com/pkg/errors"
 
 	"github.com/1024casts/snake/app/api/grpc/user/v1"
@@ -42,6 +44,7 @@ type IUserService interface {
 // userService 用小写的 service 实现接口中定义的方法
 type userService struct {
 	c              *conf.Config
+	tracer         opentracing.Tracer
 	userRepo       user.BaseRepo
 	userFollowRepo user.FollowRepo
 	userStatRepo   user.StatRepo
@@ -50,13 +53,14 @@ type userService struct {
 // NewUserService 实例化一个userService
 // 通过 NewService 函数初始化 Service 接口
 // 依赖接口，不要依赖实现，面向接口编程
-func NewUserService(c *conf.Config) IUserService {
+func NewUserService(c *conf.Config, tracer opentracing.Tracer) IUserService {
 	db := model.GetDB()
 	return &userService{
 		c:              c,
-		userRepo:       user.NewUserRepo(db),
+		tracer:         tracer,
+		userRepo:       user.NewUserRepo(db, tracer),
 		userFollowRepo: user.NewUserFollowRepo(db),
-		userStatRepo:   user.NewUserStatRepo(db),
+		userStatRepo:   user.NewUserStatRepo(db, tracer),
 	}
 }
 

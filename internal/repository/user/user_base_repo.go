@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/opentracing/opentracing-go"
+
 	"github.com/1024casts/snake/pkg/redis"
 
 	"github.com/pkg/errors"
@@ -40,10 +42,10 @@ type userBaseRepo struct {
 }
 
 // NewUserRepo 实例化用户仓库
-func NewUserRepo(db *gorm.DB) BaseRepo {
+func NewUserRepo(db *gorm.DB, tracer opentracing.Tracer) BaseRepo {
 	return &userBaseRepo{
 		db:        db,
-		userCache: user.NewUserCache(),
+		userCache: user.NewUserCache(tracer),
 	}
 }
 

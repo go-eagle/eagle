@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/opentracing/opentracing-go"
+
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
@@ -27,10 +29,10 @@ type userStatRepo struct {
 }
 
 // NewUserStatRepo 实例化用户仓库
-func NewUserStatRepo(db *gorm.DB) StatRepo {
+func NewUserStatRepo(db *gorm.DB, tracer opentracing.Tracer) StatRepo {
 	return &userStatRepo{
 		db:        db,
-		userCache: user.NewUserCache(),
+		userCache: user.NewUserCache(tracer),
 	}
 }
 

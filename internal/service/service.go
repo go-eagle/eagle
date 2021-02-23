@@ -4,6 +4,7 @@ import (
 	"github.com/1024casts/snake/internal/service/relation"
 	"github.com/1024casts/snake/internal/service/user"
 	"github.com/1024casts/snake/pkg/conf"
+	"github.com/opentracing/opentracing-go"
 )
 
 var (
@@ -14,16 +15,18 @@ var (
 // Service struct
 type Service struct {
 	c           *conf.Config
+	tracer      opentracing.Tracer
 	userSvc     user.IUserService
 	relationSvc relation.IRelationService
 }
 
 // New init service
-func New(c *conf.Config) (s *Service) {
+func New(c *conf.Config, tracer opentracing.Tracer) (s *Service) {
 	s = &Service{
 		c:           c,
-		userSvc:     user.NewUserService(c),
-		relationSvc: relation.NewRelationService(c),
+		tracer:      tracer,
+		userSvc:     user.NewUserService(c, tracer),
+		relationSvc: relation.NewRelationService(c, tracer),
 	}
 	return s
 }

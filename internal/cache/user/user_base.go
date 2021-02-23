@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/opentracing/opentracing-go/ext"
+
+	"github.com/opentracing/opentracing-go"
+
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/cache"
 	"github.com/1024casts/snake/pkg/redis"
@@ -17,18 +21,20 @@ const (
 
 // Cache cache
 type Cache struct {
-	cache cache.Driver
+	cache  cache.Driver
+	tracer opentracing.Tracer
 	//localCache cache.Driver
 }
 
 // NewUserCache new一个用户cache
-func NewUserCache() *Cache {
+func NewUserCache(tracer opentracing.Tracer) *Cache {
 	encoding := cache.JSONEncoding{}
 	cachePrefix := ""
 	return &Cache{
 		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, encoding, func() interface{} {
 			return &model.UserBaseModel{}
 		}),
+		tracer: tracer,
 	}
 }
 
@@ -52,9 +58,19 @@ func (u *Cache) SetUserBaseCache(ctx context.Context, userID uint64, user *model
 
 // GetUserBaseCache 获取用户cache
 func (u *Cache) GetUserBaseCache(ctx context.Context, userID uint64) (data *model.UserBaseModel, err error) {
+	if span := opentracing.SpanFromContext(ctx); span != nil {
+		span := u.tracer.StartSpan("GetUserBaseCache", opentracing.ChildOf(span.Context()))
+		span.SetTag("param.userID", userID)
+		ext.SpanKindRPCClient.Set(span)
+		defer span.Finish()
+		ctx = opentracing.ContextWithSpan(ctx, span)
+	}
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 	err = u.cache.Get(cacheKey, &data)
 	if err != nil {
+		if span := opentracing.SpanFromContext(ctx); span != nil {
+			ext.Error.Set(span, true)
+		}
 		return nil, err
 	}
 	return data, nil

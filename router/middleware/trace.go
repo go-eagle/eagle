@@ -4,8 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
-
-	"github.com/1024casts/snake/pkg/net/tracing"
 )
 
 const (
@@ -15,11 +13,7 @@ const (
 
 func Trace() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tracer, closer := tracing.Init(DefaultServiceName)
-		defer closer.Close()
-
-		// set into opentracing
-		opentracing.SetGlobalTracer(tracer)
+		tracer := opentracing.GlobalTracer()
 
 		var sp opentracing.Span
 		carrier := opentracing.HTTPHeadersCarrier(c.Request.Header)

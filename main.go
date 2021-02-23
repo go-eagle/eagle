@@ -9,7 +9,9 @@
 package main
 
 import (
+	"github.com/1024casts/snake/pkg/net/tracing"
 	"github.com/gin-gonic/gin"
+	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
 	"google.golang.org/grpc"
@@ -68,8 +70,15 @@ func main() {
 	// WEB Routes
 	routers.LoadWebRouter(router)
 
+	// init tracer
+	tracer, closer := tracing.Init(conf.Conf.App.Name)
+	defer closer.Close()
+
+	// set into opentracing
+	opentracing.SetGlobalTracer(tracer)
+
 	// init service
-	svc := service.New(conf.Conf)
+	svc := service.New(conf.Conf, tracer)
 
 	// set global service
 	service.Svc = svc
