@@ -25,7 +25,7 @@ var toolIndexs = []*Tool{
 	{
 		Name:         "gen-project",
 		Alias:        "snake-gen-project",
-		Install:      "go get -u github.com/1024casts/snake/cmd/snake-gen-project@" + Version,
+		Install:      "go get -u github.com/1024casts/snake/cmd/snake-gen-project",
 		BuildTime:    time.Date(2021, 1, 16, 0, 0, 0, 0, time.Local),
 		Platform:     []string{"darwin", "linux", "windows"},
 		Hidden:       true,
