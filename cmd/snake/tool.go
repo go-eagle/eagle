@@ -195,7 +195,7 @@ func checkInstall(name string) (err error) {
 }
 
 func upgradeAction(c *cli.Context) error {
-	install("kratos")
+	install("snake")
 	return nil
 }
 
