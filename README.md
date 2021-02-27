@@ -97,11 +97,14 @@ make build
 # 下载
 go get github.com/1024casts/snake/cmd/snake
 
-cd $GOPATH/src
+export GO111MODULE=on
+# 或者在.bashrc 或 .zshrc中加入
+# source .bashrc 或 source .zshrc
+
 # 使用
-snake new snake-demo -d ./
+snake new snake-demo 
 # 或者 
-snake new github.com/foo/bar -d ./
+snake new github.com/foo/bar
 ```
 
 ## 💻 常用命令
