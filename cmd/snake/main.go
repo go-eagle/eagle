@@ -1,65 +1,31 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"log"
 
-	"github.com/urfave/cli/v2"
+	"github.com/spf13/cobra"
+
+	"github.com/1024casts/snake/cmd/snake/internal/project"
 )
 
-func main() {
-	app := cli.NewApp()
-	app.Name = "snake"
-	app.Usage = "snake tools"
-	app.Version = Version
-	app.Commands = []*cli.Command{
-		{
-			Name:            "new",
-			Aliases:         []string{"n"},
-			Usage:           "Create a new project",
-			Action:          newAction,
-			SkipFlagParsing: true,
-		},
-		{
-			Name:    "build",
-			Aliases: []string{"b"},
-			Usage:   "snake build",
-			Action:  buildAction,
-		},
-		{
-			Name:    "run",
-			Aliases: []string{"r"},
-			Usage:   "snake run",
-			Action:  runAction,
-		},
-		{
-			Name:            "tool",
-			Aliases:         []string{"t"},
-			Usage:           "snake tool",
-			Action:          toolAction,
-			SkipFlagParsing: true,
-		},
-		{
-			Name:    "version",
-			Aliases: []string{"v"},
-			Usage:   "snake version",
-			Action: func(c *cli.Context) error {
-				fmt.Println(getVersion())
-				return nil
-			},
-		},
-		{
-			Name:   "self-upgrade",
-			Usage:  "snake self-upgrade",
-			Action: upgradeAction,
-		},
+var (
+	// Version is the version of the compiled software.
+	Version string = "v0.2.0"
+
+	rootCmd = &cobra.Command{
+		Use:     "snake",
+		Short:   "Snake: An elegant toolkit for Go microservices.",
+		Long:    `Snake: An elegant toolkit for Go microservices.`,
+		Version: Version,
 	}
-	err := app.Run(os.Args)
-	if err != nil {
-		panic(err)
-	}
+)
+
+func init() {
+	rootCmd.AddCommand(project.CmdNew)
 }
 
-func newAction(ctx *cli.Context) error {
-	return installAndRun("gen-project", ctx.Args().Slice())
+func main() {
+	if err := rootCmd.Execute(); err != nil {
+		log.Fatal(err)
+	}
 }

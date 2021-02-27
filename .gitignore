@@ -42,6 +42,6 @@ bin/
 vendor
 
 # custom
-snake
+./snake
 conf/config.yaml
 conf/config.local.yaml
