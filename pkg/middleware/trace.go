@@ -22,7 +22,7 @@ func Trace() gin.HandlerFunc {
 			opentracing.HTTPHeadersCarrier(c.Request.Header),
 		)
 		sp = tracer.StartSpan(
-			c.Request.URL.Path,
+			"HTTP "+c.Request.Method+" "+c.Request.URL.Path,
 			ext.RPCServerOption(spanCtx),
 			opentracing.Tag{Key: string(ext.Component), Value: "HTTP"},
 		)
