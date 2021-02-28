@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/1024casts/snake/pkg/log"
+
 	"github.com/uber/jaeger-lib/metrics"
 
 	"github.com/opentracing/opentracing-go"
@@ -30,8 +32,12 @@ func Init(serviceName string, metricsFactory metrics.Factory) (opentracing.Trace
 			//CollectorEndpoint:   "http://127.0.0.1:14268/api/traces",   // for gorm
 		},
 	}
+
+	jaegerLogger := jaegerLoggerAdapter{log.GetLogger()}
+
 	tracer, closer, err := cfg.NewTracer(
-		config.Logger(jaeger.StdLogger),
+		//config.Logger(jaeger.StdLogger),
+		config.Logger(jaegerLogger),
 		config.Metrics(metricsFactory),
 		config.ZipkinSharedRPCSpan(true),
 	)
@@ -39,4 +45,16 @@ func Init(serviceName string, metricsFactory metrics.Factory) (opentracing.Trace
 		panic(fmt.Sprintf("ERROR: cannot init Jaeger: %v\n", err))
 	}
 	return tracer, closer
+}
+
+type jaegerLoggerAdapter struct {
+	logger log.Logger
+}
+
+func (l jaegerLoggerAdapter) Error(msg string) {
+	l.logger.Error(msg)
+}
+
+func (l jaegerLoggerAdapter) Infof(msg string, args ...interface{}) {
+	l.logger.Info(fmt.Sprintf(msg, args...))
 }
