@@ -14,6 +14,8 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
+	"github.com/uber/jaeger-lib/metrics"
+	jprom "github.com/uber/jaeger-lib/metrics/prometheus"
 	"google.golang.org/grpc"
 
 	"github.com/1024casts/snake/app/api"
@@ -71,7 +73,8 @@ func main() {
 	routers.LoadWebRouter(router)
 
 	// init tracer
-	tracer, closer := tracing.Init(conf.Conf.App.Name)
+	metricsFactory := jprom.New().Namespace(metrics.NSOptions{Name: conf.Conf.App.Name, Tags: nil})
+	tracer, closer := tracing.Init(conf.Conf.App.Name, metricsFactory)
 	defer closer.Close()
 
 	// set into opentracing

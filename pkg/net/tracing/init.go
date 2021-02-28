@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/uber/jaeger-lib/metrics"
+
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
 )
 
-// Init returns an instance of Jaeger Tracer.
-func Init(serviceName string) (opentracing.Tracer, io.Closer) {
+// Init returns a new instance of Jaeger Tracer.
+func Init(serviceName string, metricsFactory metrics.Factory) (opentracing.Tracer, io.Closer) {
 	cfg := &config.Configuration{
 		ServiceName: serviceName,
 
@@ -30,6 +32,7 @@ func Init(serviceName string) (opentracing.Tracer, io.Closer) {
 	}
 	tracer, closer, err := cfg.NewTracer(
 		config.Logger(jaeger.StdLogger),
+		config.Metrics(metricsFactory),
 		config.ZipkinSharedRPCSpan(true),
 	)
 	if err != nil {
