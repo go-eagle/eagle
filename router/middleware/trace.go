@@ -16,19 +16,21 @@ func Trace() gin.HandlerFunc {
 		tracer := opentracing.GlobalTracer()
 
 		var sp opentracing.Span
-		carrier := opentracing.HTTPHeadersCarrier(c.Request.Header)
-		ctx, _ := tracer.Extract(opentracing.HTTPHeaders, carrier)
-		sp = tracer.StartSpan(c.Request.URL.Path, ext.RPCServerOption(ctx))
-		// or use under statement
-		// sp = tracing.StartSpanFromRequest(c.Request.URL.Path, tracer, c.Request)
-		defer sp.Finish()
+		// for http
+		spanCtx, _ := tracer.Extract(
+			opentracing.HTTPHeaders,
+			opentracing.HTTPHeadersCarrier(c.Request.Header),
+		)
+		sp = tracer.StartSpan(
+			c.Request.URL.Path,
+			ext.RPCServerOption(spanCtx),
+			opentracing.Tag{Key: string(ext.Component), Value: "HTTP"},
+		)
 
 		// record HTTP method
 		ext.HTTPMethod.Set(sp, c.Request.Method)
 		// record HTTP url
 		ext.HTTPUrl.Set(sp, c.Request.URL.String())
-		// record component name
-		// ext.Component.Set(sp, componentName)
 
 		c.Request = c.Request.WithContext(opentracing.ContextWithSpan(c.Request.Context(), sp))
 
@@ -36,5 +38,7 @@ func Trace() gin.HandlerFunc {
 
 		// record HTTP status code
 		ext.HTTPStatusCode.Set(sp, uint16(c.Writer.Status()))
+
+		sp.Finish()
 	}
 }
