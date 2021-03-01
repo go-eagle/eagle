@@ -53,7 +53,7 @@ func NewRelationService(c *conf.Config, tracer opentracing.Tracer) IRelationServ
 	return &relationService{
 		c:              c,
 		tracer:         tracer,
-		userRepo:       user.NewUserRepo(db, tracer),
+		userRepo:       user.NewUserRepo(db),
 		userFollowRepo: user.NewUserFollowRepo(db),
 		userStatRepo:   user.NewUserStatRepo(db, tracer),
 	}

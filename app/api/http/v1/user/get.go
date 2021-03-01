@@ -28,8 +28,10 @@ func Get(c *gin.Context) {
 		return
 	}
 
+	c.Request.Context()
+
 	// Get the user by the `user_id` from the database.
-	u, err := service.Svc.UserSvc().GetUserByID(c, userID)
+	u, err := service.Svc.UserSvc().GetUserByID(c.Request.Context(), userID)
 	if err != nil {
 		log.Warnf("get user info err: %v", err)
 		api.SendResponse(c, errno.ErrUserNotFound, nil)

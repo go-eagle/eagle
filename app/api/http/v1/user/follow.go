@@ -29,7 +29,7 @@ func Follow(c *gin.Context) {
 	}
 
 	// Get the user by the `user_id` from the database.
-	_, err := service.Svc.UserSvc().GetUserByID(context.TODO(), req.UserID)
+	_, err := service.Svc.UserSvc().GetUserByID(c, req.UserID)
 	if err != nil {
 		api.SendResponse(c, errno.ErrUserNotFound, nil)
 		return

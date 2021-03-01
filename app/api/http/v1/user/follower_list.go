@@ -27,7 +27,7 @@ func FollowerList(c *gin.Context) {
 
 	curUserID := api.GetUserID(c)
 
-	_, err := service.Svc.UserSvc().GetUserByID(context.TODO(), uint64(userID))
+	_, err := service.Svc.UserSvc().GetUserByID(c, uint64(userID))
 	if err != nil {
 		api.SendResponse(c, errno.ErrUserNotFound, nil)
 		return
