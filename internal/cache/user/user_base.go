@@ -41,6 +41,16 @@ func NewUserCache() *Cache {
 	}
 }
 
+func getCacheClient(ctx context.Context) cache.Driver {
+	encoding := cache.JSONEncoding{}
+	cachePrefix := ""
+	client := cache.NewRedisCache(redis.WrapRedisClient(ctx, redis.RedisClient), cachePrefix, encoding, func() interface{} {
+		return &model.UserBaseModel{}
+	})
+
+	return client
+}
+
 // GetUserBaseCacheKey 获取cache key
 func (u *Cache) GetUserBaseCacheKey(userID uint64) string {
 	return fmt.Sprintf(PrefixUserBaseCacheKey, userID)
@@ -61,15 +71,18 @@ func (u *Cache) SetUserBaseCache(ctx context.Context, userID uint64, user *model
 
 // GetUserBaseCache 获取用户cache
 func (u *Cache) GetUserBaseCache(ctx context.Context, userID uint64) (data *model.UserBaseModel, err error) {
-	if span := opentracing.SpanFromContext(ctx); span != nil {
-		span := u.tracer.StartSpan("GetUserBaseCache", opentracing.ChildOf(span.Context()))
-		span.SetTag("param.userID", userID)
-		ext.SpanKindRPCClient.Set(span)
-		defer span.Finish()
-		ctx = opentracing.ContextWithSpan(ctx, span)
-	}
+	//if span := opentracing.SpanFromContext(ctx); span != nil {
+	//	span := u.tracer.StartSpan("GetUserBaseCache", opentracing.ChildOf(span.Context()))
+	//	span.SetTag("param.userID", userID)
+	//	ext.SpanKindRPCClient.Set(span)
+	//	defer span.Finish()
+	//	ctx = opentracing.ContextWithSpan(ctx, span)
+	//}
+	client := getCacheClient(ctx)
+
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
-	err = u.cache.Get(cacheKey, &data)
+	//err = u.cache.Get(cacheKey, &data)
+	err = client.Get(cacheKey, &data)
 	if err != nil {
 		if span := opentracing.SpanFromContext(ctx); span != nil {
 			ext.Error.Set(span, true)
