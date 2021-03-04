@@ -25,12 +25,12 @@ type Client interface {
 	Post(url string, data []byte, duration time.Duration) ([]byte, error)
 }
 
-// New 实例化一个client
+// New 实例化一个client, default is raw http client
 func New(typ string) Client {
 	var c Client
 	if typ == "resty" {
 		c = newRestyClient()
-	} else if typ == "raw" {
+	} else {
 		c = newRawClient()
 	}
 

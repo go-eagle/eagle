@@ -1,4 +1,4 @@
-package valid
+package utils
 
 import (
 	"reflect"
