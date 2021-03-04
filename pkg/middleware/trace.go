@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/1024casts/snake/pkg/log"
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
@@ -17,10 +18,13 @@ func Trace() gin.HandlerFunc {
 
 		var sp opentracing.Span
 		// for http
-		spanCtx, _ := tracer.Extract(
+		spanCtx, err := tracer.Extract(
 			opentracing.HTTPHeaders,
 			opentracing.HTTPHeadersCarrier(c.Request.Header),
 		)
+		if err != nil && err != opentracing.ErrSpanContextNotFound {
+			log.Warn("err", err)
+		}
 		sp = tracer.StartSpan(
 			"HTTP "+c.Request.Method+" "+c.Request.URL.Path,
 			ext.RPCServerOption(spanCtx),
