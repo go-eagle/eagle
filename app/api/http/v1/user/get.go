@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/1024casts/snake/internal/ecode"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 
@@ -34,7 +35,7 @@ func Get(c *gin.Context) {
 	u, err := service.Svc.UserSvc().GetUserByID(c.Request.Context(), userID)
 	if err != nil {
 		log.Warnf("get user info err: %v", err)
-		api.SendResponse(c, errno.ErrUserNotFound, nil)
+		api.SendResponse(c, ecode.ErrUserNotFound, nil)
 		return
 	}
 

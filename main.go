@@ -9,6 +9,7 @@
 package main
 
 import (
+	"github.com/1024casts/snake/pkg"
 	"github.com/1024casts/snake/pkg/net/tracing"
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
@@ -22,7 +23,6 @@ import (
 	rpc "github.com/1024casts/snake/internal/server"
 	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/conf"
-	"github.com/1024casts/snake/pkg/snake"
 	routers "github.com/1024casts/snake/router"
 )
 
@@ -52,8 +52,8 @@ func main() {
 	gin.SetMode(conf.Conf.App.RunMode)
 
 	// init app
-	app := snake.New(conf.Conf)
-	snake.App = app
+	app := pkg.New(conf.Conf)
+	pkg.App = app
 
 	// init db tracing plugin
 	//app.DB.Use(gormopentracing.New())
@@ -85,13 +85,13 @@ func main() {
 
 	// set global service
 	service.Svc = svc
-	snake.App.BizService = svc
+	pkg.App.BizService = svc
 
 	// start grpc server
 	var rpcSrv *grpc.Server
 	go func() {
 		rpcSrv = rpc.New(conf.Conf, svc)
-		snake.App.RPCServer = rpcSrv
+		pkg.App.RPCServer = rpcSrv
 	}()
 
 	// here register to service discovery

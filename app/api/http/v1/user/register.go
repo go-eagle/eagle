@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/1024casts/snake/internal/ecode"
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/app/api"
@@ -37,14 +38,14 @@ func Register(c *gin.Context) {
 	// 两次密码是否正确
 	if req.Password != req.ConfirmPassword {
 		log.Warnf("twice password is not same")
-		api.SendResponse(c, errno.ErrTwicePasswordNotMatch, nil)
+		api.SendResponse(c, ecode.ErrTwicePasswordNotMatch, nil)
 		return
 	}
 
 	err := service.Svc.UserSvc().Register(c, req.Username, req.Email, req.Password)
 	if err != nil {
 		log.Warnf("register err: %v", err)
-		api.SendResponse(c, errno.ErrRegisterFailed, nil)
+		api.SendResponse(c, ecode.ErrRegisterFailed, nil)
 		return
 	}
 

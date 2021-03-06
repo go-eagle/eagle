@@ -3,6 +3,8 @@ package user
 import (
 	"net/http"
 
+	"github.com/1024casts/snake/internal/ecode"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/app/web"
@@ -40,7 +42,7 @@ func DoLogin(c *gin.Context) {
 	d, err := service.Svc.UserSvc().GetUserByEmail(c, req.Email)
 	if err != nil {
 		log.Warnf("[web.login] get user by email err: %v", err)
-		web.Response(c, errno.ErrUserNotFound, nil)
+		web.Response(c, ecode.ErrUserNotFound, nil)
 		return
 	}
 
@@ -49,7 +51,7 @@ func DoLogin(c *gin.Context) {
 	// Compare the login password with the user password.
 	if err := d.Compare(req.Password); err != nil {
 		log.Warnf("[web.login] compare user password err: %v", err)
-		web.Response(c, errno.ErrPasswordIncorrect, nil)
+		web.Response(c, ecode.ErrPasswordIncorrect, nil)
 		return
 	}
 

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"github.com/1024casts/snake/internal/ecode"
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/app/api"
@@ -39,7 +40,7 @@ func Login(c *gin.Context) {
 	t, err := service.Svc.UserSvc().EmailLogin(c, req.Email, req.Password)
 	if err != nil {
 		log.Warnf("email login err: %v", err)
-		api.SendResponse(c, errno.ErrEmailOrPassword, nil)
+		api.SendResponse(c, ecode.ErrEmailOrPassword, nil)
 		return
 	}
 
@@ -77,14 +78,14 @@ func PhoneLogin(c *gin.Context) {
 
 	// 验证校验码
 	if !vcode.VCodeService.CheckLoginVCode(req.Phone, req.VerifyCode) {
-		api.SendResponse(c, errno.ErrVerifyCode, nil)
+		api.SendResponse(c, ecode.ErrVerifyCode, nil)
 		return
 	}
 
 	// 登录
 	t, err := service.Svc.UserSvc().PhoneLogin(c, req.Phone, req.VerifyCode)
 	if err != nil {
-		api.SendResponse(c, errno.ErrVerifyCode, nil)
+		api.SendResponse(c, ecode.ErrVerifyCode, nil)
 		return
 	}
 
