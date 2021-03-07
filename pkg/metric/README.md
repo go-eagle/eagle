@@ -142,3 +142,7 @@ snake_http_response_size_bytes_count{endpoint="/favicon.ico",method="GET",status
 # TYPE snake_uptime counter
 snake_uptime 9
 ```
+
+## Reference
+
+- https://github.com/rcrowley/go-metrics
