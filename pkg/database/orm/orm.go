@@ -4,17 +4,28 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
-	"github.com/1024casts/snake/pkg/conf"
 	// MySQL driver.
 	"gorm.io/driver/mysql"
 	// GORM MySQL
 	"gorm.io/gorm"
 )
 
+// Config mysql config
+type Config struct {
+	Name            string
+	Addr            string
+	UserName        string
+	Password        string
+	ShowLog         bool
+	MaxIdleConn     int
+	MaxOpenConn     int
+	ConnMaxLifeTime time.Duration
+}
+
 // NewMySQL 链接数据库，生成数据库实例
-func NewMySQL(cfg *conf.Config) (db *gorm.DB) {
-	c := cfg.MySQL
+func NewMySQL(c *Config) (db *gorm.DB) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=%t&loc=%s",
 		c.UserName,
 		c.Password,

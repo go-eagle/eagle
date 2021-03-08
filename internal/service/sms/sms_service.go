@@ -1,11 +1,10 @@
 package sms
 
 import (
+	"github.com/1024casts/snake/config"
 	"github.com/pkg/errors"
 	"github.com/qiniu/api.v7/auth"
 	"github.com/qiniu/api.v7/sms"
-
-	"github.com/1024casts/snake/pkg/conf"
 )
 
 // ServiceSms 短信服务
@@ -40,15 +39,15 @@ func (srv *smsService) Send(phoneNumber string, verifyCode int) error {
 
 // _sendViaQiNiu 调用七牛短信服务
 func (srv *smsService) _sendViaQiNiu(phoneNumber string, verifyCode int) error {
-	accessKey := conf.Conf.QiNiu.AccessKey
-	secretKey := conf.Conf.QiNiu.SecretKey
+	accessKey := config.Conf.QiNiu.AccessKey
+	secretKey := config.Conf.QiNiu.SecretKey
 
 	mac := auth.New(accessKey, secretKey)
 	manager := sms.NewManager(mac)
 
 	args := sms.MessagesRequest{
-		SignatureID: conf.Conf.QiNiu.SignatureID,
-		TemplateID:  conf.Conf.QiNiu.TemplateID,
+		SignatureID: config.Conf.QiNiu.SignatureID,
+		TemplateID:  config.Conf.QiNiu.TemplateID,
 		Mobiles:     []string{phoneNumber},
 		Parameters: map[string]interface{}{
 			"code": verifyCode,

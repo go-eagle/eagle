@@ -3,9 +3,9 @@ package web
 import (
 	"net/http"
 
-	"github.com/spf13/viper"
+	"github.com/1024casts/snake/config"
 
-	"github.com/1024casts/snake/pkg/conf"
+	"github.com/spf13/viper"
 
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/flash"
@@ -51,7 +51,7 @@ func SetLoginCookie(ctx *gin.Context, userID uint64) {
 
 	session := GetCookieSession(ctx)
 	session.Options = &sessions.Options{
-		Domain:   conf.Conf.Cookie.Domain,
+		Domain:   config.Conf.Cookie.Domain,
 		MaxAge:   86400,
 		Path:     "/",
 		HttpOnly: true,
@@ -75,7 +75,7 @@ func SetLoginCookie(ctx *gin.Context, userID uint64) {
 
 // GetCookieSession get cookie
 func GetCookieSession(ctx *gin.Context) *sessions.Session {
-	session, err := Store.Get(ctx.Request, conf.Conf.Cookie.Name)
+	session, err := Store.Get(ctx.Request, config.Conf.Cookie.Name)
 	if err != nil {
 		log.Warnf("[handler] store get err, %v", err)
 	}

@@ -1,9 +1,9 @@
 package model
 
 import (
+	"github.com/1024casts/snake/config"
 	"gorm.io/gorm"
 
-	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/database/orm"
 )
 
@@ -11,8 +11,8 @@ import (
 var DB *gorm.DB
 
 // Init 初始化数据库
-func Init(cfg *conf.Config) *gorm.DB {
-	DB = orm.NewMySQL(cfg)
+func Init(cfg *config.Config) *gorm.DB {
+	DB = orm.NewMySQL(&cfg.MySQL)
 	return DB
 }
 

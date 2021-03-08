@@ -3,13 +3,14 @@ package relation
 import (
 	"context"
 
+	"github.com/1024casts/snake/config"
+
 	"github.com/opentracing/opentracing-go"
 
 	"github.com/pkg/errors"
 
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/repository/user"
-	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/constvar"
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -38,7 +39,7 @@ type IRelationService interface {
 
 // relationService 用小写的 service 实现接口中定义的方法
 type relationService struct {
-	c              *conf.Config
+	c              *config.Config
 	tracer         opentracing.Tracer
 	userRepo       user.BaseRepo
 	userFollowRepo user.FollowRepo
@@ -48,7 +49,7 @@ type relationService struct {
 // NewRelationService 实例化一个userService
 // 通过 NewService 函数初始化 Service 接口
 // 依赖接口，不要依赖实现，面向接口编程
-func NewRelationService(c *conf.Config, tracer opentracing.Tracer) IRelationService {
+func NewRelationService(c *config.Config, tracer opentracing.Tracer) IRelationService {
 	db := model.GetDB()
 	return &relationService{
 		c:              c,

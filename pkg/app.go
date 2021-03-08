@@ -1,4 +1,4 @@
-package pkg
+package snake
 
 import (
 	"context"
@@ -8,6 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/1024casts/snake/config"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"google.golang.org/grpc"
@@ -15,7 +17,6 @@ import (
 
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/service"
-	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/log"
 	redis2 "github.com/1024casts/snake/pkg/redis"
 )
@@ -34,9 +35,9 @@ var App *Application
 
 // Application a container for your application.
 type Application struct {
-	Conf        *conf.Config
+	Conf        *config.Config
 	DB          *gorm.DB
-	RedisClient redis.UniversalClient
+	RedisClient *redis.Client
 	Router      *gin.Engine
 	BizService  *service.Service
 	RPCServer   *grpc.Server
@@ -44,11 +45,11 @@ type Application struct {
 }
 
 // New create a app
-func New(cfg *conf.Config) *Application {
+func New(cfg *config.Config) *Application {
 	app := new(Application)
 
 	// init log
-	conf.InitLog(cfg)
+	config.InitLog(cfg)
 
 	// init db
 	app.DB = model.Init(cfg)
@@ -69,9 +70,9 @@ func New(cfg *conf.Config) *Application {
 
 // Run start a app
 func (a *Application) Run() {
-	fmt.Printf("Listening and serving HTTP on %s\n", conf.Conf.App.Addr)
+	fmt.Printf("Listening and serving HTTP on %s\n", config.Conf.App.Addr)
 	srv := &http.Server{
-		Addr:    conf.Conf.App.Addr,
+		Addr:    config.Conf.App.Addr,
 		Handler: a.Router,
 	}
 	go func() {

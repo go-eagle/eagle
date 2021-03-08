@@ -9,6 +9,7 @@
 package main
 
 import (
+	"github.com/1024casts/snake/config"
 	"github.com/1024casts/snake/pkg"
 	"github.com/1024casts/snake/pkg/net/tracing"
 	"github.com/gin-gonic/gin"
@@ -22,12 +23,11 @@ import (
 	"github.com/1024casts/snake/app/api"
 	rpc "github.com/1024casts/snake/internal/server"
 	"github.com/1024casts/snake/internal/service"
-	"github.com/1024casts/snake/pkg/conf"
 	routers "github.com/1024casts/snake/router"
 )
 
 var (
-	cfg = pflag.StringP("config", "c", "", "snake config file path.")
+	cfgFile = pflag.StringP("config", "c", "", "snake config file path.")
 )
 
 // @title snake docs api
@@ -44,16 +44,17 @@ func main() {
 	pflag.Parse()
 
 	// init config
-	if err := conf.Init(*cfg); err != nil {
+	cfg, err := config.Init(*cfgFile)
+	if err != nil {
 		panic(err)
 	}
 
 	// Set gin mode.
-	gin.SetMode(conf.Conf.App.RunMode)
+	gin.SetMode(config.Conf.App.RunMode)
 
 	// init app
-	app := pkg.New(conf.Conf)
-	pkg.App = app
+	app := snake.New(cfg)
+	snake.App = app
 
 	// init db tracing plugin
 	//app.DB.Use(gormopentracing.New())
@@ -73,25 +74,25 @@ func main() {
 	routers.LoadWebRouter(router)
 
 	// init tracer
-	metricsFactory := jprom.New().Namespace(metrics.NSOptions{Name: conf.Conf.App.Name, Tags: nil})
-	tracer, closer := tracing.Init(conf.Conf.App.Name, metricsFactory)
+	metricsFactory := jprom.New().Namespace(metrics.NSOptions{Name: cfg.App.Name, Tags: nil})
+	tracer, closer := tracing.Init(cfg.App.Name, metricsFactory)
 	defer closer.Close()
 
 	// set into opentracing
 	opentracing.SetGlobalTracer(tracer)
 
 	// init service
-	svc := service.New(conf.Conf, tracer)
+	svc := service.New(cfg, tracer)
 
 	// set global service
 	service.Svc = svc
-	pkg.App.BizService = svc
+	snake.App.BizService = svc
 
 	// start grpc server
 	var rpcSrv *grpc.Server
 	go func() {
-		rpcSrv = rpc.New(conf.Conf, svc)
-		pkg.App.RPCServer = rpcSrv
+		rpcSrv = rpc.New(cfg, svc)
+		snake.App.RPCServer = rpcSrv
 	}()
 
 	// here register to service discovery

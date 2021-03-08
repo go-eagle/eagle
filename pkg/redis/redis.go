@@ -3,10 +3,11 @@ package redis
 import (
 	"fmt"
 
+	"github.com/1024casts/snake/config"
+
 	"github.com/alicebob/miniredis"
 	"github.com/go-redis/redis"
 
-	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -20,7 +21,7 @@ const Nil = redis.Nil
 const ErrRedisNotFound = redis.Nil
 
 // Init 实例化一个redis client
-func Init(cfg *conf.Config) *redis.Client {
+func Init(cfg *config.Config) *redis.Client {
 	c := cfg.Redis
 	RedisClient = redis.NewClient(&redis.Options{
 		Addr:         c.Addr,

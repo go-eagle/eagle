@@ -4,10 +4,11 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/1024casts/snake/config"
+
 	"github.com/go-redis/redis"
 	"github.com/pkg/errors"
 
-	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -57,7 +58,7 @@ func (ia *IDAlloc) GetCurrentID(key string) (int64, error) {
 
 // GetKey 获取key
 func (ia *IDAlloc) GetKey(key string) string {
-	keyPrefix := conf.Conf.App.Name
+	keyPrefix := config.Conf.App.Name
 	lockKey := "idalloc"
 	return strings.Join([]string{keyPrefix, lockKey, key}, ":")
 }

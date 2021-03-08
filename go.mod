@@ -14,6 +14,7 @@ require (
 	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-contrib/static v0.0.0-20200916080430-d45d9a37d28e
 	github.com/gin-gonic/gin v1.6.3
+	github.com/go-git/go-git/v5 v5.2.0 // indirect
 	github.com/go-mail/mail v2.3.1+incompatible
 	github.com/go-playground/validator/v10 v10.2.0
 	github.com/go-redis/redis v6.15.8+incompatible

@@ -1,7 +1,8 @@
-package conf
+package config
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -9,7 +10,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/1024casts/snake/pkg/database/orm"
+	logger "github.com/1024casts/snake/pkg/log"
 )
 
 var (
@@ -18,47 +20,65 @@ var (
 )
 
 // Init init config
-func Init(confPath string) error {
-	err := initConfig(confPath)
+func Init(configPath string) (*Config, error) {
+	cfgFile, err := LoadConfig(configPath)
 	if err != nil {
-		return err
+		log.Fatalf("LoadConfig: %v", err)
 	}
-	return nil
+	cfg, err := ParseConfig(cfgFile)
+	if err != nil {
+		log.Fatalf("ParseConfig: %v", err)
+	}
+
+	watchConfig(cfgFile)
+
+	Conf = cfg
+
+	return cfg, nil
 }
 
-// initConfig init config from conf file
-func initConfig(confPath string) error {
+// LoadConfig load config file from given path
+func LoadConfig(confPath string) (*viper.Viper, error) {
+	v := viper.New()
 	if confPath != "" {
-		viper.SetConfigFile(confPath) // 如果指定了配置文件，则解析指定的配置文件
+		v.SetConfigFile(confPath) // 如果指定了配置文件，则解析指定的配置文件
 	} else {
-		viper.AddConfigPath("conf") // 如果没有指定配置文件，则解析默认的配置文件
-		viper.SetConfigName("config.local")
+		v.AddConfigPath("config") // 如果没有指定配置文件，则解析默认的配置文件
+		v.SetConfigName("config.local")
 	}
-	viper.SetConfigType("yaml") // 设置配置文件格式为YAML
-	viper.AutomaticEnv()        // 读取匹配的环境变量
+	v.SetConfigType("yaml")     // 设置配置文件格式为YAML
+	v.AutomaticEnv()            // 读取匹配的环境变量
 	viper.SetEnvPrefix("snake") // 读取环境变量的前缀为 snake
 	replacer := strings.NewReplacer(".", "_")
 	viper.SetEnvKeyReplacer(replacer)
-	if err := viper.ReadInConfig(); err != nil { // viper解析配置文件
-		return errors.WithStack(err)
+	if err := v.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			return nil, errors.New("config file not found")
+		}
+		return nil, err
 	}
 
-	// parse to config struct
-	err := viper.Unmarshal(&Conf)
+	return v, nil
+}
+
+// Parse config file
+func ParseConfig(v *viper.Viper) (*Config, error) {
+	var c Config
+
+	err := v.Unmarshal(&c)
 	if err != nil {
-		return err
+		log.Printf("unable to decode into struct, %v", err)
+		return nil, err
 	}
 
-	watchConfig()
-
-	return nil
+	return &c, nil
 }
 
 // 监控配置文件变化并热加载程序
-func watchConfig() {
-	viper.WatchConfig()
-	viper.OnConfigChange(func(e fsnotify.Event) {
-		log.Infof("Config file changed: %s", e.Name)
+func watchConfig(v *viper.Viper) {
+	v.WatchConfig()
+	v.OnConfigChange(func(e fsnotify.Event) {
+		log.Printf("Config file changed: %s", e.Name)
 	})
 }
 
@@ -68,7 +88,7 @@ type Config struct {
 	// common
 	App    AppConfig
 	Log    LogConfig
-	MySQL  MySQLConfig
+	MySQL  orm.Config
 	Redis  RedisConfig
 	Cache  CacheConfig
 	Email  EmailConfig
@@ -102,18 +122,6 @@ type LogConfig struct {
 	LogRotateDate    int    `mapstructure:"log_rotate_date"`
 	LogRotateSize    int    `mapstructure:"log_rotate_size"`
 	LogBackupCount   uint   `mapstructure:"log_backup_count"`
-}
-
-// MySQLConfig mysql config
-type MySQLConfig struct {
-	Name            string        `mapstructure:"name"`
-	Addr            string        `mapstructure:"addr"`
-	UserName        string        `mapstructure:"username"`
-	Password        string        `mapstructure:"password"`
-	ShowLog         bool          `mapstructure:"show_log"`
-	MaxIdleConn     int           `mapstructure:"max_idle_conn"`
-	MaxOpenConn     int           `mapstructure:"max_open_conn"`
-	ConnMaxLifeTime time.Duration `mapstructure:"conn_max_life_time"`
 }
 
 // RedisConfig redis config
@@ -174,7 +182,7 @@ type QiNiuConfig struct {
 // InitLog init log
 func InitLog(cfg *Config) {
 	c := cfg.Log
-	config := log.Config{
+	config := logger.Config{
 		Name:             c.Name,
 		Writers:          c.Writers,
 		LoggerLevel:      c.LoggerLevel,
@@ -187,7 +195,7 @@ func InitLog(cfg *Config) {
 		LogRotateSize:    c.LogRotateSize,
 		LogBackupCount:   c.LogBackupCount,
 	}
-	err := log.NewLogger(&config, log.InstanceZapLogger)
+	err := logger.NewLogger(&config, logger.InstanceZapLogger)
 	if err != nil {
 		fmt.Printf("InitWithConfig err: %v", err)
 	}

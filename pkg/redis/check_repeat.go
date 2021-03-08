@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/1024casts/snake/pkg/conf"
+	"github.com/1024casts/snake/config"
 
 	"github.com/go-redis/redis"
 )
@@ -37,7 +37,7 @@ func NewCheckRepeat(client *redis.Client) CheckRepeat {
 
 // GetKey 获取key
 func getKey(key string) string {
-	keyPrefix := conf.Conf.App.Name
+	keyPrefix := config.Conf.App.Name
 	return strings.Join([]string{keyPrefix, PrefixCheckRepeat, key}, ":")
 }
 
