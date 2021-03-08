@@ -9,18 +9,20 @@
 package main
 
 import (
+	"github.com/1024casts/snake/pkg"
 	"github.com/1024casts/snake/pkg/net/tracing"
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
+	"github.com/uber/jaeger-lib/metrics"
+	jprom "github.com/uber/jaeger-lib/metrics/prometheus"
 	"google.golang.org/grpc"
 
 	"github.com/1024casts/snake/app/api"
 	rpc "github.com/1024casts/snake/internal/server"
 	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/conf"
-	"github.com/1024casts/snake/pkg/snake"
 	routers "github.com/1024casts/snake/router"
 )
 
@@ -50,8 +52,8 @@ func main() {
 	gin.SetMode(conf.Conf.App.RunMode)
 
 	// init app
-	app := snake.New(conf.Conf)
-	snake.App = app
+	app := pkg.New(conf.Conf)
+	pkg.App = app
 
 	// init db tracing plugin
 	//app.DB.Use(gormopentracing.New())
@@ -71,7 +73,8 @@ func main() {
 	routers.LoadWebRouter(router)
 
 	// init tracer
-	tracer, closer := tracing.Init(conf.Conf.App.Name)
+	metricsFactory := jprom.New().Namespace(metrics.NSOptions{Name: conf.Conf.App.Name, Tags: nil})
+	tracer, closer := tracing.Init(conf.Conf.App.Name, metricsFactory)
 	defer closer.Close()
 
 	// set into opentracing
@@ -82,13 +85,13 @@ func main() {
 
 	// set global service
 	service.Svc = svc
-	snake.App.BizService = svc
+	pkg.App.BizService = svc
 
 	// start grpc server
 	var rpcSrv *grpc.Server
 	go func() {
 		rpcSrv = rpc.New(conf.Conf, svc)
-		snake.App.RPCServer = rpcSrv
+		pkg.App.RPCServer = rpcSrv
 	}()
 
 	// here register to service discovery

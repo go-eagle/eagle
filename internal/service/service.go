@@ -25,7 +25,7 @@ func New(c *conf.Config, tracer opentracing.Tracer) (s *Service) {
 	s = &Service{
 		c:           c,
 		tracer:      tracer,
-		userSvc:     user.NewUserService(c, tracer),
+		userSvc:     user.NewUserService(c),
 		relationSvc: relation.NewRelationService(c, tracer),
 	}
 	return s

@@ -32,7 +32,7 @@ type userStatRepo struct {
 func NewUserStatRepo(db *gorm.DB, tracer opentracing.Tracer) StatRepo {
 	return &userStatRepo{
 		db:        db,
-		userCache: user.NewUserCache(tracer),
+		userCache: user.NewUserCache(),
 	}
 }
 

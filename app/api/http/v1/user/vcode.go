@@ -1,13 +1,13 @@
 package user
 
 import (
+	"github.com/1024casts/snake/internal/ecode"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 
 	"github.com/1024casts/snake/app/api"
 	"github.com/1024casts/snake/internal/service/sms"
 	"github.com/1024casts/snake/internal/service/vcode"
-	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -25,14 +25,14 @@ func VCode(c *gin.Context) {
 	// 验证区号和手机号是否为空
 	if c.Query("area_code") == "" {
 		log.Warn("vcode area code is empty")
-		api.SendResponse(c, errno.ErrAreaCodeEmpty, nil)
+		api.SendResponse(c, ecode.ErrAreaCodeEmpty, nil)
 		return
 	}
 
 	phone := c.Query("phone")
 	if phone == "" {
 		log.Warn("vcode phone is empty")
-		api.SendResponse(c, errno.ErrPhoneEmpty, nil)
+		api.SendResponse(c, ecode.ErrPhoneEmpty, nil)
 		return
 	}
 
@@ -42,7 +42,7 @@ func VCode(c *gin.Context) {
 	verifyCode, err := vcode.VCodeService.GenLoginVCode(phone)
 	if err != nil {
 		log.Warnf("gen login verify code err, %v", errors.WithStack(err))
-		api.SendResponse(c, errno.ErrGenVCode, nil)
+		api.SendResponse(c, ecode.ErrGenVCode, nil)
 		return
 	}
 
@@ -50,7 +50,7 @@ func VCode(c *gin.Context) {
 	err = sms.ServiceSms.Send(phone, verifyCode)
 	if err != nil {
 		log.Warnf("send phone sms err, %v", errors.WithStack(err))
-		api.SendResponse(c, errno.ErrSendSMS, nil)
+		api.SendResponse(c, ecode.ErrSendSMS, nil)
 		return
 	}
 

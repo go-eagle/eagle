@@ -3,6 +3,8 @@ package user
 import (
 	"context"
 
+	"github.com/1024casts/snake/internal/ecode"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/app/api"
@@ -29,16 +31,16 @@ func Follow(c *gin.Context) {
 	}
 
 	// Get the user by the `user_id` from the database.
-	_, err := service.Svc.UserSvc().GetUserByID(context.TODO(), req.UserID)
+	_, err := service.Svc.UserSvc().GetUserByID(c, req.UserID)
 	if err != nil {
-		api.SendResponse(c, errno.ErrUserNotFound, nil)
+		api.SendResponse(c, ecode.ErrUserNotFound, nil)
 		return
 	}
 
 	userID := api.GetUserID(c)
 	// 不能关注自己
 	if userID == req.UserID {
-		api.SendResponse(c, errno.ErrUserNotFound, nil)
+		api.SendResponse(c, ecode.ErrUserNotFound, nil)
 		return
 	}
 

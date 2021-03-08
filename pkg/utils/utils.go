@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
+	"os"
 	"regexp"
 	"time"
 
@@ -66,4 +67,13 @@ func RegexpReplace(reg, src, temp string) string {
 		result = pattern.ExpandString(result, temp, src, submatches)
 	}
 	return string(result)
+}
+
+// GetHostname 获取主机名
+func GetHostname() string {
+	name, err := os.Hostname()
+	if err != nil {
+		name = "unknown"
+	}
+	return name
 }

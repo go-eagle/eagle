@@ -5,9 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
+
+	"github.com/1024casts/snake/pkg/net/tracing"
 
 	"github.com/1024casts/snake/pkg/redis"
+	"github.com/opentracing/opentracing-go"
 
 	"github.com/pkg/errors"
 	"golang.org/x/sync/singleflight"
@@ -39,13 +42,16 @@ type BaseRepo interface {
 type userBaseRepo struct {
 	db        *gorm.DB
 	userCache *user.Cache
+	tracer    opentracing.Tracer
 }
 
 // NewUserRepo 实例化用户仓库
-func NewUserRepo(db *gorm.DB, tracer opentracing.Tracer) BaseRepo {
+func NewUserRepo(db *gorm.DB) BaseRepo {
+	tracer, _ := tracing.Init("mysql", nil)
 	return &userBaseRepo{
 		db:        db,
-		userCache: user.NewUserCache(tracer),
+		userCache: user.NewUserCache(),
+		tracer:    tracer,
 	}
 }
 
@@ -124,6 +130,16 @@ func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase 
 		} else if err != nil {
 			prom.BusinessErrCount.Incr("mysql: getOneUser")
 			return nil, errors.Wrapf(err, "[repo.user_base] query db err")
+		}
+
+		// add tracing
+		if span := opentracing.SpanFromContext(ctx); span != nil {
+			span := repo.tracer.StartSpan("GetOneUser", opentracing.ChildOf(span.Context()))
+			span.SetTag("param.uid", uid)
+			ext.SpanKindRPCClient.Set(span)
+			span.Finish()
+
+			// ctx = opentracing.ContextWithSpan(ctx, span)
 		}
 
 		// set cache

@@ -64,6 +64,10 @@ func NewLogger(cfg *Config, loggerInstance int) error {
 	}
 }
 
+func GetLogger() Logger {
+	return log
+}
+
 // Debug logger
 func Debug(args ...interface{}) {
 	log.Debug(args...)
