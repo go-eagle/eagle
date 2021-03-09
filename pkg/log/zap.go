@@ -39,7 +39,12 @@ func newZapLogger(cfg *Config) (Logger, error) {
 	var cores []zapcore.Core
 	var options []zap.Option
 	// 设置初始化字段
-	option := zap.Fields(zap.String("ip", ip.GetLocalIP()), zap.String("app", cfg.Name))
+	hostName, _ := os.Hostname()
+	option := zap.Fields(
+		zap.String("ip", ip.GetLocalIP()),
+		zap.String("app_id", cfg.Name),
+		zap.String("instance_id", hostName),
+	)
 	options = append(options, option)
 
 	allLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
@@ -115,7 +120,7 @@ func getJSONEncoder() zapcore.Encoder {
 		LevelKey:       "level",
 		TimeKey:        "time",
 		EncodeTime:     zapcore.ISO8601TimeEncoder,
-		NameKey:        "app",
+		NameKey:        "app_id",
 		CallerKey:      "file",
 		StacktraceKey:  "trace",
 		EncodeCaller:   zapcore.ShortCallerEncoder,
