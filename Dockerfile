@@ -38,13 +38,15 @@ WORKDIR /app
 
 # 从builder镜像中把 /app 拷贝到当前目录
 COPY --from=builder /app/snake /app/snake
-COPY --from=builder /app/config /app/conf
+COPY --from=builder /app/conf /app/conf
+
+RUN mkdir -p /data/logs/
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
 
 # 需要运行的命令
-CMD ["/app/snake", "-c", "config/config.local.yaml"]
+CMD ["/app/snake", "-c", "conf/config.docker.yaml"]
 
 # 1. build image: docker build -t snake:v1 -f Dockerfile .
 # 2. start: docker run --rm -it -p 8080:8080 snake:v1

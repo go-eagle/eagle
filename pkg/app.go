@@ -3,21 +3,22 @@ package snake
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"github.com/1024casts/snake/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
 
-	"github.com/1024casts/snake/internal/model"
+	"github.com/1024casts/snake/config"
 	"github.com/1024casts/snake/internal/service"
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/1024casts/snake/pkg/database/orm"
+
+	//"github.com/1024casts/snake/pkg/log"
 	redis2 "github.com/1024casts/snake/pkg/redis"
 )
 
@@ -52,7 +53,7 @@ func New(cfg *config.Config) *Application {
 	config.InitLog(cfg)
 
 	// init db
-	app.DB = model.Init(cfg)
+	app.DB = orm.NewMySQL(&cfg.MySQL)
 
 	// init redis
 	app.RedisClient = redis2.Init(cfg)
@@ -60,7 +61,7 @@ func New(cfg *config.Config) *Application {
 	// init router
 	app.Router = gin.Default()
 
-	if cfg.App.RunMode == ModeDebug {
+	if cfg.App.Mode == ModeDebug {
 		app.DB.Debug()
 		app.Debug = true
 	}
@@ -70,9 +71,9 @@ func New(cfg *config.Config) *Application {
 
 // Run start a app
 func (a *Application) Run() {
-	fmt.Printf("Listening and serving HTTP on %s\n", config.Conf.App.Addr)
+	fmt.Printf("Listening and serving HTTP on %s\n", config.Conf.App.Port)
 	srv := &http.Server{
-		Addr:    config.Conf.App.Addr,
+		Addr:    config.Conf.App.Port,
 		Handler: a.Router,
 	}
 	go func() {
@@ -95,10 +96,10 @@ func (a *Application) GracefulStop(httpSrv *http.Server) {
 	signal.Notify(quit, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
 	for {
 		s := <-quit
-		log.Infof("[snake] Server receive a quit signal: %s", s.String())
+		log.Printf("[snake] Server receive a quit signal: %s", s.String())
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
-			log.Info("[snake] Server is exiting")
+			log.Println("[snake] Server is exiting")
 
 			// close rpc
 			if a.RPCServer != nil {

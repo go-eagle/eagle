@@ -3,10 +3,10 @@
 version: "3.7"
 services:
   app:
-    container_name: go-app
+    container_name: app_container
     build: .
-    links:
-      - "db:mysql"
+    depends_on:
+      - db
       - redis
     ports:
       - "8080:8080"
@@ -20,8 +20,8 @@ services:
       start_period: 40s # 启动多久后开始检查
 
   db:
-    container_name: mysql57
-    image: mysql:5.7.22
+    container_name: mysql_container
+    image: mysql:5.7.26
     ports:
       - "3306:3306"
     expose:
@@ -29,6 +29,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: "123456"
       MYSQL_DATABASE: "snake"
+      MYSQL_USER: "root"
       MYSQL_PASSWORD: "123456"
       TZ: Asia/Shanghai
     # 解决外部无法访问 for mysql8
@@ -47,17 +48,17 @@ services:
 
   # web 数据库管理工具，tips: host使用 db:3306
   adminer:
-    container_name: adminer
+    container_name: adminer_container
     image: adminer
     restart: always
-    links:
-      - "db:mysql"
+    depends_on:
+      - db
     ports:
-      - 8036:8080
+      - 8036:8036
 
   redis:
-    container_name: redis
-    image: redis:alpine
+    container_name: redis_container
+    image: redis:6.0.9-alpine
     ports:
       - "6379:6379"
     networks:
@@ -66,7 +67,7 @@ services:
       - redis_data:/var/lib/redis
 
   nginx:
-    container_name: nginx
+    container_name: nginx_container
     image: nginx:1.17.10-alpine
     ports:
       - 80:80
@@ -75,6 +76,41 @@ services:
     volumes:
       - ./conf/nginx_api.conf:/etc/nginx/conf.d/default.conf
     command: nginx -g 'daemon off';
+
+  prometheus:
+    container_name: prometheus_container
+    image: prom/prometheus
+    restart: always
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:Z
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention=20d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - '9090:9090'
+    networks:
+      - default
+
+  node_exporter:
+    container_name: node_exporter_container
+    restart: always
+    image: prom/node-exporter
+    ports:
+      - '9101:9100'
+    networks:
+      - default
+
+  grafana:
+    container_name: grafana_container
+    restart: always
+    image: grafana/grafana
+    ports:
+      - '3000:3000'
+    networks:
+      - default
 
 networks:
   default:

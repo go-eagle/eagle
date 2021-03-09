@@ -26,7 +26,7 @@ func Init(cfg *config.Config) *redis.Client {
 	RedisClient = redis.NewClient(&redis.Options{
 		Addr:         c.Addr,
 		Password:     c.Password,
-		DB:           c.Db,
+		DB:           c.DB,
 		MinIdleConns: c.MinIdleConn,
 		DialTimeout:  c.DialTimeout,
 		ReadTimeout:  c.ReadTimeout,

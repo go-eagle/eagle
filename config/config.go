@@ -86,15 +86,18 @@ func watchConfig(v *viper.Viper) {
 // include common and biz config
 type Config struct {
 	// common
-	App    AppConfig
-	Log    LogConfig
-	MySQL  orm.Config
-	Redis  RedisConfig
-	Cache  CacheConfig
-	Email  EmailConfig
-	Web    WebConfig
-	Cookie CookieConfig
-	QiNiu  QiNiuConfig
+	App     AppConfig
+	Log     LogConfig
+	Logger  Logger
+	MySQL   orm.Config
+	Redis   RedisConfig
+	Cache   CacheConfig
+	Email   EmailConfig
+	Web     WebConfig
+	Cookie  CookieConfig
+	QiNiu   QiNiuConfig
+	Metrics Metrics
+	Jaeger  Jaeger
 
 	// here can add biz conf
 
@@ -102,11 +105,20 @@ type Config struct {
 
 // AppConfig app config
 type AppConfig struct {
-	Name      string `mapstructure:"name"`
-	RunMode   string `mapstructure:"run_mode"`
-	Addr      string `mapstructure:"addr"`
-	URL       string `mapstructure:"url"`
-	JwtSecret string `mapstructure:"jwt_secret"`
+	Name              string
+	Version           string
+	Mode              string
+	Port              string
+	PprofPort         string
+	URL               string
+	JwtSecret         string
+	JwtTimeout        int
+	ReadTimeout       int
+	WriteTimeout      int
+	SSL               bool
+	CtxDefaultTimeout int
+	CSRF              bool
+	Debug             bool
 }
 
 // LogConfig log config
@@ -124,17 +136,26 @@ type LogConfig struct {
 	LogBackupCount   uint   `mapstructure:"log_backup_count"`
 }
 
+// Logger config
+type Logger struct {
+	Development       bool
+	DisableCaller     bool
+	DisableStacktrace bool
+	Encoding          string
+	Level             string
+}
+
 // RedisConfig redis config
 type RedisConfig struct {
-	Addr         string        `mapstructure:"addr"`
-	Password     string        `mapstructure:"password"`
-	Db           int           `mapstructure:"db"`
-	MinIdleConn  int           `mapstructure:"min_idle_conn"`
-	DialTimeout  time.Duration `mapstructure:"dial_timeout"`
-	ReadTimeout  time.Duration `mapstructure:"read_timeout"`
-	WriteTimeout time.Duration `mapstructure:"write_timeout"`
-	PoolSize     int           `mapstructure:"pool_size"`
-	PoolTimeout  time.Duration `mapstructure:"pool_timeout"`
+	Addr         string
+	Password     string
+	DB           int
+	MinIdleConn  int
+	DialTimeout  time.Duration
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
+	PoolSize     int
+	PoolTimeout  time.Duration
 }
 
 // CacheConfig define cache config struct
@@ -145,38 +166,54 @@ type CacheConfig struct {
 
 // EmailConfig email config
 type EmailConfig struct {
-	Host      string `mapstructure:"host"`
-	Port      int    `mapstructure:"port"`
-	Username  string `mapstructure:"username"`
-	Password  string `mapstructure:"password"`
-	Name      string `mapstructure:"name"`
-	Address   string `mapstructure:"address"`
-	ReplyTo   string `mapstructure:"reply_to"`
-	KeepAlive int    `mapstructure:"keep_alive"`
+	Host      string
+	Port      int
+	Username  string
+	Password  string
+	Name      string
+	Address   string
+	ReplyTo   string
+	KeepAlive int
 }
 
 // WebConfig web config
 type WebConfig struct {
-	Name   string `mapstructure:"host"`
-	Domain string `mapstructure:"domain"`
-	Secret string `mapstructure:"secret"`
-	Static string `mapstructure:"static"`
+	Name   string
+	Domain string
+	Secret string
+	Static string
 }
 
 // CookieConfig cookie config
 type CookieConfig struct {
-	Name   string `mapstructure:"host"`
-	Domain string `mapstructure:"domain"`
-	Secret string `mapstructure:"secret"`
+	Name     string
+	MaxAge   int
+	Secure   bool
+	HttpOnly bool
+	Domain   string
+	Secret   string
 }
 
 // QiNiuConfig qiniu config
 type QiNiuConfig struct {
-	AccessKey   string `mapstructure:"access_key"`
-	SecretKey   string `mapstructure:"secret_key"`
-	CdnURL      string `mapstructure:"cdn_url"`
-	SignatureID string `mapstructure:"signature_id"`
-	TemplateID  string `mapstructure:"template_id"`
+	AccessKey   string
+	SecretKey   string
+	CdnURL      string
+	SignatureID string
+	TemplateID  string
+}
+
+// Metrics config
+type Metrics struct {
+	URL         string
+	ServiceName string
+}
+
+// Jaeger config
+type Jaeger struct {
+	Host        string
+	ServiceName string
+	LogSpans    bool
 }
 
 // InitLog init log
