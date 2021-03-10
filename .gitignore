@@ -44,4 +44,3 @@ vendor
 # custom
 snake
 config/config.yaml
-config/config.local.yaml

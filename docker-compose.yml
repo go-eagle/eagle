@@ -5,13 +5,17 @@ services:
   app:
     container_name: app_container
     build: .
+    restart: on-failure
     depends_on:
+      - db
+      - redis
+    links:
       - db
       - redis
     ports:
       - "8080:8080"
     networks:
-      - default
+      - snake
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]   # 用于健康检查的指令
       interval: 1m30s   # 间隔时间
@@ -33,18 +37,21 @@ services:
       MYSQL_PASSWORD: "123456"
       TZ: Asia/Shanghai
     # 解决外部无法访问 for mysql8
-    command: --default-authentication-plugin=mysql_native_password --init-file /data/application/init.sql
+    command:
+      --snake-authentication-plugin=mysql_native_password
+      --explicit_snakes_for_timestamp=true
     stdin_open: true
     tty: true
     # 修复问题 mbind: Operation not permitted
-    security_opt:
-      - seccomp:unconfined
+#    security_opt:
+#      - seccomp:unconfined
     volumes:
-      - ./db.sql:/data/application/init.sql
-      - ./build/docker/mysql/my.cnf:/etc/mysql/my.cnf
       - mysql-data:/var/lib/mysql
+      - ./build/docker/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./build/docker/mysql/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+      - ./build/docker/mysql:/docker-entrypoint-initdb.d
     networks:
-      - default
+      - snake
 
   # web 数据库管理工具，tips: host使用 db:3306
   adminer:
@@ -62,7 +69,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - default
+      - snake
     volumes:
       - redis_data:/var/lib/redis
 
@@ -74,7 +81,7 @@ services:
     depends_on:
       - app
     volumes:
-      - ./conf/nginx_api.conf:/etc/nginx/conf.d/default.conf
+      - ./conf/nginx_api.conf:/etc/nginx/conf.d/snake.conf
     command: nginx -g 'daemon off';
 
   prometheus:
@@ -92,7 +99,7 @@ services:
     ports:
       - '9090:9090'
     networks:
-      - default
+      - snake
 
   node_exporter:
     container_name: node_exporter_container
@@ -101,7 +108,7 @@ services:
     ports:
       - '9101:9100'
     networks:
-      - default
+      - snake
 
   grafana:
     container_name: grafana_container
@@ -110,10 +117,10 @@ services:
     ports:
       - '3000:3000'
     networks:
-      - default
+      - snake
 
 networks:
-  default:
+  snake:
     driver: "bridge"
 
 volumes:
