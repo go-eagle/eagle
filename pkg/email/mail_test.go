@@ -4,12 +4,13 @@ import (
 	"testing"
 
 	"github.com/1024casts/snake/pkg/conf"
+	"github.com/1024casts/snake/pkg/log"
 )
 
 func TestSend(t *testing.T) {
 	// init config
 	cfg := "../../conf/config.sample.yaml"
-	if err := conf.Init(cfg); err != nil {
+	if _, err := conf.Init(cfg); err != nil {
 		panic(err)
 	}
 
