@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/1024casts/snake/config"
+	"github.com/1024casts/snake/pkg/conf"
 
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -32,14 +32,14 @@ func Init() {
 	}
 
 	client := NewSMTPClient(SMTPConfig{
-		Name:      config.Conf.Email.Name,
-		Address:   config.Conf.Email.Address,
-		ReplyTo:   config.Conf.Email.ReplyTo,
-		Host:      config.Conf.Email.Host,
-		Port:      config.Conf.Email.Port,
-		Username:  config.Conf.Email.Username,
-		Password:  config.Conf.Email.Password,
-		Keepalive: config.Conf.Email.KeepAlive,
+		Name:      conf.Conf.Email.Name,
+		Address:   conf.Conf.Email.Address,
+		ReplyTo:   conf.Conf.Email.ReplyTo,
+		Host:      conf.Conf.Email.Host,
+		Port:      conf.Conf.Email.Port,
+		Username:  conf.Conf.Email.Username,
+		Password:  conf.Conf.Email.Password,
+		Keepalive: conf.Conf.Email.KeepAlive,
 	})
 
 	Client = client

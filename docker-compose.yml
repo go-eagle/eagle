@@ -3,15 +3,19 @@
 version: "3.7"
 services:
   app:
-    container_name: go-app
+    container_name: app_container
     build: .
+    restart: on-failure
+    depends_on:
+      - db
+      - redis
     links:
-      - "db:mysql"
+      - db
       - redis
     ports:
       - "8080:8080"
     networks:
-      - default
+      - snake
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]   # 用于健康检查的指令
       interval: 1m30s   # 间隔时间
@@ -20,8 +24,8 @@ services:
       start_period: 40s # 启动多久后开始检查
 
   db:
-    container_name: mysql57
-    image: mysql:5.7.22
+    container_name: mysql_container
+    image: mysql:5.7.26
     ports:
       - "3306:3306"
     expose:
@@ -29,55 +33,110 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: "123456"
       MYSQL_DATABASE: "snake"
+      MYSQL_USER: "root"
       MYSQL_PASSWORD: "123456"
       TZ: Asia/Shanghai
     # 解决外部无法访问 for mysql8
-    command: --default-authentication-plugin=mysql_native_password --init-file /data/application/init.sql
+    command:
+      --snake-authentication-plugin=mysql_native_password
+      --explicit_snakes_for_timestamp=true
     stdin_open: true
     tty: true
     # 修复问题 mbind: Operation not permitted
-    security_opt:
-      - seccomp:unconfined
+#    security_opt:
+#      - seccomp:unconfined
     volumes:
-      - ./db.sql:/data/application/init.sql
-      - ./build/docker/mysql/my.cnf:/etc/mysql/my.cnf
       - mysql-data:/var/lib/mysql
+      - ./build/docker/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./build/docker/mysql/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+      - ./build/docker/mysql:/docker-entrypoint-initdb.d
     networks:
-      - default
+      - snake
 
   # web 数据库管理工具，tips: host使用 db:3306
   adminer:
-    container_name: adminer
+    container_name: adminer_container
     image: adminer
     restart: always
-    links:
-      - "db:mysql"
+    depends_on:
+      - db
     ports:
-      - 8036:8080
+      - 8036:8036
 
   redis:
-    container_name: redis
-    image: redis:alpine
+    container_name: redis_container
+    image: redis:6.0.9-alpine
     ports:
       - "6379:6379"
     networks:
-      - default
+      - snake
     volumes:
       - redis_data:/var/lib/redis
 
   nginx:
-    container_name: nginx
+    container_name: nginx_container
     image: nginx:1.17.10-alpine
     ports:
       - 80:80
     depends_on:
       - app
     volumes:
-      - ./conf/nginx_api.conf:/etc/nginx/conf.d/default.conf
+      - ./conf/nginx_api.conf:/etc/nginx/conf.d/snake.conf
     command: nginx -g 'daemon off';
 
+  prometheus:
+    container_name: prometheus_container
+    image: prom/prometheus
+    restart: always
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:Z
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention=20d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - '9090:9090'
+    networks:
+      - snake
+
+  node_exporter:
+    container_name: node_exporter_container
+    restart: always
+    image: prom/node-exporter
+    ports:
+      - '9101:9100'
+    networks:
+      - snake
+
+  grafana:
+    container_name: grafana_container
+    restart: always
+    image: grafana/grafana
+    ports:
+      - '3000:3000'
+    networks:
+      - snake
+  jaeger:
+    container_name: jaeger_container
+    image: jaegertracing/all-in-one:1.21
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+    ports:
+      - 5775:5775/udp
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 5778:5778
+      - 16686:16686
+      - 14268:14268
+      - 14250:14250
+      - 9411:9411
+    networks:
+      - snake
+
 networks:
-  default:
+  snake:
     driver: "bridge"
 
 volumes:

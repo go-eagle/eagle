@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/1024casts/snake/config"
+	"github.com/1024casts/snake/pkg/conf"
 
 	"github.com/go-redis/redis"
 
@@ -35,7 +35,7 @@ func NewCounter() *Counter {
 
 // GetKey 获取key
 func (c *Counter) GetKey(key string) string {
-	keyPrefix := config.Conf.App.Name
+	keyPrefix := conf.Conf.App.Name
 	return strings.Join([]string{keyPrefix, PrefixCounter, key}, ":")
 }
 

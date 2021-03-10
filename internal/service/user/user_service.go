@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/1024casts/snake/config"
+	"github.com/1024casts/snake/pkg/conf"
 
 	"github.com/1024casts/snake/pkg/net/tracing"
 
@@ -46,7 +46,7 @@ type IUserService interface {
 
 // userService 用小写的 service 实现接口中定义的方法
 type userService struct {
-	c              *config.Config
+	c              *conf.Config
 	tracer         opentracing.Tracer
 	userRepo       user.BaseRepo
 	userFollowRepo user.FollowRepo
@@ -56,7 +56,7 @@ type userService struct {
 // NewUserService 实例化一个userService
 // 通过 NewService 函数初始化 Service 接口
 // 依赖接口，不要依赖实现，面向接口编程
-func NewUserService(c *config.Config) IUserService {
+func NewUserService(c *conf.Config) IUserService {
 	db := model.GetDB()
 	tracer, _ := tracing.Init("service", nil)
 	return &userService{

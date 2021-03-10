@@ -3,7 +3,7 @@
 package testutil
 
 import (
-	"github.com/1024casts/snake/config"
+	"github.com/1024casts/snake/pkg/conf"
 	"github.com/jinzhu/gorm"
 
 	"github.com/1024casts/snake/internal/model"
@@ -19,21 +19,21 @@ type App struct {
 // Initialize 初始化
 func (app *App) Initialize() {
 	cfg := "../../../../conf/config.sample.yaml"
-	if err := config.Init(cfg); err != nil {
+	if err := conf.Init(cfg); err != nil {
 		panic(err)
 	}
 
 	// init log
-	config.InitLog(config.Conf)
+	conf.InitLog(conf.Conf)
 
 	// init db
-	model.Init(config.Conf)
+	model.Init(conf.Conf)
 	app.DB = model.DB
 
 	redis.InitTestRedis()
 
 	// init service
-	svc := service.New(config.Conf)
+	svc := service.New(conf.Conf)
 
 	// set global service
 	service.Svc = svc

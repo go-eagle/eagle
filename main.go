@@ -9,8 +9,8 @@
 package main
 
 import (
-	"github.com/1024casts/snake/config"
-	"github.com/1024casts/snake/pkg"
+	snake "github.com/1024casts/snake/pkg"
+	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/net/tracing"
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
@@ -44,13 +44,13 @@ func main() {
 	pflag.Parse()
 
 	// init config
-	cfg, err := config.Init(*cfgFile)
+	cfg, err := conf.Init(*cfgFile)
 	if err != nil {
 		panic(err)
 	}
 
 	// Set gin mode.
-	gin.SetMode(config.Conf.App.RunMode)
+	gin.SetMode(cfg.App.Mode)
 
 	// init app
 	app := snake.New(cfg)

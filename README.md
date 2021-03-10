@@ -49,7 +49,7 @@
 ├── build                        # 编译目录
 ├── cmd                          # 脚手架目录
 ├── conf                         # 配置文件统一存放目录
-├── db.sql                       # 在部署新环境时，可以登录 MySQL 客户端，执行 source db.sql 创建数据库和表
+├── init.sql                       # 在部署新环境时，可以登录 MySQL 客户端，执行 source init.sql 创建数据库和表
 ├── docs                         # Swagger 文档，执行 swag init 生成的
 ├── handler                      # 控制器目录，用来读取输入、调用业务处理、返回结果
 ├── internal                     # 业务目录

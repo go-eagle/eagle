@@ -1,6 +1,11 @@
 package log
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+
+	"github.com/1024casts/snake/pkg/conf"
+)
 
 // A global variable so that log functions can be directly accessed
 var log Logger
@@ -18,22 +23,6 @@ var (
 	errInvalidLoggerInstance = errors.New("invalid logger instance")
 )
 
-// Logger is our contract for the logger
-type Logger interface {
-	Debug(args ...interface{})
-	Info(args ...interface{})
-	Warn(args ...interface{})
-	Error(args ...interface{})
-	Fatal(args ...interface{})
-	Debugf(format string, args ...interface{})
-	Infof(format string, args ...interface{})
-	Warnf(format string, args ...interface{})
-	Errorf(format string, args ...interface{})
-	Fatalf(format string, args ...interface{})
-	Panicf(format string, args ...interface{})
-	WithFields(keyValues Fields) Logger
-}
-
 // Config is the struct for logger information
 type Config struct {
 	Name             string `yaml:"name"`
@@ -49,8 +38,32 @@ type Config struct {
 	LogBackupCount   uint   `yaml:"log_backup_count"`
 }
 
+// InitLog init log
+func InitLog(cfg *conf.Config) {
+	err := NewLogger(cfg, InstanceZapLogger)
+	if err != nil {
+		fmt.Printf("InitWithConfig err: %v", err)
+	}
+}
+
+// Logger is our contract for the logger
+type Logger interface {
+	Debug(args ...interface{})
+	Debugf(format string, args ...interface{})
+	Info(args ...interface{})
+	Infof(format string, args ...interface{})
+	Warn(args ...interface{})
+	Warnf(format string, args ...interface{})
+	Error(args ...interface{})
+	Errorf(format string, args ...interface{})
+	Fatal(args ...interface{})
+	Fatalf(format string, args ...interface{})
+	Panicf(format string, args ...interface{})
+	WithFields(keyValues Fields) Logger
+}
+
 // NewLogger returns an instance of logger
-func NewLogger(cfg *Config, loggerInstance int) error {
+func NewLogger(cfg *conf.Config, loggerInstance int) error {
 	switch loggerInstance {
 	case InstanceZapLogger:
 		logger, err := newZapLogger(cfg)

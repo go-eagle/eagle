@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/1024casts/snake/config"
+	"github.com/1024casts/snake/pkg/conf"
 
 	"google.golang.org/grpc"
 
@@ -13,7 +13,7 @@ import (
 )
 
 // New new grpc server
-func New(c *config.Config, svc *service.Service) *grpc.Server {
+func New(c *conf.Config, svc *service.Service) *grpc.Server {
 	// todo: get addr from conf
 	lis, err := net.Listen("tcp", "127.0.0.1:12349")
 	if err != nil {

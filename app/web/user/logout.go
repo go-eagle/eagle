@@ -3,7 +3,7 @@ package user
 import (
 	"net/http"
 
-	"github.com/1024casts/snake/config"
+	"github.com/1024casts/snake/pkg/conf"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
@@ -17,7 +17,7 @@ func Logout(c *gin.Context) {
 	// 删除cookie信息
 	session := web.GetCookieSession(c)
 	session.Options = &sessions.Options{
-		Domain: config.Conf.Cookie.Domain,
+		Domain: conf.Conf.Cookie.Domain,
 		Path:   "/",
 		MaxAge: -1,
 	}
