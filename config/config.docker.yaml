@@ -14,24 +14,21 @@ app:
   CSRF: true
   Debug: false
 
-log:
-  name: snake                     # 应用名称
-  writers: file,stdout            # 有2个可选项：file,stdout, 可以两者同时选择输出位置，有2个可选项：file,stdout。选择file会将日志记录到logger_file指定的日志文件中，选择stdout会将日志输出到标准输出，当然也可以两者同时选择
-  logger_level: DEBUG             # 日志级别，DEBUG, INFO, WARN, ERROR, FATAL
-  logger_file: /data/logs/snake.log   # 日志文件
-  logger_warn_file: /data/logs/snake.wf.log
-  logger_error_file: /data/logs/snake.err.log
-  log_format_text: false          # 日志的输出格式，json或者plaintext，目前设置为false即可，暂时也只支持json格式
-  log_rolling_policy: daily,      # rotate依据，可选的有：daily, hourly。如果选daily(默认)则根据天进行转存，如果是hourly则根据小时进行转存
-  log_rotate_date: 1              # rotate转存时间，配合rollingPolicy: daily使用
-  log_rotate_size: 1              # rotate转存大小，配合rollingPolicy: size使用
-
 logger:
   Development: true
   DisableCaller: false
   DisableStacktrace: false
   Encoding: json
   Level: info
+  Name: snake
+  Writers: file,stdout
+  LoggerFile: /tmp/log/snake.log
+  LoggerWarnFile: /tmp/log/snake.wf.log
+  LoggerErrorFile: /tmp/log/snake.err.log
+  LogRollingPolicy: daily
+  LogRotateDate: 1
+  LogRotateSize: 1
+  LogBackupCount: 7
 
 mysql:
   Name: snake                     # 数据库名称

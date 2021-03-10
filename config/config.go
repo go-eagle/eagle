@@ -87,7 +87,6 @@ func watchConfig(v *viper.Viper) {
 type Config struct {
 	// common
 	App     AppConfig
-	Log     LogConfig
 	Logger  Logger
 	MySQL   orm.Config
 	Redis   RedisConfig
@@ -121,21 +120,6 @@ type AppConfig struct {
 	Debug             bool
 }
 
-// LogConfig log config
-type LogConfig struct {
-	Name             string `mapstructure:"name"`
-	Writers          string `mapstructure:"writers"`
-	LoggerLevel      string `mapstructure:"logger_level"`
-	LoggerFile       string `mapstructure:"logger_file"`
-	LoggerWarnFile   string `mapstructure:"logger_warn_file"`
-	LoggerErrorFile  string `mapstructure:"logger_error_file"`
-	LogFormatText    bool   `mapstructure:"log_format_text"`
-	LogRollingPolicy string `mapstructure:"log_rolling_policy"`
-	LogRotateDate    int    `mapstructure:"log_rotate_date"`
-	LogRotateSize    int    `mapstructure:"log_rotate_size"`
-	LogBackupCount   uint   `mapstructure:"log_backup_count"`
-}
-
 // Logger config
 type Logger struct {
 	Development       bool
@@ -143,6 +127,16 @@ type Logger struct {
 	DisableStacktrace bool
 	Encoding          string
 	Level             string
+	Name              string
+	Writers           string
+	LoggerFile        string
+	LoggerWarnFile    string
+	LoggerErrorFile   string
+	LogFormatText     bool
+	LogRollingPolicy  string
+	LogRotateDate     int
+	LogRotateSize     int
+	LogBackupCount    uint
 }
 
 // RedisConfig redis config
@@ -218,21 +212,7 @@ type Jaeger struct {
 
 // InitLog init log
 func InitLog(cfg *Config) {
-	c := cfg.Log
-	config := logger.Config{
-		Name:             c.Name,
-		Writers:          c.Writers,
-		LoggerLevel:      c.LoggerLevel,
-		LoggerFile:       c.LoggerFile,
-		LoggerWarnFile:   c.LoggerWarnFile,
-		LoggerErrorFile:  c.LoggerErrorFile,
-		LogFormatText:    c.LogFormatText,
-		LogRollingPolicy: c.LogRollingPolicy,
-		LogRotateDate:    c.LogRotateDate,
-		LogRotateSize:    c.LogRotateSize,
-		LogBackupCount:   c.LogBackupCount,
-	}
-	err := logger.NewLogger(&config, logger.InstanceZapLogger)
+	err := logger.NewLogger(cfg, logger.InstanceZapLogger)
 	if err != nil {
 		fmt.Printf("InitWithConfig err: %v", err)
 	}
