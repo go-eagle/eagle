@@ -95,6 +95,7 @@ type Config struct {
 	QiNiu   QiNiuConfig
 	Metrics Metrics
 	Jaeger  Jaeger
+	MongoDB MongoDB
 
 	// here can add biz conf
 
@@ -206,4 +207,12 @@ type Jaeger struct {
 	Host        string
 	ServiceName string
 	LogSpans    bool
+}
+
+// MongoDB config
+type MongoDB struct {
+	URI      string
+	User     string
+	Password string
+	DB       string
 }

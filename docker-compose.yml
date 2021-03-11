@@ -135,6 +135,22 @@ services:
     networks:
       - snake
 
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_container
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGODB_DATABASE: snake
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - snake
+
+
 networks:
   snake:
     driver: "bridge"
@@ -142,3 +158,4 @@ networks:
 volumes:
   mysql-data:
   redis_data:
+  mongodb_data:
