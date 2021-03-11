@@ -17,10 +17,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/1024casts/snake/internal/service"
-	"github.com/1024casts/snake/pkg/database/orm"
-
 	logger "github.com/1024casts/snake/pkg/log"
-	redis2 "github.com/1024casts/snake/pkg/redis"
 )
 
 const (
@@ -53,19 +50,8 @@ func New(cfg *conf.Config) *Application {
 	// init log
 	logger.InitLog(cfg)
 
-	// init db
-	app.DB = orm.NewMySQL(&cfg.MySQL)
-
-	// init redis
-	app.RedisClient = redis2.Init(cfg)
-
 	// init router
 	app.Router = gin.Default()
-
-	if cfg.App.Mode == ModeDebug {
-		app.DB.Debug()
-		app.Debug = true
-	}
 
 	return app
 }

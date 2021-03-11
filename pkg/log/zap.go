@@ -56,11 +56,12 @@ type zapLogger struct {
 // newZapLogger new zap logger
 func newZapLogger(cfg *conf.Config) (Logger, error) {
 	var encoderCfg zapcore.EncoderConfig
-	if cfg.App.Mode == "debug" {
+	if cfg.Logger.Development {
 		encoderCfg = zap.NewDevelopmentEncoderConfig()
 	} else {
 		encoderCfg = zap.NewProductionEncoderConfig()
 	}
+	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
 
 	var encoder zapcore.Encoder
 	if cfg.Logger.Encoding == WriterConsole {
@@ -68,11 +69,10 @@ func newZapLogger(cfg *conf.Config) (Logger, error) {
 	} else {
 		encoder = zapcore.NewJSONEncoder(encoderCfg)
 	}
-	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
 
 	var cores []zapcore.Core
 	var options []zap.Option
-	// 设置初始化字段
+	// init option
 	hostname, _ := os.Hostname()
 	option := zap.Fields(
 		zap.String("ip", ip.GetLocalIP()),
@@ -85,7 +85,7 @@ func newZapLogger(cfg *conf.Config) (Logger, error) {
 	for _, w := range writers {
 		switch w {
 		case WriterConsole:
-			cores = append(cores, zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel))
+			cores = append(cores, zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), getLoggerLevel(cfg)))
 		case WriterFile:
 			// info
 			cores = append(cores, getInfoCore(encoder, cfg))
@@ -93,15 +93,19 @@ func newZapLogger(cfg *conf.Config) (Logger, error) {
 			// warning
 			core, option := getWarnCore(encoder, cfg)
 			cores = append(cores, core)
-			options = append(options, option)
+			if option != nil {
+				options = append(options, option)
+			}
 
 			// error
 			core, option = getErrorCore(encoder, cfg)
 			cores = append(cores, core)
-			options = append(options, option)
+			if option != nil {
+				options = append(options, option)
+			}
 		default:
 			// console
-			cores = append(cores, zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel))
+			cores = append(cores, zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), getLoggerLevel(cfg)))
 			// file
 			cores = append(cores, getAllCore(encoder, cfg))
 		}

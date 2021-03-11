@@ -9,9 +9,6 @@
 package main
 
 import (
-	snake "github.com/1024casts/snake/pkg"
-	"github.com/1024casts/snake/pkg/conf"
-	"github.com/1024casts/snake/pkg/net/tracing"
 	"github.com/gin-gonic/gin"
 	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -21,8 +18,13 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/1024casts/snake/app/api"
+	"github.com/1024casts/snake/internal/model"
 	rpc "github.com/1024casts/snake/internal/server"
 	"github.com/1024casts/snake/internal/service"
+	snake "github.com/1024casts/snake/pkg"
+	"github.com/1024casts/snake/pkg/conf"
+	"github.com/1024casts/snake/pkg/net/tracing"
+	redis2 "github.com/1024casts/snake/pkg/redis"
 	routers "github.com/1024casts/snake/router"
 )
 
@@ -55,6 +57,17 @@ func main() {
 	// init app
 	app := snake.New(cfg)
 	snake.App = app
+
+	// init db
+	app.DB = model.Init(cfg)
+
+	// init redis
+	app.RedisClient = redis2.Init(cfg)
+
+	if cfg.App.Mode == snake.ModeDebug {
+		app.DB.Debug()
+		app.Debug = true
+	}
 
 	// init db tracing plugin
 	//app.DB.Use(gormopentracing.New())
@@ -92,7 +105,7 @@ func main() {
 	var rpcSrv *grpc.Server
 	go func() {
 		rpcSrv = rpc.New(cfg, svc)
-		snake.App.RPCServer = rpcSrv
+		app.RPCServer = rpcSrv
 	}()
 
 	// here register to service discovery
