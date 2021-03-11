@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/1024casts/snake/pkg/net/tracing"
-
 	"github.com/opentracing/opentracing-go/ext"
 
 	"github.com/opentracing/opentracing-go"
@@ -23,8 +21,7 @@ const (
 
 // Cache cache
 type Cache struct {
-	cache  cache.Driver
-	tracer opentracing.Tracer
+	cache cache.Driver
 	//localCache cache.Driver
 }
 
@@ -32,12 +29,10 @@ type Cache struct {
 func NewUserCache() *Cache {
 	encoding := cache.JSONEncoding{}
 	cachePrefix := ""
-	tracer, _ := tracing.Init("redis", nil)
 	return &Cache{
 		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, encoding, func() interface{} {
 			return &model.UserBaseModel{}
 		}),
-		tracer: tracer,
 	}
 }
 

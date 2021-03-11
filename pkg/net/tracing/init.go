@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/1024casts/snake/pkg/conf"
+
 	"github.com/1024casts/snake/pkg/log"
 
 	"github.com/uber/jaeger-lib/metrics"
@@ -14,9 +16,9 @@ import (
 )
 
 // Init returns a new instance of Jaeger Tracer.
-func Init(serviceName string, metricsFactory metrics.Factory) (opentracing.Tracer, io.Closer) {
+func Init(c *conf.Config, metricsFactory metrics.Factory) (opentracing.Tracer, io.Closer) {
 	cfg := &config.Configuration{
-		ServiceName: serviceName,
+		ServiceName: c.Jaeger.ServiceName,
 
 		// "const" sampler is a binary sampling strategy: 0=never sample, 1=always sample.
 		Sampler: &config.SamplerConfig{
@@ -26,10 +28,8 @@ func Init(serviceName string, metricsFactory metrics.Factory) (opentracing.Trace
 
 		// Log the emitted spans to stdout.
 		Reporter: &config.ReporterConfig{
-			LogSpans: true,
-			//LocalAgentHostPort:  "127.0.0.1:6381",
-			//BufferFlushInterval: 100 * time.Millisecond,
-			//CollectorEndpoint:   "http://127.0.0.1:14268/api/traces",   // for gorm
+			LogSpans:           c.Jaeger.LogSpans,
+			LocalAgentHostPort: c.Jaeger.Host,
 		},
 	}
 

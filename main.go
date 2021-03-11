@@ -88,14 +88,14 @@ func main() {
 
 	// init tracer
 	metricsFactory := jprom.New().Namespace(metrics.NSOptions{Name: cfg.App.Name, Tags: nil})
-	tracer, closer := tracing.Init(cfg.App.Name, metricsFactory)
+	tracer, closer := tracing.Init(cfg, metricsFactory)
 	defer closer.Close()
 
 	// set into opentracing
 	opentracing.SetGlobalTracer(tracer)
 
 	// init service
-	svc := service.New(cfg, tracer)
+	svc := service.New(cfg)
 
 	// set global service
 	service.Svc = svc

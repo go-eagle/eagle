@@ -5,13 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/opentracing/opentracing-go/ext"
-
-	"github.com/1024casts/snake/pkg/net/tracing"
-
 	"github.com/1024casts/snake/pkg/redis"
 	"github.com/opentracing/opentracing-go"
-
 	"github.com/pkg/errors"
 	"golang.org/x/sync/singleflight"
 	"gorm.io/gorm"
@@ -42,16 +37,13 @@ type BaseRepo interface {
 type userBaseRepo struct {
 	db        *gorm.DB
 	userCache *user.Cache
-	tracer    opentracing.Tracer
 }
 
 // NewUserRepo 实例化用户仓库
 func NewUserRepo(db *gorm.DB) BaseRepo {
-	tracer, _ := tracing.Init("mysql", nil)
 	return &userBaseRepo{
 		db:        db,
 		userCache: user.NewUserCache(),
-		tracer:    tracer,
 	}
 }
 
@@ -91,6 +83,10 @@ func (repo *userBaseRepo) UpdateUser(ctx context.Context, id uint64, userMap map
 // 缓存的更新策略使用 Cache Aside Pattern
 // see: https://coolshell.cn/articles/17416.html
 func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserBaseModel, err error) {
+	// add tracing
+	span, ctx := opentracing.StartSpanFromContext(ctx, "userBaseRepo.GetOneUser")
+	defer span.Finish()
+
 	//var userBase *model.UserBaseModel
 	start := time.Now()
 	defer func() {
@@ -130,16 +126,6 @@ func (repo *userBaseRepo) GetOneUser(ctx context.Context, uid uint64) (userBase 
 		} else if err != nil {
 			prom.BusinessErrCount.Incr("mysql: getOneUser")
 			return nil, errors.Wrapf(err, "[repo.user_base] query db err")
-		}
-
-		// add tracing
-		if span := opentracing.SpanFromContext(ctx); span != nil {
-			span := repo.tracer.StartSpan("GetOneUser", opentracing.ChildOf(span.Context()))
-			span.SetTag("param.uid", uid)
-			ext.SpanKindRPCClient.Set(span)
-			span.Finish()
-
-			// ctx = opentracing.ContextWithSpan(ctx, span)
 		}
 
 		// set cache
