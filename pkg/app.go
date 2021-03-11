@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/1024casts/snake/pkg/conf"
 
@@ -58,24 +59,38 @@ func New(cfg *conf.Config) *Application {
 
 // Run start a app
 func (a *Application) Run() {
-	fmt.Printf("Listening and serving HTTP on %s\n", conf.Conf.App.Port)
 	srv := &http.Server{
-		Addr:    conf.Conf.App.Port,
-		Handler: a.Router,
+		Addr:         conf.Conf.App.Port,
+		ReadTimeout:  time.Second * conf.Conf.App.ReadTimeout,
+		WriteTimeout: time.Second * conf.Conf.App.WriteTimeout,
+		Handler:      a.Router,
 	}
+
 	go func() {
+		fmt.Printf("Listening and serving HTTP on %s\n", conf.Conf.App.Port)
 		// service connections
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen, err: %s", err.Error())
 		}
 	}()
 
+	go func() {
+		fmt.Printf("Listening and serving Pprof HTTP on %s\n", conf.Conf.App.PprofPort)
+		// service connections
+		if err := http.ListenAndServe(conf.Conf.App.PprofPort, http.DefaultServeMux); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen Pprof, err: %s", err.Error())
+		}
+	}()
+
+	ctx, shutdown := context.WithTimeout(context.Background(), conf.Conf.App.CtxDefaultTimeout*time.Second)
+	defer shutdown()
+
 	// block process
-	a.GracefulStop(srv)
+	a.GracefulStop(ctx, srv)
 }
 
 // GracefulStop 优雅退出
-func (a *Application) GracefulStop(httpSrv *http.Server) {
+func (a *Application) GracefulStop(ctx context.Context, httpSrv *http.Server) {
 	quit := make(chan os.Signal, 1)
 	// kill (no param) default send syscall.SIGTERM
 	// kill -2 is syscall.SIGINT
@@ -98,7 +113,7 @@ func (a *Application) GracefulStop(httpSrv *http.Server) {
 
 			// close http server
 			if httpSrv != nil {
-				if err := httpSrv.Shutdown(context.Background()); err != nil {
+				if err := httpSrv.Shutdown(ctx); err != nil {
 					log.Fatalf("[snake] Server shutdown err: %s", err)
 				}
 			}

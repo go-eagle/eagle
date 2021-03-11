@@ -110,10 +110,10 @@ type AppConfig struct {
 	URL               string
 	JwtSecret         string
 	JwtTimeout        int
-	ReadTimeout       int
-	WriteTimeout      int
+	ReadTimeout       time.Duration
+	WriteTimeout      time.Duration
 	SSL               bool
-	CtxDefaultTimeout int
+	CtxDefaultTimeout time.Duration
 	CSRF              bool
 	Debug             bool
 }
