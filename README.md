@@ -48,8 +48,7 @@
 ├── Makefile                     # 项目管理文件
 ├── build                        # 编译目录
 ├── cmd                          # 脚手架目录
-├── conf                         # 配置文件统一存放目录
-├── init.sql                       # 在部署新环境时，可以登录 MySQL 客户端，执行 source init.sql 创建数据库和表
+├── config                       # 配置文件统一存放目录
 ├── docs                         # Swagger 文档，执行 swag init 生成的
 ├── handler                      # 控制器目录，用来读取输入、调用业务处理、返回结果
 ├── internal                     # 业务目录
@@ -60,7 +59,7 @@
 │   └── service                  # 业务逻辑层
 ├── logs                         # 存放日志的目录
 ├── main.go                      # 项目入口文件
-├── pkg                          # 一些封装好的 package
+├── pkg                          # 公共的 package
 ├── router                       # 路由及中间件目录
 └── scripts                      # 存放用于执行各种构建，安装，分析等操作的脚本
 ```
@@ -80,8 +79,9 @@ git clone https://github.com/1024casts/snake
 # 进入到下载目录
 cd snake
 
-# 生成本地环境配置文件
-cp config.sample.yaml config.local.yaml
+# 生成环境配置文件
+cd config
+cp config.local.yaml config.{ENV}.yaml
 
 # 编译
 make build
