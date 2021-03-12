@@ -54,7 +54,16 @@ type zapLogger struct {
 }
 
 // newZapLogger new zap logger
-func newZapLogger(cfg *conf.Config) (Logger, error) {
+func newZapLogger(cfg *conf.Config) (*zap.Logger, error) {
+	return buildLogger(cfg), nil
+}
+
+// newLogger new logger
+func newLogger(cfg *conf.Config) (Logger, error) {
+	return &zapLogger{sugarLogger: buildLogger(cfg).Sugar()}, nil
+}
+
+func buildLogger(cfg *conf.Config) *zap.Logger {
 	var encoderCfg zapcore.EncoderConfig
 	if cfg.Logger.Development {
 		encoderCfg = zap.NewDevelopmentEncoderConfig()
@@ -124,9 +133,7 @@ func newZapLogger(cfg *conf.Config) (Logger, error) {
 	options = append(options, addCallerSkip)
 
 	// 构造日志
-	logger := zap.New(combinedCore, options...).Sugar()
-
-	return &zapLogger{sugarLogger: logger}, nil
+	return zap.New(combinedCore, options...)
 }
 
 func getAllCore(encoder zapcore.Encoder, cfg *conf.Config) zapcore.Core {

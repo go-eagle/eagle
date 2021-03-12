@@ -12,18 +12,21 @@ import (
 // Factory is the default logging wrapper that can create
 // logger instances either for a given Context or context-less.
 type Factory struct {
-	logger *zap.Logger
+	zapLogger *zap.Logger
+	logger    Logger
 }
 
 // NewFactory creates a new Factory.
-func NewFactory(logger *zap.Logger) Factory {
-	return Factory{logger: logger}
+func NewFactory(zapLogger *zap.Logger, logger Logger) Factory {
+	return Factory{
+		zapLogger: zapLogger,
+		logger:    logger,
+	}
 }
 
 // Bg creates a context-unaware logger.
 func (b Factory) Bg() Logger {
-	l, _ := newZapLogger(nil)
-	return l
+	return b.logger
 }
 
 // For returns a context-aware Logger. If the context
@@ -31,7 +34,7 @@ func (b Factory) Bg() Logger {
 // echo-ed into the span.
 func (b Factory) For(ctx context.Context) Logger {
 	if span := opentracing.SpanFromContext(ctx); span != nil {
-		logger := spanLogger{span: span, logger: b.logger}
+		logger := spanLogger{span: span, logger: b.zapLogger}
 
 		if jaegerCtx, ok := span.Context().(jaeger.SpanContext); ok {
 			logger.spanFields = []zapcore.Field{
@@ -47,5 +50,5 @@ func (b Factory) For(ctx context.Context) Logger {
 
 // With creates a child logger, and optionally adds some context fields to that logger.
 func (b Factory) With(fields ...zapcore.Field) Factory {
-	return Factory{logger: b.logger.With(fields...)}
+	return Factory{zapLogger: b.zapLogger.With(fields...)}
 }

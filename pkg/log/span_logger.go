@@ -42,11 +42,17 @@ func (sl spanLogger) Infof(format string, args ...interface{}) {
 }
 
 func (sl spanLogger) Warn(args ...interface{}) {
-	panic("implement me")
+	msg := fmt.Sprint(args)
+	var fields []zap.Field
+	sl.logToSpan("error", msg)
+	sl.logger.Warn(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Warnf(format string, args ...interface{}) {
-	panic("implement me")
+	msg := fmt.Sprint(format, args)
+	var fields []zap.Field
+	sl.logToSpan("error", msg)
+	sl.logger.Warn(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Error(args ...interface{}) {

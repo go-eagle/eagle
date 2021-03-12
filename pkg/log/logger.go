@@ -1,27 +1,20 @@
 package log
 
 import (
-	"errors"
+	"context"
 	"fmt"
 
 	"github.com/1024casts/snake/pkg/conf"
 )
 
-// A global variable so that log functions can be directly accessed
+// log is A global variable so that log functions can be directly accessed
 var log Logger
+
+// logger is A global variable with trace log
+var logger Factory
 
 // Fields Type to pass when we want to call WithFields for structured logging
 type Fields map[string]interface{}
-
-const (
-	// InstanceZapLogger zap logger
-	InstanceZapLogger int = iota
-	// here add other logger
-)
-
-var (
-	errInvalidLoggerInstance = errors.New("log: invalid logger instance")
-)
 
 // Config is the struct for logger information
 type Config struct {
@@ -40,12 +33,22 @@ type Config struct {
 
 // InitLog init log
 func InitLog(cfg *conf.Config) Logger {
-	logger, err := newZapLogger(cfg)
+	zapLogger, err := newZapLogger(cfg)
 	if err != nil {
-		fmt.Printf("InitWithConfig err: %v", err)
+		fmt.Errorf("Init newZapLogger err: %v", err)
 	}
-	log = logger
-	return logger
+	l, err := newLogger(cfg)
+	if err != nil {
+		fmt.Errorf("Init newLogger err: %v", err)
+	}
+
+	// init logger with trace log
+	logger = NewFactory(zapLogger, l)
+
+	// normal log
+	log = l
+
+	return log
 }
 
 // Logger is our contract for the logger
@@ -66,6 +69,11 @@ type Logger interface {
 
 func GetLogger() Logger {
 	return log
+}
+
+// Trace is a logger that can log msg and log span for trace
+func Trace(ctx context.Context) Logger {
+	return logger.For(ctx)
 }
 
 // Debug logger
