@@ -20,7 +20,7 @@ const (
 )
 
 var (
-	errInvalidLoggerInstance = errors.New("invalid logger instance")
+	errInvalidLoggerInstance = errors.New("log: invalid logger instance")
 )
 
 // Config is the struct for logger information
@@ -39,11 +39,13 @@ type Config struct {
 }
 
 // InitLog init log
-func InitLog(cfg *conf.Config) {
-	err := NewLogger(cfg, InstanceZapLogger)
+func InitLog(cfg *conf.Config) Logger {
+	logger, err := newZapLogger(cfg)
 	if err != nil {
 		fmt.Printf("InitWithConfig err: %v", err)
 	}
+	log = logger
+	return logger
 }
 
 // Logger is our contract for the logger
@@ -60,21 +62,6 @@ type Logger interface {
 	Fatalf(format string, args ...interface{})
 	Panicf(format string, args ...interface{})
 	WithFields(keyValues Fields) Logger
-}
-
-// NewLogger returns an instance of logger
-func NewLogger(cfg *conf.Config, loggerInstance int) error {
-	switch loggerInstance {
-	case InstanceZapLogger:
-		logger, err := newZapLogger(cfg)
-		if err != nil {
-			return err
-		}
-		log = logger
-		return nil
-	default:
-		return errInvalidLoggerInstance
-	}
 }
 
 func GetLogger() Logger {

@@ -36,6 +36,7 @@ var App *Application
 // Application a container for your application.
 type Application struct {
 	Conf        *conf.Config
+	Logger      logger.Logger
 	DB          *gorm.DB
 	RedisClient *redis.Client
 	Router      *gin.Engine
@@ -49,7 +50,7 @@ func New(cfg *conf.Config) *Application {
 	app := new(Application)
 
 	// init log
-	logger.InitLog(cfg)
+	app.Logger = logger.InitLog(cfg)
 
 	// init router
 	app.Router = gin.Default()
