@@ -66,13 +66,8 @@ func (u *Cache) SetUserBaseCache(ctx context.Context, userID uint64, user *model
 
 // GetUserBaseCache 获取用户cache
 func (u *Cache) GetUserBaseCache(ctx context.Context, userID uint64) (data *model.UserBaseModel, err error) {
-	//if span := opentracing.SpanFromContext(ctx); span != nil {
-	//	span := u.tracer.StartSpan("GetUserBaseCache", opentracing.ChildOf(span.Context()))
-	//	span.SetTag("param.userID", userID)
-	//	ext.SpanKindRPCClient.Set(span)
-	//	defer span.Finish()
-	//	ctx = opentracing.ContextWithSpan(ctx, span)
-	//}
+	span, ctx := opentracing.StartSpanFromContext(ctx, "cache.GetUserBaseCache")
+	defer span.Finish()
 	client := getCacheClient(ctx)
 
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
