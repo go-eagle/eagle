@@ -55,6 +55,9 @@ func (u *Cache) GetUserBaseCacheKey(userID uint64) string {
 
 // SetUserBaseCache 写入用户cache
 func (u *Cache) SetUserBaseCache(ctx context.Context, userID uint64, user *model.UserBaseModel, duration time.Duration) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "cache.SetUserBaseCache")
+	defer span.Finish()
+
 	if user == nil || user.ID == 0 {
 		return nil
 	}
