@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/1024casts/snake/pkg/log"
+
 	"github.com/opentracing/opentracing-go/ext"
 
 	"github.com/opentracing/opentracing-go"
@@ -77,6 +79,7 @@ func (u *Cache) GetUserBaseCache(ctx context.Context, userID uint64) (data *mode
 		if span := opentracing.SpanFromContext(ctx); span != nil {
 			ext.Error.Set(span, true)
 		}
+		log.Trace(ctx).Warnf("get err from redis, err: %+v", err)
 		return nil, err
 	}
 	return data, nil
