@@ -7,8 +7,8 @@ import (
 
 // Error 返回错误码和消息的结构体
 type Error struct {
-	code    int
-	msg     string
+	code    int      `json:"code"`
+	msg     string   `json:"msg"`
 	details []string `json:"details"`
 }
 
@@ -16,14 +16,14 @@ var codes = map[int]string{}
 
 func NewError(code int, msg string) *Error {
 	if _, ok := codes[code]; ok {
-		panic(fmt.Sprintf("错误码 %d 已经存在，请更换一个", code))
+		panic(fmt.Sprintf("code %d is exsit, please change one", code))
 	}
 	codes[code] = msg
 	return &Error{code: code, msg: msg}
 }
 
 func (e Error) Error() string {
-	return fmt.Sprintf("错误码：%d, 错误信息:：%s", e.Code(), e.Msg())
+	return fmt.Sprintf("code：%d, msg:：%s", e.Code(), e.Msg())
 }
 
 func (e *Error) Code() int {
