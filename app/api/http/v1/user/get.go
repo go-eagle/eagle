@@ -25,7 +25,7 @@ func Get(c *gin.Context) {
 
 	userID := cast.ToUint64(c.Param("id"))
 	if userID == 0 {
-		api.SendResponse(c, errno.ErrParam, nil)
+		api.SendResponse(c, errno.ErrInvalidParam, nil)
 		return
 	}
 

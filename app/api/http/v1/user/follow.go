@@ -47,7 +47,7 @@ func Follow(c *gin.Context) {
 	// 检查是否已经关注过
 	isFollowed := service.Svc.RelationSvc().IsFollowing(context.TODO(), userID, req.UserID)
 	if isFollowed {
-		api.SendResponse(c, errno.OK, nil)
+		api.SendResponse(c, errno.Success, nil)
 		return
 	}
 

@@ -33,7 +33,7 @@ func Login(c *gin.Context) {
 	// check param
 	if req.Email == "" || req.Password == "" {
 		log.Warnf("email or password is empty: %v", req)
-		api.SendResponse(c, errno.ErrParam, nil)
+		api.SendResponse(c, errno.ErrInvalidParam, nil)
 		return
 	}
 
@@ -72,7 +72,7 @@ func PhoneLogin(c *gin.Context) {
 	// check param
 	if req.Phone == 0 || req.VerifyCode == 0 {
 		log.Warn("phone login bind param is empty")
-		api.SendResponse(c, errno.ErrParam, nil)
+		api.SendResponse(c, errno.ErrInvalidParam, nil)
 		return
 	}
 

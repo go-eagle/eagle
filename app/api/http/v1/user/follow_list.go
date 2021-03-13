@@ -67,7 +67,7 @@ func FollowList(c *gin.Context) {
 		return
 	}
 
-	api.SendResponse(c, errno.OK, ListResponse{
+	api.SendResponse(c, errno.Success, ListResponse{
 		TotalCount: 0,
 		HasMore:    hasMore,
 		PageKey:    "last_id",

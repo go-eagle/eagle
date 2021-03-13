@@ -17,7 +17,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		log.Infof("context is: %+v", ctx)
 
 		if err != nil {
-			api.SendResponse(c, errno.ErrTokenInvalid, nil)
+			api.SendResponse(c, errno.ErrInvalidToken, nil)
 			c.Abort()
 			return
 		}

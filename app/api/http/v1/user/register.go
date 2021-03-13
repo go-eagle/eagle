@@ -31,7 +31,7 @@ func Register(c *gin.Context) {
 	// check param
 	if req.Username == "" || req.Email == "" || req.Password == "" {
 		log.Warnf("params is empty: %v", req)
-		api.SendResponse(c, errno.ErrParam, nil)
+		api.SendResponse(c, errno.ErrInvalidParam, nil)
 		return
 	}
 
