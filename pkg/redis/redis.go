@@ -2,8 +2,7 @@ package redis
 
 import (
 	"fmt"
-
-	"github.com/1024casts/snake/pkg/conf"
+	"time"
 
 	"github.com/alicebob/miniredis"
 	"github.com/go-redis/redis"
@@ -20,9 +19,21 @@ const Nil = redis.Nil
 // ErrRedisNotFound not exist in redis
 const ErrRedisNotFound = redis.Nil
 
+// Config redis config
+type Config struct {
+	Addr         string
+	Password     string
+	DB           int
+	MinIdleConn  int
+	DialTimeout  time.Duration
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
+	PoolSize     int
+	PoolTimeout  time.Duration
+}
+
 // Init 实例化一个redis client
-func Init(cfg *conf.Config) *redis.Client {
-	c := cfg.Redis
+func Init(c *Config) *redis.Client {
 	RedisClient = redis.NewClient(&redis.Options{
 		Addr:         c.Addr,
 		Password:     c.Password,

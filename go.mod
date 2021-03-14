@@ -5,16 +5,15 @@ go 1.13
 require (
 	github.com/DATA-DOG/go-sqlmock v1.3.3
 	github.com/HdrHistogram/hdrhistogram-go v1.0.1 // indirect
+	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
 	github.com/alicebob/miniredis v2.5.0+incompatible
 	github.com/dgraph-io/ristretto v0.0.3
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/foolin/gin-template v0.0.0-20190415034731-41efedfb393b
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-contrib/static v0.0.0-20200916080430-d45d9a37d28e
 	github.com/gin-gonic/gin v1.6.3
-	github.com/go-git/go-git/v5 v5.2.0 // indirect
 	github.com/go-mail/mail v2.3.1+incompatible
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis v6.15.8+incompatible
@@ -61,4 +60,5 @@ require (
 	gopkg.in/mail.v2 v2.3.1 // indirect
 	gorm.io/driver/mysql v1.0.4
 	gorm.io/gorm v1.20.12
+	gorm.io/plugin/opentracing v0.0.0-20210220121556-913c6b2318cc
 )

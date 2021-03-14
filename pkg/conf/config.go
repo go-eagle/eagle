@@ -28,7 +28,7 @@ func Init(configPath string) (*Config, error) {
 		log.Fatalf("ParseConfig: %v", err)
 	}
 
-	watchConfig(cfgFile)
+	WatchConfig(cfgFile)
 
 	Conf = cfg
 
@@ -73,7 +73,7 @@ func ParseConfig(v *viper.Viper) (*Config, error) {
 }
 
 // 监控配置文件变化并热加载程序
-func watchConfig(v *viper.Viper) {
+func WatchConfig(v *viper.Viper) {
 	v.WatchConfig()
 	v.OnConfigChange(func(e fsnotify.Event) {
 		log.Printf("Config file changed: %s", e.Name)

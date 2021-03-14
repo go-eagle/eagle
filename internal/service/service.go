@@ -1,41 +1,47 @@
 package service
 
 import (
-	"github.com/1024casts/snake/internal/service/relation"
-	"github.com/1024casts/snake/internal/service/user"
-	"github.com/1024casts/snake/pkg/conf"
+	"github.com/1024casts/snake/internal/conf"
+	"github.com/1024casts/snake/internal/dao"
+	"github.com/1024casts/snake/internal/model"
+)
+
+const (
+	// DefaultLimit 默认分页数
+	DefaultLimit = 50
+
+	// MaxID 最大id
+	MaxID = 0xffffffffffff
+
+	// DefaultAvatar 默认头像 key
+	DefaultAvatar = "default_avatar.png"
 )
 
 var (
-	// Svc global service var
-	Svc *Service
+	UserSvc  *Service
+	VCodeSvc *Service
 )
 
 // Service struct
 type Service struct {
-	c           *conf.Config
-	userSvc     user.IUserService
-	relationSvc relation.IRelationService
+	c             *conf.Config
+	userDao       dao.BaseDao
+	userFollowDao dao.FollowRepo
+	userStatDao   dao.StatRepo
 }
 
 // New init service
 func New(c *conf.Config) (s *Service) {
+	db := model.GetDB()
 	s = &Service{
-		c:           c,
-		userSvc:     user.NewUserService(c),
-		relationSvc: relation.NewRelationService(c),
+		c:             c,
+		userDao:       dao.NewUserDao(db),
+		userFollowDao: dao.NewUserFollowRepo(db),
+		userStatDao:   dao.NewUserStatRepo(db),
 	}
+	UserSvc = s
+	VCodeSvc = s
 	return s
-}
-
-// UserSvc return user service
-func (s *Service) UserSvc() user.IUserService {
-	return s.userSvc
-}
-
-// RelationSvc return relation service
-func (s *Service) RelationSvc() relation.IRelationService {
-	return s.relationSvc
 }
 
 // Ping service
@@ -45,6 +51,7 @@ func (s *Service) Ping() error {
 
 // Close service
 func (s *Service) Close() {
-	s.userSvc.Close()
-	s.relationSvc.Close()
+	s.userDao.Close()
+	s.userFollowDao.Close()
+	s.userStatDao.Close()
 }

@@ -10,7 +10,6 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/net/ip"
 )
 
@@ -39,8 +38,8 @@ var loggerLevelMap = map[string]zapcore.Level{
 	"fatal":  zapcore.FatalLevel,
 }
 
-func getLoggerLevel(cfg *conf.Config) zapcore.Level {
-	level, exist := loggerLevelMap[cfg.Logger.Level]
+func getLoggerLevel(cfg *Config) zapcore.Level {
+	level, exist := loggerLevelMap[cfg.Level]
 	if !exist {
 		return zapcore.DebugLevel
 	}
@@ -54,18 +53,18 @@ type zapLogger struct {
 }
 
 // newZapLogger new zap logger
-func newZapLogger(cfg *conf.Config) (*zap.Logger, error) {
+func newZapLogger(cfg *Config) (*zap.Logger, error) {
 	return buildLogger(cfg), nil
 }
 
 // newLogger new logger
-func newLogger(cfg *conf.Config) (Logger, error) {
+func newLogger(cfg *Config) (Logger, error) {
 	return &zapLogger{sugarLogger: buildLogger(cfg).Sugar()}, nil
 }
 
-func buildLogger(cfg *conf.Config) *zap.Logger {
+func buildLogger(cfg *Config) *zap.Logger {
 	var encoderCfg zapcore.EncoderConfig
-	if cfg.Logger.Development {
+	if cfg.Development {
 		encoderCfg = zap.NewDevelopmentEncoderConfig()
 	} else {
 		encoderCfg = zap.NewProductionEncoderConfig()
@@ -73,7 +72,7 @@ func buildLogger(cfg *conf.Config) *zap.Logger {
 	encoderCfg.EncodeTime = zapcore.ISO8601TimeEncoder
 
 	var encoder zapcore.Encoder
-	if cfg.Logger.Encoding == WriterConsole {
+	if cfg.Encoding == WriterConsole {
 		encoder = zapcore.NewConsoleEncoder(encoderCfg)
 	} else {
 		encoder = zapcore.NewJSONEncoder(encoderCfg)
@@ -85,12 +84,12 @@ func buildLogger(cfg *conf.Config) *zap.Logger {
 	hostname, _ := os.Hostname()
 	option := zap.Fields(
 		zap.String("ip", ip.GetLocalIP()),
-		zap.String("app_id", cfg.Logger.Name),
+		zap.String("app_id", cfg.Name),
 		zap.String("instance_id", hostname),
 	)
 	options = append(options, option)
 
-	writers := strings.Split(cfg.Logger.Writers, ",")
+	writers := strings.Split(cfg.Writers, ",")
 	for _, w := range writers {
 		switch w {
 		case WriterConsole:
@@ -123,7 +122,7 @@ func buildLogger(cfg *conf.Config) *zap.Logger {
 	combinedCore := zapcore.NewTee(cores...)
 
 	// 开启开发模式，堆栈跟踪
-	if !cfg.Logger.DisableCaller {
+	if !cfg.DisableCaller {
 		caller := zap.AddCaller()
 		options = append(options, caller)
 	}
@@ -136,27 +135,27 @@ func buildLogger(cfg *conf.Config) *zap.Logger {
 	return zap.New(combinedCore, options...)
 }
 
-func getAllCore(encoder zapcore.Encoder, cfg *conf.Config) zapcore.Core {
-	allWriter := getLogWriterWithTime(cfg, cfg.Logger.LoggerFile)
+func getAllCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
+	allWriter := getLogWriterWithTime(cfg, cfg.LoggerFile)
 	allLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.FatalLevel
 	})
 	return zapcore.NewCore(encoder, zapcore.AddSync(allWriter), allLevel)
 }
 
-func getInfoCore(encoder zapcore.Encoder, cfg *conf.Config) zapcore.Core {
-	infoWrite := getLogWriterWithTime(cfg, cfg.Logger.LoggerFile)
+func getInfoCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
+	infoWrite := getLogWriterWithTime(cfg, cfg.LoggerFile)
 	infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.InfoLevel
 	})
 	return zapcore.NewCore(encoder, zapcore.AddSync(infoWrite), infoLevel)
 }
 
-func getWarnCore(encoder zapcore.Encoder, cfg *conf.Config) (zapcore.Core, zap.Option) {
-	warnWrite := getLogWriterWithTime(cfg, cfg.Logger.LoggerWarnFile)
+func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
+	warnWrite := getLogWriterWithTime(cfg, cfg.LoggerWarnFile)
 	var stacktrace zap.Option
 	warnLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		if !cfg.Logger.DisableCaller {
+		if !cfg.DisableCaller {
 			stacktrace = zap.AddStacktrace(zapcore.WarnLevel)
 		}
 		return lvl == zapcore.WarnLevel
@@ -164,12 +163,12 @@ func getWarnCore(encoder zapcore.Encoder, cfg *conf.Config) (zapcore.Core, zap.O
 	return zapcore.NewCore(encoder, zapcore.AddSync(warnWrite), warnLevel), stacktrace
 }
 
-func getErrorCore(encoder zapcore.Encoder, cfg *conf.Config) (zapcore.Core, zap.Option) {
-	errorFilename := cfg.Logger.LoggerErrorFile
+func getErrorCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
+	errorFilename := cfg.LoggerErrorFile
 	errorWrite := getLogWriterWithTime(cfg, errorFilename)
 	var stacktrace zap.Option
 	errorLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		if !cfg.Logger.DisableCaller {
+		if !cfg.DisableCaller {
 			stacktrace = zap.AddStacktrace(zapcore.ErrorLevel)
 		}
 		return lvl >= zapcore.ErrorLevel
@@ -178,10 +177,10 @@ func getErrorCore(encoder zapcore.Encoder, cfg *conf.Config) (zapcore.Core, zap.
 }
 
 // getLogWriterWithTime 按时间(小时)进行切割
-func getLogWriterWithTime(cfg *conf.Config, filename string) io.Writer {
+func getLogWriterWithTime(cfg *Config, filename string) io.Writer {
 	logFullPath := filename
-	rotationPolicy := cfg.Logger.LogRollingPolicy
-	backupCount := cfg.Logger.LogBackupCount
+	rotationPolicy := cfg.LogRollingPolicy
+	backupCount := cfg.LogBackupCount
 	// 默认
 	rotateDuration := time.Hour * 24
 	if rotationPolicy == RotateTimeHourly {

@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/willf/pad"
 
-	"github.com/1024casts/snake/app/api"
+	"github.com/1024casts/snake/api"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 )

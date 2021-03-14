@@ -51,10 +51,6 @@ redis:
   PoolSize: 12000
   PoolTimeout: 240
 
-cache:
-  Driver: "redis"                 # 缓存驱动，可以选memory、redis, 默认redis
-  Prefix: "snake:"                # cache key前缀，一般为项目名称即可
-
 email:
   Host: SMTP_HOST       # SMTP地址
   Port: 25              # 端口

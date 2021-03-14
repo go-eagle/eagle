@@ -20,6 +20,18 @@ var (
 	ErrChanNotOpen = errors.New("email queue does not open")
 )
 
+// Config email config
+type Config struct {
+	Host      string
+	Port      int
+	Username  string
+	Password  string
+	Name      string
+	Address   string
+	ReplyTo   string
+	KeepAlive int
+}
+
 // Init 初始化客户端
 func Init() {
 	log.Info("email init")

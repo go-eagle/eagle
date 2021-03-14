@@ -10,6 +10,7 @@ import (
 	"gorm.io/driver/mysql"
 	// GORM MySQL
 	"gorm.io/gorm"
+	gromopentracing "gorm.io/plugin/opentracing"
 )
 
 // Config mysql config
@@ -51,6 +52,8 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 		log.Panicf("database connection failed. database name: %s, err: %+v", c.Name, err)
 	}
 	db.Set("gorm:table_options", "CHARSET=utf8mb4")
+
+	db.Use(gromopentracing.New())
 
 	return db
 }

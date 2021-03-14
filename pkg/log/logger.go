@@ -3,8 +3,6 @@ package log
 import (
 	"context"
 	"fmt"
-
-	"github.com/1024casts/snake/pkg/conf"
 )
 
 // log is A global variable so that log functions can be directly accessed
@@ -16,23 +14,27 @@ var logger Factory
 // Fields Type to pass when we want to call WithFields for structured logging
 type Fields map[string]interface{}
 
-// Config is the struct for logger information
+// Logger config
 type Config struct {
-	Name             string `yaml:"name"`
-	Writers          string `yaml:"writers"`
-	LoggerLevel      string `yaml:"logger_level"`
-	LoggerFile       string `yaml:"logger_file"`
-	LoggerWarnFile   string `yaml:"logger_warn_file"`
-	LoggerErrorFile  string `yaml:"logger_error_file"`
-	LogFormatText    bool   `yaml:"log_format_text"`
-	LogRollingPolicy string `yaml:"log_rolling_policy"`
-	LogRotateDate    int    `yaml:"log_rotate_date"`
-	LogRotateSize    int    `yaml:"log_rotate_size"`
-	LogBackupCount   uint   `yaml:"log_backup_count"`
+	Development       bool
+	DisableCaller     bool
+	DisableStacktrace bool
+	Encoding          string
+	Level             string
+	Name              string
+	Writers           string
+	LoggerFile        string
+	LoggerWarnFile    string
+	LoggerErrorFile   string
+	LogFormatText     bool
+	LogRollingPolicy  string
+	LogRotateDate     int
+	LogRotateSize     int
+	LogBackupCount    uint
 }
 
 // InitLog init log
-func InitLog(cfg *conf.Config) Logger {
+func InitLog(cfg *Config) Logger {
 	zapLogger, err := newZapLogger(cfg)
 	if err != nil {
 		fmt.Errorf("Init newZapLogger err: %v", err)

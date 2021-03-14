@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/1024casts/snake/pkg/conf"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -16,13 +15,21 @@ const (
 	maxPoolSize     = 300
 )
 
+// Config MongoDB config
+type Config struct {
+	URI      string
+	User     string
+	Password string
+	DB       string
+}
+
 // NewMongoDBConn Create new MongoDB client
-func NewMongoDBConn(ctx context.Context, cfg *conf.Config) (*mongo.Client, error) {
+func NewMongoDBConn(ctx context.Context, cfg *Config) (*mongo.Client, error) {
 	client, err := mongo.NewClient(
-		options.Client().ApplyURI(cfg.MongoDB.URI).
+		options.Client().ApplyURI(cfg.URI).
 			SetAuth(options.Credential{
-				Username: cfg.MongoDB.User,
-				Password: cfg.MongoDB.Password,
+				Username: cfg.User,
+				Password: cfg.Password,
 			}).
 			SetConnectTimeout(connectTimeout).
 			SetMaxConnIdleTime(maxConnIdleTime).
