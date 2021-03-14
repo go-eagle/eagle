@@ -28,8 +28,8 @@ type RegisterRequest struct {
 
 // LoginCredentials 默认登录方式-邮箱
 type LoginCredentials struct {
-	Email    string `json:"email" form:"email"`
-	Password string `json:"password" form:"password"`
+	Email    string `json:"email" form:"email" binding:"required" `
+	Password string `json:"password" form:"password" binding:"required" `
 }
 
 // PhoneLoginCredentials 手机登录

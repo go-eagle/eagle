@@ -2,9 +2,9 @@ package user
 
 import (
 	"github.com/1024casts/snake/internal/ecode"
+	"github.com/1024casts/snake/pkg/app"
 	"github.com/gin-gonic/gin"
 
-	"github.com/1024casts/snake/api"
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/errno"
@@ -22,19 +22,14 @@ import (
 func Login(c *gin.Context) {
 	// Binding the data with the u struct.
 	var req LoginCredentials
-	if err := c.Bind(&req); err != nil {
-		log.Warnf("email login bind param err: %v", err)
-		api.SendResponse(c, errno.ErrBind, nil)
+	valid, errs := app.BindAndValid(c, &req)
+	if !valid {
+		log.Warnf("app.BindAndValid errs: %v", errs)
+		Response.Error(c, errno.ErrInvalidParam.WithDetails(errs.Errors()...))
 		return
 	}
 
 	log.Infof("login req %#v", req)
-	// check param
-	if req.Email == "" || req.Password == "" {
-		log.Warnf("email or password is empty: %v", req)
-		Response.Error(c, errno.ErrInvalidParam)
-		return
-	}
 
 	t, err := service.UserSvc.EmailLogin(c, req.Email, req.Password)
 	if err != nil {

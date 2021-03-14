@@ -11,6 +11,7 @@ import (
 
 	"github.com/1024casts/snake/api"
 	"github.com/1024casts/snake/internal/handler/v1/user"
+	mw "github.com/1024casts/snake/internal/middleware"
 	"github.com/1024casts/snake/pkg/middleware"
 )
 
@@ -25,6 +26,7 @@ func NewRouter() *gin.Engine {
 	g.Use(middleware.RequestID())
 	g.Use(middleware.Prom(nil))
 	g.Use(middleware.Trace())
+	g.Use(mw.Translations())
 
 	// 404 Handler.
 	g.NoRoute(api.RouteNotFound)
