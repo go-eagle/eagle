@@ -6,15 +6,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/1024casts/snake/internal/conf"
-
 	"github.com/pkg/errors"
 
 	v1 "github.com/1024casts/snake/api/grpc/user/v1"
+	"github.com/1024casts/snake/internal/conf"
 	"github.com/1024casts/snake/internal/model"
+	"github.com/1024casts/snake/pkg/app"
 	"github.com/1024casts/snake/pkg/auth"
 	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/pkg/token"
 )
 
 // Register 注册用户
@@ -53,7 +52,7 @@ func (s *Service) EmailLogin(ctx context.Context, email, password string) (token
 
 	// 签发签名 Sign the json web token.
 	payload := map[string]interface{}{"user_id": u.ID, "username": u.Username}
-	tokenStr, err = token.Sign(ctx, payload, conf.Conf.App.JwtSecret, 86400)
+	tokenStr, err = app.Sign(ctx, payload, conf.Conf.App.JwtSecret, 86400)
 	if err != nil {
 		return "", errors.Wrapf(err, "gen token sign err")
 	}
@@ -96,7 +95,7 @@ func (s *Service) PhoneLogin(ctx context.Context, phone int64, verifyCode int) (
 
 	// 签发签名 Sign the json web token.
 	payload := map[string]interface{}{"user_id": u.ID, "username": u.Username}
-	tokenStr, err = token.Sign(ctx, payload, conf.Conf.App.JwtSecret, 86400)
+	tokenStr, err = app.Sign(ctx, payload, conf.Conf.App.JwtSecret, 86400)
 	if err != nil {
 		return "", errors.Wrapf(err, "[login] gen token sign err")
 	}

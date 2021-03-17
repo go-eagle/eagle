@@ -61,7 +61,7 @@ func NewRouter() *gin.Engine {
 	g.GET("/v1/users/:id", user.Get)
 
 	u := g.Group("/v1/users")
-	u.Use(middleware.AuthMiddleware())
+	u.Use(middleware.JWTMiddleware())
 	{
 		u.PUT("/:id", user.Update)
 		u.POST("/follow", user.Follow)

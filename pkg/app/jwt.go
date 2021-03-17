@@ -1,6 +1,6 @@
 // 主要是配合jwt来生成用户登录token
 
-package token
+package app
 
 import (
 	"context"
@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/1024casts/snake/pkg/conf"
-
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+
+	"github.com/1024casts/snake/pkg/conf"
 )
 
 var (
@@ -21,8 +21,7 @@ var (
 
 // Payload is the data of the JSON web token.
 type Payload struct {
-	UserID   uint64
-	Username string
+	UserID uint64
 }
 
 // secretFunc validates the secret format.
@@ -40,25 +39,20 @@ func secretFunc(secret string) jwt.Keyfunc {
 // Parse validates the token with the specified secret,
 // and returns the payloads if the token was valid.
 func Parse(tokenString string, secret string) (*Payload, error) {
-	payloads := &Payload{}
-
 	// Parse the token.
 	token, err := jwt.Parse(tokenString, secretFunc(secret))
-
-	// Parse error.
 	if err != nil {
-		return payloads, err
-
-		// Read the token if it's valid.
-	} else if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		payloads.UserID = uint64(claims["user_id"].(float64))
-		payloads.Username = claims["username"].(string)
-		return payloads, nil
-
-		// Other errors.
-	} else {
-		return payloads, err
+		return nil, err
 	}
+	// Read the token if it's valid.
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		payloads := &Payload{}
+		payloads.UserID = uint64(claims["user_id"].(float64))
+		return payloads, nil
+	}
+
+	// Other errors.
+	return nil, err
 }
 
 // ParseRequest gets the token from the header and
@@ -83,15 +77,15 @@ func ParseRequest(c *gin.Context) (*Payload, error) {
 }
 
 // Sign signs the payload with the specified secret.
+// The token content.
+// iss: （Issuer）签发者
+// iat: （Issued At）签发时间，用Unix时间戳表示
+// exp: （Expiration Time）过期时间，用Unix时间戳表示
+// aud: （Audience）接收该JWT的一方
+// sub: （Subject）该JWT的主题
+// nbf: （Not Before）不要早于这个时间
+// jti: （JWT ID）用于标识JWT的唯一ID
 func Sign(ctx context.Context, payload map[string]interface{}, secret string, timeout int64) (tokenString string, err error) {
-	// The token content.
-	// iss: （Issuer）签发者
-	// iat: （Issued At）签发时间，用Unix时间戳表示
-	// exp: （Expiration Time）过期时间，用Unix时间戳表示
-	// aud: （Audience）接收该JWT的一方
-	// sub: （Subject）该JWT的主题
-	// nbf: （Not Before）不要早于这个时间
-	// jti: （JWT ID）用于标识JWT的唯一ID
 	now := time.Now().Unix()
 	claims := make(jwt.MapClaims)
 	claims["nbf"] = now
