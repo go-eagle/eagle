@@ -24,20 +24,16 @@ var (
 
 // Service struct
 type Service struct {
-	c             *conf.Config
-	userDao       dao.BaseDao
-	userFollowDao dao.FollowRepo
-	userStatDao   dao.StatRepo
+	c   *conf.Config
+	dao *dao.Dao
 }
 
 // New init service
 func New(c *conf.Config) (s *Service) {
 	db := model.GetDB()
 	s = &Service{
-		c:             c,
-		userDao:       dao.NewUserDao(db),
-		userFollowDao: dao.NewUserFollowRepo(db),
-		userStatDao:   dao.NewUserStatRepo(db),
+		c:   c,
+		dao: dao.New(db),
 	}
 	UserSvc = s
 	VCodeSvc = s
@@ -51,7 +47,5 @@ func (s *Service) Ping() error {
 
 // Close service
 func (s *Service) Close() {
-	s.userDao.Close()
-	s.userFollowDao.Close()
-	s.userStatDao.Close()
+	s.dao.Close()
 }

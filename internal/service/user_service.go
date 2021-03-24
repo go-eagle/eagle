@@ -30,7 +30,7 @@ func (s *Service) Register(ctx context.Context, username, email, password string
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
 	}
-	_, err = s.userDao.CreateUser(ctx, u)
+	_, err = s.dao.CreateUser(ctx, u)
 	if err != nil {
 		return errors.Wrapf(err, "create user")
 	}
@@ -87,7 +87,7 @@ func (s *Service) PhoneLogin(ctx context.Context, phone int64, verifyCode int) (
 			Phone:    phone,
 			Username: strconv.Itoa(int(phone)),
 		}
-		u.ID, err = s.userDao.CreateUser(ctx, u)
+		u.ID, err = s.dao.CreateUser(ctx, u)
 		if err != nil {
 			return "", errors.Wrapf(err, "[login] create user err")
 		}
@@ -104,7 +104,7 @@ func (s *Service) PhoneLogin(ctx context.Context, phone int64, verifyCode int) (
 
 // UpdateUser update user info
 func (s *Service) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
-	err := s.userDao.UpdateUser(ctx, id, userMap)
+	err := s.dao.UpdateUser(ctx, id, userMap)
 
 	if err != nil {
 		return err
@@ -115,7 +115,7 @@ func (s *Service) UpdateUser(ctx context.Context, id uint64, userMap map[string]
 
 // GetUserByID 获取单条用户信息
 func (s *Service) GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error) {
-	userModel, err := s.userDao.GetOneUser(ctx, id)
+	userModel, err := s.dao.GetOneUser(ctx, id)
 	if err != nil {
 		return userModel, errors.Wrap(err, "")
 	}
@@ -138,13 +138,13 @@ func (s *Service) GetUserInfoByID(ctx context.Context, id uint64) (*model.UserIn
 func (s *Service) BatchGetUsers(ctx context.Context, userID uint64, userIDs []uint64) ([]*model.UserInfo, error) {
 	infos := make([]*model.UserInfo, 0)
 	// 批量获取用户信息
-	users, err := s.userDao.GetUsersByIds(ctx, userIDs)
+	users, err := s.dao.GetUsersByIds(ctx, userIDs)
 	if err != nil {
 		return nil, errors.Wrap(err, "[user_service] batch get user err")
 	}
 
 	// 获取当前用户信息
-	curUser, err := s.userDao.GetOneUser(ctx, userID)
+	curUser, err := s.dao.GetOneUser(ctx, userID)
 	if err != nil {
 		return nil, errors.Wrap(err, "[user_service] get one user err")
 	}
@@ -162,19 +162,19 @@ func (s *Service) BatchGetUsers(ctx context.Context, userID uint64, userIDs []ui
 	finished := make(chan bool, 1)
 
 	// 获取自己对关注列表的关注状态
-	userFollowMap, err := s.userFollowDao.GetFollowByUIds(ctx, userID, userIDs)
+	userFollowMap, err := s.dao.GetFollowByUIds(ctx, userID, userIDs)
 	if err != nil {
 		errChan <- err
 	}
 
 	// 获取自己对关注列表的被关注状态
-	userFansMap, err := s.userFollowDao.GetFansByUIds(ctx, userID, userIDs)
+	userFansMap, err := s.dao.GetFansByUIds(ctx, userID, userIDs)
 	if err != nil {
 		errChan <- err
 	}
 
 	// 获取用户统计
-	userStatMap, err := s.userStatDao.GetUserStatByIDs(ctx, userIDs)
+	userStatMap, err := s.dao.GetUserStatByIDs(ctx, userIDs)
 	if err != nil {
 		errChan <- err
 	}
@@ -242,7 +242,7 @@ func (s *Service) BatchGetUsers(ctx context.Context, userID uint64, userIDs []ui
 }
 
 func (s *Service) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error) {
-	userModel, err := s.userDao.GetUserByPhone(ctx, phone)
+	userModel, err := s.dao.GetUserByPhone(ctx, phone)
 	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by phone: %d", phone)
 	}
@@ -251,7 +251,7 @@ func (s *Service) GetUserByPhone(ctx context.Context, phone int64) (*model.UserB
 }
 
 func (s *Service) GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error) {
-	userModel, err := s.userDao.GetUserByEmail(ctx, email)
+	userModel, err := s.dao.GetUserByEmail(ctx, email)
 	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by email: %s", email)
 	}

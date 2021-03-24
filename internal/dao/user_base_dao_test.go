@@ -21,7 +21,7 @@ type Suite struct {
 	db   *gorm.DB
 	mock sqlmock.Sqlmock
 
-	repository BaseDao
+	repository Dao
 }
 
 func (s *Suite) SetupSuite() {
@@ -39,7 +39,7 @@ func (s *Suite) SetupSuite() {
 	s.db = gdb
 	s.db.LogMode(true)
 
-	s.repository = NewUserRepo(gdb)
+	//s.repository = New(s.db)
 }
 
 func (s *Suite) AfterTest(_, _ string) {

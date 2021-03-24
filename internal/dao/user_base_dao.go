@@ -11,45 +11,15 @@ import (
 	"golang.org/x/sync/singleflight"
 	"gorm.io/gorm"
 
-	"github.com/1024casts/snake/internal/cache/user"
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/cache"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/metric/prom"
 )
 
-var (
-	ErrNotFound = gorm.ErrRecordNotFound
-)
-
-// BaseDao 定义用户仓库接口
-type BaseDao interface {
-	CreateUser(ctx context.Context, user model.UserBaseModel) (id uint64, err error)
-	UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error
-	GetOneUser(ctx context.Context, id uint64) (*model.UserBaseModel, error)
-	GetUsersByIds(ctx context.Context, ids []uint64) ([]*model.UserBaseModel, error)
-	GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error)
-	GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error)
-	Close()
-}
-
-// userBaseDao 用户仓库
-type userBaseDao struct {
-	db        *gorm.DB
-	userCache *user.Cache
-}
-
-// NewUserDao 实例化用户仓库
-func NewUserDao(db *gorm.DB) BaseDao {
-	return &userBaseDao{
-		db:        db,
-		userCache: user.NewUserCache(),
-	}
-}
-
 // Create 创建用户
-func (repo *userBaseDao) CreateUser(ctx context.Context, user model.UserBaseModel) (id uint64, err error) {
-	err = repo.db.Create(&user).Error
+func (d *Dao) CreateUser(ctx context.Context, user model.UserBaseModel) (id uint64, err error) {
+	err = d.db.Create(&user).Error
 	if err != nil {
 		prom.BusinessErrCount.Incr("mysql: CreateUser")
 		return 0, errors.Wrap(err, "[repo.user_base] create user err")
@@ -59,20 +29,20 @@ func (repo *userBaseDao) CreateUser(ctx context.Context, user model.UserBaseMode
 }
 
 // Update 更新用户信息
-func (repo *userBaseDao) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
-	user, err := repo.GetOneUser(ctx, id)
+func (d *Dao) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
+	user, err := d.GetOneUser(ctx, id)
 	if err != nil {
 		prom.BusinessErrCount.Incr("mysql: getOneUser")
 		return errors.Wrap(err, "[repo.user_base] update user data err")
 	}
 
 	// 删除cache
-	err = repo.userCache.DelUserBaseCache(ctx, id)
+	err = d.userCache.DelUserBaseCache(ctx, id)
 	if err != nil {
 		log.Warnf("[repo.user_base] delete user cache err: %v", err)
 	}
 
-	err = repo.db.Model(user).Updates(userMap).Error
+	err = d.db.Model(user).Updates(userMap).Error
 	if err != nil {
 		prom.BusinessErrCount.Incr("mysql: UpdateUser")
 	}
@@ -82,7 +52,7 @@ func (repo *userBaseDao) UpdateUser(ctx context.Context, id uint64, userMap map[
 // GetUserByID 获取用户
 // 缓存的更新策略使用 Cache Aside Pattern
 // see: https://coolshell.cn/articles/17416.html
-func (repo *userBaseDao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserBaseModel, err error) {
+func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserBaseModel, err error) {
 	// add tracing
 	span, ctx := opentracing.StartSpanFromContext(ctx, "userBaseDao.GetOneUser")
 	defer span.Finish()
@@ -93,7 +63,7 @@ func (repo *userBaseDao) GetOneUser(ctx context.Context, uid uint64) (userBase *
 		log.Infof("[repo.user_base] get user by uid: %d cost: %d μs", uid, time.Since(start).Microseconds())
 	}()
 	// 从cache获取
-	userBase, err = repo.userCache.GetUserBaseCache(ctx, uid)
+	userBase, err = d.userCache.GetUserBaseCache(ctx, uid)
 	if err != nil {
 		if err == cache.ErrPlaceholder {
 			return nil, ErrNotFound
@@ -115,10 +85,10 @@ func (repo *userBaseDao) GetOneUser(ctx context.Context, uid uint64) (userBase *
 	getDataFn := func() (interface{}, error) {
 		data := new(model.UserBaseModel)
 		// 从数据库中获取
-		err = repo.db.First(data, uid).Error
+		err = d.db.First(data, uid).Error
 		// if data is empty, set not found cache to prevent cache penetration(缓存穿透)
 		if errors.Is(err, ErrNotFound) {
-			err = repo.userCache.SetCacheWithNotFound(ctx, uid)
+			err = d.userCache.SetCacheWithNotFound(ctx, uid)
 			if err != nil {
 				log.Warnf("[repo.user_base] SetCacheWithNotFound err, uid: %d", uid)
 			}
@@ -129,7 +99,7 @@ func (repo *userBaseDao) GetOneUser(ctx context.Context, uid uint64) (userBase *
 		}
 
 		// set cache
-		err = repo.userCache.SetUserBaseCache(ctx, uid, data, cache.DefaultExpireTime)
+		err = d.userCache.SetUserBaseCache(ctx, uid, data, cache.DefaultExpireTime)
 		if err != nil {
 			return data, errors.Wrap(err, "[repo.user_base] SetUserBaseCache err")
 		}
@@ -151,21 +121,21 @@ func (repo *userBaseDao) GetOneUser(ctx context.Context, uid uint64) (userBase *
 }
 
 // GetUsersByIds 批量获取用户
-func (repo *userBaseDao) GetUsersByIds(ctx context.Context, userIDs []uint64) ([]*model.UserBaseModel, error) {
+func (d *Dao) GetUsersByIds(ctx context.Context, userIDs []uint64) ([]*model.UserBaseModel, error) {
 	users := make([]*model.UserBaseModel, 0)
 
 	// 从cache批量获取
-	userCacheMap, err := repo.userCache.MultiGetUserBaseCache(ctx, userIDs)
+	userCacheMap, err := d.userCache.MultiGetUserBaseCache(ctx, userIDs)
 	if err != nil {
 		return users, errors.Wrap(err, "[repo.user_base] multi get user cache data err")
 	}
 
 	// 查询未命中
 	for _, userID := range userIDs {
-		idx := repo.userCache.GetUserBaseCacheKey(userID)
+		idx := d.userCache.GetUserBaseCacheKey(userID)
 		userModel, ok := userCacheMap[idx]
 		if !ok {
-			userModel, err = repo.GetOneUser(ctx, userID)
+			userModel, err = d.GetOneUser(ctx, userID)
 			if err != nil {
 				log.Warnf("[repo.user_base] get user model err: %v", err)
 				continue
@@ -177,9 +147,9 @@ func (repo *userBaseDao) GetUsersByIds(ctx context.Context, userIDs []uint64) ([
 }
 
 // GetUserByPhone 根据手机号获取用户
-func (repo *userBaseDao) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error) {
+func (d *Dao) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error) {
 	user := model.UserBaseModel{}
-	err := repo.db.Where("phone = ?", phone).First(&user).Error
+	err := d.db.Where("phone = ?", phone).First(&user).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errors.Wrap(err, "[repo.user_base] get user err by phone")
 	}
@@ -188,15 +158,12 @@ func (repo *userBaseDao) GetUserByPhone(ctx context.Context, phone int64) (*mode
 }
 
 // GetUserByEmail 根据邮箱获取手机号
-func (repo *userBaseDao) GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error) {
+func (d *Dao) GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error) {
 	userBase := model.UserBaseModel{}
-	err := repo.db.Where("email = ?", email).First(&userBase).Error
+	err := d.db.Where("email = ?", email).First(&userBase).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errors.Wrap(err, "[repo.user_base] get user err by email")
 	}
 
 	return &userBase, nil
 }
-
-// Close close db
-func (repo *userBaseDao) Close() {}
