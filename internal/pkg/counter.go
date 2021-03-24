@@ -1,12 +1,10 @@
 // Package pkg 计数器，可以用于业务的各种模型统计使用
-// 场景：常用语重复策略，或者反作弊处理控制
+// 场景：常用于重复策略，或者反作弊处理控制
 package pkg
 
 import (
-	"strings"
+	"fmt"
 	"time"
-
-	"github.com/1024casts/snake/pkg/conf"
 
 	"github.com/go-redis/redis"
 
@@ -15,7 +13,7 @@ import (
 
 const (
 	// PrefixCounter counter key
-	PrefixCounter = "COUNTER"
+	PrefixCounter = "snake:counter:%s"
 	// DefaultStep default step key
 	DefaultStep           = 1
 	DefaultExpirationTime = 600 * time.Second
@@ -35,8 +33,7 @@ func NewCounter() *Counter {
 
 // GetKey 获取key
 func (c *Counter) GetKey(key string) string {
-	keyPrefix := conf.Conf.App.Name
-	return strings.Join([]string{keyPrefix, PrefixCounter, key}, ":")
+	return fmt.Sprintf(PrefixCounter, key)
 }
 
 // SetCounter set counter
