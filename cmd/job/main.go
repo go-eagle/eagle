@@ -5,7 +5,7 @@ import (
 
 	"github.com/robfig/cron/v3"
 
-	"github.com/1024casts/snake/cmd/job/demo"
+	"github.com/1024casts/snake/cmd/job/example"
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -29,13 +29,13 @@ func Run() {
 	}
 
 	// test recover
-	_, _ = c.AddJob("@every 1s", cron.NewChain(cron.Recover(cron.DefaultLogger)).Then(&demo.PanicJob{}))
+	_, _ = c.AddJob("@every 1s", cron.NewChain(cron.Recover(cron.DefaultLogger)).Then(&example.PanicJob{}))
 
 	// test DelayIfStillRunning
-	_, _ = c.AddJob("@every 1s", cron.NewChain(cron.DelayIfStillRunning(cron.DefaultLogger)).Then(&demo.DelayJob{}))
+	_, _ = c.AddJob("@every 1s", cron.NewChain(cron.DelayIfStillRunning(cron.DefaultLogger)).Then(&example.DelayJob{}))
 
 	// test SkipIfStillRunning
-	_, _ = c.AddJob("@every 1s", cron.NewChain(cron.SkipIfStillRunning(cron.DefaultLogger)).Then(&demo.SkipJob{}))
+	_, _ = c.AddJob("@every 1s", cron.NewChain(cron.SkipIfStillRunning(cron.DefaultLogger)).Then(&example.SkipJob{}))
 
 	// 执行具体的任务
 	// _, _ = c.AddJob("@every 3s", demo.GreetingJob{"dj"})
