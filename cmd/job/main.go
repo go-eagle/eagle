@@ -38,7 +38,7 @@ func Run() {
 	_, _ = c.AddJob("@every 1s", cron.NewChain(cron.SkipIfStillRunning(cron.DefaultLogger)).Then(&example.SkipJob{}))
 
 	// 执行具体的任务
-	// _, _ = c.AddJob("@every 3s", demo.GreetingJob{"dj"})
+	// _, _ = c.AddJob("@every 3s", example.GreetingJob{"dj"})
 
 	c.Start()
 }
