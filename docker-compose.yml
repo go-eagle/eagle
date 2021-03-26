@@ -40,6 +40,11 @@ services:
     command:
       --snake-authentication-plugin=mysql_native_password
       --explicit_snakes_for_timestamp=true
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]   # 用于健康检查的指令
+      timeout: 20s  # 超时时间
+      retries: 10   # 重试次数
+      start_period: 40s # 启动多久后开始检查
     stdin_open: true
     tty: true
     # 修复问题 mbind: Operation not permitted
