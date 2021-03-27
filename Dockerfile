@@ -3,7 +3,7 @@ FROM golang:1.14-alpine AS builder
 
 # The latest alpine images don't have some tools like (`git` and `bash`).
 # Adding git, bash and openssh to the image
-RUN apk add --no-cache git=2.24.3-r0 ca-certificates tzdata \
+RUN apk add --no-cache git ca-certificates tzdata \
     --repository http://mirrors.aliyun.com/alpine/v3.11/community \
     --repository http://mirrors.aliyun.com/alpine/v3.11/main
 
