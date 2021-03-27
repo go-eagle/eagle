@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/DATA-DOG/go-sqlmock v1.3.3
 	github.com/HdrHistogram/hdrhistogram-go v1.0.1 // indirect
+	github.com/Shopify/sarama v1.19.0
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
 	github.com/alicebob/miniredis v2.5.0+incompatible
@@ -37,7 +38,6 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.9.0
 	github.com/qiniu/api.v7 v0.0.0-20190520053455-bea02cd22bf4
-	github.com/robfig/cron v1.2.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/pflag v1.0.5

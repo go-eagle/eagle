@@ -1,0 +1,52 @@
+version: "3.3"
+
+services:
+  #  go-message-broker:
+  #    container_name: "go-message-broker"
+  #    build:
+  #      context: .
+  #      dockerfile: Dockerfile.dev
+  #    ports:
+  #      - 3001:3001
+  #    volumes:
+  #      - ./:/app
+  #    depends_on:
+  #      - rabbitmq
+  #      - kafka
+
+  rabbitmq:
+    container_name: "rabbitmq"
+    image: "rabbitmq:3-management"
+    hostname: "rabbit"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    labels:
+      NAME: "rabbitmq"
+    volumes:
+      - ./rabbitmq-isolated.conf:/etc/rabbitmq/rabbitmq.config
+
+  zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+    expose:
+      - "2181"
+    restart: always
+    container_name: zookeeper
+
+  kafka:
+    image: wurstmeister/kafka:2.12-2.3.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9093:9093"
+    expose:
+      - "9092"
+    environment:
+      KAFKA_CREATE_TOPICS: "go-message-broker-topic:2:1"
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9092,OUTSIDE://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9092,OUTSIDE://0.0.0.0:9093
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+    restart: always
+    container_name: kafka
