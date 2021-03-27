@@ -28,7 +28,6 @@ func init() {
 }
 
 func runCompose(args ...string) (output []byte, err error) {
-	fmt.Println("yamlPath...", yamlPath)
 	if _, err = os.Stat(yamlPath); os.IsNotExist(err) {
 		log.Errorf("os.Stat(%s) composer yaml is not exist!", yamlPath)
 		return
