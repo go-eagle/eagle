@@ -19,12 +19,11 @@ type Dao struct {
 }
 
 // New new a Dao and return
-func New(db *gorm.DB) (d *Dao) {
-	d = &Dao{
+func New(db *gorm.DB) *Dao {
+	return &Dao{
 		db:        db,
 		userCache: cache.NewUserCache(),
 	}
-	return
 }
 
 // Ping ping mysql
