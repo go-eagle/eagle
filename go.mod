@@ -20,6 +20,7 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis v6.15.8+incompatible
 	github.com/go-resty/resty/v2 v2.2.0
+	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-test/deep v1.0.6
 	github.com/golang/protobuf v1.4.3
 	github.com/golang/snappy v0.0.2
