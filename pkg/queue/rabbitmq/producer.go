@@ -2,7 +2,6 @@ package rabbitmq
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/streadway/amqp"
 )
@@ -29,8 +28,6 @@ func (p Producer) Publish(message string) error {
 		}); err != nil {
 		return fmt.Errorf("failed to publish a message: %s", err)
 	}
-
-	log.Printf("New message publish:  %s", message)
 
 	return nil
 }

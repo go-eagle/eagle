@@ -6,12 +6,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"time"
-
-	"github.com/1024casts/snake/pkg/log"
 )
 
 var (
@@ -29,17 +28,17 @@ func init() {
 
 func runCompose(args ...string) (output []byte, err error) {
 	if _, err = os.Stat(yamlPath); os.IsNotExist(err) {
-		log.Errorf("os.Stat(%s) composer yaml is not exist!", yamlPath)
+		log.Fatalf("os.Stat(%s) composer yaml is not exist!", yamlPath)
 		return
 	}
 	if yamlPath, err = filepath.Abs(yamlPath); err != nil {
-		log.Errorf("filepath.Abs(%s) error(%v)", yamlPath, err)
+		log.Fatalf("filepath.Abs(%s) error(%v)", yamlPath, err)
 		return
 	}
 	pathHash = fmt.Sprintf("%x", md5.Sum([]byte(yamlPath)))[:9]
 	args = append([]string{"-f", yamlPath, "-p", pathHash}, args...)
 	if output, err = exec.Command("docker-compose", args...).CombinedOutput(); err != nil {
-		log.Errorf("exec.Command(docker-compose) args(%v) stdout(%s) error(%v)", args, string(output), err)
+		log.Fatalf("exec.Command(docker-compose) args(%v) stdout(%s) error(%v)", args, string(output), err)
 		return
 	}
 	return
@@ -85,17 +84,17 @@ func getServices() (output []byte, err error) {
 			args = []string{"inspect", id, "--format", "'{{json .}}'"}
 		)
 		if output, err = exec.Command("docker", args...).CombinedOutput(); err != nil {
-			log.Error("exec.Command(docker) args(%v) stdout(%s) error(%v)", args, string(output), err)
+			log.Fatalf("exec.Command(docker) args(%v) stdout(%s) error(%v)", args, string(output), err)
 			return
 		}
 		if output = bytes.TrimSpace(output); bytes.Equal(output, []byte("")) {
 			err = fmt.Errorf("service: %s | container: %s fails to launch", svr, id)
-			log.Error("exec.Command(docker) args(%v) error(%v)", args, err)
+			log.Fatalf("exec.Command(docker) args(%v) error(%v)", args, err)
 			return
 		}
 		var c = &Container{}
 		if err = json.Unmarshal(bytes.Trim(output, "'"), c); err != nil {
-			log.Error("json.Unmarshal(%s) error(%v)", string(output), err)
+			log.Fatalf("json.Unmarshal(%s) error(%v)", string(output), err)
 			return
 		}
 		services[string(svr)] = c
@@ -116,7 +115,7 @@ func checkServices() (output []byte, err error) {
 	}()
 	for svr, c := range services {
 		if err = c.Healthcheck(); err != nil {
-			log.Error("healthcheck(%s) error(%v) retrying %d times...", svr, err, 5-retry)
+			log.Fatalf("healthcheck(%s) error(%v) retrying %d times...", svr, err, 5-retry)
 			return
 		}
 		// TODO About container check and more...

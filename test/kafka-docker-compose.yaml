@@ -1,31 +1,6 @@
 version: "3.3"
 
 services:
-  #  go-message-broker:
-  #    container_name: "go-message-broker"
-  #    build:
-  #      context: .
-  #      dockerfile: Dockerfile.dev
-  #    ports:
-  #      - 3001:3001
-  #    volumes:
-  #      - ./:/app
-  #    depends_on:
-  #      - rabbitmq
-  #      - kafka
-
-  rabbitmq:
-    container_name: "rabbitmq"
-    image: "rabbitmq:3-management"
-    hostname: "rabbit"
-    ports:
-      - "15672:15672"
-      - "5672:5672"
-    labels:
-      NAME: "rabbitmq"
-    volumes:
-      - ./rabbitmq-isolated.conf:/etc/rabbitmq/rabbitmq.config
-
   zookeeper:
     image: wurstmeister/zookeeper:3.4.6
     expose:
