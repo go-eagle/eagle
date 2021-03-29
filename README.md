@@ -144,7 +144,7 @@ snake new github.com/foo/bar
 
 ## 开发规范
 
-遵循: [Uber Go 语言编码规范](https://github.com/xxjwxc/uber_go_guide_cn)
+遵循: [Uber Go 语言编码规范](https://github.com/uber-go/guide/blob/master/style.md)
 
 ## 📖 开发规约
 
