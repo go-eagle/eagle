@@ -30,7 +30,8 @@ func TestMain(m *testing.M) {
 }
 
 func TestRabbitMQ(t *testing.T) {
-	connection, err := rabbitmq.OpenConnection()
+	addr := "guest:guest@localhost:5672"
+	connection, err := rabbitmq.OpenConnection(addr)
 	if err != nil {
 		t.Fatalf("failed connection: %s", err)
 	}
@@ -45,15 +46,12 @@ func TestRabbitMQ(t *testing.T) {
 		t.Fatalf("failed create channel: %s", err)
 	}
 
-	queue, err := rabbitmq.NewQueue(channel, "go-message-broker").Create()
-	if err != nil {
-		t.Fatalf("failed queue declare: %s", err)
-	}
+	queueName := "message-broker"
 
 	var message = "Hello World RabbitMQ!"
 
 	t.Run("rabbitmq publish message", func(t *testing.T) {
-		if err := rabbitmq.NewProducer(channel, queue.Name).Publish(message); err != nil {
+		if err := rabbitmq.NewProducer(channel, queueName).Publish(message); err != nil {
 			t.Errorf("failed publish message: %s", err)
 		}
 	})
@@ -65,12 +63,13 @@ func TestRabbitMQ(t *testing.T) {
 	}
 
 	t.Run("rabbitmq consume message", func(t *testing.T) {
-		if err := rabbitmq.NewConsumer(connection, channel, queue.Name).Consume(true, handler); err != nil {
+		if err := rabbitmq.NewConsumer(addr, "", queueName, true, handler).Consume(); err != nil {
 			t.Errorf("failed consume: %s", err)
 		}
 	})
 }
 
+// TODO: read config
 func TestKafka(t *testing.T) {
 	var (
 		config  = sarama.NewConfig()
