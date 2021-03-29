@@ -1,9 +1,13 @@
 package rabbitmq
 
-import "github.com/streadway/amqp"
+import (
+	"fmt"
 
-func OpenConnection() (*amqp.Connection, error) {
-	uri := "amqp://guest:guest@localhost:5672"
+	"github.com/streadway/amqp"
+)
+
+func OpenConnection(addr string) (*amqp.Connection, error) {
+	uri := fmt.Sprintf("amqp://%s", addr)
 
 	return amqp.Dial(uri)
 }
