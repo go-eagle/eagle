@@ -188,3 +188,4 @@ span.LogFields(
 - https://github.com/opentracing-contrib/go-gin/blob/master/examples/example_test.go
 - https://github.com/opentracing-contrib/goredis
 - https://xie.infoq.cn/article/6450b96c33298bab92ba6f3c2
+- [如何在Go中使用OpenTelemetry开始分布式追踪](https://www.youtube.com/watch?v=yQpyIrdxmQc)
