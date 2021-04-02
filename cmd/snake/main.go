@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/1024casts/snake/cmd/snake/internal/project"
+	"github.com/1024casts/snake/cmd/snake/internal/upgrade"
 )
 
 var (
@@ -22,6 +23,7 @@ var (
 
 func init() {
 	rootCmd.AddCommand(project.CmdNew)
+	rootCmd.AddCommand(upgrade.CmdUpgrade)
 }
 
 func main() {
