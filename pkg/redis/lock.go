@@ -33,11 +33,12 @@ type Lock struct {
 	// maxRetries int
 }
 
-// NewLock 实例化lock
+// NewLock new a lock instance
 func NewLock(conn *redis.Client, key string, options ...func(lock *Lock)) *Lock {
 	lock := Lock{
 		key:         key,
 		redisClient: conn,
+		token:       genToken(),
 		timeout:     DefaultTimeout,
 	}
 
@@ -49,9 +50,7 @@ func NewLock(conn *redis.Client, key string, options ...func(lock *Lock)) *Lock 
 
 // Lock 加锁
 func (l *Lock) Lock() (bool, error) {
-	token := l.getToken()
-	l.token = token
-	ok, err := l.redisClient.SetNX(l.GetKey(), token, l.timeout).Result()
+	ok, err := l.redisClient.SetNX(l.GetKey(), l.token, l.timeout).Result()
 	if err == redis.Nil {
 		err = nil
 	}
@@ -74,8 +73,8 @@ func (l *Lock) GetKey() string {
 	return fmt.Sprintf(LockKey, l.key)
 }
 
-// getToken 生成token
-func (l *Lock) getToken() string {
+// genToken 生成token
+func genToken() string {
 	u, _ := uuid.NewRandom()
 	return u.String()
 }
