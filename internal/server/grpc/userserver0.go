@@ -8,12 +8,12 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/1024casts/snake/api/grpc/user/v1"
+	v1 "github.com/1024casts/snake/api/grpc/user/v1"
 	"github.com/1024casts/snake/internal/service"
 )
 
-// Init new grpc server
-func Init(c *conf.Config, svc *service.Service) *grpc.Server {
+// NewServer creates a gRPC server
+func NewServer(c *conf.Config, svc *service.Service) *grpc.Server {
 	// todo: get addr from conf
 	lis, err := net.Listen("tcp", "127.0.0.1:12349")
 	if err != nil {

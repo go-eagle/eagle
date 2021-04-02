@@ -73,9 +73,9 @@ func init() {
 func main() {
 	gin.SetMode(conf.Conf.App.Mode)
 	// init http server
-	httpSrv := httpServer.Init(svc)
+	httpSrv := httpServer.NewServer(svc)
 	// init grpc server
-	grpcSrv := grpc.Init(cfg, svc)
+	grpcSrv := grpc.NewServer(cfg, svc)
 	// init pprof server
 	go func() {
 		fmt.Printf("Listening and serving PProf HTTP on %s\n", conf.Conf.App.PprofPort)

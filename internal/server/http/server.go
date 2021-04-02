@@ -15,7 +15,8 @@ var (
 	UserSvc *service.Service
 )
 
-func Init(s *service.Service) *http.Server {
+// NewServer creates a HTTP server
+func NewServer(s *service.Service) *http.Server {
 	UserSvc = s
 	router := routers.NewRouter()
 	srv := &http.Server{
