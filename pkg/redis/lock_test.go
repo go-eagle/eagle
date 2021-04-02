@@ -24,7 +24,7 @@ func TestLockWithDefaultTimeout(t *testing.T) {
 
 func TestLockWithTimeout(t *testing.T) {
 	InitTestRedis()
-	lock := NewLock(RedisClient, "test:lock", Timeout(3*time.Second))
+	lock := NewLock(RedisClient, "test:lock", WithTimeout(3*time.Second))
 	ok, err := lock.Lock()
 	if err != nil {
 		t.Error(err)

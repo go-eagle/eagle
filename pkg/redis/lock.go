@@ -17,7 +17,7 @@ const (
 
 type Option func(*Lock)
 
-func Timeout(expiration time.Duration) Option {
+func WithTimeout(expiration time.Duration) Option {
 	return func(l *Lock) {
 		l.timeout = expiration
 	}
