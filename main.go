@@ -26,11 +26,11 @@ import (
 	"github.com/1024casts/snake/internal/conf"
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/server/grpc"
-	http2 "github.com/1024casts/snake/internal/server/http"
+	httpServer "github.com/1024casts/snake/internal/server/http"
 	"github.com/1024casts/snake/internal/service"
 	logger "github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/net/tracing"
-	redis2 "github.com/1024casts/snake/pkg/redis"
+	"github.com/1024casts/snake/pkg/redis"
 )
 
 var (
@@ -51,7 +51,7 @@ func init() {
 	// init db
 	model.Init(&Cfg.MySQL)
 	// init redis
-	redis2.Init(&Cfg.Redis)
+	redis.Init(&Cfg.Redis)
 	// init tracer
 	metricsFactory := jprom.New().Namespace(metrics.NSOptions{Name: Cfg.App.Name, Tags: nil})
 	_, closer, err := tracing.Init(Cfg.Jaeger.ServiceName, Cfg.Jaeger.Host, metricsFactory)
@@ -74,7 +74,7 @@ func init() {
 func main() {
 	gin.SetMode(conf.Conf.App.Mode)
 	// init http server
-	httpSrv := http2.Init(Svc)
+	httpSrv := httpServer.Init(Svc)
 	// init grpc server
 	grpcSrv := grpc.Init(Cfg, Svc)
 	// init pprof server
