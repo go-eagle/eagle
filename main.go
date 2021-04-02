@@ -35,8 +35,8 @@ import (
 
 var (
 	cfgFile = pflag.StringP("config", "c", "", "snake config file path.")
-	Cfg     *conf.Config
-	Svc     *service.Service
+	cfg     *conf.Config
+	svc     *service.Service
 )
 
 func init() {
@@ -61,8 +61,7 @@ func init() {
 	defer closer.Close()
 
 	// init service
-	Svc := service.New(Cfg)
-	_ = Svc
+	svc = service.New(Cfg)
 }
 
 // @title snake docs api
@@ -74,9 +73,9 @@ func init() {
 func main() {
 	gin.SetMode(conf.Conf.App.Mode)
 	// init http server
-	httpSrv := httpServer.Init(Svc)
+	httpSrv := httpServer.Init(svc)
 	// init grpc server
-	grpcSrv := grpc.Init(Cfg, Svc)
+	grpcSrv := grpc.Init(cfg, svc)
 	// init pprof server
 	go func() {
 		fmt.Printf("Listening and serving PProf HTTP on %s\n", conf.Conf.App.PprofPort)
@@ -107,7 +106,7 @@ func main() {
 				grpcSrv.GracefulStop()
 			}
 			// close service
-			Svc.Close()
+			svc.Close()
 			return
 		case syscall.SIGHUP:
 			// TODO: reload
