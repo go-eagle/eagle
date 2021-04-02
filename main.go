@@ -42,26 +42,26 @@ var (
 func init() {
 	pflag.Parse()
 	// init config
-	Cfg, err := conf.Init(*cfgFile)
+	c, err := conf.Init(*cfgFile)
 	if err != nil {
 		panic(err)
 	}
 	// init log
-	logger.InitLog(&Cfg.Logger)
+	logger.InitLog(&c.Logger)
 	// init db
-	model.Init(&Cfg.MySQL)
+	model.Init(&c.MySQL)
 	// init redis
-	redis.Init(&Cfg.Redis)
+	redis.Init(&c.Redis)
 	// init tracer
-	metricsFactory := jprom.New().Namespace(metrics.NSOptions{Name: Cfg.App.Name, Tags: nil})
-	_, closer, err := tracing.Init(Cfg.Jaeger.ServiceName, Cfg.Jaeger.Host, metricsFactory)
+	metricsFactory := jprom.New().Namespace(metrics.NSOptions{Name: c.App.Name, Tags: nil})
+	_, closer, err := tracing.Init(c.Jaeger.ServiceName, c.Jaeger.Host, metricsFactory)
 	if err != nil {
 		panic(err)
 	}
 	defer closer.Close()
 
 	// init service
-	svc = service.New(Cfg)
+	svc = service.New(c)
 }
 
 // @title snake docs api
