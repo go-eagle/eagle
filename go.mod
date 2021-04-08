@@ -3,7 +3,7 @@ module github.com/1024casts/snake
 go 1.13
 
 require (
-	github.com/1024casts/snake/cmd/snake v0.0.0-20210402114607-6f2e50b4faaf // indirect
+	github.com/1024casts/snake/cmd/snake v0.0.0-20210402120525-f3a949b02dc8 // indirect
 	github.com/DATA-DOG/go-sqlmock v1.4.1
 	github.com/HdrHistogram/hdrhistogram-go v1.0.1 // indirect
 	github.com/Shopify/sarama v1.19.0
