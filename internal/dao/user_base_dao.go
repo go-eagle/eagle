@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/1024casts/snake/pkg/redis"
 	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 	"golang.org/x/sync/singleflight"
@@ -15,6 +14,7 @@ import (
 	"github.com/1024casts/snake/pkg/cache"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/metric/prom"
+	"github.com/1024casts/snake/pkg/redis"
 )
 
 // Create 创建用户
