@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -22,7 +23,7 @@ func NewHttpServer(s *service.Service) *http.Server {
 	}
 
 	fmt.Printf("Listening and serving HTTP on %s\n", conf.Conf.Http.Addr)
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+	if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("ListenAndServe, err: %s", err.Error())
 	}
 
