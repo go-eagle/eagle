@@ -5,7 +5,7 @@ import (
 	"github.com/1024casts/snake/pkg/app"
 )
 
-var Response = app.NewResponse()
+var response = app.NewResponse()
 
 // CreateRequest 创建用户请求
 type CreateRequest struct {

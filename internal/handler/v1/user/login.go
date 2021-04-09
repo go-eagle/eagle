@@ -25,7 +25,7 @@ func Login(c *gin.Context) {
 	valid, errs := app.BindAndValid(c, &req)
 	if !valid {
 		log.Warnf("app.BindAndValid errs: %v", errs)
-		Response.Error(c, errno.ErrInvalidParam.WithDetails(errs.Errors()...))
+		response.Error(c, errno.ErrInvalidParam.WithDetails(errs.Errors()...))
 		return
 	}
 
@@ -34,11 +34,11 @@ func Login(c *gin.Context) {
 	t, err := service.UserSvc.EmailLogin(c, req.Email, req.Password)
 	if err != nil {
 		log.Warnf("email login err: %v", err)
-		Response.Error(c, ecode.ErrEmailOrPassword)
+		response.Error(c, ecode.ErrEmailOrPassword)
 		return
 	}
 
-	Response.Success(c, model.Token{Token: t})
+	response.Success(c, model.Token{Token: t})
 }
 
 // PhoneLogin 手机登录接口
@@ -56,7 +56,7 @@ func PhoneLogin(c *gin.Context) {
 	var req PhoneLoginCredentials
 	if err := c.Bind(&req); err != nil {
 		log.Warnf("phone login bind param err: %v", err)
-		Response.Error(c, errno.ErrBind)
+		response.Error(c, errno.ErrBind)
 		return
 	}
 
@@ -64,22 +64,22 @@ func PhoneLogin(c *gin.Context) {
 	// check param
 	if req.Phone == 0 || req.VerifyCode == 0 {
 		log.Warn("phone login bind param is empty")
-		Response.Error(c, errno.ErrInvalidParam)
+		response.Error(c, errno.ErrInvalidParam)
 		return
 	}
 
 	// 验证校验码
 	if !service.UserSvc.CheckLoginVCode(req.Phone, req.VerifyCode) {
-		Response.Error(c, ecode.ErrVerifyCode)
+		response.Error(c, ecode.ErrVerifyCode)
 		return
 	}
 
 	// 登录
 	t, err := service.UserSvc.PhoneLogin(c, req.Phone, req.VerifyCode)
 	if err != nil {
-		Response.Error(c, ecode.ErrVerifyCode)
+		response.Error(c, ecode.ErrVerifyCode)
 		return
 	}
 
-	Response.Success(c, model.Token{Token: t})
+	response.Success(c, model.Token{Token: t})
 }

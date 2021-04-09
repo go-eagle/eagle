@@ -30,7 +30,7 @@ func Update(c *gin.Context) {
 	var req UpdateRequest
 	if err := c.Bind(&req); err != nil {
 		log.Warnf("bind request param err: %+v", err)
-		Response.Error(c, errno.ErrBind)
+		response.Error(c, errno.ErrBind)
 		return
 	}
 	log.Infof("user update req: %#v", req)
@@ -41,9 +41,9 @@ func Update(c *gin.Context) {
 	err := service.UserSvc.UpdateUser(context.TODO(), userID, userMap)
 	if err != nil {
 		log.Warnf("[user] update user err, %v", err)
-		Response.Error(c, errno.InternalServerError)
+		response.Error(c, errno.InternalServerError)
 		return
 	}
 
-	Response.Success(c, userID)
+	response.Success(c, userID)
 }

@@ -27,28 +27,28 @@ func Follow(c *gin.Context) {
 	var req FollowRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Warnf("follow bind param err: %v", err)
-		Response.Error(c, errno.ErrBind)
+		response.Error(c, errno.ErrBind)
 		return
 	}
 
 	// Get the user by the `user_id` from the database.
 	_, err := service.UserSvc.GetUserByID(c, req.UserID)
 	if err != nil {
-		Response.Error(c, ecode.ErrUserNotFound)
+		response.Error(c, ecode.ErrUserNotFound)
 		return
 	}
 
 	userID := api.GetUserID(c)
 	// 不能关注自己
 	if userID == req.UserID {
-		Response.Error(c, ecode.ErrUserNotFound)
+		response.Error(c, ecode.ErrUserNotFound)
 		return
 	}
 
 	// 检查是否已经关注过
 	isFollowed := service.UserSvc.IsFollowing(context.TODO(), userID, req.UserID)
 	if isFollowed {
-		Response.Error(c, errno.Success)
+		response.Error(c, errno.Success)
 		return
 	}
 
@@ -57,7 +57,7 @@ func Follow(c *gin.Context) {
 		err = service.UserSvc.Unfollow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] cancel user follow err: %v", err)
-			Response.Error(c, errno.InternalServerError)
+			response.Error(c, errno.InternalServerError)
 			return
 		}
 	} else {
@@ -65,10 +65,10 @@ func Follow(c *gin.Context) {
 		err = service.UserSvc.Follow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] add user follow err: %v", err)
-			Response.Error(c, errno.InternalServerError)
+			response.Error(c, errno.InternalServerError)
 			return
 		}
 	}
 
-	Response.Success(c, nil)
+	response.Success(c, nil)
 }

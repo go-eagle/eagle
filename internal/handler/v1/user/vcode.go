@@ -23,14 +23,14 @@ func VCode(c *gin.Context) {
 	// 验证区号和手机号是否为空
 	if c.Query("area_code") == "" {
 		log.Warn("vcode area code is empty")
-		Response.Error(c, ecode.ErrAreaCodeEmpty)
+		response.Error(c, ecode.ErrAreaCodeEmpty)
 		return
 	}
 
 	phone := c.Query("phone")
 	if phone == "" {
 		log.Warn("vcode phone is empty")
-		Response.Error(c, ecode.ErrPhoneEmpty)
+		response.Error(c, ecode.ErrPhoneEmpty)
 		return
 	}
 
@@ -40,7 +40,7 @@ func VCode(c *gin.Context) {
 	verifyCode, err := service.VCodeSvc.GenLoginVCode(phone)
 	if err != nil {
 		log.Warnf("gen login verify code err, %v", errors.WithStack(err))
-		Response.Error(c, ecode.ErrGenVCode)
+		response.Error(c, ecode.ErrGenVCode)
 		return
 	}
 
@@ -48,9 +48,9 @@ func VCode(c *gin.Context) {
 	err = service.VCodeSvc.SendSMS(phone, verifyCode)
 	if err != nil {
 		log.Warnf("send phone sms err, %v", errors.WithStack(err))
-		Response.Error(c, ecode.ErrSendSMS)
+		response.Error(c, ecode.ErrSendSMS)
 		return
 	}
 
-	Response.Success(c, nil)
+	response.Success(c, nil)
 }

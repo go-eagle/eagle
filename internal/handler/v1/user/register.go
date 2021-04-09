@@ -22,7 +22,7 @@ func Register(c *gin.Context) {
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Warnf("register bind param err: %v", err)
-		Response.Error(c, errno.ErrBind)
+		response.Error(c, errno.ErrBind)
 		return
 	}
 
@@ -30,23 +30,23 @@ func Register(c *gin.Context) {
 	// check param
 	if req.Username == "" || req.Email == "" || req.Password == "" {
 		log.Warnf("params is empty: %v", req)
-		Response.Error(c, errno.ErrInvalidParam)
+		response.Error(c, errno.ErrInvalidParam)
 		return
 	}
 
 	// 两次密码是否正确
 	if req.Password != req.ConfirmPassword {
 		log.Warnf("twice password is not same")
-		Response.Error(c, ecode.ErrTwicePasswordNotMatch)
+		response.Error(c, ecode.ErrTwicePasswordNotMatch)
 		return
 	}
 
 	err := service.UserSvc.Register(c, req.Username, req.Email, req.Password)
 	if err != nil {
 		log.Warnf("register err: %v", err)
-		Response.Error(c, ecode.ErrRegisterFailed)
+		response.Error(c, ecode.ErrRegisterFailed)
 		return
 	}
 
-	Response.Success(c, nil)
+	response.Success(c, nil)
 }

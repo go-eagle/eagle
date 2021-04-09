@@ -1,12 +1,11 @@
 package user
 
 import (
-	"github.com/1024casts/snake/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 
 	"github.com/1024casts/snake/internal/ecode"
-	"github.com/1024casts/snake/pkg/app"
+	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -22,8 +21,6 @@ import (
 // @Router /users/:id [get]
 func Get(c *gin.Context) {
 	log.Info("Get function called.")
-
-	response := app.NewResponse()
 
 	userID := cast.ToUint64(c.Param("id"))
 	if userID == 0 {
