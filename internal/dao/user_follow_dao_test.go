@@ -23,7 +23,7 @@ var (
 func TestMain(m *testing.M) {
 	pflag.Parse()
 
-	*cfgFile = "../../config/config.local.yaml"
+	*cfgFile = "../../config/config.yaml"
 
 	flag.Set("f", "../../test/docker-compose.yaml")
 	flag.Parse()

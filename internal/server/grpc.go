@@ -1,4 +1,4 @@
-package grpc
+package server
 
 import (
 	"log"
@@ -12,10 +12,9 @@ import (
 	"github.com/1024casts/snake/internal/service"
 )
 
-// NewServer creates a gRPC server
-func NewServer(c *conf.Config, svc *service.Service) *grpc.Server {
-	// todo: get addr from conf
-	lis, err := net.Listen("tcp", "127.0.0.1:12349")
+// NewGRPCServer creates a gRPC server
+func NewGRPCServer(svc *service.Service) *grpc.Server {
+	lis, err := net.Listen("tcp", conf.Conf.Grpc.Addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -26,7 +25,7 @@ func NewServer(c *conf.Config, svc *service.Service) *grpc.Server {
 	if err != nil {
 		log.Fatalf("failed to serve grpc server: %v", err)
 	}
-	log.Println("serve grpc server is success, port:1234")
+	log.Printf("serve grpc server is success, port:%s", conf.Conf.Grpc.Addr)
 
 	return grpcServer
 }

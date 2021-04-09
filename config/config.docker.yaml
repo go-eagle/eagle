@@ -1,18 +1,24 @@
 app:
   Name: snake
   Version: 1.0.0
-  Port: :8080
   PprofPort: :5555
   Mode: debug                 # debug, release, test
   JwtSecret: JWT_SECRET
   JwtTimeout: 86400
   CookieName: jwt-token
-  ReadTimeout: 5
-  WriteTimeout: 5
   SSL: true
   CtxDefaultTimeout: 12
   CSRF: true
   Debug: false
+
+Http:
+  Addr: :8080
+  ReadTimeout: 5
+  WriteTimeout: 5
+Grpc:
+  Addr: :9090
+  ReadTimeout: 5
+  WriteTimeout: 5
 
 logger:
   Development: true

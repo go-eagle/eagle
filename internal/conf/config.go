@@ -3,17 +3,12 @@ package conf
 import (
 	"time"
 
-	"github.com/1024casts/snake/pkg/mongodb"
-
-	"github.com/1024casts/snake/pkg/net/tracing"
-
-	"github.com/1024casts/snake/pkg/email"
-
-	"github.com/1024casts/snake/pkg/log"
-
-	redis2 "github.com/1024casts/snake/pkg/redis"
-
 	"github.com/1024casts/snake/pkg/database/orm"
+	"github.com/1024casts/snake/pkg/email"
+	"github.com/1024casts/snake/pkg/log"
+	"github.com/1024casts/snake/pkg/mongodb"
+	"github.com/1024casts/snake/pkg/net/tracing"
+	"github.com/1024casts/snake/pkg/redis"
 )
 
 // Config global config
@@ -21,9 +16,11 @@ import (
 type Config struct {
 	// common
 	App     AppConfig
+	Http    ServerConfig
+	Grpc    ServerConfig
 	Logger  log.Config
 	MySQL   orm.Config
-	Redis   redis2.Config
+	Redis   redis.Config
 	Email   email.Config
 	Web     WebConfig
 	Cookie  CookieConfig
@@ -40,17 +37,20 @@ type AppConfig struct {
 	Name              string
 	Version           string
 	Mode              string
-	Port              string
 	PprofPort         string
 	URL               string
 	JwtSecret         string
 	JwtTimeout        int
-	ReadTimeout       time.Duration
-	WriteTimeout      time.Duration
 	SSL               bool
 	CtxDefaultTimeout time.Duration
 	CSRF              bool
 	Debug             bool
+}
+
+type ServerConfig struct {
+	Addr         string
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
 }
 
 // WebConfig web config

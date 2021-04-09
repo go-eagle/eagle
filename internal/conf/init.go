@@ -37,7 +37,7 @@ func LoadConfig(confPath string) (*viper.Viper, error) {
 		v.SetConfigFile(confPath) // 如果指定了配置文件，则解析指定的配置文件
 	} else {
 		v.AddConfigPath("config") // 如果没有指定配置文件，则解析默认的配置文件
-		v.SetConfigName("config.local")
+		v.SetConfigName("config")
 	}
 	v.SetConfigType("yaml")     // 设置配置文件格式为YAML
 	v.AutomaticEnv()            // 读取匹配的环境变量

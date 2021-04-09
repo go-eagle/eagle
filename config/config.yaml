@@ -1,18 +1,24 @@
 app:
   Name: snake
   Version: 1.0.0
-  Port: :8080
   PprofPort: :5555
   Mode: debug                 # debug, release, test
   JwtSecret: JWT_SECRET
   JwtTimeout: 86400
   CookieName: jwt-token
-  ReadTimeout: 5
-  WriteTimeout: 5
   SSL: true
   CtxDefaultTimeout: 12
   CSRF: true
   Debug: false
+
+Http:
+  Addr: :8080
+  ReadTimeout: 5
+  WriteTimeout: 5
+Grpc:
+  Addr: :9090
+  ReadTimeout: 5
+  WriteTimeout: 5
 
 logger:
   Development: false
@@ -31,8 +37,8 @@ logger:
   LogBackupCount: 7
 
 mysql:
-  Name: snake                     # 数据库名称
-  Addr: 127.0.0.1:3306            # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
+  Name: sanke                     # 数据库名称
+  Addr: localhost:3306            # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
   UserName: root
   Password: root
   ShowLog: true                   # 是否打印SQL日志

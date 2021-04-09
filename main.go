@@ -25,8 +25,7 @@ import (
 
 	"github.com/1024casts/snake/internal/conf"
 	"github.com/1024casts/snake/internal/model"
-	"github.com/1024casts/snake/internal/server/grpc"
-	httpServer "github.com/1024casts/snake/internal/server/http"
+	"github.com/1024casts/snake/internal/server"
 	"github.com/1024casts/snake/internal/service"
 	logger "github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/net/tracing"
@@ -61,7 +60,7 @@ func init() {
 	defer closer.Close()
 
 	// init service
-	svc = service.New(c)
+	svc = service.New(cfg)
 }
 
 // @title snake docs api
@@ -73,9 +72,9 @@ func init() {
 func main() {
 	gin.SetMode(conf.Conf.App.Mode)
 	// init http server
-	httpSrv := httpServer.NewServer(svc)
+	httpSrv := server.NewHttpServer(svc)
 	// init grpc server
-	grpcSrv := grpc.NewServer(cfg, svc)
+	grpcSrv := server.NewGRPCServer(svc)
 	// init pprof server
 	go func() {
 		fmt.Printf("Listening and serving PProf HTTP on %s\n", conf.Conf.App.PprofPort)

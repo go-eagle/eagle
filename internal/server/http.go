@@ -1,4 +1,4 @@
-package http
+package server
 
 import (
 	"fmt"
@@ -11,22 +11,17 @@ import (
 	"github.com/1024casts/snake/internal/service"
 )
 
-var (
-	UserSvc *service.Service
-)
-
-// NewServer creates a HTTP server
-func NewServer(s *service.Service) *http.Server {
-	UserSvc = s
+// NewHttpServer creates a HTTP server
+func NewHttpServer(s *service.Service) *http.Server {
 	router := routers.NewRouter()
 	srv := &http.Server{
-		Addr:         conf.Conf.App.Port,
+		Addr:         conf.Conf.Http.Addr,
 		Handler:      router,
-		ReadTimeout:  time.Second * conf.Conf.App.ReadTimeout,
-		WriteTimeout: time.Second * conf.Conf.App.WriteTimeout,
+		ReadTimeout:  time.Second * conf.Conf.Http.ReadTimeout,
+		WriteTimeout: time.Second * conf.Conf.Http.WriteTimeout,
 	}
 
-	fmt.Printf("Listening and serving HTTP on %s\n", conf.Conf.App.Port)
+	fmt.Printf("Listening and serving HTTP on %s\n", conf.Conf.Http.Addr)
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("ListenAndServe, err: %s", err.Error())
 	}

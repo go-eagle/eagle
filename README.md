@@ -85,7 +85,7 @@ cd snake
 
 # 生成环境配置文件
 cd config
-cp config.local.yaml config.{ENV}.yaml
+cp config.yaml config.{ENV}.yaml
 
 # 编译
 make build
