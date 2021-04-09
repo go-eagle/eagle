@@ -67,7 +67,7 @@ func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserB
 	if err != nil {
 		if err == cache.ErrPlaceholder {
 			return nil, ErrNotFound
-		} else if err != redis.ErrRedisNotFound {
+		} else if !errors.Is(err, redis.ErrRedisNotFound) {
 			// fail fast, if cache error return, don't request to db
 			return nil, errors.Wrapf(err, "[repo.user_base] get user by uid: %d", uid)
 		}
