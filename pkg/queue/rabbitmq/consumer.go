@@ -35,7 +35,7 @@ func NewConsumer(addr, exchange, queueName string, autoDelete bool, handler func
 	}
 }
 
-func (c *Consumer) Consume() error {
+func (c *Consumer) Start() error {
 	if err := c.Run(); err != nil {
 		return err
 	}

@@ -1,33 +1,133 @@
 package rabbitmq
 
 import (
-	"fmt"
+	"log"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/streadway/amqp"
 )
 
 type Producer struct {
-	channel   *amqp.Channel
-	queueName string
+	addr          string
+	conn          *amqp.Connection
+	channel       *amqp.Channel
+	routingKey    string
+	exchange      string
+	connNotify    chan *amqp.Error
+	channelNotify chan *amqp.Error
+	quit          chan struct{}
 }
 
-func NewProducer(channel *amqp.Channel, queueName string) Producer {
-	return Producer{channel: channel, queueName: queueName}
-}
-
-func (p Producer) Publish(message string) error {
-	if err := p.channel.Publish(
-		"",
-		p.queueName,
-		false,
-		false,
-		amqp.Publishing{
-			Headers:     amqp.Table{},
-			ContentType: "text/plain",
-			Body:        []byte(message),
-		}); err != nil {
-		return fmt.Errorf("failed to publish a message: %s", err)
+func NewProducer(addr, exchange string) *Producer {
+	p := &Producer{
+		addr:       addr,
+		exchange:   exchange,
+		routingKey: "",
+		quit:       make(chan struct{}),
 	}
 
+	return p
+}
+
+func (p *Producer) Start() error {
+	if err := p.Run(); err != nil {
+		return err
+	}
+	go p.ReConnect()
+
 	return nil
+}
+
+func (p *Producer) Stop() {
+	close(p.quit)
+
+	if !p.conn.IsClosed() {
+		if err := p.conn.Close(); err != nil {
+			log.Println("rabbitmq producer - connection close failed: ", err)
+		}
+	}
+}
+
+func (p *Producer) Run() error {
+	var err error
+	if p.conn, err = amqp.Dial(p.addr); err != nil {
+		return err
+	}
+
+	if p.channel, err = p.conn.Channel(); err != nil {
+		p.conn.Close()
+		return err
+	}
+
+	p.connNotify = p.conn.NotifyClose(make(chan *amqp.Error))
+	p.channelNotify = p.channel.NotifyClose(make(chan *amqp.Error))
+
+	return err
+}
+
+func (p *Producer) ReConnect() {
+	for {
+		select {
+		case err := <-p.connNotify:
+			if err != nil {
+				log.Println("rabbitmq producer - connection NotifyClose: ", err)
+			}
+		case err := <-p.channelNotify:
+			if err != nil {
+				log.Println("rabbitmq producer - channel NotifyClose: ", err)
+			}
+		case <-p.quit:
+			return
+		}
+
+		// backstop
+		if !p.conn.IsClosed() {
+			if err := p.conn.Close(); err != nil {
+				log.Println("rabbitmq producer - connection close failed: ", err)
+			}
+		}
+
+		// IMPORTANT: 必须清空 Notify，否则死连接不会释放
+		for err := range p.channelNotify {
+			log.Println(err)
+		}
+		for err := range p.connNotify {
+			log.Println(err)
+		}
+
+	quit:
+		for {
+			select {
+			case <-p.quit:
+				return
+			default:
+				log.Println("rabbitmq producer - reconnect")
+
+				if err := p.Run(); err != nil {
+					log.Println("rabbitmq producer - failCheck: ", err)
+
+					// sleep 5s reconnect
+					time.Sleep(time.Second * 5)
+					continue
+				}
+
+				break quit
+			}
+		}
+	}
+}
+
+func (p *Producer) Publish(message string) error {
+	return p.channel.Publish(
+		p.exchange,   // exchange
+		p.routingKey, // routing key
+		false,        // mandatory
+		false,        // immediate
+		amqp.Publishing{
+			ContentType: "text/plain",
+			MessageId:   uuid.New().String(),
+			Type:        "",
+			Body:        []byte(message),
+		})
 }

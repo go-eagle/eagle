@@ -31,28 +31,47 @@ func TestMain(m *testing.M) {
 
 func TestRabbitMQ(t *testing.T) {
 	addr := "guest:guest@localhost:5672"
-	connection, err := rabbitmq.OpenConnection(addr)
+	conn, err := rabbitmq.OpenConnection(addr)
 	if err != nil {
 		t.Fatalf("failed connection: %s", err)
 	}
 	defer func() {
-		if err := connection.Close(); err != nil {
+		if err := conn.Close(); err != nil {
 			t.Fatalf("failed close connection: %s", err)
 		}
 	}()
 
-	channel, err := rabbitmq.NewChannel(connection).Create()
+	ch, err := rabbitmq.NewChannel(conn).Create()
 	if err != nil {
 		t.Fatalf("failed create channel: %s", err)
 	}
 
+	exchangeName := "test-exchange"
 	queueName := "message-broker"
+
+	err = ch.ExchangeDeclare(
+		exchangeName,
+		"direct",
+		false,
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		t.Fatalf("failed create exchange: %s", err)
+	}
 
 	var message = "Hello World RabbitMQ!"
 
 	t.Run("rabbitmq publish message", func(t *testing.T) {
-		if err := rabbitmq.NewProducer(channel, queueName).Publish(message); err != nil {
-			t.Errorf("failed publish message: %s", err)
+		producer := rabbitmq.NewProducer(addr, exchangeName)
+		defer producer.Stop()
+		if err := producer.Start(); err != nil {
+			t.Errorf("start producer err: %s", err.Error())
+		}
+		if err := producer.Publish(message); err != nil {
+			t.Errorf("failed publish message: %s", err.Error())
 		}
 	})
 
@@ -63,7 +82,9 @@ func TestRabbitMQ(t *testing.T) {
 	}
 
 	t.Run("rabbitmq consume message", func(t *testing.T) {
-		if err := rabbitmq.NewConsumer(addr, "", queueName, true, handler).Consume(); err != nil {
+		consumer := rabbitmq.NewConsumer(addr, exchangeName, queueName, true, handler)
+		defer consumer.Stop()
+		if err := consumer.Start(); err != nil {
 			t.Errorf("failed consume: %s", err)
 		}
 	})
