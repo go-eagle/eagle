@@ -104,7 +104,7 @@ func (c *Consumer) Handle(delivery <-chan amqp.Delivery) {
 		log.Printf("Consumer received a message: %s in queue: %s", d.Body, c.queueName)
 		log.Printf("got %dB delivery: [%v] %q", len(d.Body), d.DeliveryTag, d.Body)
 		go func(delivery amqp.Delivery) {
-			if err := c.handler(delivery.Body); err != nil {
+			if err := c.handler(delivery.Body); err == nil {
 				// NOTE: 假如现在有 10 条消息，它们都是并发处理的，如果第 10 条消息最先处理完毕，
 				// 那么前 9 条消息都会被 delivery.Ack(true) 给确认掉。后续 9 条消息处理完毕时，
 				// 再执行 delivery.Ack(true)，显然就会导致消息重复确认

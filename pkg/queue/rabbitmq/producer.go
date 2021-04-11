@@ -51,11 +51,11 @@ func (p *Producer) Stop() {
 
 func (p *Producer) Run() error {
 	var err error
-	if p.conn, err = amqp.Dial(p.addr); err != nil {
+	if p.conn, err = OpenConnection(p.addr); err != nil {
 		return err
 	}
 
-	if p.channel, err = p.conn.Channel(); err != nil {
+	if p.channel, err = NewChannel(p.conn).Create(); err != nil {
 		p.conn.Close()
 		return err
 	}

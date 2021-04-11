@@ -33,3 +33,5 @@
 - [RocketMQ Go客户端](https://github.com/apache/rocketmq-client-go)
 - [RocketMQ Go客户端使用文档](https://github.com/apache/rocketmq-client-go/blob/master/docs/Introduction.md)
 - [阿里云RocketMQ](https://cn.aliyun.com/product/rocketmq)
+- https://github.com/GSabadini/go-message-broker/blob/master/main.go
+- [Automatically recovering RabbitMQ connections in Go applications](https://medium.com/@dhanushgopinath/automatically-recovering-rabbitmq-connections-in-go-applications-7795a605ca59)
