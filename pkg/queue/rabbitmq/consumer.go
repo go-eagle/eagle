@@ -71,6 +71,20 @@ func (c *Consumer) Run() error {
 		return err
 	}
 
+	if err := c.channel.ExchangeDeclare(
+		c.exchange, // name
+		"direct",   // type
+		true,       // durable
+		false,      // auto-deleted
+		false,      // internal
+		false,      // noWait
+		nil,        // arguments
+	); err != nil {
+		c.channel.Close()
+		c.conn.Close()
+		return err
+	}
+
 	if _, err = c.channel.QueueDeclare(c.queueName, false, c.autoDelete, false, false, nil); err != nil {
 		c.channel.Close()
 		c.conn.Close()
