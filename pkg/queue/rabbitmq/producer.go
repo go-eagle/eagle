@@ -125,9 +125,10 @@ func (p *Producer) Publish(message string) error {
 		false,        // mandatory
 		false,        // immediate
 		amqp.Publishing{
-			ContentType: "text/plain",
-			MessageId:   uuid.New().String(),
-			Type:        "",
-			Body:        []byte(message),
+			DeliveryMode: amqp.Persistent,
+			ContentType:  "text/plain",
+			MessageId:    uuid.New().String(),
+			Type:         "",
+			Body:         []byte(message),
 		})
 }
