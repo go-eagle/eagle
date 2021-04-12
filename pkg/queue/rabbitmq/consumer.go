@@ -71,21 +71,8 @@ func (c *Consumer) Run() error {
 		return err
 	}
 
-	if err := c.channel.ExchangeDeclare(
-		c.exchange, // name
-		"direct",   // type
-		true,       // durable
-		false,      // auto-deleted
-		false,      // internal
-		false,      // noWait
-		nil,        // arguments
-	); err != nil {
-		c.channel.Close()
-		c.conn.Close()
-		return err
-	}
-
-	if _, err = c.channel.QueueDeclare(c.queueName, false, c.autoDelete, false, false, nil); err != nil {
+	// bind queue
+	if _, err = c.channel.QueueDeclare(c.queueName, true, c.autoDelete, false, false, nil); err != nil {
 		c.channel.Close()
 		c.conn.Close()
 		return err
@@ -98,7 +85,8 @@ func (c *Consumer) Run() error {
 	}
 
 	var delivery <-chan amqp.Delivery
-	delivery, err = c.channel.Consume(c.queueName, c.consumerTag, false, false, false, false, nil)
+	// NOTE: autoAck param
+	delivery, err = c.channel.Consume(c.queueName, c.consumerTag, true, false, false, false, nil)
 	if err != nil {
 		c.channel.Close()
 		c.conn.Close()

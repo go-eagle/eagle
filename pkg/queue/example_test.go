@@ -29,8 +29,9 @@ import (
 func TestRabbitMQ(t *testing.T) {
 	addr := "guest:guest@localhost:5672"
 
-	exchangeName := ""
-	queueName := "message-broker-queue"
+	// NOTE: need to create exchange and queue manually, than bind exchange to queue
+	exchangeName := "test-exchange"
+	queueName := "test-bind-to-exchange"
 
 	var message = "Hello World RabbitMQ!"
 
@@ -52,7 +53,8 @@ func TestRabbitMQ(t *testing.T) {
 	}
 
 	t.Run("rabbitmq consume message", func(t *testing.T) {
-		consumer := rabbitmq.NewConsumer(addr, exchangeName, queueName, true, handler)
+		// NOTE: autoDelete param
+		consumer := rabbitmq.NewConsumer(addr, exchangeName, queueName, false, handler)
 		defer consumer.Stop()
 		if err := consumer.Start(); err != nil {
 			t.Errorf("failed consume: %s", err)
