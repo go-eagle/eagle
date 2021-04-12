@@ -1,10 +1,13 @@
 package queue
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"testing"
+
+	"github.com/1024casts/snake/pkg/testing/lich"
 
 	"github.com/Shopify/sarama"
 
@@ -12,19 +15,19 @@ import (
 	"github.com/1024casts/snake/pkg/queue/rabbitmq"
 )
 
-//func TestMain(m *testing.M) {
-//	flag.Set("f", "../../test/rabbitmq-docker-compose.yaml")
-//	flag.Parse()
-//
-//	if err := lich.Setup(); err != nil {
-//		panic(err)
-//	}
-//	defer lich.Teardown()
-//
-//	if code := m.Run(); code != 0 {
-//		panic(code)
-//	}
-//}
+func TestMain(m *testing.M) {
+	flag.Set("f", "../../test/rabbitmq-docker-compose.yaml")
+	flag.Parse()
+
+	if err := lich.Setup(); err != nil {
+		panic(err)
+	}
+	defer lich.Teardown()
+
+	if code := m.Run(); code != 0 {
+		panic(code)
+	}
+}
 
 func TestRabbitMQ(t *testing.T) {
 	addr := "guest:guest@localhost:5672"
