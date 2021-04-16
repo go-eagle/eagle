@@ -17,4 +17,5 @@ var (
 	TooManyRequests       = NewError(10110, "Too many request")
 	ErrInvalidTransaction = NewError(10111, "Invalid transaction")
 	ErrEncrypt            = NewError(10112, "Encrypting the user password error")
+	ErrLimitExceed        = NewError(10113, "Beyond limit")
 )

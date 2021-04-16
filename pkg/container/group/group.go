@@ -40,6 +40,8 @@ func (g *Group) Get(key string) interface{} {
 	if ok {
 		return obj
 	}
+
+	// new a obj if not exist
 	obj = g.new()
 	g.objs[key] = obj
 	return obj

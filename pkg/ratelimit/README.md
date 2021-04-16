@@ -15,14 +15,16 @@
 
 代码实现：[https://github.com/uber-go/ratelimit](https://github.com/uber-go/ratelimit)
 
-## 过载保护
+## 自适应限流
 
 但是采用漏斗桶/令牌桶的缺点是太被动, 不能快速适应流量变化。  
 因此我们需要一种自适应的限流算法，即: 过载保护，根据系统当前的负载自动丢弃流量。
 
-可以参考 BBR算法实现： [https://github.com/go-kratos/kratos/blob/master/pkg/ratelimit/bbr/bbr.go](https://github.com/go-kratos/kratos/blob/master/pkg/ratelimit/bbr/bbr.go)
+> 可以参考 BBR算法实现： [https://github.com/go-kratos/kratos/blob/master/pkg/ratelimit/bbr/bbr.go](https://github.com/go-kratos/kratos/blob/master/pkg/ratelimit/bbr/bbr.go)
 
-### Sentinel-golang 版本 
+## 扩展
+
+###Sentinel-golang 版本 
 
 sentinel 官网：https://sentinelguard.io/zh-cn/index.html
 
