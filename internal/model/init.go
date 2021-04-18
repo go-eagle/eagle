@@ -3,7 +3,7 @@ package model
 import (
 	"gorm.io/gorm"
 
-	"github.com/1024casts/snake/pkg/database/orm"
+	"github.com/1024casts/snake/pkg/storage/orm"
 )
 
 // DB 数据库全局变量

@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 
-	"github.com/1024casts/snake/pkg/database/orm"
+	"github.com/1024casts/snake/pkg/storage/orm"
 )
 
 var (

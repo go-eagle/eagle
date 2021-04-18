@@ -3,12 +3,12 @@ package conf
 import (
 	"time"
 
-	"github.com/1024casts/snake/pkg/database/orm"
 	"github.com/1024casts/snake/pkg/email"
 	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/pkg/mongodb"
 	"github.com/1024casts/snake/pkg/net/tracing"
 	"github.com/1024casts/snake/pkg/redis"
+	"github.com/1024casts/snake/pkg/storage/mongodb"
+	"github.com/1024casts/snake/pkg/storage/orm"
 )
 
 // Config global config
