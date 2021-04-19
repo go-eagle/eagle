@@ -33,8 +33,8 @@ type Config struct {
 	LogBackupCount    uint
 }
 
-// InitLog init log
-func InitLog(cfg *Config) Logger {
+// Init init log
+func Init(cfg *Config) Logger {
 	zapLogger, err := newZapLogger(cfg)
 	if err != nil {
 		fmt.Errorf("Init newZapLogger err: %v", err)

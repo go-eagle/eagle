@@ -46,7 +46,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	logger.InitLog(&cfg.Logger)
+	logger.Init(&cfg.Logger)
 	// init db
 	model.Init(&cfg.MySQL)
 	// init redis

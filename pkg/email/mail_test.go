@@ -15,7 +15,7 @@ func TestSend(t *testing.T) {
 	}
 
 	// init log
-	log.InitLog(conf.Conf)
+	log.Init(conf.Conf)
 
 	Init()
 

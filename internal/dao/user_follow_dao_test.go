@@ -38,7 +38,7 @@ func TestMain(m *testing.M) {
 	defer lich.Teardown()
 
 	// init log
-	logger.InitLog(&cfg.Logger)
+	logger.Init(&cfg.Logger)
 	// init db
 	model.Init(&cfg.MySQL)
 
