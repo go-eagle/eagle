@@ -9,14 +9,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
+
+	"github.com/1024casts/snake/pkg/app"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
@@ -34,34 +31,7 @@ import (
 
 var (
 	cfgFile = pflag.StringP("config", "c", "", "snake config file path.")
-	cfg     *conf.Config
-	svc     *service.Service
 )
-
-func init() {
-	pflag.Parse()
-	// init config
-	c, err := conf.Init(*cfgFile)
-	if err != nil {
-		panic(err)
-	}
-	// init log
-	logger.InitLog(&c.Logger)
-	// init db
-	model.Init(&c.MySQL)
-	// init redis
-	redis.Init(&c.Redis)
-	// init tracer
-	metricsFactory := jprom.New().Namespace(metrics.NSOptions{Name: c.App.Name, Tags: nil})
-	_, closer, err := tracing.Init(c.Jaeger.ServiceName, c.Jaeger.Host, metricsFactory)
-	if err != nil {
-		panic(err)
-	}
-	defer closer.Close()
-
-	// init service
-	svc = service.New(cfg)
-}
 
 // @title snake docs api
 // @version 1.0
@@ -70,11 +40,30 @@ func init() {
 // @host localhost:8080
 // @BasePath /v1
 func main() {
+	pflag.Parse()
+	// init config
+	cfg, err := conf.Init(*cfgFile)
+	if err != nil {
+		panic(err)
+	}
+	logger.InitLog(&cfg.Logger)
+	// init db
+	model.Init(&cfg.MySQL)
+	// init redis
+	redis.Init(&cfg.Redis)
+	// init tracer
+	metricsFactory := jprom.New().Namespace(metrics.NSOptions{Name: cfg.App.Name, Tags: nil})
+	_, closer, err := tracing.Init(cfg.Jaeger.ServiceName, cfg.Jaeger.Host, metricsFactory)
+	if err != nil {
+		panic(err)
+	}
+	defer closer.Close()
+
+	// init service
+	svc := service.New(cfg)
+
 	gin.SetMode(conf.Conf.App.Mode)
-	// init http server
-	httpSrv := server.NewHttpServer(svc)
-	// init grpc server
-	grpcSrv := server.NewGRPCServer(svc)
+
 	// init pprof server
 	go func() {
 		fmt.Printf("Listening and serving PProf HTTP on %s\n", conf.Conf.App.PprofPort)
@@ -83,34 +72,19 @@ func main() {
 		}
 	}()
 
-	ctx, cancel := context.WithTimeout(context.Background(), conf.Conf.App.CtxDefaultTimeout*time.Second)
-	defer cancel()
+	app := app.New(cfg,
+		app.WithName(cfg.App.Name),
+		app.WithVersion(cfg.App.Version),
+		app.WithLogger(logger.GetLogger()),
+		app.Server(
+			// init http server
+			server.NewHttpServer(conf.Conf, svc),
+			// init grpc server
+			//grpcSrv := server.NewGRPCServer(svc)
+		),
+	)
 
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
-	for {
-		s := <-quit
-		log.Printf("Server receive a quit signal: %s", s.String())
-		switch s {
-		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
-			log.Println("Server is exiting")
-			// close http server
-			if httpSrv != nil {
-				if err := httpSrv.Shutdown(ctx); err != nil {
-					log.Fatalf("Server shutdown err: %s", err)
-				}
-			}
-			// close grpc server
-			if grpcSrv != nil {
-				grpcSrv.GracefulStop()
-			}
-			// close service
-			svc.Close()
-			return
-		case syscall.SIGHUP:
-			// TODO: reload
-		default:
-			return
-		}
+	if err := app.Run(); err != nil {
+		panic(err)
 	}
 }

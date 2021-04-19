@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/1024casts/snake/pkg/log"
+	"github.com/1024casts/snake/pkg/transport"
 )
 
 // Option is func for application
@@ -20,6 +21,8 @@ type options struct {
 	ctx  context.Context
 
 	logger log.Logger
+
+	servers []transport.Server
 }
 
 // WithID with app id
@@ -54,5 +57,11 @@ func WithSignal(sigs ...os.Signal) Option {
 func WithLogger(logger log.Logger) Option {
 	return func(o *options) {
 		o.logger = logger
+	}
+}
+
+func Server(srv ...transport.Server) Option {
+	return func(o *options) {
+		o.servers = srv
 	}
 }

@@ -1,31 +1,22 @@
 package server
 
 import (
-	"errors"
-	"fmt"
-	"log"
-	"net/http"
-	"time"
-
 	"github.com/1024casts/snake/internal/conf"
 	"github.com/1024casts/snake/internal/routers"
 	"github.com/1024casts/snake/internal/service"
+	"github.com/1024casts/snake/pkg/transport/http"
 )
 
 // NewHttpServer creates a HTTP server
-func NewHttpServer(s *service.Service) *http.Server {
+func NewHttpServer(c *conf.Config, svc *service.Service) *http.Server {
 	router := routers.NewRouter()
-	srv := &http.Server{
-		Addr:         conf.Conf.Http.Addr,
-		Handler:      router,
-		ReadTimeout:  time.Second * conf.Conf.Http.ReadTimeout,
-		WriteTimeout: time.Second * conf.Conf.Http.WriteTimeout,
-	}
 
-	fmt.Printf("Listening and serving HTTP on %s\n", conf.Conf.Http.Addr)
-	if err := srv.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-		log.Fatalf("ListenAndServe, err: %s", err.Error())
+	var opts []http.ServerOption
+	if c.Http.Addr != "" {
+		opts = append(opts, http.Address(c.Http.Addr))
 	}
+	srv := http.NewServer(opts...)
+	srv.Handler = router
 
 	return srv
 }
