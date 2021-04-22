@@ -7,8 +7,8 @@ import (
 	"github.com/1024casts/snake/pkg/errno"
 )
 
-// JWTMiddleware 认证中间件
-func JWTMiddleware() gin.HandlerFunc {
+// JWT 认证中间件
+func JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Parse the json web token.
 		ctx, err := app.ParseRequest(c)
