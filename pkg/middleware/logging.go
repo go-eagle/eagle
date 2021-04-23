@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/willf/pad"
 
-	"github.com/1024casts/snake/api"
+	"github.com/1024casts/snake/pkg/app"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -67,7 +67,7 @@ func Logging() gin.HandlerFunc {
 		var message string
 
 		// get code and message
-		var response api.Response
+		var response app.Response
 		if err := json.Unmarshal(blw.body.Bytes(), &response); err != nil {
 			log.Errorf("response body can not unmarshal to model.Response struct, body: `%s`, err: %+v",
 				blw.body.Bytes(), err)
@@ -78,7 +78,7 @@ func Logging() gin.HandlerFunc {
 			message = response.Message
 		}
 
-		log.Infof("%-13s | %-12s | %s %s | {code: %d, message: %s}", latency, ip,
-			pad.Right(method, 5, ""), path, code, message)
+		log.Infof("%-13s | %-12s | %s %s | %d | {code: %d, message: %s}", latency, ip,
+			pad.Right(method, 5, ""), path, blw.Status(), code, message)
 	}
 }
