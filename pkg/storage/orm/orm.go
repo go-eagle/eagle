@@ -53,7 +53,11 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 	}
 	db.Set("gorm:table_options", "CHARSET=utf8mb4")
 
-	db.Use(gromopentracing.New())
+	// set tracing
+	err = db.Use(gromopentracing.New())
+	if err != nil {
+		log.Panicf("using gorm opentracing, err: %+v", err)
+	}
 
 	return db
 }
