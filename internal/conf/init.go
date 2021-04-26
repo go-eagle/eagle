@@ -69,8 +69,10 @@ func ParseConfig(v *viper.Viper) (*Config, error) {
 
 // 监控配置文件变化并热加载程序
 func watchConfig(v *viper.Viper) {
-	v.WatchConfig()
-	v.OnConfigChange(func(e fsnotify.Event) {
-		log.Printf("Config file changed: %s", e.Name)
-	})
+	go func() {
+		v.WatchConfig()
+		v.OnConfigChange(func(e fsnotify.Event) {
+			log.Printf("Config file changed: %s", e.Name)
+		})
+	}()
 }
