@@ -3,7 +3,6 @@ package http
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -48,7 +47,6 @@ func (s *Server) Start() error {
 	s.lis = lis
 	s.log.Infof("http server is listening on: %s", lis.Addr().String())
 	if err := s.Serve(lis); !errors.Is(err, http.ErrServerClosed) {
-		fmt.Println("err...", err)
 		return err
 	}
 	return nil

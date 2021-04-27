@@ -7,13 +7,11 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/1024casts/snake/internal/conf"
-
-	"github.com/1024casts/snake/pkg/log"
-
+	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/google/uuid"
+	"github.com/1024casts/snake/internal/conf"
+	"github.com/1024casts/snake/pkg/log"
 )
 
 type App struct {
@@ -69,15 +67,16 @@ func (a *App) Run() error {
 	}
 
 	// watch signal
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, a.opts.sigs...)
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, a.opts.sigs...)
 	g.Go(func() error {
 		for {
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
-			case <-c:
-				a.Stop()
+			case s := <-quit:
+				a.log.Infof("receive a quit signal: %s", s.String())
+				return a.Stop()
 			}
 		}
 	})
