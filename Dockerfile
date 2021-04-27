@@ -3,7 +3,7 @@ FROM golang:1.14-alpine AS builder
 
 # The latest alpine images don't have some tools like (`git` and `bash`).
 # Adding git, bash and openssh to the image
-RUN apk add --no-cache git ca-certificates tzdata \
+RUN apk add --no-cache git make ca-certificates tzdata \
     --repository http://mirrors.aliyun.com/alpine/v3.11/community \
     --repository http://mirrors.aliyun.com/alpine/v3.11/main
 
@@ -15,8 +15,8 @@ ENV GO111MODULE=on \
     GOPROXY="https://goproxy.cn,direct" \
     TZ=Asia/Shanghai
 
-# 移动到工作目录：/app
-WORKDIR /build/app
+# 移动到工作目录
+WORKDIR /go/src/github.com/1024casts/snake
 
 # 复制项目中的 go.mod 和 go.sum文件并下载依赖信息
 COPY go.mod .
@@ -25,10 +25,10 @@ RUN go mod download
 
 # 将代码复制到容器中
 COPY . .
-COPY config /app/conf
+COPY config ./conf
 
 # Build the Go app
-RUN go build -ldflags="-s -w" -o /app/snake .
+RUN make build
 
 # 创建一个小镜像
 # Final stage
@@ -36,9 +36,9 @@ FROM debian:stretch-slim
 
 WORKDIR /app
 
-# 从builder镜像中把 /app 拷贝到当前目录
-COPY --from=builder /app/snake /app/snake
-COPY --from=builder /app/conf /app/conf
+# 从builder镜像中把 /build 拷贝到当前目录
+COPY --from=builder /go/src/github.com/1024casts/snake/snake  /app
+COPY --from=builder /go/src/github.com/1024casts/snake/conf   /app
 
 RUN mkdir -p /data/logs/
 
