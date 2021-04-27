@@ -9,9 +9,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/1024casts/snake/pkg/app"
 
@@ -27,10 +29,12 @@ import (
 	logger "github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/net/tracing"
 	"github.com/1024casts/snake/pkg/redis"
+	v "github.com/1024casts/snake/pkg/version"
 )
 
 var (
 	cfgFile = pflag.StringP("config", "c", "", "snake config file path.")
+	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
 // @title snake docs api
@@ -41,6 +45,18 @@ var (
 // @BasePath /v1
 func main() {
 	pflag.Parse()
+	if *version {
+		ver := v.Get()
+		marshaled, err := json.MarshalIndent(&ver, "", "  ")
+		if err != nil {
+			fmt.Printf("%v\n", err)
+			os.Exit(1)
+		}
+
+		fmt.Println(string(marshaled))
+		return
+	}
+
 	// init config
 	cfg, err := conf.Init(*cfgFile)
 	if err != nil {
