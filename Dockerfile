@@ -1,9 +1,9 @@
 # Compile stage
-FROM golang:1.14-alpine AS builder
+FROM golang:1.15-alpine AS builder
 
 # The latest alpine images don't have some tools like (`git` and `bash`).
 # Adding git, bash and openssh to the image
-RUN apk add --no-cache git make ca-certificates tzdata \
+RUN apk add --no-cache git make bash ca-certificates tzdata \
     --repository http://mirrors.aliyun.com/alpine/v3.11/community \
     --repository http://mirrors.aliyun.com/alpine/v3.11/main
 
@@ -25,7 +25,7 @@ RUN go mod download
 
 # 将代码复制到容器中
 COPY . .
-COPY config ./conf
+COPY config ./config
 
 # Build the Go app
 RUN make build
@@ -37,8 +37,8 @@ FROM debian:stretch-slim
 WORKDIR /app
 
 # 从builder镜像中把 /build 拷贝到当前目录
-COPY --from=builder /go/src/github.com/1024casts/snake/snake  /app
-COPY --from=builder /go/src/github.com/1024casts/snake/conf   /app
+COPY --from=builder /go/src/github.com/1024casts/snake/snake    /app/snake
+COPY --from=builder /go/src/github.com/1024casts/snake/config   /app/config
 
 RUN mkdir -p /data/logs/
 
@@ -46,7 +46,7 @@ RUN mkdir -p /data/logs/
 EXPOSE 8080
 
 # 需要运行的命令
-CMD ["/app/snake", "-c", "conf/config.docker.yaml"]
+CMD ["/app/snake", "-c", "config/config.docker.yaml"]
 
 # 1. build image: docker build -t snake:v1 -f Dockerfile .
 # 2. start: docker run --rm -it -p 8080:8080 snake:v1
