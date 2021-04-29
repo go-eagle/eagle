@@ -12,13 +12,13 @@ scrape_configs:
   - job_name: node_exporter
     scrape_interval: 10s
     static_configs:
-      - targets: ["localhost:9100"]
+      - targets: ["localhost:9100","node_exporter:9100"]
 
   # Go 程序数据的抓取配置
   - job_name: go_app_server
     scrape_interval: 10s  # 抓取间隔
     metrics_path: /metrics  # 抓取数据的URL路径
     static_configs:
-      - targets: ["localhost:8080"]
+      - targets: ["localhost:8080","app:8080"]
         labels:
           instance: go-snake

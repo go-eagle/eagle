@@ -97,7 +97,7 @@ metrics:
   ServiceName: api
 
 jaeger:
-  Host: localhost:6831
+  Host: jaeger:6831
   ServiceName: REST_API
   LogSpans: false
 

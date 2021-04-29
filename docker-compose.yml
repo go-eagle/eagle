@@ -26,7 +26,7 @@ services:
 
   db:
     container_name: mysql_container
-    image: mysql:5.7.31
+    image: mysql:5.7.33
     ports:
       - "3306:3306"
     expose:
@@ -40,7 +40,8 @@ services:
     # 解决外部无法访问 for mysql8
     command: [
         '--character-set-server=utf8',
-        '--collation-server=utf8_unicode_ci'
+        '--collation-server=utf8_unicode_ci',
+        '--default-authentication-plugin=mysql_native_password'
     ]
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]   # 用于健康检查的指令
@@ -53,10 +54,10 @@ services:
     security_opt:
       - seccomp:unconfined
     volumes:
-      - mysql-data:/var/lib/mysql
-      - ./build/docker/mysql/my.cnf:/etc/mysql/my.cnf
-      - ./build/docker/mysql/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
-      - ./build/docker/mysql:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+      - ./deploy/docker/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./deploy/docker/mysql/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+      - ./deploy/docker/mysql/:/docker-entrypoint-initdb.d/
     networks:
       - snake
 
@@ -88,7 +89,7 @@ services:
     depends_on:
       - app
     volumes:
-      - ./conf/nginx_api.conf:/etc/nginx/conf.d/snake.conf
+      - ./config/nginx_api.conf:/etc/nginx/conf.d/snake.conf
     command: nginx -g 'daemon off';
 
   prometheus:
@@ -125,22 +126,22 @@ services:
       - '3000:3000'
     networks:
       - snake
-#  jaeger:
-#    container_name: jaeger_container
-#    image: jaegertracing/all-in-one:1.21
-#    environment:
-#      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
-#    ports:
-#      - 5775:5775/udp
-#      - 6831:6831/udp
-#      - 6832:6832/udp
-#      - 5778:5778
-#      - 16686:16686
-#      - 14268:14268
-#      - 14250:14250
-#      - 9411:9411
-#    networks:
-#      - snake
+  jaeger:
+    container_name: jaeger_container
+    image: jaegertracing/all-in-one:1.21
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+    ports:
+      - 5775:5775/udp
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 5778:5778
+      - 16686:16686
+      - 14268:14268
+      - 14250:14250
+      - 9411:9411
+    networks:
+      - snake
 
   mongodb:
     image: mongo:latest
@@ -163,6 +164,6 @@ networks:
     driver: "bridge"
 
 volumes:
-  mysql-data:
+  mysql_data:
   redis_data:
   mongodb_data:
