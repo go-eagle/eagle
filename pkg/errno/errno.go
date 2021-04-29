@@ -56,7 +56,7 @@ func (e *Error) StatusCode() int {
 	switch e.Code() {
 	case Success.Code():
 		return http.StatusOK
-	case InternalServerError.Code():
+	case ErrInternalServerError.Code():
 		return http.StatusInternalServerError
 	case ErrInvalidParam.Code():
 		return http.StatusBadRequest
@@ -66,8 +66,10 @@ func (e *Error) StatusCode() int {
 		fallthrough
 	case ErrTokenTimeout.Code():
 		return http.StatusUnauthorized
-	case TooManyRequests.Code():
+	case ErrTooManyRequests.Code():
 		return http.StatusTooManyRequests
+	case ErrServiceUnavailable.Code():
+		return http.StatusServiceUnavailable
 	}
 
 	return http.StatusInternalServerError
@@ -98,5 +100,5 @@ func DecodeErr(err error) (int, string) {
 	default:
 	}
 
-	return InternalServerError.Code(), err.Error()
+	return ErrInternalServerError.Code(), err.Error()
 }
