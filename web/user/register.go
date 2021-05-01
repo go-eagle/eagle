@@ -50,7 +50,7 @@ func DoRegister(c *gin.Context) {
 	// Insert the user to the database.
 	err := service.UserSvc.Register(c, u.Username, u.Email, u.Password)
 	if err != nil {
-		web.Response(c, errno.InternalServerError, nil)
+		web.Response(c, errno.ErrInternalServerError, nil)
 		return
 	}
 
