@@ -27,8 +27,8 @@ import (
 	"github.com/1024casts/snake/internal/server"
 	"github.com/1024casts/snake/internal/service"
 	logger "github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/pkg/net/tracing"
 	"github.com/1024casts/snake/pkg/redis"
+	"github.com/1024casts/snake/pkg/tracing"
 	v "github.com/1024casts/snake/pkg/version"
 )
 

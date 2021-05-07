@@ -5,13 +5,12 @@ import (
 	"io"
 	"time"
 
-	"github.com/1024casts/snake/pkg/log"
-
-	"github.com/uber/jaeger-lib/metrics"
-
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
+	"github.com/uber/jaeger-lib/metrics"
+
+	"github.com/1024casts/snake/pkg/log"
 )
 
 // Jaeger config

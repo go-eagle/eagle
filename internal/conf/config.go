@@ -5,10 +5,10 @@ import (
 
 	"github.com/1024casts/snake/pkg/email"
 	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/pkg/net/tracing"
 	"github.com/1024casts/snake/pkg/redis"
 	"github.com/1024casts/snake/pkg/storage/mongodb"
 	"github.com/1024casts/snake/pkg/storage/orm"
+	"github.com/1024casts/snake/pkg/tracing"
 )
 
 // Config global config
