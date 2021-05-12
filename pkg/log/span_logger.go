@@ -24,14 +24,14 @@ func (sl spanLogger) Debug(args ...interface{}) {
 }
 
 func (sl spanLogger) Debugf(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args)
+	msg := fmt.Sprintf(format, args...)
 	var fields []zap.Field
 	sl.logToSpan("info", msg)
 	sl.logger.Debug(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Info(args ...interface{}) {
-	msg := fmt.Sprint(args)
+	msg := fmt.Sprint(args...)
 	var fields []zap.Field
 	sl.logToSpan("info", msg)
 	sl.logger.Info(msg, append(sl.spanFields, fields...)...)
@@ -42,7 +42,7 @@ func (sl spanLogger) Infof(format string, args ...interface{}) {
 }
 
 func (sl spanLogger) Warn(args ...interface{}) {
-	msg := fmt.Sprint(args)
+	msg := fmt.Sprint(args...)
 	var fields []zap.Field
 	sl.logToSpan("error", msg)
 	sl.logger.Warn(msg, append(sl.spanFields, fields...)...)
@@ -56,7 +56,7 @@ func (sl spanLogger) Warnf(format string, args ...interface{}) {
 }
 
 func (sl spanLogger) Error(args ...interface{}) {
-	msg := fmt.Sprint(args)
+	msg := fmt.Sprint(args...)
 	var fields []zap.Field
 	sl.logToSpan("error", msg)
 	sl.logger.Error(msg, append(sl.spanFields, fields...)...)
@@ -67,7 +67,7 @@ func (sl spanLogger) Errorf(format string, args ...interface{}) {
 }
 
 func (sl spanLogger) Fatal(args ...interface{}) {
-	msg := fmt.Sprint(args)
+	msg := fmt.Sprint(args...)
 	var fields []zap.Field
 	sl.logToSpan("fatal", msg)
 	tag.Error.Set(sl.span, true)
