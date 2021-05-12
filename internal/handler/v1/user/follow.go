@@ -57,7 +57,7 @@ func Follow(c *gin.Context) {
 		err = service.UserSvc.Unfollow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] cancel user follow err: %v", err)
-			response.Error(c, errno.InternalServerError)
+			response.Error(c, errno.ErrInternalServerError)
 			return
 		}
 	} else {
@@ -65,7 +65,7 @@ func Follow(c *gin.Context) {
 		err = service.UserSvc.Follow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] add user follow err: %v", err)
-			response.Error(c, errno.InternalServerError)
+			response.Error(c, errno.ErrInternalServerError)
 			return
 		}
 	}
