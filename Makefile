@@ -19,12 +19,12 @@ GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
 all: build
 
 .PHONY: build
-build: ## Build the binary file
+# make build, Build the binary file
+build:
 	@go build -v -ldflags ${ldflags} .
 
 .PHONY: docker
-# make docker
-# 生成docker镜像
+# make docker  生成docker镜像
 docker:
 	docker build \
 		-t snake:$(versionDir) \
@@ -37,11 +37,6 @@ clean:
 	rm cover.out coverage.txt
 	find . -name "[._]*.s[a-w][a-z]" | xargs -i rm -f {}
 
-.PHONY: gotool
-gotool:
-	gofmt -w .
-	go tool vet . | grep -v vendor;true
-
 .PHONY: dep
 dep: ## Get the dependencies
 	@go mod download
@@ -50,31 +45,41 @@ dep: ## Get the dependencies
 lint: ## Lint Golang files
 	@golint -set_exit_status ${PKG_LIST}
 
+.PHONY: ci-lint
+ci-lint: ci-lint-prepare
+	@./bin/golangci-lint run ./...
+
 .PHONY: ci-lint-prepare
 ci-lint-prepare:
 	@echo "Installing golangci-lint"
     @curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s latest
 
-.PHONY: ci-lint
-ci-lint:
-	@./bin/golangci-lint run ./...
-
 .PHONY: test
-test: ## Run unittests
+# make test
+test: test-case vet-case
 	@go test -short ${PKG_LIST}
 
-.PHONY: test-coverage
-test-coverage: ## Run tests with coverage
+.PHONY: test-case
+test-case:
+	@go test -cover ./... | grep -v vendor;true
+
+.PHONY: vet-case
+vet-case:
+	go vet ./... | grep -v vendor;true
+
+.PHONY: coverage
+# make coverage
+coverage:
 	@go test -short -coverprofile cover.out -covermode=atomic ${PKG_LIST}
 	@cat cover.out >> coverage.txt
 
 .PHONY: test-view
-# view test result
+# make test-view
 test-view:
 	@go tool cover -html=coverage.txt
 
-.PHONY: gen-docs
-gen-docs:
+.PHONY: docs
+docs:
 	@swag init
 	@mv docs/docs.go api/http
 	@mv docs/swagger.json api/http
@@ -82,9 +87,9 @@ gen-docs:
 	@echo "gen-docs done"
 	@echo "see docs by: http://localhost:8080/swagger/index.html"
 
-.PHONY: gen-graph
+.PHONY: graph
 # 生成交互式的可视化Go程序调用图
-gen-graph:
+graph:
 	@echo "downloading go-callvis"
 	@go get github.com/1024casts/snake
 	@echo "generating graph"
