@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/uber/jaeger-lib/metrics"
 	jprom "github.com/uber/jaeger-lib/metrics/prometheus"
+	_ "go.uber.org/automaxprocs"
 
 	"github.com/1024casts/snake/internal/conf"
 	"github.com/1024casts/snake/internal/model"
