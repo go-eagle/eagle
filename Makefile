@@ -22,6 +22,15 @@ all: build
 build: ## Build the binary file
 	@go build -v -ldflags ${ldflags} .
 
+.PHONY: docker
+# make docker
+# 生成docker镜像
+docker:
+	docker build \
+		-t snake:$(versionDir) \
+		-f Dockeffile \
+		.
+
 .PHONY: clean
 clean:
 	rm -f snake
@@ -60,7 +69,8 @@ test-coverage: ## Run tests with coverage
 	@cat cover.out >> coverage.txt
 
 .PHONY: test-view
-test-view: ## view test result
+# view test result
+test-view:
 	@go tool cover -html=coverage.txt
 
 .PHONY: gen-docs
@@ -84,12 +94,5 @@ gen-graph:
 ca:
 	openssl req -new -nodes -x509 -out conf/server.crt -keyout conf/server.key -days 3650 -subj "/C=DE/ST=NRW/L=Earth/O=Random Company/OU=IT/CN=127.0.0.1/emailAddress=xxxxx@qq.com"
 
-.PHONY: help
-help:
-	@echo "make - compile the source code"
-	@echo "make clean - remove binary file and vim swp files"
-	@echo "make gotool - run go tool 'fmt' and 'vet'"
-	@echo "make ca - generate ca files"
-	@echo "make gen-docs - gen swag doc"
 
 
