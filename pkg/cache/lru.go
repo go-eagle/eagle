@@ -1,6 +1,7 @@
 // LRU cache
 // wiki: https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU)
 // impl1: https://dev.to/clavinjune/lru-cache-in-go-1cfk
+// impl2: https://github.com/baidu/go-lib/blob/master/lru_cache/lru_cache.go
 package cache
 
 import "fmt"
