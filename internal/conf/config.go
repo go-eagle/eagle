@@ -8,7 +8,7 @@ import (
 	"github.com/1024casts/snake/pkg/redis"
 	"github.com/1024casts/snake/pkg/storage/mongodb"
 	"github.com/1024casts/snake/pkg/storage/orm"
-	"github.com/1024casts/snake/pkg/tracing"
+	"github.com/1024casts/snake/pkg/trace"
 )
 
 // Config global config
@@ -25,7 +25,7 @@ type Config struct {
 	Web     WebConfig
 	Cookie  CookieConfig
 	QiNiu   QiNiuConfig
-	Jaeger  tracing.Config
+	Trace   trace.Config
 	MongoDB mongodb.Config
 
 	// here can add biz conf

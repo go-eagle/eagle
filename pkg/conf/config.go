@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/1024casts/snake/pkg/trace"
+
 	"github.com/fsnotify/fsnotify"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -94,7 +96,7 @@ type Config struct {
 	Cookie  CookieConfig
 	QiNiu   QiNiuConfig
 	Metrics Metrics
-	Jaeger  Jaeger
+	Trace   trace.Config
 	MongoDB MongoDB
 
 	// here can add biz conf

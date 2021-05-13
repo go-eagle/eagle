@@ -1,4 +1,4 @@
-// tracing redis
+// trace redis
 // link: https://github.com/smacker/opentracing-go-redis
 package redis
 

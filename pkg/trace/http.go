@@ -1,4 +1,4 @@
-package tracing
+package trace
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"github.com/opentracing/opentracing-go"
 )
 
-// HTTPClient wraps an http.Client with tracing instrumentation.
+// HTTPClient wraps an http.Client with trace instrumentation.
 type HTTPClient struct {
 	Tracer opentracing.Tracer
 	Client *http.Client

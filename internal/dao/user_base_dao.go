@@ -53,7 +53,7 @@ func (d *Dao) UpdateUser(ctx context.Context, id uint64, userMap map[string]inte
 // 缓存的更新策略使用 Cache Aside Pattern
 // see: https://coolshell.cn/articles/17416.html
 func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserBaseModel, err error) {
-	// add tracing
+	// add trace
 	span, ctx := opentracing.StartSpanFromContext(ctx, "userBaseDao.GetOneUser")
 	defer span.Finish()
 

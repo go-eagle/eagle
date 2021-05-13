@@ -19,8 +19,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
-	"github.com/uber/jaeger-lib/metrics"
-	jprom "github.com/uber/jaeger-lib/metrics/prometheus"
 	_ "go.uber.org/automaxprocs"
 
 	"github.com/1024casts/snake/internal/conf"
@@ -29,7 +27,7 @@ import (
 	"github.com/1024casts/snake/internal/service"
 	logger "github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/redis"
-	"github.com/1024casts/snake/pkg/tracing"
+	"github.com/1024casts/snake/pkg/trace"
 	v "github.com/1024casts/snake/pkg/version"
 )
 
@@ -69,12 +67,10 @@ func main() {
 	// init redis
 	redis.Init(&cfg.Redis)
 	// init tracer
-	metricsFactory := jprom.New().Namespace(metrics.NSOptions{Name: cfg.App.Name, Tags: nil})
-	_, closer, err := tracing.Init(cfg.Jaeger.ServiceName, cfg.Jaeger.Host, metricsFactory)
+	_, err = trace.Init(cfg.Trace.ServiceName, cfg.Trace.GetTraceConfig())
 	if err != nil {
-		panic(err)
+		// panic(err)
 	}
-	defer closer.Close()
 
 	// init service
 	svc := service.New(cfg)
