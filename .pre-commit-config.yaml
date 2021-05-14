@@ -1,0 +1,25 @@
+# reference
+# 需要安装：https://pre-commit.com/
+#   - https://blog.xizhibei.me/2019/08/12/the-outpost-of-project-quality-git-hooks/
+#   - https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks
+#   - https://githooks.com/
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v3.4.0
+  hooks:
+    - id: check-yaml
+- repo: git://github.com/dnephin/pre-commit-golang
+  rev: master
+  hooks:
+    - id: go-fmt
+    - id: go-vet
+    - id: go-unit-tests
+    - id: go-build
+#- repo: local
+#  hooks:
+#    - id: generate-docs
+#      name: Generate docs
+#      pass_filenames: false
+#      entry: make docs
+#      files: \.go$
+#      language: system
+#      types: [text]
