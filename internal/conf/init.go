@@ -39,9 +39,8 @@ func LoadConfig(confPath string) (*viper.Viper, error) {
 		v.AddConfigPath("config") // 如果没有指定配置文件，则解析默认的配置文件
 		v.SetConfigName("config")
 	}
-	v.SetConfigType("yaml")     // 设置配置文件格式为YAML
-	v.AutomaticEnv()            // 读取匹配的环境变量
-	viper.SetEnvPrefix("snake") // 读取环境变量的前缀为 snake
+	v.SetConfigType("yaml") // 设置配置文件格式为YAML
+
 	replacer := strings.NewReplacer(".", "_")
 	viper.SetEnvKeyReplacer(replacer)
 	if err := v.ReadInConfig(); err != nil {
