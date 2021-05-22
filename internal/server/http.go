@@ -1,9 +1,9 @@
 package server
 
 import (
-	"github.com/1024casts/snake/internal/conf"
 	"github.com/1024casts/snake/internal/routers"
 	"github.com/1024casts/snake/internal/service"
+	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/transport/http"
 )
 

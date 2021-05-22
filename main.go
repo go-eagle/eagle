@@ -21,10 +21,10 @@ import (
 	"github.com/spf13/pflag"
 	_ "go.uber.org/automaxprocs"
 
-	"github.com/1024casts/snake/internal/conf"
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/server"
 	"github.com/1024casts/snake/internal/service"
+	"github.com/1024casts/snake/pkg/conf"
 	logger "github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/redis"
 	"github.com/1024casts/snake/pkg/trace"

@@ -4,8 +4,6 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/1024casts/snake/pkg/conf"
-
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -33,7 +31,7 @@ type Config struct {
 }
 
 // Init 初始化客户端
-func Init() {
+func Init(cfg Config) {
 	log.Info("email init")
 	Lock.Lock()
 	defer Lock.Unlock()
@@ -44,14 +42,14 @@ func Init() {
 	}
 
 	client := NewSMTPClient(SMTPConfig{
-		Name:      conf.Conf.Email.Name,
-		Address:   conf.Conf.Email.Address,
-		ReplyTo:   conf.Conf.Email.ReplyTo,
-		Host:      conf.Conf.Email.Host,
-		Port:      conf.Conf.Email.Port,
-		Username:  conf.Conf.Email.Username,
-		Password:  conf.Conf.Email.Password,
-		Keepalive: conf.Conf.Email.KeepAlive,
+		Name:      cfg.Name,
+		Address:   cfg.Address,
+		ReplyTo:   cfg.ReplyTo,
+		Host:      cfg.Host,
+		Port:      cfg.Port,
+		Username:  cfg.Username,
+		Password:  cfg.Password,
+		Keepalive: cfg.KeepAlive,
 	})
 
 	Client = client

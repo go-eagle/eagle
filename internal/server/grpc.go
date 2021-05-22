@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/1024casts/snake/internal/conf"
+	"github.com/1024casts/snake/pkg/conf"
 
 	"google.golang.org/grpc"
 

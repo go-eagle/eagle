@@ -3,10 +3,10 @@ package api
 import (
 	"net/http"
 
-	"github.com/1024casts/snake/pkg/utils"
+	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/pkg/errno"
-	"github.com/gin-gonic/gin"
+	"github.com/1024casts/snake/pkg/utils"
 )
 
 // Response api的返回结构体

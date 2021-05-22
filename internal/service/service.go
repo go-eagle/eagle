@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/1024casts/snake/internal/conf"
 	"github.com/1024casts/snake/internal/dao"
 	"github.com/1024casts/snake/internal/model"
+	"github.com/1024casts/snake/pkg/conf"
 )
 
 const (

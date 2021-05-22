@@ -1,23 +1,24 @@
 package sql
 
 import (
-	"time"
-
+	"github.com/1024casts/snake/pkg/breaker"
 	// database driver
 	_ "github.com/go-sql-driver/mysql"
+
+	xtime "github.com/1024casts/snake/pkg/time"
 )
 
 // Config mysql config.
 type Config struct {
-	DSN          string        // write data source name.
-	ReadDSN      []string      // read data source name.
-	Active       int           // pool
-	Idle         int           // pool
-	IdleTimeout  time.Duration // connect max life time.
-	QueryTimeout time.Duration // query sql timeout
-	ExecTimeout  time.Duration // execute sql timeout
-	TranTimeout  time.Duration // transaction sql timeout
-	//Breaker      *breaker.Config // breaker
+	DSN          string          // write data source name.
+	ReadDSN      []string        // read data source name.
+	Active       int             // pool
+	Idle         int             // pool
+	IdleTimeout  xtime.Duration  // connect max life time.
+	QueryTimeout xtime.Duration  // query sql timeout
+	ExecTimeout  xtime.Duration  // execute sql timeout
+	TranTimeout  xtime.Duration  // transaction sql timeout
+	Breaker      *breaker.Config // breaker
 }
 
 // NewMySQL new db and retry connection when has error.

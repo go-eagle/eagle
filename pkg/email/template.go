@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/1024casts/snake/pkg/conf"
-
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -29,11 +27,11 @@ type ActiveUserMailData struct {
 // NewActivationHTMLEmail 发送激活邮件 html
 func NewActivationHTMLEmail(username, activateURL string) (subject string, body string) {
 	mailData := ActiveUserMailData{
-		HomeURL:       conf.Conf.Web.Domain,
-		WebsiteName:   conf.Conf.Web.Name,
-		WebsiteDomain: conf.Conf.Web.Domain,
-		ActivateURL:   activateURL,
-		Year:          time.Now().Year(),
+		//HomeURL:       conf.Conf.Web.Domain,
+		//WebsiteName:   conf.Conf.Web.Name,
+		//WebsiteDomain: conf.Conf.Web.Domain,
+		ActivateURL: activateURL,
+		Year:        time.Now().Year(),
 	}
 	mailTplContent := getEmailHTMLContent("./templates/active-mail.html", mailData)
 	return "帐号激活链接", mailTplContent
@@ -56,11 +54,11 @@ func NewResetPasswordEmail(username, resetURL string) (subject string, body stri
 // NewResetPasswordHTMLEmail 发送重置密码邮件 html
 func NewResetPasswordHTMLEmail(username, resetURL string) (subject string, body string) {
 	mailData := ResetPasswordMailData{
-		HomeURL:       conf.Conf.Web.Domain,
-		WebsiteName:   conf.Conf.Web.Name,
-		WebsiteDomain: conf.Conf.Web.Domain,
-		ResetURL:      resetURL,
-		Year:          time.Now().Year(),
+		//HomeURL:       conf.Conf.Web.Domain,
+		//WebsiteName:   conf.Conf.Web.Name,
+		//WebsiteDomain: conf.Conf.Web.Domain,
+		ResetURL: resetURL,
+		Year:     time.Now().Year(),
 	}
 	mailTplContent := getEmailHTMLContent("./templates/reset-mail.html", mailData)
 	return "密码重置", mailTplContent

@@ -9,7 +9,7 @@ import (
 
 	"github.com/1024casts/snake/internal/model"
 
-	"github.com/1024casts/snake/internal/conf"
+	"github.com/1024casts/snake/pkg/conf"
 	"github.com/1024casts/snake/pkg/testing/lich"
 	"github.com/spf13/pflag"
 )
