@@ -13,7 +13,6 @@ import (
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/cache"
 	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/pkg/metric/prom"
 	"github.com/1024casts/snake/pkg/redis"
 )
 
@@ -21,7 +20,7 @@ import (
 func (d *Dao) CreateUser(ctx context.Context, user model.UserBaseModel) (id uint64, err error) {
 	err = d.db.Create(&user).Error
 	if err != nil {
-		prom.BusinessErrCount.Incr("mysql: CreateUser")
+		//prom.BusinessErrCount.Incr("mysql: CreateUser")
 		return 0, errors.Wrap(err, "[repo.user_base] create user err")
 	}
 
@@ -32,7 +31,7 @@ func (d *Dao) CreateUser(ctx context.Context, user model.UserBaseModel) (id uint
 func (d *Dao) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
 	user, err := d.GetOneUser(ctx, id)
 	if err != nil {
-		prom.BusinessErrCount.Incr("mysql: getOneUser")
+		//prom.BusinessErrCount.Incr("mysql: getOneUser")
 		return errors.Wrap(err, "[repo.user_base] update user data err")
 	}
 
@@ -44,7 +43,7 @@ func (d *Dao) UpdateUser(ctx context.Context, id uint64, userMap map[string]inte
 
 	err = d.db.Model(user).Updates(userMap).Error
 	if err != nil {
-		prom.BusinessErrCount.Incr("mysql: UpdateUser")
+		//prom.BusinessErrCount.Incr("mysql: UpdateUser")
 	}
 	return err
 }
@@ -74,7 +73,7 @@ func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserB
 	}
 	// cache hit
 	if userBase != nil {
-		prom.CacheHit.Incr("getOneUser")
+		//prom.CacheHit.Incr("getOneUser")
 		log.Infof("[repo.user_base] get user base data from cache, uid: %d", uid)
 		return
 	}
@@ -94,7 +93,7 @@ func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserB
 			}
 			return nil, ErrNotFound
 		} else if err != nil {
-			prom.BusinessErrCount.Incr("mysql: getOneUser")
+			//prom.BusinessErrCount.Incr("mysql: getOneUser")
 			return nil, errors.Wrapf(err, "[repo.user_base] query db err")
 		}
 
@@ -115,7 +114,7 @@ func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserB
 	data := val.(*model.UserBaseModel)
 
 	// cache miss
-	prom.CacheMiss.Incr("getOneUser")
+	//prom.CacheMiss.Incr("getOneUser")
 
 	return data, nil
 }

@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	metric2 "github.com/1024casts/snake/pkg/metric"
 
-	"github.com/1024casts/snake/pkg/stat/metric"
+	"github.com/stretchr/testify/assert"
 )
 
 func confForTest() *Config {
@@ -117,7 +117,7 @@ func TestBBRMinRt(t *testing.T) {
 	// default max min rt is equal to maxFloat64.
 	bucketDuration = time.Millisecond * 100
 	bbr = newLimiter(confForTest()).(*BBR)
-	bbr.rtStat = metric.NewRollingCounter(metric.RollingCounterOpts{Size: 10, BucketDuration: bucketDuration})
+	bbr.rtStat = metric2.NewRollingCounter(metric2.RollingCounterOpts{Size: 10, BucketDuration: bucketDuration})
 	assert.Equal(t, int64(1), bbr.minRT())
 }
 
@@ -145,8 +145,8 @@ func TestBBRMinRtWithCache(t *testing.T) {
 func TestBBRMaxQps(t *testing.T) {
 	bbr := newLimiter(confForTest()).(*BBR)
 	bucketDuration := time.Millisecond * 100
-	passStat := metric.NewRollingCounter(metric.RollingCounterOpts{Size: 10, BucketDuration: bucketDuration})
-	rtStat := metric.NewRollingCounter(metric.RollingCounterOpts{Size: 10, BucketDuration: bucketDuration})
+	passStat := metric2.NewRollingCounter(metric2.RollingCounterOpts{Size: 10, BucketDuration: bucketDuration})
+	rtStat := metric2.NewRollingCounter(metric2.RollingCounterOpts{Size: 10, BucketDuration: bucketDuration})
 	for i := 0; i < 10; i++ {
 		passStat.Add(int64((i + 2) * 100))
 		for j := i*10 + 1; j <= i*10+10; j++ {
@@ -168,8 +168,8 @@ func TestBBRShouldDrop(t *testing.T) {
 		return cpu
 	}
 	bucketDuration := time.Millisecond * 100
-	passStat := metric.NewRollingCounter(metric.RollingCounterOpts{Size: 10, BucketDuration: bucketDuration})
-	rtStat := metric.NewRollingCounter(metric.RollingCounterOpts{Size: 10, BucketDuration: bucketDuration})
+	passStat := metric2.NewRollingCounter(metric2.RollingCounterOpts{Size: 10, BucketDuration: bucketDuration})
+	rtStat := metric2.NewRollingCounter(metric2.RollingCounterOpts{Size: 10, BucketDuration: bucketDuration})
 	for i := 0; i < 10; i++ {
 		passStat.Add(int64((i + 1) * 100))
 		for j := i*10 + 1; j <= i*10+10; j++ {

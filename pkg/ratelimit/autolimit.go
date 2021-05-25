@@ -6,11 +6,12 @@ import (
 	"sync/atomic"
 	"time"
 
+	metric2 "github.com/1024casts/snake/pkg/metric"
+
 	"github.com/1024casts/snake/pkg/container/group"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
 	cpustat "github.com/1024casts/snake/pkg/stat/cpu"
-	"github.com/1024casts/snake/pkg/stat/metric"
 )
 
 var (
@@ -65,8 +66,8 @@ type Stat struct {
 // https://github.com/alibaba/Sentinel/wiki/%E7%B3%BB%E7%BB%9F%E8%87%AA%E9%80%82%E5%BA%94%E9%99%90%E6%B5%81
 type BBR struct {
 	cpu             cpuGetter
-	passStat        metric.RollingCounter
-	rtStat          metric.RollingCounter
+	passStat        metric2.RollingCounter
+	rtStat          metric2.RollingCounter
 	inFlight        int64
 	winBucketPerSec int64
 	bucketDuration  time.Duration
@@ -103,7 +104,7 @@ func (l *BBR) maxPASS() int64 {
 			return ps.val
 		}
 	}
-	rawMaxPass := int64(l.passStat.Reduce(func(iterator metric.Iterator) float64 {
+	rawMaxPass := int64(l.passStat.Reduce(func(iterator metric2.Iterator) float64 {
 		var result = 1.0
 		for i := 1; iterator.Next() && i < l.conf.WinBucket; i++ {
 			bucket := iterator.Bucket()
@@ -141,7 +142,7 @@ func (l *BBR) minRT() int64 {
 			return rc.val
 		}
 	}
-	rawMinRT := int64(math.Ceil(l.rtStat.Reduce(func(iterator metric.Iterator) float64 {
+	rawMinRT := int64(math.Ceil(l.rtStat.Reduce(func(iterator metric2.Iterator) float64 {
 		var result = math.MaxFloat64
 		for i := 1; iterator.Next() && i < l.conf.WinBucket; i++ {
 			bucket := iterator.Bucket()
@@ -239,8 +240,8 @@ func newLimiter(conf *Config) Limiter {
 	}
 	size := conf.WinBucket
 	bucketDuration := conf.Window / time.Duration(conf.WinBucket)
-	passStat := metric.NewRollingCounter(metric.RollingCounterOpts{Size: size, BucketDuration: bucketDuration})
-	rtStat := metric.NewRollingCounter(metric.RollingCounterOpts{Size: size, BucketDuration: bucketDuration})
+	passStat := metric2.NewRollingCounter(metric2.RollingCounterOpts{Size: size, BucketDuration: bucketDuration})
+	rtStat := metric2.NewRollingCounter(metric2.RollingCounterOpts{Size: size, BucketDuration: bucketDuration})
 	cpu := func() int64 {
 		return atomic.LoadInt64(&cpu)
 	}

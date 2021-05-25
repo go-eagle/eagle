@@ -6,9 +6,10 @@ import (
 	"testing"
 	"time"
 
+	metric2 "github.com/1024casts/snake/pkg/metric"
+
 	"github.com/stretchr/testify/assert"
 
-	"github.com/1024casts/snake/pkg/stat/metric"
 	xtime "github.com/1024casts/snake/pkg/time"
 )
 
@@ -22,11 +23,11 @@ func getSRE() Breaker {
 }
 
 func getSREBreaker() *sreBreaker {
-	counterOpts := metric.RollingCounterOpts{
+	counterOpts := metric2.RollingCounterOpts{
 		Size:           10,
 		BucketDuration: time.Millisecond * 100,
 	}
-	stat := metric.NewRollingCounter(counterOpts)
+	stat := metric2.NewRollingCounter(counterOpts)
 	return &sreBreaker{
 		stat: stat,
 		r:    rand.New(rand.NewSource(time.Now().UnixNano())),

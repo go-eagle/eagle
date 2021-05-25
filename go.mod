@@ -17,7 +17,6 @@ require (
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gin-contrib/static v0.0.0-20200916080430-d45d9a37d28e
 	github.com/gin-gonic/gin v1.6.3
-	github.com/go-git/gcfg v1.5.0 // indirect
 	github.com/go-mail/mail v2.3.1+incompatible
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-playground/locales v0.13.0
@@ -46,7 +45,7 @@ require (
 	github.com/petermattis/goid v0.0.0-20180202154549-b0b1615b78e5
 	github.com/pierrec/lz4 v2.5.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/client_golang v1.9.0
+	github.com/prometheus/client_golang v1.10.1-0.20210520222353-a7515ca7c9c6
 	github.com/qiniu/api.v7 v0.0.0-20190520053455-bea02cd22bf4
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/shirou/gopsutil v3.21.3+incompatible

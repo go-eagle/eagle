@@ -7,14 +7,15 @@ import (
 	"sync/atomic"
 	"time"
 
+	metric2 "github.com/1024casts/snake/pkg/metric"
+
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/pkg/stat/metric"
 )
 
 // sreBreaker is a sre CircuitBreaker pattern.
 type sreBreaker struct {
-	stat metric.RollingCounter
+	stat metric2.RollingCounter
 	r    *rand.Rand
 	// rand.New(...) returns a non thread safe object
 	randLock sync.Mutex
@@ -26,11 +27,11 @@ type sreBreaker struct {
 }
 
 func newSRE(c *Config) Breaker {
-	counterOpts := metric.RollingCounterOpts{
+	counterOpts := metric2.RollingCounterOpts{
 		Size:           c.Bucket,
 		BucketDuration: time.Duration(int64(c.Window) / int64(c.Bucket)),
 	}
-	stat := metric.NewRollingCounter(counterOpts)
+	stat := metric2.NewRollingCounter(counterOpts)
 	return &sreBreaker{
 		stat: stat,
 		r:    rand.New(rand.NewSource(time.Now().UnixNano())),
@@ -42,7 +43,7 @@ func newSRE(c *Config) Breaker {
 }
 
 func (b *sreBreaker) summary() (success int64, total int64) {
-	b.stat.Reduce(func(iterator metric.Iterator) float64 {
+	b.stat.Reduce(func(iterator metric2.Iterator) float64 {
 		for iterator.Next() {
 			bucket := iterator.Bucket()
 			total += bucket.Count
