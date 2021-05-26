@@ -13,9 +13,6 @@ import (
 // RedisClient redis 客户端
 var RedisClient *redis.Client
 
-// Nil redis 返回为空
-const Nil = redis.Nil
-
 // ErrRedisNotFound not exist in redis
 const ErrRedisNotFound = redis.Nil
 
