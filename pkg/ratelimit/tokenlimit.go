@@ -48,8 +48,8 @@ return allowed`
 
 // A TokenLimiter controls how frequently events are allowed to happen with in one second.
 type TokenLimiter struct {
-	rate           int
-	burst          int
+	rate           int // 每秒生成几个令牌
+	burst          int // 令牌桶最大值
 	store          *redis.Client
 	tokenKey       string
 	timestampKey   string
