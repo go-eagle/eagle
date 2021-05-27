@@ -19,6 +19,8 @@ import (
 // SkipIfStillRunning：触发时，如果上一次任务还未完成，则跳过此次执行。
 func Run() {
 	c := cron.New()
+	// support to second
+	// c = cron.New(cron.WithSeconds())
 	// demo
 	_, err := c.AddFunc("* */5 * * *", func() {
 		log.Infof("test cron, time: %d ", time.Now().Unix())
