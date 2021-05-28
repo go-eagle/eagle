@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: awesome-project
+  labels:
+    app: awesome-project
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: awesome-project
+  template:
+    metadata:
+      labels:
+        app: awesome-project
+    spec:
+      containers:
+        - name: awesome-project
+          image: 1024casts/awesome-project:v1.0.0

@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: test-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+    - host: website-ingress.local
+      http:
+        paths:
+          - backend:
+              serviceName: awesome-project-svc
+              servicePort: 9001
