@@ -6,71 +6,73 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/1024casts/snake/pkg/conf"
+
+	"github.com/1024casts/snake/pkg/metric"
+
 	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus"
 )
 
-const namespace = "snake"
+var namespace = conf.Conf.App.Name
 
 var (
 	labels = []string{"status", "endpoint", "method"}
 
 	// 应用时长
-	uptime = prometheus.NewCounterVec(
-		prometheus.CounterOpts{
+	uptime = metric.NewCounterVec(
+		&metric.CounterVecOpts{
 			Namespace: namespace,
 			Name:      "uptime",
 			Help:      "HTTP service uptime.",
-		}, nil,
-	)
+			Labels:    labels,
+		})
 
 	// QPS
-	reqCount = prometheus.NewCounterVec(
-		prometheus.CounterOpts{
+	reqCount = metric.NewCounterVec(
+		&metric.CounterVecOpts{
 			Namespace: namespace,
 			Name:      "http_request_count_total",
 			Help:      "Total number of HTTP requests made.",
-		}, labels,
-	)
+			Labels:    labels,
+		})
 
 	// 接口响应时间
-	reqDuration = prometheus.NewHistogramVec(
-		prometheus.HistogramOpts{
+	reqDuration = metric.NewHistogramVec(
+		&metric.HistogramVecOpts{
 			Namespace: namespace,
 			Name:      "http_request_duration_seconds",
 			Help:      "HTTP request latencies in seconds.",
-		}, labels,
-	)
+			Labels:    labels,
+		})
 
 	// 请求大小
-	reqSizeBytes = prometheus.NewSummaryVec(
-		prometheus.SummaryOpts{
+	reqSizeBytes = metric.NewHistogramVec(
+		&metric.HistogramVecOpts{
 			Namespace: namespace,
 			Name:      "http_request_size_bytes",
 			Help:      "HTTP request sizes in bytes.",
-		}, labels,
-	)
+			Labels:    labels,
+		})
 
 	// 响应大小
-	respSizeBytes = prometheus.NewSummaryVec(
-		prometheus.SummaryOpts{
+	respSizeBytes = metric.NewHistogramVec(
+		&metric.HistogramVecOpts{
 			Namespace: namespace,
 			Name:      "http_response_size_bytes",
 			Help:      "HTTP request sizes in bytes.",
-		}, labels,
-	)
+			Labels:    labels,
+		})
 )
 
 // init registers the prometheus metrics
 func init() {
-	prometheus.MustRegister(uptime, reqCount, reqDuration, reqSizeBytes, respSizeBytes)
-	go recordUptime()
+	// go recordUptime()
 }
 
 // recordUptime increases service uptime per second.
 func recordUptime() {
 	for range time.Tick(time.Second) {
-		uptime.WithLabelValues().Inc()
+		uptime.Inc()
 	}
 }
 
@@ -170,10 +172,10 @@ func Prom(promOpts *PromOpts) gin.HandlerFunc {
 		if respSize < 0 {
 			respSize = 0
 		}
-		reqCount.WithLabelValues(labels...).Inc()
-		reqDuration.WithLabelValues(labels...).Observe(time.Since(start).Seconds())
-		reqSizeBytes.WithLabelValues(labels...).Observe(calcRequestSize(c.Request))
-		respSizeBytes.WithLabelValues(labels...).Observe(float64(respSize))
+		reqCount.Inc()
+		reqDuration.Observe(int64(time.Since(start).Seconds()), labels...)
+		reqSizeBytes.Observe(int64(calcRequestSize(c.Request)), labels...)
+		respSizeBytes.Observe(int64(respSize), labels...)
 	}
 }
 
