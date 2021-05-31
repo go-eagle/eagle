@@ -2,10 +2,15 @@ package base
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
+	"path/filepath"
+	"strings"
+
+	"github.com/fatih/color"
 )
 
 func snakeHome() string {
@@ -97,4 +102,13 @@ func hasSets(name string, sets []string) bool {
 		}
 	}
 	return false
+}
+
+func Tree(path string, dir string) {
+	filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			fmt.Printf("%s %s (%v bytes)\n", color.GreenString("CREATED"), strings.Replace(path, dir+"/", "", -1), info.Size())
+		}
+		return nil
+	})
 }
