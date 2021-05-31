@@ -4,6 +4,17 @@ global:
   external_labels:
     monitor: 'my-monitor'
 
+# Alertmanager configuration
+#alerting:
+#  alertmanagers:
+#    - static_configs:
+#      - targets:
+#        - localhost:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+#rule_files:
+#  - ./rules/rules.yml
+
 scrape_configs:
   # prometheus 自身数据的抓取配置
   - job_name: prometheus
@@ -18,6 +29,7 @@ scrape_configs:
   - job_name: go_app_server
     scrape_interval: 10s  # 抓取间隔
     metrics_path: /metrics  # 抓取数据的URL路径
+    # scheme defaults to 'http'
     static_configs:
       - targets: ["localhost:8080","app:8080"]
         labels:

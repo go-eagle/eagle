@@ -1,0 +1,12 @@
+#global config
+global:
+  resolve_timeout: 30s
+  slack_api_url: ''
+route:
+  receiver: 'slack-notifications'
+
+receivers:
+  - name: 'slack-notifications'
+    slack_configs:
+      - channel: '#alerts'
+        send_resolved: true
