@@ -1,10 +1,12 @@
 package sql
 
 import (
-	"github.com/1024casts/snake/pkg/breaker"
+
 	// database driver
 	_ "github.com/go-sql-driver/mysql"
 
+	"github.com/1024casts/snake/pkg/breaker"
+	"github.com/1024casts/snake/pkg/log"
 	xtime "github.com/1024casts/snake/pkg/time"
 )
 
@@ -22,14 +24,14 @@ type Config struct {
 }
 
 // NewMySQL new db and retry connection when has error.
-//func NewMySQL(c *Config) (db *DB) {
-//	if c.QueryTimeout == 0 || c.ExecTimeout == 0 || c.TranTimeout == 0 {
-//		panic("mysql must be set query/execute/transction timeout")
-//	}
-//	db, err := Open(c)
-//	if err != nil {
-//		log.Error("open mysql error(%v)", err)
-//		panic(err)
-//	}
-//	return
-//}
+func NewMySQL(c *Config) (db *DB) {
+	if c.QueryTimeout == 0 || c.ExecTimeout == 0 || c.TranTimeout == 0 {
+		panic("mysql must be set query/execute/transction timeout")
+	}
+	db, err := Open(c)
+	if err != nil {
+		log.Error("open mysql error(%v)", err)
+		panic(err)
+	}
+	return
+}
