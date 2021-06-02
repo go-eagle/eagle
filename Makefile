@@ -95,6 +95,15 @@ graph:
 	@echo "generating graph"
 	@go-callvis github.com/1024casts/snake
 
+.PHONY: mockgen
+mockgen:
+	@echo "downloading mockgen"
+	@go get github.com/golang/mock/mockgen
+	cd ./internal &&  for file in `egrep -rnl "type.*?interface" ./dao | grep -v "_test" `; do \
+		echo $$file ; \
+		cd .. && mockgen -destination="./internal/mock/$$file" -source="./internal/$$file" && cd ./internal ; \
+	done
+
 .PHONY: ca
 ca:
 	openssl req -new -nodes -x509 -out conf/server.crt -keyout conf/server.key -days 3650 -subj "/C=DE/ST=NRW/L=Earth/O=Random Company/OU=IT/CN=127.0.0.1/emailAddress=xxxxx@qq.com"
