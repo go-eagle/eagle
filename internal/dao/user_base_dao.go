@@ -108,7 +108,7 @@ func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserB
 	g := singleflight.Group{}
 	doKey := fmt.Sprintf("get_user_base_%d", uid)
 	val, err, _ := g.Do(doKey, getDataFn)
-	if err != nil {
+	if err != nil && err != ErrNotFound {
 		return nil, errors.Wrap(err, "[repo.user_base] get user base err via single flight do")
 	}
 	data := val.(*model.UserBaseModel)

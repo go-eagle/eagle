@@ -3,13 +3,16 @@ package log
 import (
 	"context"
 	"fmt"
+
+	"github.com/opentracing/opentracing-go"
+	"github.com/uber/jaeger-client-go"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 // log is A global variable so that log functions can be directly accessed
 var log Logger
-
-// logger is A global variable with trace log
-var logger Factory
+var zl *zap.Logger
 
 // Fields Type to pass when we want to call WithFields for structured logging
 type Fields map[string]interface{}
@@ -35,20 +38,19 @@ type Config struct {
 
 // Init init log
 func Init(cfg *Config) Logger {
-	zapLogger, err := newZapLogger(cfg)
+	var err error
+	// new zap logger
+	zl, err = newZapLogger(cfg)
 	if err != nil {
-		fmt.Errorf("Init newZapLogger err: %v", err)
+		fmt.Errorf("init newZapLogger err: %v", err)
 	}
-	l, err := newLogger(cfg)
+	_ = zl
+
+	// new sugar logger
+	log, err = newLogger(cfg)
 	if err != nil {
-		fmt.Errorf("Init newLogger err: %v", err)
+		fmt.Errorf("init newLogger err: %v", err)
 	}
-
-	// init logger with trace log
-	logger = NewFactory(zapLogger, l)
-
-	// normal log
-	log = l
 
 	return log
 }
@@ -57,15 +59,21 @@ func Init(cfg *Config) Logger {
 type Logger interface {
 	Debug(args ...interface{})
 	Debugf(format string, args ...interface{})
+
 	Info(args ...interface{})
 	Infof(format string, args ...interface{})
+
 	Warn(args ...interface{})
 	Warnf(format string, args ...interface{})
+
 	Error(args ...interface{})
 	Errorf(format string, args ...interface{})
+
 	Fatal(args ...interface{})
 	Fatalf(format string, args ...interface{})
+
 	Panicf(format string, args ...interface{})
+
 	WithFields(keyValues Fields) Logger
 }
 
@@ -74,8 +82,21 @@ func GetLogger() Logger {
 }
 
 // Trace is a logger that can log msg and log span for trace
-func Trace(ctx context.Context) Logger {
-	return logger.For(ctx)
+func WithContext(ctx context.Context) Logger {
+	//return logger.For(ctx)
+	if span := opentracing.SpanFromContext(ctx); span != nil {
+		logger := spanLogger{span: span, logger: zl}
+
+		if jaegerCtx, ok := span.Context().(jaeger.SpanContext); ok {
+			logger.spanFields = []zapcore.Field{
+				zap.String("trace_id", jaegerCtx.TraceID().String()),
+				zap.String("span_id", jaegerCtx.SpanID().String()),
+			}
+		}
+
+		return logger
+	}
+	return log
 }
 
 // Debug logger

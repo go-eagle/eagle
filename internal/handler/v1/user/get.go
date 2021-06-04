@@ -1,6 +1,9 @@
 package user
 
 import (
+	"errors"
+
+	"github.com/1024casts/snake/internal/dao"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 
@@ -30,9 +33,13 @@ func Get(c *gin.Context) {
 
 	// Get the user by the `user_id` from the database.
 	u, err := service.UserSvc.GetUserByID(c.Request.Context(), userID)
-	if err != nil {
-		log.Warnf("get user info err: %+v", err)
+	if errors.Is(err, dao.ErrNotFound) {
+		log.Errorf("get user info err: %+v", err)
 		response.Error(c, ecode.ErrUserNotFound)
+		return
+	}
+	if err != nil {
+		response.Error(c, errno.ErrInternalServerError)
 		return
 	}
 

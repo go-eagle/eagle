@@ -115,12 +115,7 @@ func (s *Service) UpdateUser(ctx context.Context, id uint64, userMap map[string]
 
 // GetUserByID 获取单条用户信息
 func (s *Service) GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error) {
-	userModel, err := s.dao.GetOneUser(ctx, id)
-	if err != nil {
-		return userModel, errors.Wrap(err, "")
-	}
-
-	return userModel, nil
+	return s.dao.GetOneUser(ctx, id)
 }
 
 // GetUserInfoByID 获取组装好的用户数据

@@ -172,7 +172,7 @@ func Prom(promOpts *PromOpts) gin.HandlerFunc {
 		if respSize < 0 {
 			respSize = 0
 		}
-		reqCount.Inc()
+		reqCount.Inc(labels...)
 		reqDuration.Observe(int64(time.Since(start).Seconds()), labels...)
 		reqSizeBytes.Observe(int64(calcRequestSize(c.Request)), labels...)
 		respSizeBytes.Observe(int64(respSize), labels...)
