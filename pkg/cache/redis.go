@@ -175,30 +175,6 @@ func (c *redisCache) Del(keys ...string) error {
 	return nil
 }
 
-func (c *redisCache) Incr(key string, step int64) (int64, error) {
-	cacheKey, err := BuildCacheKey(c.KeyPrefix, key)
-	if err != nil {
-		return 0, errors.Wrapf(err, "build cache key err, key is %+v", key)
-	}
-	affectRow, err := c.client.IncrBy(cacheKey, step).Result()
-	if err != nil {
-		return 0, errors.Wrapf(err, "redis incr, keys is %+v", key)
-	}
-	return affectRow, nil
-}
-
-func (c *redisCache) Decr(key string, step int64) (int64, error) {
-	cacheKey, err := BuildCacheKey(c.KeyPrefix, key)
-	if err != nil {
-		return 0, errors.Wrapf(err, "build cache key err, key is %+v", key)
-	}
-	affectRow, err := c.client.DecrBy(cacheKey, step).Result()
-	if err != nil {
-		return 0, errors.Wrapf(err, "redis incr, keys is %+v", key)
-	}
-	return affectRow, nil
-}
-
 func (c *redisCache) SetCacheWithNotFound(key string) error {
 	return c.client.Set(key, NotFoundPlaceholder, DefaultNotFoundExpireTime).Err()
 }

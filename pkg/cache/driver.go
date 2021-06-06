@@ -29,8 +29,6 @@ type Driver interface {
 	MultiSet(valMap map[string]interface{}, expiration time.Duration) error
 	MultiGet(keys []string, valueMap interface{}) error
 	Del(keys ...string) error
-	Incr(key string, step int64) (int64, error)
-	Decr(key string, step int64) (int64, error)
 	SetCacheWithNotFound(key string) error
 }
 
@@ -57,16 +55,6 @@ func MultiGet(keys []string, valueMap interface{}) error {
 // Del 批量删除
 func Del(keys ...string) error {
 	return Client.Del(keys...)
-}
-
-// Incr 自增
-func Incr(key string, step int64) (int64, error) {
-	return Client.Incr(key, step)
-}
-
-// Decr 自减
-func Decr(key string, step int64) (int64, error) {
-	return Client.Decr(key, step)
 }
 
 func SetCacheWithNotFound(key string) error {

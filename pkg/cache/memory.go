@@ -16,8 +16,10 @@ type memoryCache struct {
 	encoding  Encoding
 }
 
-// NewMemoryCache 实例化一个内存cache
+// NewMemoryCache create a memory cache
 func NewMemoryCache(keyPrefix string, encoding Encoding) Driver {
+	// see: https://dgraph.io/blog/post/introducing-ristretto-high-perf-go-cache/
+	//		https://www.start.io/blog/we-chose-ristretto-cache-for-go-heres-why/
 	config := &ristretto.Config{
 		NumCounters: 1e7,     // number of keys to track frequency of (10M).
 		MaxCost:     1 << 30, // maximum cost of cache (1GB).
@@ -89,16 +91,6 @@ func (m *memoryCache) MultiSet(valMap map[string]interface{}, expiration time.Du
 
 // MultiGet 批量获取
 func (m *memoryCache) MultiGet(keys []string, val interface{}) error {
-	panic("implement me")
-}
-
-// Incr 自增
-func (m *memoryCache) Incr(key string, step int64) (int64, error) {
-	panic("implement me")
-}
-
-// Decr 自减
-func (m *memoryCache) Decr(key string, step int64) (int64, error) {
 	panic("implement me")
 }
 
