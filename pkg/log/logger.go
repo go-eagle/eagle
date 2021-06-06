@@ -83,7 +83,7 @@ func GetLogger() Logger {
 
 // Trace is a logger that can log msg and log span for trace
 func WithContext(ctx context.Context) Logger {
-	//return logger.For(ctx)
+	//return zap logger
 	if span := opentracing.SpanFromContext(ctx); span != nil {
 		logger := spanLogger{span: span, logger: zl}
 
