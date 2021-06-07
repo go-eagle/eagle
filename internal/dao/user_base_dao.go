@@ -16,7 +16,7 @@ import (
 	"github.com/1024casts/snake/pkg/redis"
 )
 
-// Create 创建用户
+// CreateUser 创建用户
 func (d *Dao) CreateUser(ctx context.Context, user model.UserBaseModel) (id uint64, err error) {
 	err = d.db.Create(&user).Error
 	if err != nil {
@@ -27,7 +27,7 @@ func (d *Dao) CreateUser(ctx context.Context, user model.UserBaseModel) (id uint
 	return user.ID, nil
 }
 
-// Update 更新用户信息
+// UpdateUser 更新用户信息
 func (d *Dao) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
 	user, err := d.GetOneUser(ctx, id)
 	if err != nil {
@@ -48,7 +48,7 @@ func (d *Dao) UpdateUser(ctx context.Context, id uint64, userMap map[string]inte
 	return err
 }
 
-// GetUserByID 获取用户
+// GetOneUser 获取用户
 // 缓存的更新策略使用 Cache Aside Pattern
 // see: https://coolshell.cn/articles/17416.html
 func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserBaseModel, err error) {
