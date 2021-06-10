@@ -26,7 +26,8 @@ func New(c *conf.Config, opts ...Option) *App {
 	options := options{
 		ctx:    context.Background(),
 		logger: log.GetLogger(),
-		sigs:   []os.Signal{syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT},
+		// don not catch SIGKILL signal, need to waiting for kill self by other.
+		sigs: []os.Signal{syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT},
 	}
 	if id, err := uuid.NewUUID(); err == nil {
 		options.id = id.String()
