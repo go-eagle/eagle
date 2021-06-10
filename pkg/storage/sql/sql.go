@@ -7,15 +7,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	"golang.org/x/net/trace"
-
-	"github.com/go-sql-driver/mysql"
-	"github.com/opentracing/opentracing-go"
-	"github.com/pkg/errors"
-
 	"github.com/1024casts/snake/pkg/breaker"
 	"github.com/1024casts/snake/pkg/errno"
 	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-sql-driver/mysql"
+	"github.com/opentracing/opentracing-go"
+	tags "github.com/opentracing/opentracing-go/ext"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -274,16 +272,12 @@ func (db *conn) onBreaker(err *error) {
 func (db *conn) begin(ctx context.Context) (tx *Tx, err error) {
 	now := time.Now()
 	defer slowLog("Begin", now)
-	//t, ok := opentracing.SpanFromContext(c)
-	//if ok {
-	//t = t.Fork(_family, "begin")
-	//t.SetTag(trace.String(trace.TagAddress, db.addr), trace.String(trace.TagComment, ""))
-	//defer func() {
-	//	if err != nil {
-	//		t.Finish(&err)
-	//	}
-	//}()
-	//}
+	span, ctx := opentracing.StartSpanFromContext(ctx, "sql.begin")
+	defer span.Finish()
+	tags.SpanKindRPCClient.Set(span)
+	tags.PeerService.Set(span, "mysql")
+	tags.DBInstance.Set(span, db.addr)
+
 	if err = db.breaker.Allow(); err != nil {
 		_metricReqErr.Inc(db.addr, db.addr, "begin", "breaker")
 		return
@@ -296,18 +290,20 @@ func (db *conn) begin(ctx context.Context) (tx *Tx, err error) {
 		cancel()
 		return
 	}
-	tx = &Tx{tx: rtx, trace: nil, db: db, c: c, cancel: cancel}
+	tx = &Tx{tx: rtx, trace: span.Tracer(), db: db, c: c, cancel: cancel}
 	return
 }
 
 func (db *conn) exec(ctx context.Context, query string, args ...interface{}) (res sql.Result, err error) {
 	now := time.Now()
 	defer slowLog(fmt.Sprintf("Exec query(%s) args(%+v)", query, args), now)
-	if _, ok := trace.FromContext(ctx); ok {
-		//t = t.Fork(_family, "exec")
-		//t.SetTag(trace.String(trace.TagAddress, db.addr), trace.String(trace.TagComment, query))
-		//defer t.Finish(&err)
-	}
+	span, ctx := opentracing.StartSpanFromContext(ctx, "sql.exec")
+	defer span.Finish()
+	tags.SpanKindRPCClient.Set(span)
+	tags.PeerService.Set(span, "mysql")
+	tags.DBInstance.Set(span, db.addr)
+	tags.DBStatement.Set(span, fmt.Sprintf("exec:%s, args:%+v", query, args))
+
 	if err = db.breaker.Allow(); err != nil {
 		_metricReqErr.Inc(db.addr, db.addr, "exec", "breaker")
 		return
@@ -326,11 +322,12 @@ func (db *conn) exec(ctx context.Context, query string, args ...interface{}) (re
 func (db *conn) ping(ctx context.Context) (err error) {
 	now := time.Now()
 	defer slowLog("Ping", now)
-	if _, ok := trace.FromContext(ctx); ok {
-		//t = t.Fork(_family, "ping")
-		//t.SetTag(trace.String(trace.TagAddress, db.addr), trace.String(trace.TagComment, ""))
-		//defer t.Finish(&err)
-	}
+	span, ctx := opentracing.StartSpanFromContext(ctx, "sql.ping")
+	defer span.Finish()
+	tags.SpanKindRPCClient.Set(span)
+	tags.PeerService.Set(span, "mysql")
+	tags.DBInstance.Set(span, db.addr)
+
 	if err = db.breaker.Allow(); err != nil {
 		_metricReqErr.Inc(db.addr, db.addr, "ping", "breaker")
 		return
@@ -383,11 +380,13 @@ func (db *conn) prepared(query string) (stmt *Stmt) {
 func (db *conn) query(ctx context.Context, query string, args ...interface{}) (rows *Rows, err error) {
 	now := time.Now()
 	defer slowLog(fmt.Sprintf("Query query(%s) args(%+v)", query, args), now)
-	if _, ok := trace.FromContext(ctx); ok {
-		//t = t.Fork(_family, "query")
-		//t.SetTag(trace.String(trace.TagAddress, db.addr), trace.String(trace.TagComment, query))
-		//defer t.Finish(&err)
-	}
+	span, ctx := opentracing.StartSpanFromContext(ctx, "sql.query")
+	defer span.Finish()
+	tags.SpanKindRPCClient.Set(span)
+	tags.PeerService.Set(span, "mysql")
+	tags.DBInstance.Set(span, db.addr)
+	tags.DBStatement.Set(span, fmt.Sprintf("exec:%s, args:%+v", query, args))
+
 	if err = db.breaker.Allow(); err != nil {
 		_metricReqErr.Inc(db.addr, db.addr, "query", "breaker")
 		return
@@ -408,11 +407,13 @@ func (db *conn) query(ctx context.Context, query string, args ...interface{}) (r
 func (db *conn) queryRow(ctx context.Context, query string, args ...interface{}) *Row {
 	now := time.Now()
 	defer slowLog(fmt.Sprintf("QueryRow query(%s) args(%+v)", query, args), now)
-	//t, ok := trace.FromContext(c)
-	//if ok {
-	//t = t.Fork(_family, "queryrow")
-	//t.SetTag(trace.String(trace.TagAddress, db.addr), trace.String(trace.TagComment, query))
-	//}
+	span, ctx := opentracing.StartSpanFromContext(ctx, "sql.queryRow")
+	defer span.Finish()
+	tags.SpanKindRPCClient.Set(span)
+	tags.PeerService.Set(span, "mysql")
+	tags.DBInstance.Set(span, db.addr)
+	tags.DBStatement.Set(span, fmt.Sprintf("exec:%s, args:%+v", query, args))
+
 	if err := db.breaker.Allow(); err != nil {
 		_metricReqErr.Inc(db.addr, db.addr, "queryRow", "breaker")
 		return &Row{db: db, trace: nil, err: err}
@@ -420,7 +421,7 @@ func (db *conn) queryRow(ctx context.Context, query string, args ...interface{})
 	_, c, cancel := db.conf.QueryTimeout.Shrink(ctx)
 	r := db.DB.QueryRowContext(c, query, args...)
 	_metricReqDur.Observe(int64(time.Since(now)/time.Millisecond), db.addr, db.addr, "queryrow")
-	return &Row{db: db, Row: r, query: query, args: args, trace: nil, cancel: cancel}
+	return &Row{db: db, Row: r, query: query, args: args, trace: span.Tracer(), cancel: cancel}
 }
 
 // Close closes the statement.
@@ -446,13 +447,16 @@ func (s *Stmt) Exec(ctx context.Context, args ...interface{}) (res sql.Result, e
 	now := time.Now()
 	defer slowLog(fmt.Sprintf("Exec query(%s) args(%+v)", s.query, args), now)
 	if s.tx {
-		//if s.trace != nil {
-		//	s.trace.SetTag(trace.String(trace.TagAnnotation, s.query))
-		//}
-	} else if _, ok := trace.FromContext(ctx); ok {
-		//t = t.Fork(_family, "exec")
-		//t.SetTag(trace.String(trace.TagAddress, s.db.addr), trace.String(trace.TagComment, s.query))
-		//defer t.Finish(&err)
+		if s.trace != nil {
+			span, _ := opentracing.StartSpanFromContext(ctx, "sql.Exec")
+			span.SetTag("sql.query", fmt.Sprintf("exec %s", s.query))
+			defer span.Finish()
+		}
+	} else {
+		span, _ := opentracing.StartSpanFromContext(ctx, "sql.Exec")
+		span.SetTag("sql.query", fmt.Sprintf("exec %s", s.query))
+		tags.DBInstance.Set(span, s.db.addr)
+		defer span.Finish()
 	}
 	if err = s.db.breaker.Allow(); err != nil {
 		_metricReqErr.Inc(s.db.addr, s.db.addr, "stmt:exec", "breaker")
@@ -484,13 +488,16 @@ func (s *Stmt) Query(ctx context.Context, args ...interface{}) (rows *Rows, err 
 	now := time.Now()
 	defer slowLog(fmt.Sprintf("Query query(%s) args(%+v)", s.query, args), now)
 	if s.tx {
-		//if s.trace != nil {
-		//	s.trace.SetTag(trace.String(trace.TagAnnotation, s.query))
-		//}
-	} else if _, ok := trace.FromContext(ctx); ok {
-		//t = t.Fork(_family, "query")
-		//t.SetTag(trace.String(trace.TagAddress, s.db.addr), trace.String(trace.TagComment, s.query))
-		//defer t.Finish(&err)
+		if s.trace != nil {
+			span, _ := opentracing.StartSpanFromContext(ctx, "sql.Exec")
+			span.SetTag("sql.query", fmt.Sprintf("exec %s", s.query))
+			defer span.Finish()
+		}
+	} else {
+		span, _ := opentracing.StartSpanFromContext(ctx, "sql.Exec")
+		span.SetTag("sql.query", fmt.Sprintf("exec %s", s.query))
+		tags.DBInstance.Set(span, s.db.addr)
+		defer span.Finish()
 	}
 	if err = s.db.breaker.Allow(); err != nil {
 		_metricReqErr.Inc(s.db.addr, s.db.addr, "stmt:query", "breaker")
@@ -528,13 +535,16 @@ func (s *Stmt) QueryRow(ctx context.Context, args ...interface{}) (row *Row) {
 		return
 	}
 	if s.tx {
-		//if s.trace != nil {
-		//	s.trace.SetTag(trace.String(trace.TagAnnotation, s.query))
-		//}
-	} else if _, ok := trace.FromContext(ctx); ok {
-		//t = t.Fork(_family, "queryrow")
-		//t.SetTag(trace.String(trace.TagAddress, s.db.addr), trace.String(trace.TagComment, s.query))
-		//row.trace = t
+		if s.trace != nil {
+			span, _ := opentracing.StartSpanFromContext(ctx, "sql.Exec")
+			span.SetTag("sql.query", fmt.Sprintf("exec %s", s.query))
+			defer span.Finish()
+		}
+	} else {
+		span, _ := opentracing.StartSpanFromContext(ctx, "sql.Exec")
+		span.SetTag("sql.query", fmt.Sprintf("exec %s", s.query))
+		tags.DBInstance.Set(span, s.db.addr)
+		defer span.Finish()
 	}
 	if row.err = s.db.breaker.Allow(); row.err != nil {
 		_metricReqErr.Inc(s.db.addr, s.db.addr, "stmt:queryrow", "breaker")
@@ -556,9 +566,10 @@ func (tx *Tx) Commit() (err error) {
 	err = tx.tx.Commit()
 	tx.cancel()
 	tx.db.onBreaker(&err)
-	//if tx.trace != nil {
-	//	tx.trace.Finish(&err)
-	//}
+	if tx.trace != nil {
+		span, _ := opentracing.StartSpanFromContext(tx.c, "sql.Commit")
+		span.Finish()
+	}
 	if err != nil {
 		err = errors.WithStack(err)
 	}
@@ -570,9 +581,10 @@ func (tx *Tx) Rollback() (err error) {
 	err = tx.tx.Rollback()
 	tx.cancel()
 	tx.db.onBreaker(&err)
-	//if tx.trace != nil {
-	//	tx.trace.Finish(&err)
-	//}
+	if tx.trace != nil {
+		span, _ := opentracing.StartSpanFromContext(tx.c, "sql.Rollback")
+		span.Finish()
+	}
 	if err != nil {
 		err = errors.WithStack(err)
 	}
@@ -584,7 +596,10 @@ func (tx *Tx) Rollback() (err error) {
 func (tx *Tx) Exec(query string, args ...interface{}) (res sql.Result, err error) {
 	now := time.Now()
 	defer slowLog(fmt.Sprintf("Exec query(%s) args(%+v)", query, args), now)
-	// TODO: add trace
+	if tx.trace != nil {
+		span, _ := opentracing.StartSpanFromContext(tx.c, "sql.Exec")
+		span.SetTag("sql.query", fmt.Sprintf("exec %s", query))
+	}
 	res, err = tx.tx.ExecContext(tx.c, query, args...)
 	_metricReqDur.Observe(int64(time.Since(now)/time.Millisecond), tx.db.addr, tx.db.addr, "tx:exec")
 	if err != nil {
@@ -595,7 +610,10 @@ func (tx *Tx) Exec(query string, args ...interface{}) (res sql.Result, err error
 
 // Query executes a query that returns rows, typically a SELECT.
 func (tx *Tx) Query(query string, args ...interface{}) (rows *Rows, err error) {
-	// TODO: add trace
+	if tx.trace != nil {
+		span, _ := opentracing.StartSpanFromContext(tx.c, "sql.Query")
+		span.SetTag("sql.query", fmt.Sprintf("query %s", query))
+	}
 	now := time.Now()
 	defer slowLog(fmt.Sprintf("Query query(%s) args(%+v)", query, args), now)
 	defer func() {
@@ -614,7 +632,10 @@ func (tx *Tx) Query(query string, args ...interface{}) (rows *Rows, err error) {
 // QueryRow always returns a non-nil value. Errors are deferred until Row's
 // Scan method is called.
 func (tx *Tx) QueryRow(query string, args ...interface{}) *Row {
-	// TODO: add trace
+	if tx.trace != nil {
+		span, _ := opentracing.StartSpanFromContext(tx.c, "sql.QueryRow")
+		span.SetTag("sql.query", fmt.Sprintf("queryrow %s", query))
+	}
 	now := time.Now()
 	defer slowLog(fmt.Sprintf("QueryRow query(%s) args(%+v)", query, args), now)
 	defer func() {
@@ -641,7 +662,10 @@ func (tx *Tx) Stmt(stmt *Stmt) *Stmt {
 // used once the transaction has been committed or rolled back.
 // To use an existing prepared statement on this transaction, see Tx.Stmt.
 func (tx *Tx) Prepare(query string) (*Stmt, error) {
-	// TODO: add trace
+	if tx.trace != nil {
+		span, _ := opentracing.StartSpanFromContext(tx.c, "sql.Prepare")
+		span.SetTag("sql.query", fmt.Sprintf("prepare %s", query))
+	}
 	defer slowLog(fmt.Sprintf("Prepare query(%s)", query), time.Now())
 	stmt, err := tx.tx.Prepare(query)
 	if err != nil {

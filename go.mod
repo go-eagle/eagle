@@ -26,6 +26,7 @@ require (
 	github.com/go-resty/resty/v2 v2.2.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-test/deep v1.0.6
+	github.com/golang/mock v1.5.0 // indirect
 	github.com/golang/protobuf v1.4.3
 	github.com/golang/snappy v0.0.2
 	github.com/gomodule/redigo/redis v0.0.0-20200429221454-e14091dffc1b // indirect
