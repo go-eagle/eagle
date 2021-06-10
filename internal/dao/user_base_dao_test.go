@@ -33,7 +33,7 @@ func (s *Suite) SetupSuite() {
 	db, s.mock, err = sqlmock.New()
 	require.NoError(s.T(), err)
 
-	gdb, err := gorm.Open("postgres", db)
+	gdb, err := gorm.Open("mysql", db)
 	require.NoError(s.T(), err)
 
 	s.db = gdb
