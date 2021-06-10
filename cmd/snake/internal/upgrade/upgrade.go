@@ -16,7 +16,7 @@ var CmdUpgrade = &cobra.Command{
 	Run:   Run,
 }
 
-// Run upgrade the kratos tools.
+// Run upgrade the snake tools.
 func Run(cmd *cobra.Command, args []string) {
 	err := base.GoGet(
 		"github.com/1024casts/snake/cmd/snake",
