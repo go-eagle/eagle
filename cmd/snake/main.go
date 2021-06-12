@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"github.com/1024casts/snake/cmd/snake/internal/cache"
+
 	"github.com/spf13/cobra"
 
 	"github.com/1024casts/snake/cmd/snake/internal/project"
@@ -23,6 +25,7 @@ var (
 
 func init() {
 	rootCmd.AddCommand(project.CmdNew)
+	rootCmd.AddCommand(cache.CmdCache)
 	rootCmd.AddCommand(upgrade.CmdUpgrade)
 }
 
