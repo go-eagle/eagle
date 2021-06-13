@@ -1,28 +1,48 @@
 package cache
 
 import (
+	"fmt"
+	"io/ioutil"
 	"os"
-
-	"github.com/spf13/cobra"
+	"path"
+	"unicode"
 )
 
-// CmdCache represents the new command.
-var CmdCache = &cobra.Command{
-	Use:   "cache",
-	Short: "Create a cache by template",
-	Long:  "Create a cache using the cache template. Example: snake cache -name UserCache",
-	Run:   run,
+// Cache is a cache generator.
+type Cache struct {
+	Name    string
+	Path    string
+	Service string
+	Package string
 }
 
-var repoURL string
-
-func init() {
-	if repoURL = os.Getenv("SNAKE_LAYOUT_REPO"); repoURL == "" {
-		repoURL = "https://github.com/1024casts/snake-layout.git"
+// Generate generate a cache template.
+func (c *Cache) Generate() error {
+	body, err := c.execute()
+	if err != nil {
+		return err
 	}
-	CmdCache.Flags().StringVarP(&repoURL, "-repo-url", "r", repoURL, "layout repo")
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	to := path.Join(wd, c.Path)
+	if _, err := os.Stat(to); os.IsNotExist(err) {
+		if err := os.MkdirAll(to, 0700); err != nil {
+			return err
+		}
+	}
+	name := path.Join(to, Lcfirst(c.Name))
+	if _, err := os.Stat(name); !os.IsNotExist(err) {
+		return fmt.Errorf("%s already exists", c.Name)
+	}
+	return ioutil.WriteFile(name, body, 0644)
 }
 
-func run(cmd *cobra.Command, args []string) {
-
+// 首字母小写
+func Lcfirst(str string) string {
+	for i, v := range str {
+		return string(unicode.ToLower(v)) + str[i+1:]
+	}
+	return ""
 }
