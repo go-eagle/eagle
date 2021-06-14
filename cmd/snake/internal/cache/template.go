@@ -35,7 +35,7 @@ type Cache struct {
 	//localCache cache.Driver
 }
 
-// New{{.Name}} new一个用户cache
+// New{{.Name}} new a cache
 func New{{.Name}}() *Cache {
 	encoding := cache.JSONEncoding{}
 	cachePrefix := ""
@@ -51,7 +51,7 @@ func (c *Cache) Get{{.Name}}CacheKey(userID uint64) string {
 	return fmt.Sprintf(Prefix{{.Name}}CacheKey, userID)
 }
 
-// Set{{.Name}}Cache 写入用户cache
+// Set{{.Name}}Cache 写入cache
 func (c *Cache) Set{{.Name}}Cache(ctx context.Context, userID uint64, user *model.{{.Name}}Model, duration time.Duration) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "cache.Set{{.Name}}Cache")
 	defer span.Finish()
@@ -67,7 +67,7 @@ func (c *Cache) Set{{.Name}}Cache(ctx context.Context, userID uint64, user *mode
 	return nil
 }
 
-// Get{{.Name}}Cache 获取用户cache
+// Get{{.Name}}Cache 获取cache
 func (c *Cache) Get{{.Name}}Cache(ctx context.Context, userID uint64) (data *model.{{.Name}}Model, err error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "cache.Get{{.Name}}Cache")
 	defer span.Finish()
@@ -86,7 +86,7 @@ func (c *Cache) Get{{.Name}}Cache(ctx context.Context, userID uint64) (data *mod
 	return data, nil
 }
 
-// MultiGet{{.Name}}Cache 批量获取用户cache
+// MultiGet{{.Name}}Cache 批量获取cache
 func (c *Cache) MultiGet{{.Name}}Cache(ctx context.Context, userIDs []uint64) (map[string]*model.{{.Name}}Model, error) {
 	var keys []string
 	for _, v := range userIDs {
@@ -103,7 +103,7 @@ func (c *Cache) MultiGet{{.Name}}Cache(ctx context.Context, userIDs []uint64) (m
 	return userMap, nil
 }
 
-// Del{{.Name}}Cache 删除用户cache
+// Del{{.Name}}Cache 删除cache
 func (c *Cache) Del{{.Name}}Cache(ctx context.Context, userID uint64) error {
 	cacheKey := fmt.Sprintf(Prefix{{.Name}}CacheKey, userID)
 	err := c.cache.Del(cacheKey)
@@ -113,7 +113,7 @@ func (c *Cache) Del{{.Name}}Cache(ctx context.Context, userID uint64) error {
 	return nil
 }
 
-// Del{{.Name}}Cache 删除用户cache
+// Del{{.Name}}Cache set empty cache
 func (c *Cache) SetCacheWithNotFound(ctx context.Context, userID uint64) error {
 	cacheKey := fmt.Sprintf(Prefix{{.Name}}CacheKey, userID)
 	err := c.cache.SetCacheWithNotFound(cacheKey)
