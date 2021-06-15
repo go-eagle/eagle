@@ -20,10 +20,10 @@ var (
 )
 
 // Client 生成一个缓存客户端，其中keyPrefix 一般为业务前缀
-var Client Driver
+var Client Cache
 
-// Driver 定义cache驱动接口
-type Driver interface {
+// Cache 定义cache驱动接口
+type Cache interface {
 	Set(key string, val interface{}, expiration time.Duration) error
 	Get(key string, val interface{}) error
 	MultiSet(valMap map[string]interface{}, expiration time.Duration) error

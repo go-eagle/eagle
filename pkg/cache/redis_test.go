@@ -29,7 +29,7 @@ func Test_redisCache_SetGet(t *testing.T) {
 
 	setTests := []struct {
 		name    string
-		cache   Driver
+		cache   Cache
 		args    setArgs
 		wantErr bool
 	}{
@@ -57,7 +57,7 @@ func Test_redisCache_SetGet(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		cache   Driver
+		cache   Cache
 		args    args
 		wantVal interface{}
 		wantErr bool

@@ -18,7 +18,7 @@ type memoryCache struct {
 }
 
 // NewMemoryCache create a memory cache
-func NewMemoryCache(keyPrefix string, encoding encoding.Encoding) Driver {
+func NewMemoryCache(keyPrefix string, encoding encoding.Encoding) Cache {
 	// see: https://dgraph.io/blog/post/introducing-ristretto-high-perf-go-cache/
 	//		https://www.start.io/blog/we-chose-ristretto-cache-for-go-heres-why/
 	config := &ristretto.Config{
