@@ -7,6 +7,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/pkg/errors"
 
+	"github.com/1024casts/snake/pkg/encoding"
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -14,13 +15,13 @@ import (
 type redisCache struct {
 	client            *redis.Client
 	KeyPrefix         string
-	encoding          Encoding
+	encoding          encoding.Encoding
 	DefaultExpireTime time.Duration
 	newObject         func() interface{}
 }
 
 // NewRedisCache new一个cache cache, redis client 参数是可传入的，这样方便进行单元测试
-func NewRedisCache(client *redis.Client, keyPrefix string, encoding Encoding, newObject func() interface{}) Driver {
+func NewRedisCache(client *redis.Client, keyPrefix string, encoding encoding.Encoding, newObject func() interface{}) Driver {
 	return &redisCache{
 		client:    client,
 		KeyPrefix: keyPrefix,
@@ -30,7 +31,7 @@ func NewRedisCache(client *redis.Client, keyPrefix string, encoding Encoding, ne
 }
 
 func (c *redisCache) Set(key string, val interface{}, expiration time.Duration) error {
-	buf, err := Marshal(c.encoding, val)
+	buf, err := encoding.Marshal(c.encoding, val)
 	if err != nil {
 		return errors.Wrapf(err, "marshal data err, value is %+v", val)
 	}
@@ -69,7 +70,7 @@ func (c *redisCache) Get(key string, val interface{}) error {
 	if string(data) == NotFoundPlaceholder {
 		return ErrPlaceholder
 	}
-	err = Unmarshal(c.encoding, data, val)
+	err = encoding.Unmarshal(c.encoding, data, val)
 	if err != nil {
 		return errors.Wrapf(err, "unmarshal data error, key=%s, cacheKey=%s type=%v, json is %+v ",
 			key, cacheKey, reflect.TypeOf(val), string(data))
@@ -84,7 +85,7 @@ func (c *redisCache) MultiSet(valueMap map[string]interface{}, expiration time.D
 	// key-value是成对的，所以这里的容量是map的2倍
 	paris := make([]interface{}, 0, 2*len(valueMap))
 	for key, value := range valueMap {
-		buf, err := Marshal(c.encoding, value)
+		buf, err := encoding.Marshal(c.encoding, value)
 		if err != nil {
 			log.Warnf("marshal data err: %+v, value is %+v", err, value)
 			continue
@@ -142,7 +143,7 @@ func (c *redisCache) MultiGet(keys []string, value interface{}) error {
 			continue
 		}
 		object := c.newObject()
-		err = Unmarshal(c.encoding, []byte(value.(string)), object)
+		err = encoding.Unmarshal(c.encoding, []byte(value.(string)), object)
 		if err != nil {
 			log.Warnf("unmarshal data error: %+v, key=%s, cacheKey=%s type=%v", err,
 				keys[i], cacheKeys[i], reflect.TypeOf(value))

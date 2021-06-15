@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/1024casts/snake/pkg/encoding"
 	redis2 "github.com/1024casts/snake/pkg/redis"
 )
 
@@ -15,7 +16,7 @@ func Test_redisCache_SetGet(t *testing.T) {
 	// 获取redis客户端
 	redisClient := redis2.RedisClient
 	// 实例化redis cache
-	cache := NewRedisCache(redisClient, "unit-test", JSONEncoding{}, func() interface{} {
+	cache := NewRedisCache(redisClient, "unit-test", encoding.JSONEncoding{}, func() interface{} {
 		return new(int64)
 	})
 

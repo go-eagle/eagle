@@ -7,17 +7,18 @@ import (
 	"github.com/dgraph-io/ristretto"
 	"github.com/pkg/errors"
 
+	"github.com/1024casts/snake/pkg/encoding"
 	"github.com/1024casts/snake/pkg/log"
 )
 
 type memoryCache struct {
-	Store     *ristretto.Cache
+	client    *ristretto.Cache
 	KeyPrefix string
-	encoding  Encoding
+	encoding  encoding.Encoding
 }
 
 // NewMemoryCache create a memory cache
-func NewMemoryCache(keyPrefix string, encoding Encoding) Driver {
+func NewMemoryCache(keyPrefix string, encoding encoding.Encoding) Driver {
 	// see: https://dgraph.io/blog/post/introducing-ristretto-high-perf-go-cache/
 	//		https://www.start.io/blog/we-chose-ristretto-cache-for-go-heres-why/
 	config := &ristretto.Config{
@@ -27,7 +28,7 @@ func NewMemoryCache(keyPrefix string, encoding Encoding) Driver {
 	}
 	store, _ := ristretto.NewCache(config)
 	return &memoryCache{
-		Store:     store,
+		client:    store,
 		KeyPrefix: keyPrefix,
 		encoding:  encoding,
 	}
@@ -35,7 +36,7 @@ func NewMemoryCache(keyPrefix string, encoding Encoding) Driver {
 
 // Set add cache
 func (m *memoryCache) Set(key string, val interface{}, expiration time.Duration) error {
-	buf, err := Marshal(m.encoding, val)
+	buf, err := encoding.Marshal(m.encoding, val)
 	if err != nil {
 		return errors.Wrapf(err, "marshal data err, value is %+v", val)
 	}
@@ -43,7 +44,7 @@ func (m *memoryCache) Set(key string, val interface{}, expiration time.Duration)
 	if err != nil {
 		return errors.Wrapf(err, "build cache key err, key is %+v", key)
 	}
-	m.Store.SetWithTTL(cacheKey, buf, 0, expiration)
+	m.client.SetWithTTL(cacheKey, buf, 0, expiration)
 	return nil
 }
 
@@ -53,14 +54,14 @@ func (m *memoryCache) Get(key string, val interface{}) error {
 	if err != nil {
 		return errors.Wrapf(err, "build cache key err, key is %+v", key)
 	}
-	data, ok := m.Store.Get(cacheKey)
+	data, ok := m.client.Get(cacheKey)
 	if !ok {
 		return nil
 	}
 	if data == NotFoundPlaceholder {
 		return ErrPlaceholder
 	}
-	err = Unmarshal(m.encoding, data.([]byte), val)
+	err = encoding.Unmarshal(m.encoding, data.([]byte), val)
 	if err != nil {
 		return errors.Wrapf(err, "unmarshal data error, key=%s, cacheKey=%s type=%v, json is %+v ",
 			key, cacheKey, reflect.TypeOf(val), string(data.([]byte)))
@@ -80,7 +81,7 @@ func (m *memoryCache) Del(keys ...string) error {
 		log.Warnf("build cache key err: %+v, key is %+v", err, key)
 		return err
 	}
-	m.Store.Del(cacheKey)
+	m.client.Del(cacheKey)
 	return nil
 }
 
@@ -95,7 +96,7 @@ func (m *memoryCache) MultiGet(keys []string, val interface{}) error {
 }
 
 func (m *memoryCache) SetCacheWithNotFound(key string) error {
-	if m.Store.Set(key, NotFoundPlaceholder, int64(DefaultNotFoundExpireTime)) {
+	if m.client.Set(key, NotFoundPlaceholder, int64(DefaultNotFoundExpireTime)) {
 		return nil
 	}
 	return ErrSetMemoryWithNotFound

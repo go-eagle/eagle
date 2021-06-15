@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	encoding2 "github.com/1024casts/snake/pkg/encoding"
+
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 
@@ -27,7 +29,7 @@ type Cache struct {
 
 // NewUserCache new一个用户cache
 func NewUserCache() *Cache {
-	encoding := cache.JSONEncoding{}
+	encoding := encoding2.JSONEncoding{}
 	cachePrefix := ""
 	return &Cache{
 		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, encoding, func() interface{} {
