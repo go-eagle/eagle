@@ -20,7 +20,7 @@ type redisCache struct {
 	newObject         func() interface{}
 }
 
-// NewRedisCache new一个cache cache, redis client 参数是可传入的，这样方便进行单元测试
+// NewRedisCache new一个cache, client 参数是可传入的，方便进行单元测试
 func NewRedisCache(client *redis.Client, keyPrefix string, encoding encoding.Encoding, newObject func() interface{}) Cache {
 	return &redisCache{
 		client:    client,
