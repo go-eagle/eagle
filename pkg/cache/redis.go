@@ -45,7 +45,7 @@ func (c *redisCache) Set(key string, val interface{}, expiration time.Duration) 
 	}
 	err = c.client.Set(cacheKey, buf, expiration).Err()
 	if err != nil {
-		return errors.Wrapf(err, "redis set error")
+		return errors.Wrapf(err, "redis set err: %+v", err)
 	}
 	return nil
 }
@@ -56,7 +56,7 @@ func (c *redisCache) Get(key string, val interface{}) error {
 		return errors.Wrapf(err, "build cache key err, key is %+v", key)
 	}
 
-	data, err := c.client.Get(cacheKey).Bytes()
+	bytes, err := c.client.Get(cacheKey).Bytes()
 	if err != nil {
 		if err != redis.Nil {
 			return errors.Wrapf(err, "get data error from redis, key is %+v", cacheKey)
@@ -64,16 +64,16 @@ func (c *redisCache) Get(key string, val interface{}) error {
 	}
 
 	// 防止data为空时，Unmarshal报错
-	if string(data) == "" {
+	if string(bytes) == "" {
 		return nil
 	}
-	if string(data) == NotFoundPlaceholder {
+	if string(bytes) == NotFoundPlaceholder {
 		return ErrPlaceholder
 	}
-	err = encoding.Unmarshal(c.encoding, data, val)
+	err = encoding.Unmarshal(c.encoding, bytes, val)
 	if err != nil {
 		return errors.Wrapf(err, "unmarshal data error, key=%s, cacheKey=%s type=%v, json is %+v ",
-			key, cacheKey, reflect.TypeOf(val), string(data))
+			key, cacheKey, reflect.TypeOf(val), string(bytes))
 	}
 	return nil
 }
