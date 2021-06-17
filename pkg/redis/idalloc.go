@@ -1,10 +1,11 @@
 package redis
 
 import (
+	"context"
 	"strconv"
 	"strings"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
 
 	"github.com/1024casts/snake/pkg/log"
@@ -28,7 +29,7 @@ func NewIDAlloc(conn *redis.Client) *IDAlloc {
 // GetNewID 生成id
 func (ia *IDAlloc) GetNewID(key string, step int64) (int64, error) {
 	key = ia.GetKey(key)
-	id, err := ia.redisClient.IncrBy(key, step).Result()
+	id, err := ia.redisClient.IncrBy(context.Background(), key, step).Result()
 	if err != nil {
 		return 0, errors.Wrapf(err, "redis incr err, key: %s", key)
 	}
@@ -43,7 +44,7 @@ func (ia *IDAlloc) GetNewID(key string, step int64) (int64, error) {
 // GetCurrentID 获取当前id
 func (ia *IDAlloc) GetCurrentID(key string) (int64, error) {
 	key = ia.GetKey(key)
-	ret, err := ia.redisClient.Get(key).Result()
+	ret, err := ia.redisClient.Get(context.Background(), key).Result()
 	if err != nil {
 		return 0, errors.Wrapf(err, "redis get err, key: %s", key)
 	}

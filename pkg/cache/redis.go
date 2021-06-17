@@ -1,10 +1,11 @@
 package cache
 
 import (
+	"context"
 	"reflect"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
 
 	"github.com/1024casts/snake/pkg/encoding"
@@ -30,7 +31,7 @@ func NewRedisCache(client *redis.Client, keyPrefix string, encoding encoding.Enc
 	}
 }
 
-func (c *redisCache) Set(key string, val interface{}, expiration time.Duration) error {
+func (c *redisCache) Set(ctx context.Context, key string, val interface{}, expiration time.Duration) error {
 	buf, err := encoding.Marshal(c.encoding, val)
 	if err != nil {
 		return errors.Wrapf(err, "marshal data err, value is %+v", val)
@@ -43,20 +44,20 @@ func (c *redisCache) Set(key string, val interface{}, expiration time.Duration) 
 	if expiration == 0 {
 		expiration = DefaultExpireTime
 	}
-	err = c.client.Set(cacheKey, buf, expiration).Err()
+	err = c.client.Set(ctx, cacheKey, buf, expiration).Err()
 	if err != nil {
 		return errors.Wrapf(err, "redis set err: %+v", err)
 	}
 	return nil
 }
 
-func (c *redisCache) Get(key string, val interface{}) error {
+func (c *redisCache) Get(ctx context.Context, key string, val interface{}) error {
 	cacheKey, err := BuildCacheKey(c.KeyPrefix, key)
 	if err != nil {
 		return errors.Wrapf(err, "build cache key err, key is %+v", key)
 	}
 
-	bytes, err := c.client.Get(cacheKey).Bytes()
+	bytes, err := c.client.Get(ctx, cacheKey).Bytes()
 	if err != nil {
 		if err != redis.Nil {
 			return errors.Wrapf(err, "get data error from redis, key is %+v", cacheKey)
@@ -78,7 +79,7 @@ func (c *redisCache) Get(key string, val interface{}) error {
 	return nil
 }
 
-func (c *redisCache) MultiSet(valueMap map[string]interface{}, expiration time.Duration) error {
+func (c *redisCache) MultiSet(ctx context.Context, valueMap map[string]interface{}, expiration time.Duration) error {
 	if len(valueMap) == 0 {
 		return nil
 	}
@@ -104,14 +105,14 @@ func (c *redisCache) MultiSet(valueMap map[string]interface{}, expiration time.D
 	if expiration == 0 {
 		expiration = DefaultExpireTime
 	}
-	err := c.client.MSet(paris...).Err()
+	err := c.client.MSet(ctx, paris...).Err()
 	if err != nil {
 		return errors.Wrapf(err, "redis multi set error")
 	}
 	for i := 0; i < len(paris); i = i + 2 {
 		switch paris[i].(type) {
 		case []byte:
-			c.client.Expire(string(paris[i].([]byte)), expiration)
+			c.client.Expire(ctx, string(paris[i].([]byte)), expiration)
 		default:
 			log.Warnf("redis expire is unsupported key type: %+v", reflect.TypeOf(paris[i]))
 		}
@@ -119,7 +120,7 @@ func (c *redisCache) MultiSet(valueMap map[string]interface{}, expiration time.D
 	return nil
 }
 
-func (c *redisCache) MultiGet(keys []string, value interface{}) error {
+func (c *redisCache) MultiGet(ctx context.Context, keys []string, value interface{}) error {
 	if len(keys) == 0 {
 		return nil
 	}
@@ -131,7 +132,7 @@ func (c *redisCache) MultiGet(keys []string, value interface{}) error {
 		}
 		cacheKeys[index] = cacheKey
 	}
-	values, err := c.client.MGet(cacheKeys...).Result()
+	values, err := c.client.MGet(ctx, cacheKeys...).Result()
 	if err != nil {
 		return errors.Wrapf(err, "redis MGet error, keys is %+v", keys)
 	}
@@ -154,7 +155,7 @@ func (c *redisCache) MultiGet(keys []string, value interface{}) error {
 	return nil
 }
 
-func (c *redisCache) Del(keys ...string) error {
+func (c *redisCache) Del(ctx context.Context, keys ...string) error {
 	if len(keys) == 0 {
 		return nil
 	}
@@ -169,13 +170,13 @@ func (c *redisCache) Del(keys ...string) error {
 		}
 		cacheKeys[index] = cacheKey
 	}
-	err := c.client.Del(cacheKeys...).Err()
+	err := c.client.Del(ctx, cacheKeys...).Err()
 	if err != nil {
 		return errors.Wrapf(err, "redis delete error, keys is %+v", keys)
 	}
 	return nil
 }
 
-func (c *redisCache) SetCacheWithNotFound(key string) error {
-	return c.client.Set(key, NotFoundPlaceholder, DefaultNotFoundExpireTime).Err()
+func (c *redisCache) SetCacheWithNotFound(ctx context.Context, key string) error {
+	return c.client.Set(ctx, key, NotFoundPlaceholder, DefaultNotFoundExpireTime).Err()
 }

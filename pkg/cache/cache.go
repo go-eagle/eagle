@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"errors"
 	"time"
 )
@@ -24,39 +25,39 @@ var Client Cache
 
 // Cache 定义cache驱动接口
 type Cache interface {
-	Set(key string, val interface{}, expiration time.Duration) error
-	Get(key string, val interface{}) error
-	MultiSet(valMap map[string]interface{}, expiration time.Duration) error
-	MultiGet(keys []string, valueMap interface{}) error
-	Del(keys ...string) error
-	SetCacheWithNotFound(key string) error
+	Set(ctx context.Context, key string, val interface{}, expiration time.Duration) error
+	Get(ctx context.Context, key string, val interface{}) error
+	MultiSet(ctx context.Context, valMap map[string]interface{}, expiration time.Duration) error
+	MultiGet(ctx context.Context, keys []string, valueMap interface{}) error
+	Del(ctx context.Context, keys ...string) error
+	SetCacheWithNotFound(ctx context.Context, key string) error
 }
 
 // Set 数据
-func Set(key string, val interface{}, expiration time.Duration) error {
-	return Client.Set(key, val, expiration)
+func Set(ctx context.Context, key string, val interface{}, expiration time.Duration) error {
+	return Client.Set(ctx, key, val, expiration)
 }
 
 // Get 数据
-func Get(key string, val interface{}) error {
-	return Client.Get(key, val)
+func Get(ctx context.Context, key string, val interface{}) error {
+	return Client.Get(ctx, key, val)
 }
 
 // MultiSet 批量set
-func MultiSet(valMap map[string]interface{}, expiration time.Duration) error {
-	return Client.MultiSet(valMap, expiration)
+func MultiSet(ctx context.Context, valMap map[string]interface{}, expiration time.Duration) error {
+	return Client.MultiSet(ctx, valMap, expiration)
 }
 
 // MultiGet 批量获取
-func MultiGet(keys []string, valueMap interface{}) error {
-	return Client.MultiGet(keys, valueMap)
+func MultiGet(ctx context.Context, keys []string, valueMap interface{}) error {
+	return Client.MultiGet(ctx, keys, valueMap)
 }
 
 // Del 批量删除
-func Del(keys ...string) error {
-	return Client.Del(keys...)
+func Del(ctx context.Context, keys ...string) error {
+	return Client.Del(ctx, keys...)
 }
 
-func SetCacheWithNotFound(key string) error {
-	return Client.SetCacheWithNotFound(key)
+func SetCacheWithNotFound(ctx context.Context, key string) error {
+	return Client.SetCacheWithNotFound(ctx, key)
 }

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -27,7 +28,7 @@ func (s *Service) GenLoginVCode(phone string) (int, error) {
 	// step2: 写入到redis里
 	// 使用set, key使用前缀+手机号 缓存10分钟）
 	key := fmt.Sprintf("app:login:vcode:%s", phone)
-	err := redis.RedisClient.Set(key, vCodeStr, maxDurationTime).Err()
+	err := redis.RedisClient.Set(context.Background(), key, vCodeStr, maxDurationTime).Err()
 	if err != nil {
 		return 0, errors.Wrap(err, "gen login code from redis set err")
 	}
@@ -78,7 +79,7 @@ func (s *Service) CheckLoginVCode(phone int64, vCode int) bool {
 func (s *Service) GetLoginVCode(phone int64) (int, error) {
 	// 直接从redis里获取
 	key := fmt.Sprintf(verifyCodeRedisKey, phone)
-	vcode, err := redis.RedisClient.Get(key).Result()
+	vcode, err := redis.RedisClient.Get(context.Background(), key).Result()
 	if err == redis.ErrRedisNotFound {
 		return 0, nil
 	} else if err != nil {

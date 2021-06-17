@@ -6,7 +6,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 )
@@ -22,9 +22,9 @@ func WrapRedisClient(ctx context.Context, client *redis.Client) *redis.Client {
 	}
 	// clone using context
 	ctxClient := client.WithContext(ctx)
-	opts := ctxClient.Options()
-	ctxClient.WrapProcess(process(parentSpan, opts))
-	ctxClient.WrapProcessPipeline(processPipeline(parentSpan, opts))
+	//opts := ctxClient.Options()
+	//ctxClient.WrapProcess(process(parentSpan, opts))
+	//ctxClient.WrapProcessPipeline(processPipeline(parentSpan, opts))
 	return ctxClient
 }
 

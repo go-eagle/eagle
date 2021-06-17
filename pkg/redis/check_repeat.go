@@ -1,10 +1,11 @@
 package redis
 
 import (
+	"context"
 	"strings"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 )
 
 const (
@@ -40,22 +41,22 @@ func getKey(key string) string {
 
 func (c *checkRepeat) Set(key string, value interface{}, expiration time.Duration) error {
 	key = getKey(key)
-	return c.client.Set(key, value, expiration).Err()
+	return c.client.Set(context.Background(), key, value, expiration).Err()
 }
 
 func (c *checkRepeat) Get(key string) (string, error) {
 	key = getKey(key)
-	return c.client.Get(key).Result()
+	return c.client.Get(context.Background(), key).Result()
 }
 
 func (c *checkRepeat) SetNX(key string, value interface{}, expiration time.Duration) (bool, error) {
 	key = getKey(key)
-	return c.client.SetNX(key, value, expiration).Result()
+	return c.client.SetNX(context.Background(), key, value, expiration).Result()
 }
 
 func (c *checkRepeat) Del(key string) int64 {
 	key = getKey(key)
 	var keys []string
 	keys = append(keys, key)
-	return c.client.Del(keys...).Val()
+	return c.client.Del(context.Background(), keys...).Val()
 }

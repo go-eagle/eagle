@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"reflect"
 	"time"
 
@@ -35,7 +36,7 @@ func NewMemoryCache(keyPrefix string, encoding encoding.Encoding) Cache {
 }
 
 // Set add cache
-func (m *memoryCache) Set(key string, val interface{}, expiration time.Duration) error {
+func (m *memoryCache) Set(ctx context.Context, key string, val interface{}, expiration time.Duration) error {
 	buf, err := encoding.Marshal(m.encoding, val)
 	if err != nil {
 		return errors.Wrapf(err, "marshal data err, value is %+v", val)
@@ -49,7 +50,7 @@ func (m *memoryCache) Set(key string, val interface{}, expiration time.Duration)
 }
 
 // Get data
-func (m *memoryCache) Get(key string, val interface{}) error {
+func (m *memoryCache) Get(ctx context.Context, key string, val interface{}) error {
 	cacheKey, err := BuildCacheKey(m.KeyPrefix, key)
 	if err != nil {
 		return errors.Wrapf(err, "build cache key err, key is %+v", key)
@@ -70,7 +71,7 @@ func (m *memoryCache) Get(key string, val interface{}) error {
 }
 
 // Del 删除
-func (m *memoryCache) Del(keys ...string) error {
+func (m *memoryCache) Del(ctx context.Context, keys ...string) error {
 	if len(keys) == 0 {
 		return nil
 	}
@@ -86,16 +87,16 @@ func (m *memoryCache) Del(keys ...string) error {
 }
 
 // MultiSet 批量set
-func (m *memoryCache) MultiSet(valMap map[string]interface{}, expiration time.Duration) error {
+func (m *memoryCache) MultiSet(ctx context.Context, valMap map[string]interface{}, expiration time.Duration) error {
 	panic("implement me")
 }
 
 // MultiGet 批量获取
-func (m *memoryCache) MultiGet(keys []string, val interface{}) error {
+func (m *memoryCache) MultiGet(ctx context.Context, keys []string, val interface{}) error {
 	panic("implement me")
 }
 
-func (m *memoryCache) SetCacheWithNotFound(key string) error {
+func (m *memoryCache) SetCacheWithNotFound(ctx context.Context, key string) error {
 	if m.client.Set(key, NotFoundPlaceholder, int64(DefaultNotFoundExpireTime)) {
 		return nil
 	}

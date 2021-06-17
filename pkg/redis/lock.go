@@ -1,10 +1,11 @@
 package redis
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 )
 
@@ -49,8 +50,8 @@ func NewLock(conn *redis.Client, key string, options ...func(lock *Lock)) *Lock 
 }
 
 // Lock 加锁
-func (l *Lock) Lock() (bool, error) {
-	ok, err := l.redisClient.SetNX(l.GetKey(), l.token, l.timeout).Result()
+func (l *Lock) Lock(ctx context.Context) (bool, error) {
+	ok, err := l.redisClient.SetNX(ctx, l.GetKey(), l.token, l.timeout).Result()
 	if err == redis.Nil {
 		err = nil
 	}
@@ -59,9 +60,9 @@ func (l *Lock) Lock() (bool, error) {
 
 // Unlock 解锁
 // token 一致才会执行删除，避免误删，这里用了lua脚本进行事务处理
-func (l *Lock) Unlock() error {
+func (l *Lock) Unlock(ctx context.Context) error {
 	script := "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end"
-	_, err := l.redisClient.Eval(script, []string{l.GetKey()}, l.token).Result()
+	_, err := l.redisClient.Eval(ctx, script, []string{l.GetKey()}, l.token).Result()
 	if err != nil {
 		return err
 	}

@@ -1,11 +1,12 @@
 package redis
 
 import (
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/alicebob/miniredis"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -43,7 +44,7 @@ func Init(c *Config) *redis.Client {
 		PoolTimeout:  c.PoolTimeout,
 	})
 
-	_, err := RedisClient.Ping().Result()
+	_, err := RedisClient.Ping(context.Background()).Result()
 	if err != nil {
 		log.Panicf("[redis] redis ping err: %+v", err)
 	}
