@@ -1,62 +1,14 @@
-package cache
+package encoding
 
 import (
 	"bytes"
 	"compress/gzip"
-	"encoding"
-	"encoding/gob"
-	"fmt"
-
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 
 	"github.com/golang/snappy"
-
-	//json "github.com/json-iterator/go"
-	"github.com/vmihailenco/msgpack"
 )
-
-// Encoding 编码接口定义
-type Encoding interface {
-	Marshal(v interface{}) ([]byte, error)
-	Unmarshal(data []byte, v interface{}) error
-}
-
-// Marshal encode data
-func Marshal(e Encoding, v interface{}) (data []byte, err error) {
-	bm, ok := v.(encoding.BinaryMarshaler)
-	if ok && e == nil {
-		data, err = bm.MarshalBinary()
-		return
-	}
-
-	data, err = e.Marshal(v)
-	if err == nil {
-		return
-	}
-	if ok {
-		data, err = bm.MarshalBinary()
-	}
-
-	return
-}
-
-// Unmarshal decode data
-func Unmarshal(e Encoding, data []byte, v interface{}) (err error) {
-	bm, ok := v.(encoding.BinaryUnmarshaler)
-	if ok && e == nil {
-		err = bm.UnmarshalBinary(data)
-		return err
-	}
-	err = e.Unmarshal(data, v)
-	if err == nil {
-		return
-	}
-	if ok {
-		return bm.UnmarshalBinary(data)
-	}
-	return
-}
 
 // JSONEncoding json格式
 type JSONEncoding struct{}
@@ -70,28 +22,6 @@ func (j JSONEncoding) Marshal(v interface{}) ([]byte, error) {
 // Unmarshal json decode
 func (j JSONEncoding) Unmarshal(data []byte, value interface{}) error {
 	err := json.Unmarshal(data, value)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// GobEncoding gob encode
-type GobEncoding struct{}
-
-// Marshal gob encode
-func (g GobEncoding) Marshal(v interface{}) ([]byte, error) {
-	var (
-		buffer bytes.Buffer
-	)
-
-	err := gob.NewEncoder(&buffer).Encode(v)
-	return buffer.Bytes(), err
-}
-
-// Unmarshal gob encode
-func (g GobEncoding) Unmarshal(data []byte, value interface{}) error {
-	err := gob.NewDecoder(bytes.NewReader(data)).Decode(value)
 	if err != nil {
 		return err
 	}
@@ -194,22 +124,4 @@ func (s JSONSnappyEncoding) Unmarshal(data []byte, value interface{}) error {
 	}
 
 	return json.Unmarshal(b, value)
-}
-
-// MsgPackEncoding msgpack 格式
-type MsgPackEncoding struct{}
-
-// Marshal msgpack encode
-func (mp MsgPackEncoding) Marshal(v interface{}) ([]byte, error) {
-	buf, err := msgpack.Marshal(v)
-	return buf, err
-}
-
-// Unmarshal msgpack decode
-func (mp MsgPackEncoding) Unmarshal(data []byte, value interface{}) error {
-	err := msgpack.Unmarshal(data, value)
-	if err != nil {
-		return err
-	}
-	return nil
 }

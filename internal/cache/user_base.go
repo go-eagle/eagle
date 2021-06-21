@@ -10,6 +10,7 @@ import (
 
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/cache"
+	"github.com/1024casts/snake/pkg/encoding"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/redis"
 )
@@ -21,13 +22,13 @@ const (
 
 // Cache cache
 type Cache struct {
-	cache cache.Driver
-	//localCache cache.Driver
+	cache cache.Cache
+	//localCache cache.Cache
 }
 
 // NewUserCache new一个用户cache
 func NewUserCache() *Cache {
-	encoding := cache.JSONEncoding{}
+	encoding := encoding.JSONEncoding{}
 	cachePrefix := ""
 	return &Cache{
 		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, encoding, func() interface{} {
@@ -50,7 +51,7 @@ func (c *Cache) SetUserBaseCache(ctx context.Context, userID uint64, user *model
 		return nil
 	}
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
-	err := c.cache.Set(cacheKey, user, duration)
+	err := c.cache.Set(ctx, cacheKey, user, duration)
 	if err != nil {
 		return err
 	}
@@ -65,7 +66,7 @@ func (c *Cache) GetUserBaseCache(ctx context.Context, userID uint64) (data *mode
 
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 	//err = u.cache.Get(cacheKey, &data)
-	err = client.Get(cacheKey, &data)
+	err = client.Get(ctx, cacheKey, &data)
 	if err != nil {
 		if span := opentracing.SpanFromContext(ctx); span != nil {
 			ext.Error.Set(span, true)
@@ -86,7 +87,7 @@ func (c *Cache) MultiGetUserBaseCache(ctx context.Context, userIDs []uint64) (ma
 
 	// 需要在这里make实例化，如果在返回参数里直接定义会报 nil map
 	userMap := make(map[string]*model.UserBaseModel)
-	err := c.cache.MultiGet(keys, userMap)
+	err := c.cache.MultiGet(ctx, keys, userMap)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +97,7 @@ func (c *Cache) MultiGetUserBaseCache(ctx context.Context, userIDs []uint64) (ma
 // DelUserBaseCache 删除用户cache
 func (c *Cache) DelUserBaseCache(ctx context.Context, userID uint64) error {
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
-	err := c.cache.Del(cacheKey)
+	err := c.cache.Del(ctx, cacheKey)
 	if err != nil {
 		return err
 	}
@@ -106,7 +107,7 @@ func (c *Cache) DelUserBaseCache(ctx context.Context, userID uint64) error {
 // DelUserBaseCache 删除用户cache
 func (c *Cache) SetCacheWithNotFound(ctx context.Context, userID uint64) error {
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
-	err := c.cache.SetCacheWithNotFound(cacheKey)
+	err := c.cache.SetCacheWithNotFound(ctx, cacheKey)
 	if err != nil {
 		return err
 	}

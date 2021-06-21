@@ -4,26 +4,28 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/1024casts/snake/pkg/encoding"
 )
 
 func Test_NewMemoryCache(t *testing.T) {
 	asserts := assert.New(t)
 
-	client := NewMemoryCache("memory-unit-test", JSONEncoding{})
+	client := NewMemoryCache("memory-unit-test", encoding.JSONEncoding{})
 	asserts.NotNil(client)
 }
 
 func TestMemoStore_Set(t *testing.T) {
 	asserts := assert.New(t)
 
-	store := NewMemoryCache("memory-unit-test", JSONEncoding{})
+	store := NewMemoryCache("memory-unit-test", encoding.JSONEncoding{})
 	err := store.Set("test-key", "test-val", -1)
 	asserts.NoError(err)
 }
 
 func TestMemoStore_Get(t *testing.T) {
 	asserts := assert.New(t)
-	store := NewMemoryCache("memory-unit-test", JSONEncoding{})
+	store := NewMemoryCache("memory-unit-test", encoding.JSONEncoding{})
 
 	// 正常情况
 	{
