@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/alicebob/miniredis"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/opentracing/opentracing-go/mocktracer"
@@ -87,16 +87,16 @@ func TestSetPipeline(t *testing.T) {
 }
 
 func callSet(assert *assert.Assertions, client *redis.Client, value string) {
-	_, err := client.Set("foo", value, 0).Result()
+	_, err := client.Set(context.Background(), "foo", value, 0).Result()
 	assert.Nil(err, "Redis returned error: %v", err)
 }
 
 func callSetPipeline(assert *assert.Assertions, client *redis.Client, setPipelineParams map[string]string) {
 	pipeline := client.Pipeline()
 	for key, value := range setPipelineParams {
-		pipeline.Set(key, value, 0)
+		pipeline.Set(context.Background(), key, value, 0)
 	}
-	_, err := pipeline.Exec()
+	_, err := pipeline.Exec(context.Background())
 	assert.Nil(err, "Redis returned error: %v", err)
 }
 
@@ -146,16 +146,16 @@ func TestGetPipeline(t *testing.T) {
 }
 
 func callGet(assert *assert.Assertions, client *redis.Client) {
-	_, err := client.Get("foo").Result()
+	_, err := client.Get(context.Background(), "foo").Result()
 	assert.Nil(err, "Redis returned error: %v", err)
 }
 
 func callGetPipeline(assert *assert.Assertions, client *redis.Client, getPipelineParams []string) {
 	pipeline := client.Pipeline()
 	for _, key := range getPipelineParams {
-		pipeline.Get(key)
+		pipeline.Get(context.Background(), key)
 	}
-	_, err := pipeline.Exec()
+	_, err := pipeline.Exec(context.Background())
 	assert.Nil(err, "Redis returned error: %v", err)
 }
 

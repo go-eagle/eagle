@@ -16,14 +16,6 @@ const (
 	DefaultTimeout = 2 * time.Second
 )
 
-type Option func(*Lock)
-
-func WithTimeout(expiration time.Duration) Option {
-	return func(l *Lock) {
-		l.timeout = expiration
-	}
-}
-
 // Lock 定义lock结构体
 type Lock struct {
 	key         string
@@ -34,8 +26,16 @@ type Lock struct {
 	// maxRetries int
 }
 
+type Option func(*Lock)
+
+func WithTimeout(expiration time.Duration) Option {
+	return func(l *Lock) {
+		l.timeout = expiration
+	}
+}
+
 // NewLock new a lock instance
-func NewLock(conn *redis.Client, key string, options ...func(lock *Lock)) *Lock {
+func NewLock(conn *redis.Client, key string, opts ...Option) *Lock {
 	lock := Lock{
 		key:         key,
 		redisClient: conn,
@@ -43,8 +43,8 @@ func NewLock(conn *redis.Client, key string, options ...func(lock *Lock)) *Lock 
 		timeout:     DefaultTimeout,
 	}
 
-	for _, option := range options {
-		option(&lock)
+	for _, o := range opts {
+		o(&lock)
 	}
 	return &lock
 }
