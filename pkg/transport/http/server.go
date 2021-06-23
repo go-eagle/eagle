@@ -36,7 +36,7 @@ func NewServer(opts ...ServerOption) *Server {
 
 // ServeHTTP should write reply headers and data to the ResponseWriter and then return.
 func (s *Server) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-
+	s.ServeHTTP(resp, req)
 }
 
 func (s *Server) Start() error {
@@ -45,7 +45,7 @@ func (s *Server) Start() error {
 		return err
 	}
 	s.lis = lis
-	s.log.Infof("http server is listening on: %s", lis.Addr().String())
+	s.log.Infof("[HTTP] server is listening on: %s", lis.Addr().String())
 	if err := s.Serve(lis); !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
@@ -53,6 +53,6 @@ func (s *Server) Start() error {
 }
 
 func (s *Server) Stop() error {
-	s.log.Info("http server is stopping")
+	s.log.Info("[HTTP] server is stopping")
 	return s.Shutdown(context.Background())
 }
