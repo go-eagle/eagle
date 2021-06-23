@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"context"
 	"testing"
 	"time"
 )
@@ -8,7 +9,7 @@ import (
 func TestInitTestRedis(t *testing.T) {
 	InitTestRedis()
 
-	err := RedisClient.Ping().Err()
+	err := RedisClient.Ping(context.Background()).Err()
 	if err != nil {
 		t.Error("ping redis server err: ", err)
 		return
@@ -21,9 +22,9 @@ func TestRedisSetGet(t *testing.T) {
 
 	var setGetKey = "test-set"
 	var setGetValue = "test-content"
-	RedisClient.Set(setGetKey, setGetValue, time.Second*100)
+	RedisClient.Set(context.Background(), setGetKey, setGetValue, time.Second*100)
 
-	expectValue := RedisClient.Get(setGetKey).Val()
+	expectValue := RedisClient.Get(context.Background(), setGetKey).Val()
 	if setGetValue != expectValue {
 		t.Log("original value: ", setGetValue)
 		t.Log("expect value: ", expectValue)
