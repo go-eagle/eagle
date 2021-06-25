@@ -12,13 +12,13 @@ type Error struct {
 	details []string `json:"details"`
 }
 
-var codes = map[int]string{}
+var codes = map[int]struct{}{}
 
 func NewError(code int, msg string) *Error {
 	if _, ok := codes[code]; ok {
 		panic(fmt.Sprintf("code %d is exsit, please change one", code))
 	}
-	codes[code] = msg
+	codes[code] = struct{}{}
 	return &Error{code: code, msg: msg}
 }
 
