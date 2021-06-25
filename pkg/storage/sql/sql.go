@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/1024casts/snake/pkg/breaker"
-	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/go-sql-driver/mysql"
 	"github.com/opentracing/opentracing-go"
@@ -197,7 +197,7 @@ func (db *DB) Prepared(query string) (stmt *Stmt) {
 func (db *DB) Query(ctx context.Context, query string, args ...interface{}) (rows *Rows, err error) {
 	idx := db.readIndex()
 	for i := range db.read {
-		if rows, err = db.read[(idx+i)%len(db.read)].query(ctx, query, args...); !errors.Is(errno.ErrServiceUnavailable, err) {
+		if rows, err = db.read[(idx+i)%len(db.read)].query(ctx, query, args...); !errors.Is(errcode.ErrServiceUnavailable, err) {
 			return
 		}
 	}
@@ -210,7 +210,7 @@ func (db *DB) Query(ctx context.Context, query string, args ...interface{}) (row
 func (db *DB) QueryRow(ctx context.Context, query string, args ...interface{}) *Row {
 	idx := db.readIndex()
 	for i := range db.read {
-		if row := db.read[(idx+i)%len(db.read)].queryRow(ctx, query, args...); !errors.Is(errno.ErrServiceUnavailable, row.err) {
+		if row := db.read[(idx+i)%len(db.read)].queryRow(ctx, query, args...); !errors.Is(errcode.ErrServiceUnavailable, row.err) {
 			return row
 		}
 	}

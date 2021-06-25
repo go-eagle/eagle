@@ -9,7 +9,7 @@ import (
 
 	metric2 "github.com/1024casts/snake/pkg/metric"
 
-	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -78,7 +78,7 @@ func (b *sreBreaker) Allow() error {
 	log.Info("breaker: drop ratio: %f, drop: %t", dr, drop)
 
 	if drop {
-		return errno.ErrServiceUnavailable
+		return errcode.ErrServiceUnavailable
 	}
 	return nil
 }

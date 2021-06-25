@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/utils"
 )
 
@@ -18,7 +18,7 @@ type Response struct {
 
 // SendResponse 返回json
 func SendResponse(c *gin.Context, err error, data interface{}) {
-	code, message := errno.DecodeErr(err)
+	code, message := errcode.DecodeErr(err)
 
 	// always return http.StatusOK
 	c.JSON(http.StatusOK, Response{

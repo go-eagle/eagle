@@ -9,7 +9,7 @@ import (
 
 	"github.com/1024casts/snake/internal/ecode"
 	"github.com/1024casts/snake/internal/service"
-	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -27,7 +27,7 @@ func Get(c *gin.Context) {
 
 	userID := cast.ToUint64(c.Param("id"))
 	if userID == 0 {
-		response.Error(c, errno.ErrInvalidParam)
+		response.Error(c, errcode.ErrInvalidParam)
 		return
 	}
 
@@ -39,7 +39,7 @@ func Get(c *gin.Context) {
 		return
 	}
 	if err != nil {
-		response.Error(c, errno.ErrInternalServerError)
+		response.Error(c, errcode.ErrInternalServerError.WithDetails(err.Error()))
 		return
 	}
 

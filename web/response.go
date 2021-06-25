@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/flash"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/gin-gonic/gin"
@@ -23,7 +23,7 @@ type Resp struct {
 
 // Response json response
 func Response(c *gin.Context, err error, data interface{}) {
-	code, message := errno.DecodeErr(err)
+	code, message := errcode.DecodeErr(err)
 
 	// always return http.StatusOK
 	c.JSON(http.StatusOK, Resp{

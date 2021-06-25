@@ -1,4 +1,4 @@
-package errno
+package errcode
 
 //nolint: golint
 var (
