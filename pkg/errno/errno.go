@@ -52,6 +52,7 @@ func (e *Error) WithDetails(details ...string) *Error {
 	return &newError
 }
 
+// StatusCode trans err code to http status code
 func (e *Error) StatusCode() int {
 	switch e.Code() {
 	case Success.Code():
