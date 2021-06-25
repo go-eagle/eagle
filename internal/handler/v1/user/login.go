@@ -7,7 +7,7 @@ import (
 
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/service"
-	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -25,7 +25,7 @@ func Login(c *gin.Context) {
 	valid, errs := app.BindAndValid(c, &req)
 	if !valid {
 		log.Warnf("app.BindAndValid errs: %v", errs)
-		response.Error(c, errno.ErrInvalidParam.WithDetails(errs.Errors()...))
+		response.Error(c, errcode.ErrInvalidParam.WithDetails(errs.Errors()...))
 		return
 	}
 
@@ -56,7 +56,7 @@ func PhoneLogin(c *gin.Context) {
 	var req PhoneLoginCredentials
 	if err := c.Bind(&req); err != nil {
 		log.Warnf("phone login bind param err: %v", err)
-		response.Error(c, errno.ErrBind)
+		response.Error(c, errcode.ErrBind)
 		return
 	}
 
@@ -64,7 +64,7 @@ func PhoneLogin(c *gin.Context) {
 	// check param
 	if req.Phone == 0 || req.VerifyCode == 0 {
 		log.Warn("phone login bind param is empty")
-		response.Error(c, errno.ErrInvalidParam)
+		response.Error(c, errcode.ErrInvalidParam)
 		return
 	}
 

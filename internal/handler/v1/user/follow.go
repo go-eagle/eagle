@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/api"
-	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -27,14 +27,14 @@ func Follow(c *gin.Context) {
 	var req FollowRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Warnf("follow bind param err: %v", err)
-		response.Error(c, errno.ErrBind)
+		response.Error(c, errcode.ErrBind.WithDetails(err.Error()))
 		return
 	}
 
 	// Get the user by the `user_id` from the database.
 	_, err := service.UserSvc.GetUserByID(c, req.UserID)
 	if err != nil {
-		response.Error(c, ecode.ErrUserNotFound)
+		response.Error(c, ecode.ErrUserNotFound.WithDetails(err.Error()))
 		return
 	}
 
@@ -48,7 +48,7 @@ func Follow(c *gin.Context) {
 	// 检查是否已经关注过
 	isFollowed := service.UserSvc.IsFollowing(context.TODO(), userID, req.UserID)
 	if isFollowed {
-		response.Error(c, errno.Success)
+		response.Error(c, errcode.Success)
 		return
 	}
 
@@ -57,7 +57,7 @@ func Follow(c *gin.Context) {
 		err = service.UserSvc.Unfollow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] cancel user follow err: %v", err)
-			response.Error(c, errno.ErrInternalServerError)
+			response.Error(c, errcode.ErrInternalServerError.WithDetails(err.Error()))
 			return
 		}
 	} else {
@@ -65,7 +65,7 @@ func Follow(c *gin.Context) {
 		err = service.UserSvc.Follow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] add user follow err: %v", err)
-			response.Error(c, errno.ErrInternalServerError)
+			response.Error(c, errcode.ErrInternalServerError.WithDetails(err.Error()))
 			return
 		}
 	}

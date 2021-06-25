@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/internal/service"
-	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/web"
 )
@@ -28,7 +28,7 @@ func DoLogin(c *gin.Context) {
 	var req LoginCredentials
 	if err := c.Bind(&req); err != nil {
 		log.Warnf("[web.login] bind err: %v", err)
-		web.Response(c, errno.ErrBind, nil)
+		web.Response(c, errcode.ErrBind, nil)
 		return
 	}
 

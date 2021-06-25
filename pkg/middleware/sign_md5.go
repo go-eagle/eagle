@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/1024casts/snake/api"
-	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/sign"
 )
 
@@ -17,13 +17,13 @@ func SignMd5Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sn, err := verifySign(c)
 		if err != nil {
-			api.SendResponse(c, errno.ErrInternalServerError, nil)
+			api.SendResponse(c, errcode.ErrInternalServerError, nil)
 			c.Abort()
 			return
 		}
 
 		if sn != nil {
-			api.SendResponse(c, errno.ErrSignParam, sn)
+			api.SendResponse(c, errcode.ErrSignParam, sn)
 			c.Abort()
 			return
 		}

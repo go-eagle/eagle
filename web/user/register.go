@@ -7,7 +7,7 @@ import (
 
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/service"
-	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/flash"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/web"
@@ -26,7 +26,7 @@ func DoRegister(c *gin.Context) {
 	log.Info("User Register function called.")
 	var r RegisterRequest
 	if err := c.Bind(&r); err != nil {
-		web.Response(c, errno.ErrBind, nil)
+		web.Response(c, errcode.ErrBind, nil)
 		return
 	}
 
@@ -38,19 +38,19 @@ func DoRegister(c *gin.Context) {
 
 	// Validate the data.
 	if err := u.Validate(); err != nil {
-		web.Response(c, errno.ErrValidation, nil)
+		web.Response(c, errcode.ErrValidation, nil)
 		return
 	}
 
 	// Encrypt the user password.
 	if err := u.Encrypt(); err != nil {
-		web.Response(c, errno.ErrEncrypt, nil)
+		web.Response(c, errcode.ErrEncrypt, nil)
 		return
 	}
 	// Insert the user to the database.
 	err := service.UserSvc.Register(c, u.Username, u.Email, u.Password)
 	if err != nil {
-		web.Response(c, errno.ErrInternalServerError, nil)
+		web.Response(c, errcode.ErrInternalServerError, nil)
 		return
 	}
 
