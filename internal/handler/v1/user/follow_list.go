@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/api"
-	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/log"
 )
 
@@ -44,7 +44,7 @@ func FollowList(c *gin.Context) {
 	userFollowList, err := service.UserSvc.GetFollowingUserList(context.TODO(), uint64(userID), uint64(lastID), limit+1)
 	if err != nil {
 		log.Warnf("get following user list err: %+v", err)
-		response.Error(c, errno.ErrInternalServerError)
+		response.Error(c, errcode.ErrInternalServerError)
 		return
 	}
 
@@ -64,7 +64,7 @@ func FollowList(c *gin.Context) {
 	userOutList, err := service.UserSvc.BatchGetUsers(context.TODO(), curUserID, userIDs)
 	if err != nil {
 		log.Warnf("batch get users err: %v", err)
-		response.Error(c, errno.ErrInternalServerError)
+		response.Error(c, errcode.ErrInternalServerError)
 		return
 	}
 

@@ -9,7 +9,7 @@ import (
 	metric2 "github.com/1024casts/snake/pkg/metric"
 
 	"github.com/1024casts/snake/pkg/container/group"
-	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/log"
 	cpustat "github.com/1024casts/snake/pkg/stat/cpu"
 )
@@ -216,7 +216,7 @@ func (l *BBR) Allow(ctx context.Context, opts ...AllowOption) (func(info DoneInf
 		opt.Apply(&allowOpts)
 	}
 	if l.shouldDrop() {
-		return nil, errno.ErrLimitExceed
+		return nil, errcode.ErrLimitExceed
 	}
 	atomic.AddInt64(&l.inFlight, 1)
 	stime := time.Since(initTime)

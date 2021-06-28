@@ -3,7 +3,7 @@ package app
 import (
 	"net/http"
 
-	"github.com/1024casts/snake/pkg/errno"
+	"github.com/1024casts/snake/pkg/errcode"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,13 +24,13 @@ func (r *Response) Success(c *gin.Context, data interface{}) {
 	}
 
 	c.JSON(http.StatusOK, Response{
-		Code:    errno.Success.Code(),
-		Message: errno.Success.Msg(),
+		Code:    errcode.Success.Code(),
+		Message: errcode.Success.Msg(),
 		Data:    data,
 	})
 }
 
-func (r *Response) Error(c *gin.Context, err *errno.Error) {
+func (r *Response) Error(c *gin.Context, err *errcode.Error) {
 	response := gin.H{"code": err.Code(), "msg": err.Msg(), "data": gin.H{}}
 	details := err.Details()
 	if len(details) > 0 {

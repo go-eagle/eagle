@@ -53,16 +53,16 @@ func (a *App) Run() error {
 		a.opts.name,
 		a.opts.version,
 	)
-	g, ctx := errgroup.WithContext(a.ctx)
+	eg, ctx := errgroup.WithContext(a.ctx)
 
 	// start server
 	for _, srv := range a.opts.servers {
 		srv := srv
-		g.Go(func() error {
+		eg.Go(func() error {
 			<-ctx.Done()
 			return srv.Stop()
 		})
-		g.Go(func() error {
+		eg.Go(func() error {
 			return srv.Start()
 		})
 	}
@@ -70,7 +70,7 @@ func (a *App) Run() error {
 	// watch signal
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, a.opts.sigs...)
-	g.Go(func() error {
+	eg.Go(func() error {
 		for {
 			select {
 			case <-ctx.Done():
@@ -81,7 +81,7 @@ func (a *App) Run() error {
 			}
 		}
 	})
-	if err := g.Wait(); err != nil && !errors.Is(err, context.Canceled) {
+	if err := eg.Wait(); err != nil && !errors.Is(err, context.Canceled) {
 		return err
 	}
 
