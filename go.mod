@@ -16,7 +16,7 @@ require (
 	github.com/frankban/quicktest v1.7.2 // indirect
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gin-contrib/static v0.0.0-20200916080430-d45d9a37d28e
-	github.com/gin-gonic/gin v1.6.3
+	github.com/gin-gonic/gin v1.7.2
 	github.com/go-mail/mail v2.3.1+incompatible
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-playground/locales v0.13.0
@@ -24,7 +24,7 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-redis/redis/v8 v8.10.0
-	github.com/go-resty/resty/v2 v2.2.0
+	github.com/go-resty/resty/v2 v2.6.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-test/deep v1.0.6
 	github.com/golang/protobuf v1.4.3
@@ -72,7 +72,6 @@ require (
 	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/mod v0.4.2 // indirect
-	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4 // indirect
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
 	golang.org/x/sys v0.0.0-20210502180810-71e4cd670f79 // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0
