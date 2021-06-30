@@ -4,7 +4,6 @@
         "description": "snake demo",
         "title": "snake docs api",
         "contact": {},
-        "license": {},
         "version": "1.0"
     },
     "host": "localhost:8080",
@@ -398,7 +397,6 @@
                     "type": "integer"
                 },
                 "user_follow": {
-                    "type": "object",
                     "$ref": "#/definitions/model.UserFollow"
                 },
                 "username": {
@@ -409,6 +407,10 @@
         },
         "user.LoginCredentials": {
             "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
             "properties": {
                 "email": {
                     "type": "string"

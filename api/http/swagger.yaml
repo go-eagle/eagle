@@ -55,7 +55,6 @@ definitions:
         type: integer
       user_follow:
         $ref: '#/definitions/model.UserFollow'
-        type: object
       username:
         example: 张三
         type: string
@@ -66,6 +65,9 @@ definitions:
         type: string
       password:
         type: string
+    required:
+    - email
+    - password
     type: object
   user.PhoneLoginCredentials:
     properties:
@@ -94,7 +96,6 @@ host: localhost:8080
 info:
   contact: {}
   description: snake demo
-  license: {}
   title: snake docs api
   version: "1.0"
 paths:

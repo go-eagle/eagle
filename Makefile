@@ -15,14 +15,23 @@ PKG := "$(PROJECT_NAME)"
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
 
+# init environment variables
+export PATH        := $(shell go env GOPATH)/bin:$(PATH)
+export GOPATH      := $(shell go env GOPATH)
+export GO111MODULE := on
+
+# make   make all
+.PHONY: all
+all: lint test build
+
 .PHONY: build
 # make build, Build the binary file
-build:
-	go build -v -ldflags ${ldflags} .
+build: dep
+	@go build -v -ldflags ${ldflags} .
 
 .PHONY: dep
-# make dep
-dep: ## Get the dependencies
+# make dep Get the dependencies
+dep:
 	@go mod download
 
 .PHONY: fmt
@@ -37,18 +46,20 @@ lint:
 
 .PHONY: ci-lint
 # make ci-lint
-ci-lint: ci-lint-prepare
-	@./bin/golangci-lint run ./...
+ci-lint: prepare-lint
+	${GOPATH}/bin/golangci-lint run ./...
 
-.PHONY: ci-lint-prepare
-# make ci-lint-prepare
-ci-lint-prepare:
-	@echo "Installing golangci-lint"
-    @curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s latest
+.PHONY: prepare-lint
+# make prepare-lint
+prepare-lint:
+	@if ! which golangci-lint &>/dev/null; then \
+  		echo "Installing golangci-lint"; \
+  		curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s latest; \
+  	fi
 
 .PHONY: test
 # make test
-test: test-case vet-case
+test: test-case vet
 	@go test -short ${PKG_LIST}
 
 .PHONY: test-case
@@ -56,22 +67,20 @@ test: test-case vet-case
 test-case:
 	@go test -cover ./... | grep -v vendor;true
 
-.PHONY: vet-case
-# make vet-case
-vet-case:
+.PHONY: vet
+# make vet
+vet:
 	go vet ./... | grep -v vendor;true
+
+.PHONY: cover
+# make cover
+cover: gen-coverage
+	@go tool cover -html=coverage.txt
 
 .PHONY: gen-coverage
 # make gen-coverage
 gen-coverage:
-	@go test -short -coverprofile cover.out -covermode=atomic ${PKG_LIST}
-	@cat cover.out >> coverage.txt
-
-.PHONY: review-cover
-# make review-cover
-review-cover:
-	@go tool cover -html=coverage.txt
-
+	@go test -short -coverprofile coverage.txt -covermode=atomic ${PKG_LIST}
 
 .PHONY: docker
 # make docker  生成docker镜像
@@ -90,6 +99,10 @@ clean:
 .PHONY: docs
 # gen swagger doc
 docs:
+	@if ! which swag &>/dev/null; then \
+  		echo "downloading swag"; \
+  		go get -u github.com/swaggo/swag/cmd/swag; \
+  	fi
 	@swag init
 	@mv docs/docs.go api/http
 	@mv docs/swagger.json api/http
@@ -98,14 +111,13 @@ docs:
 	@echo "see docs by: http://localhost:8080/swagger/index.html"
 
 .PHONY: graph
-# 生成交互式的可视化Go程序调用图
+# make graph 生成交互式的可视化Go程序调用图(会在浏览器自动打开)
 graph:
 	@export GO111MODULE="on"
 	@if ! which go-callvis &>/dev/null; then \
   		echo "downloading go-callvis"; \
-  		go get github.com/ofabry/go-callvis; \
+  		go get -u github.com/ofabry/go-callvis; \
   	fi
-	@go get github.com/ofabry/go-callvis
 	@echo "generating graph"
 	@go-callvis github.com/1024casts/snake
 
@@ -141,5 +153,5 @@ help:
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
-.DEFAULT_GOAL := help
+.DEFAULT_GOAL := all
 
