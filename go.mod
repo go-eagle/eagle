@@ -1,6 +1,6 @@
 module github.com/1024casts/snake
 
-go 1.13
+go 1.15
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.4.1
@@ -26,7 +26,7 @@ require (
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/go-redis/redis/v8 v8.10.0
+	github.com/go-redis/redis/v8 v8.11.0
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-test/deep v1.0.6
@@ -70,6 +70,8 @@ require (
 	go.elastic.co/apm v1.11.0
 	go.elastic.co/apm/module/apmot v1.11.0
 	go.mongodb.org/mongo-driver v1.5.0
+	go.opentelemetry.io/otel/exporters/jaeger v1.0.0-RC1 // indirect
+	//go.opentelemetry.io/otel/unit v0.20.0
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/automaxprocs v1.4.0
 	go.uber.org/zap v1.16.0
@@ -86,6 +88,7 @@ require (
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/mail.v2 v2.3.1 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	gorm.io/driver/mysql v1.0.4
 	gorm.io/gorm v1.20.12
 	gorm.io/plugin/opentracing v0.0.0-20210220121556-913c6b2318cc
