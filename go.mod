@@ -70,7 +70,9 @@ require (
 	go.elastic.co/apm v1.11.0
 	go.elastic.co/apm/module/apmot v1.11.0
 	go.mongodb.org/mongo-driver v1.5.0
-	go.opentelemetry.io/otel/exporters/jaeger v1.0.0-RC1 // indirect
+	go.opentelemetry.io/otel v1.0.0-RC1
+	go.opentelemetry.io/otel/exporters/jaeger v1.0.0-RC1
+	go.opentelemetry.io/otel/sdk v1.0.0-RC1
 	//go.opentelemetry.io/otel/unit v0.20.0
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/automaxprocs v1.4.0
