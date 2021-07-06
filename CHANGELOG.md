@@ -3,6 +3,7 @@
 ## v1.3.1
 - 优化 新建项目命令 `snake new`
 - 优化 目录结构
+- 新增 链路追踪 tracing 支持 jaeger、zipkin、elastic
 - 新增 SQL库，支持 tracing
 - 新增 工具链，可以自动生成对应的 cache 文件
 - 升级 go-redis到v8.10.0版本
