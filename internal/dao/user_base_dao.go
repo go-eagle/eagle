@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
+	"github.com/spf13/cast"
+	"go.opentelemetry.io/otel/attribute"
+	oteltrace "go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/singleflight"
 	"gorm.io/gorm"
 
@@ -52,9 +54,8 @@ func (d *Dao) UpdateUser(ctx context.Context, id uint64, userMap map[string]inte
 // 缓存的更新策略使用 Cache Aside Pattern
 // see: https://coolshell.cn/articles/17416.html
 func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserBaseModel, err error) {
-	// add trace
-	span, ctx := opentracing.StartSpanFromContext(ctx, "userBaseDao.GetOneUser")
-	defer span.Finish()
+	ctx, span := d.tracer.Start(ctx, "GetOneUser", oteltrace.WithAttributes(attribute.String("uid", cast.ToString(uid))))
+	defer span.End()
 
 	//var userBase *model.UserBaseModel
 	start := time.Now()

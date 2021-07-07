@@ -3,6 +3,9 @@ package dao
 import (
 	"context"
 
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
+
 	"gorm.io/gorm"
 
 	"github.com/1024casts/snake/internal/cache"
@@ -15,6 +18,7 @@ var (
 // Dao mysql struct
 type Dao struct {
 	db        *gorm.DB
+	tracer    trace.Tracer
 	userCache *cache.Cache
 }
 
@@ -22,6 +26,7 @@ type Dao struct {
 func New(db *gorm.DB) *Dao {
 	return &Dao{
 		db:        db,
+		tracer:    otel.GetTracerProvider().Tracer("dao"),
 		userCache: cache.NewUserCache(),
 	}
 }
