@@ -117,7 +117,7 @@ trace:
     Propagation: "jaeger"
     Gen128Bit: true
     TraceContextHeaderName: "uber-trace-id"
-    CollectorEndpoint: ""
+    CollectorEndpoint: "http://localhost:14268/api/traces"
     CollectorUser: ""
     CollectorPassword: ""
 

@@ -15,13 +15,14 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/1024casts/snake/internal/model"
+
 	"github.com/1024casts/snake/pkg/app"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
 	_ "go.uber.org/automaxprocs"
 
-	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/server"
 	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/conf"
@@ -67,9 +68,9 @@ func main() {
 	// init redis
 	redis.Init(&cfg.Redis)
 	// init tracer
-	_, err = trace.Init(cfg.Trace.ServiceName, cfg.Trace.GetTraceConfig())
+	_, err = trace.InitTracerProvider(cfg.Trace.ServiceName, cfg.Trace.Jaeger.CollectorEndpoint)
 	if err != nil {
-		// panic(err)
+		panic(err)
 	}
 
 	// init service

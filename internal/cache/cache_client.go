@@ -10,9 +10,9 @@ import (
 )
 
 func getCacheClient(ctx context.Context) cache.Cache {
-	encoding := encoding.JSONEncoding{}
+	jsonEncoding := encoding.JSONEncoding{}
 	cachePrefix := ""
-	client := cache.NewRedisCache(redis.WrapRedisClient(ctx, redis.RedisClient), cachePrefix, encoding, func() interface{} {
+	client := cache.NewRedisCache(redis.RedisClient, cachePrefix, jsonEncoding, func() interface{} {
 		return &model.UserBaseModel{}
 	})
 

@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"go.opentelemetry.io/otel/trace"
+
+	"go.opentelemetry.io/otel"
+
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 
@@ -22,7 +26,8 @@ const (
 
 // Cache cache
 type Cache struct {
-	cache cache.Cache
+	cache  cache.Cache
+	tracer trace.Tracer
 	//localCache cache.Cache
 }
 
@@ -33,7 +38,9 @@ func NewUserCache() *Cache {
 	return &Cache{
 		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, encoding, func() interface{} {
 			return &model.UserBaseModel{}
-		}),
+		},
+		),
+		tracer: otel.GetTracerProvider().Tracer("cache"),
 	}
 }
 
@@ -44,8 +51,8 @@ func (c *Cache) GetUserBaseCacheKey(userID uint64) string {
 
 // SetUserBaseCache 写入用户cache
 func (c *Cache) SetUserBaseCache(ctx context.Context, userID uint64, user *model.UserBaseModel, duration time.Duration) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "cache.SetUserBaseCache")
-	defer span.Finish()
+	ctx, span := c.tracer.Start(ctx, "SetUserBaseCache")
+	defer span.End()
 
 	if user == nil || user.ID == 0 {
 		return nil
@@ -60,8 +67,9 @@ func (c *Cache) SetUserBaseCache(ctx context.Context, userID uint64, user *model
 
 // GetUserBaseCache 获取用户cache
 func (c *Cache) GetUserBaseCache(ctx context.Context, userID uint64) (data *model.UserBaseModel, err error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "cache.GetUserBaseCache")
-	defer span.Finish()
+	ctx, span := c.tracer.Start(ctx, "GetUserBaseCache")
+	defer span.End()
+
 	client := getCacheClient(ctx)
 
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
@@ -79,6 +87,8 @@ func (c *Cache) GetUserBaseCache(ctx context.Context, userID uint64) (data *mode
 
 // MultiGetUserBaseCache 批量获取用户cache
 func (c *Cache) MultiGetUserBaseCache(ctx context.Context, userIDs []uint64) (map[string]*model.UserBaseModel, error) {
+	ctx, span := c.tracer.Start(ctx, "MultiGetUserBaseCache")
+	defer span.End()
 	var keys []string
 	for _, v := range userIDs {
 		cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, v)
@@ -96,6 +106,8 @@ func (c *Cache) MultiGetUserBaseCache(ctx context.Context, userIDs []uint64) (ma
 
 // DelUserBaseCache 删除用户cache
 func (c *Cache) DelUserBaseCache(ctx context.Context, userID uint64) error {
+	ctx, span := c.tracer.Start(ctx, "DelUserBaseCache")
+	defer span.End()
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 	err := c.cache.Del(ctx, cacheKey)
 	if err != nil {
@@ -106,6 +118,8 @@ func (c *Cache) DelUserBaseCache(ctx context.Context, userID uint64) error {
 
 // DelUserBaseCache 删除用户cache
 func (c *Cache) SetCacheWithNotFound(ctx context.Context, userID uint64) error {
+	ctx, span := c.tracer.Start(ctx, "SetCacheWithNotFound")
+	defer span.End()
 	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
 	err := c.cache.SetCacheWithNotFound(ctx, cacheKey)
 	if err != nil {
