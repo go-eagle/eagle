@@ -48,6 +48,10 @@ func Init(c *Config) *redis.Client {
 	if err != nil {
 		log.Panicf("[redis] redis ping err: %+v", err)
 	}
+
+	// hook tracing (with open telemetry)
+	RedisClient.AddHook(NewTracingHook())
+
 	return RedisClient
 }
 
