@@ -25,7 +25,7 @@ func NewRouter() *gin.Engine {
 	g.Use(middleware.Logging())
 	g.Use(middleware.RequestID())
 	g.Use(middleware.Prom(nil))
-	g.Use(middleware.Trace())
+	g.Use(middleware.Tracing("snake-service"))
 	g.Use(mw.Translations())
 
 	// 404 Handler.
