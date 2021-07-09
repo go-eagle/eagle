@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/opentracing/opentracing-go"
-	"github.com/uber/jaeger-client-go"
+	"go.opentelemetry.io/otel/trace"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -81,17 +81,17 @@ func GetLogger() Logger {
 	return log
 }
 
-// Trace is a logger that can log msg and log span for trace
+// WithContext is a logger that can log msg and log span for trace
 func WithContext(ctx context.Context) Logger {
 	//return zap logger
-	if span := opentracing.SpanFromContext(ctx); span != nil {
+
+	if span := trace.SpanFromContext(ctx); span != nil {
 		logger := spanLogger{span: span, logger: zl}
 
-		if jaegerCtx, ok := span.Context().(jaeger.SpanContext); ok {
-			logger.spanFields = []zapcore.Field{
-				zap.String("trace_id", jaegerCtx.TraceID().String()),
-				zap.String("span_id", jaegerCtx.SpanID().String()),
-			}
+		spanCtx := span.SpanContext()
+		logger.spanFields = []zapcore.Field{
+			zap.String("trace_id", spanCtx.TraceID().String()),
+			zap.String("span_id", spanCtx.SpanID().String()),
 		}
 
 		return logger

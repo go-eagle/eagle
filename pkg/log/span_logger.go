@@ -3,19 +3,19 @@
 package log
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
-	"github.com/opentracing/opentracing-go"
-	tag "github.com/opentracing/opentracing-go/ext"
 	spanlog "github.com/opentracing/opentracing-go/log"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 type spanLogger struct {
 	logger     *zap.Logger
-	span       opentracing.Span
+	span       trace.Span
 	spanFields []zapcore.Field
 }
 
@@ -70,7 +70,7 @@ func (sl spanLogger) Fatal(args ...interface{}) {
 	msg := fmt.Sprint(args...)
 	var fields []zap.Field
 	sl.logToSpan("fatal", msg)
-	tag.Error.Set(sl.span, true)
+	sl.span.RecordError(errors.New(msg))
 	sl.logger.Fatal(msg, append(sl.spanFields, fields...)...)
 }
 
@@ -91,7 +91,7 @@ func (sl spanLogger) logToSpan(level string, msg string) {
 	fa := fieldAdapter(make([]spanlog.Field, 0, 2))
 	fa = append(fa, spanlog.String("event", msg))
 	fa = append(fa, spanlog.String("level", level))
-	sl.span.LogFields(fa...)
+	// sl.span.SetAttributes(fa...)
 }
 
 type fieldAdapter []spanlog.Field

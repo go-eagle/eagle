@@ -116,7 +116,7 @@ func (c *Cache) DelUserBaseCache(ctx context.Context, userID uint64) error {
 	return nil
 }
 
-// DelUserBaseCache 删除用户cache
+// SetCacheWithNotFound .
 func (c *Cache) SetCacheWithNotFound(ctx context.Context, userID uint64) error {
 	ctx, span := c.tracer.Start(ctx, "SetCacheWithNotFound")
 	defer span.End()
