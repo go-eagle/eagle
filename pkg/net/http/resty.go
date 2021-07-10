@@ -3,9 +3,10 @@
 package http
 
 import (
+	"encoding/json"
+	"errors"
+	"io/ioutil"
 	"time"
-
-	"github.com/1024casts/snake/pkg/log"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -19,7 +20,7 @@ func newRestyClient() Client {
 }
 
 // Get request url by get method
-func (r *restyClient) Get(url string, params map[string]string, duration time.Duration) ([]byte, error) {
+func (r *restyClient) Get(url string, params map[string]string, duration time.Duration, out interface{}) error {
 	client := resty.New()
 
 	if duration != 0 {
@@ -36,15 +37,23 @@ func (r *restyClient) Get(url string, params map[string]string, duration time.Du
 		}).
 		Get(url)
 	if err != nil {
-		log.Warnf("get url: %s err: %s", url, err)
-		return nil, err
+		return err
 	}
+	defer resp.RawResponse.Body.Close()
 
-	return resp.Body(), nil
+	if resp.StatusCode() >= 400 {
+		body, err := ioutil.ReadAll(resp.RawBody())
+		if err != nil {
+			return err
+		}
+		return errors.New(string(body))
+	}
+	decoder := json.NewDecoder(resp.RawBody())
+	return decoder.Decode(out)
 }
 
 // Post request url by post method
-func (r *restyClient) Post(url string, data []byte, duration time.Duration) ([]byte, error) {
+func (r *restyClient) Post(url string, data []byte, duration time.Duration, out interface{}) error {
 	client := resty.New()
 
 	if duration != 0 {
@@ -59,9 +68,17 @@ func (r *restyClient) Post(url string, data []byte, duration time.Duration) ([]b
 
 	resp, err := cr.Post(url)
 	if err != nil {
-		log.Warnf("post url: %s err: %s", url, err)
-		return nil, err
+		return err
 	}
+	defer resp.RawBody().Close()
 
-	return resp.Body(), nil
+	if resp.StatusCode() >= 400 {
+		body, err := ioutil.ReadAll(resp.RawBody())
+		if err != nil {
+			return err
+		}
+		return errors.New(string(body))
+	}
+	decoder := json.NewDecoder(resp.RawBody())
+	return decoder.Decode(out)
 }

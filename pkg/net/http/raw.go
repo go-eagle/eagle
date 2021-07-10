@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	"github.com/1024casts/snake/pkg/log"
 )
 
 // raw 使用原生包封装的 http client
@@ -22,58 +20,45 @@ func newRawClient() Client {
 }
 
 // Get get data by get method
-func (r *rawClient) Get(url string, params map[string]string, duration time.Duration) ([]byte, error) {
+func (r *rawClient) Get(url string, params map[string]string, duration time.Duration, out interface{}) error {
 	client := http.Client{Timeout: duration}
-	var target []byte
 
 	resp, err := client.Get(url)
 	if err != nil {
-		log.Warnf("get url:%s, err: %s", url, err)
-		return target, err
+		return err
 	}
-	defer func() {
-		_ = resp.Body.Close()
-	}()
+	defer resp.Body.Close()
 
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Warnf("read body: %s by ioutil, err: %s", b, err)
-		return target, err
+		return err
 	}
 
-	if err := json.Unmarshal(b, &target); err != nil {
-		log.Warnf("can't unmarshal to target err: %s, body: %s", err, b)
-		return target, fmt.Errorf("can't unmarshal to target err: %s, body: %s", err, b)
+	if err := json.Unmarshal(b, &out); err != nil {
+		return fmt.Errorf("can't unmarshal to out, err: %s, body: %s", err, b)
 	}
 
-	return target, nil
+	return nil
 }
 
 // Post send data by post method
-func (r *rawClient) Post(url string, data []byte, duration time.Duration) ([]byte, error) {
+func (r *rawClient) Post(url string, data []byte, duration time.Duration, out interface{}) error {
 	client := http.Client{Timeout: duration}
-	var target []byte
 	resp, err := client.Post(url, contentTypeJSON, bytes.NewBuffer(data))
 	if err != nil {
-		log.Warnf("post url:%s, err: %s", url, err)
-		return target, err
+		return err
 	}
 
-	defer func() {
-		_ = resp.Body.Close()
-	}()
+	defer resp.Body.Close()
 
 	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Warnf("read body: %s by ioutil, err: %s", b, err)
-		return target, err
+		return err
 	}
 
-	log.Infof("resp: %+v", string(b))
-	if err := json.Unmarshal(b, &target); err != nil {
-		log.Warnf("can't unmarshal to target err: %s, body: %s", err, b)
-		return target, fmt.Errorf("can't unmarshal to target, err: %s, body: %s", err, b)
+	if err := json.Unmarshal(b, &out); err != nil {
+		return fmt.Errorf("can't unmarshal to out, err: %s, body: %s", err, b)
 	}
 
-	return target, nil
+	return nil
 }
