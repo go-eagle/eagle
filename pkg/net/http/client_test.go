@@ -18,15 +18,15 @@ func TestDefaultClient(t *testing.T) {
 		t.Log(ret)
 	})
 
-	//t.Run("test http post func", func(t *testing.T) {
-	//	var ret interface{}
-	//	err := c.Post("http://httpbin.org/post", nil, 3*time.Second, &ret)
-	//	if err != nil {
-	//		t.Fatal(err)
-	//	}
-	//
-	//	t.Log(ret)
-	//})
+	t.Run("test http post func", func(t *testing.T) {
+		var ret interface{}
+		err := c.Post("http://httpbin.org/post", nil, 3*time.Second, &ret)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		t.Log(ret)
+	})
 }
 
 func TestRawClient(t *testing.T) {

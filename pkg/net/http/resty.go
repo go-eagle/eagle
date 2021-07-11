@@ -27,7 +27,7 @@ func (r *restyClient) Get(url string, params map[string]string, duration time.Du
 		client.SetTimeout(duration)
 	}
 
-	if len(params) > 0 {
+	if params != nil {
 		client.SetQueryParams(params)
 	}
 
