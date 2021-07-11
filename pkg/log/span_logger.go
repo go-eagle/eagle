@@ -5,9 +5,8 @@ package log
 import (
 	"errors"
 	"fmt"
-	"time"
 
-	spanlog "github.com/opentracing/opentracing-go/log"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -38,20 +37,24 @@ func (sl spanLogger) Info(args ...interface{}) {
 }
 
 func (sl spanLogger) Infof(format string, args ...interface{}) {
-	panic("implement me")
+	msg := fmt.Sprint(format, args)
+	var fields []zap.Field
+	sl.logToSpan("Infof", msg)
+	sl.logger.Info(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Warn(args ...interface{}) {
 	msg := fmt.Sprint(args...)
 	var fields []zap.Field
-	sl.logToSpan("error", msg)
+	sl.logToSpan("warn", msg)
 	sl.logger.Warn(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Warnf(format string, args ...interface{}) {
 	msg := fmt.Sprint(format, args)
 	var fields []zap.Field
-	sl.logToSpan("error", msg)
+	sl.logToSpan("Warnf", msg)
+	sl.span.RecordError(errors.New(msg))
 	sl.logger.Warn(msg, append(sl.spanFields, fields...)...)
 }
 
@@ -59,11 +62,16 @@ func (sl spanLogger) Error(args ...interface{}) {
 	msg := fmt.Sprint(args...)
 	var fields []zap.Field
 	sl.logToSpan("error", msg)
+	sl.span.RecordError(errors.New(msg))
 	sl.logger.Error(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Errorf(format string, args ...interface{}) {
-	panic("implement me")
+	msg := fmt.Sprint(format, args)
+	var fields []zap.Field
+	sl.logToSpan("Errorf", msg)
+	sl.span.RecordError(errors.New(msg))
+	sl.logger.Error(msg, append(sl.spanFields, fields...)...)
 }
 
 func (sl spanLogger) Fatal(args ...interface{}) {
@@ -87,95 +95,8 @@ func (sl spanLogger) WithFields(keyValues Fields) Logger {
 }
 
 func (sl spanLogger) logToSpan(level string, msg string) {
-	// TODO rather than always converting the fields, we could wrap them into a lazy logger
-	fa := fieldAdapter(make([]spanlog.Field, 0, 2))
-	fa = append(fa, spanlog.String("event", msg))
-	fa = append(fa, spanlog.String("level", level))
-	// sl.span.SetAttributes(fa...)
-}
-
-type fieldAdapter []spanlog.Field
-
-func (fa *fieldAdapter) AddBool(key string, value bool) {
-	*fa = append(*fa, spanlog.Bool(key, value))
-}
-
-func (fa *fieldAdapter) AddFloat64(key string, value float64) {
-	*fa = append(*fa, spanlog.Float64(key, value))
-}
-
-func (fa *fieldAdapter) AddFloat32(key string, value float32) {
-	*fa = append(*fa, spanlog.Float64(key, float64(value)))
-}
-
-func (fa *fieldAdapter) AddInt(key string, value int) {
-	*fa = append(*fa, spanlog.Int(key, value))
-}
-
-func (fa *fieldAdapter) AddInt64(key string, value int64) {
-	*fa = append(*fa, spanlog.Int64(key, value))
-}
-
-func (fa *fieldAdapter) AddInt32(key string, value int32) {
-	*fa = append(*fa, spanlog.Int64(key, int64(value)))
-}
-
-func (fa *fieldAdapter) AddInt16(key string, value int16) {
-	*fa = append(*fa, spanlog.Int64(key, int64(value)))
-}
-
-func (fa *fieldAdapter) AddInt8(key string, value int8) {
-	*fa = append(*fa, spanlog.Int64(key, int64(value)))
-}
-
-func (fa *fieldAdapter) AddUint(key string, value uint) {
-	*fa = append(*fa, spanlog.Uint64(key, uint64(value)))
-}
-
-func (fa *fieldAdapter) AddUint64(key string, value uint64) {
-	*fa = append(*fa, spanlog.Uint64(key, value))
-}
-
-func (fa *fieldAdapter) AddUint32(key string, value uint32) {
-	*fa = append(*fa, spanlog.Uint64(key, uint64(value)))
-}
-
-func (fa *fieldAdapter) AddUint16(key string, value uint16) {
-	*fa = append(*fa, spanlog.Uint64(key, uint64(value)))
-}
-
-func (fa *fieldAdapter) AddUint8(key string, value uint8) {
-	*fa = append(*fa, spanlog.Uint64(key, uint64(value)))
-}
-
-func (fa *fieldAdapter) AddUintptr(key string, value uintptr)                        {}
-func (fa *fieldAdapter) AddArray(key string, marshaler zapcore.ArrayMarshaler) error { return nil }
-func (fa *fieldAdapter) AddComplex128(key string, value complex128)                  {}
-func (fa *fieldAdapter) AddComplex64(key string, value complex64)                    {}
-func (fa *fieldAdapter) AddObject(key string, value zapcore.ObjectMarshaler) error   { return nil }
-func (fa *fieldAdapter) AddReflected(key string, value interface{}) error            { return nil }
-func (fa *fieldAdapter) OpenNamespace(key string)                                    {}
-
-func (fa *fieldAdapter) AddDuration(key string, value time.Duration) {
-	// TODO inefficient
-	*fa = append(*fa, spanlog.String(key, value.String()))
-}
-
-func (fa *fieldAdapter) AddTime(key string, value time.Time) {
-	// TODO inefficient
-	*fa = append(*fa, spanlog.String(key, value.String()))
-}
-
-func (fa *fieldAdapter) AddBinary(key string, value []byte) {
-	*fa = append(*fa, spanlog.Object(key, value))
-}
-
-func (fa *fieldAdapter) AddByteString(key string, value []byte) {
-	*fa = append(*fa, spanlog.Object(key, value))
-}
-
-func (fa *fieldAdapter) AddString(key, value string) {
-	if key != "" && value != "" {
-		*fa = append(*fa, spanlog.String(key, value))
-	}
+	sl.span.SetAttributes(
+		attribute.String("event", level),
+		attribute.String("message", msg),
+	)
 }

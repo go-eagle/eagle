@@ -3,7 +3,6 @@ package dao
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
@@ -58,10 +57,6 @@ func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserB
 	defer span.End()
 
 	//var userBase *model.UserBaseModel
-	start := time.Now()
-	defer func() {
-		log.Infof("[repo.user_base] get user by uid: %d cost: %d μs", uid, time.Since(start).Microseconds())
-	}()
 	// 从cache获取
 	userBase, err = d.userCache.GetUserBaseCache(ctx, uid)
 	if err != nil {
@@ -79,7 +74,7 @@ func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserB
 	// cache hit
 	if userBase != nil {
 		//prom.CacheHit.Incr("getOneUser")
-		log.Infof("[repo.user_base] get user base data from cache, uid: %d", uid)
+		log.WithContext(ctx).Infof("[repo.user_base] get user base data from cache, uid: %d", uid)
 		return
 	}
 

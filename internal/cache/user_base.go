@@ -9,9 +9,6 @@ import (
 
 	"go.opentelemetry.io/otel"
 
-	"github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
-
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/cache"
 	"github.com/1024casts/snake/pkg/encoding"
@@ -76,9 +73,6 @@ func (c *Cache) GetUserBaseCache(ctx context.Context, userID uint64) (data *mode
 	//err = u.cache.Get(cacheKey, &data)
 	err = client.Get(ctx, cacheKey, &data)
 	if err != nil {
-		if span := opentracing.SpanFromContext(ctx); span != nil {
-			ext.Error.Set(span, true)
-		}
 		log.WithContext(ctx).Warnf("get err from redis, err: %+v", err)
 		return nil, err
 	}
