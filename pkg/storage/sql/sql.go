@@ -7,6 +7,11 @@ import (
 	"sync/atomic"
 	"time"
 
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+
 	"github.com/1024casts/snake/pkg/breaker"
 	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/log"
@@ -297,12 +302,14 @@ func (db *conn) begin(ctx context.Context) (tx *Tx, err error) {
 func (db *conn) exec(ctx context.Context, query string, args ...interface{}) (res sql.Result, err error) {
 	now := time.Now()
 	defer slowLog(fmt.Sprintf("Exec query(%s) args(%+v)", query, args), now)
-	span, ctx := opentracing.StartSpanFromContext(ctx, "sql.exec")
-	defer span.Finish()
-	tags.SpanKindRPCClient.Set(span)
-	tags.PeerService.Set(span, "mysql")
-	tags.DBInstance.Set(span, db.addr)
-	tags.DBStatement.Set(span, fmt.Sprintf("exec:%s, args:%+v", query, args))
+	ctx, span := otel.GetTracerProvider().Tracer("sql").Start(ctx, "sql.exec")
+	defer span.End()
+
+	span.SetAttributes(
+		attribute.KeyValue{Key: semconv.DBSystemMySQL.Key, Value: attribute.StringValue("mysql")},
+		attribute.String("db.instance", db.addr),
+		attribute.KeyValue{Key: semconv.DBStatementKey, Value: attribute.StringValue(fmt.Sprintf("exec:%s, args:%+v", query, args))},
+	)
 
 	if err = db.breaker.Allow(); err != nil {
 		_metricReqErr.Inc(db.addr, db.addr, "exec", "breaker")
