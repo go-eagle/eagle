@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"go.opentelemetry.io/otel/trace"
-
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 
 	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/cache"
@@ -37,7 +36,7 @@ func NewUserCache() *Cache {
 			return &model.UserBaseModel{}
 		},
 		),
-		tracer: otel.GetTracerProvider().Tracer("cache"),
+		tracer: otel.Tracer("user cache"),
 	}
 }
 
