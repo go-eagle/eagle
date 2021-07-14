@@ -28,6 +28,9 @@ func NewRouter() *gin.Engine {
 	g.Use(middleware.Tracing("snake-service"))
 	g.Use(mw.Translations())
 
+	// load web router
+	LoadWebRouter(g)
+
 	// 404 Handler.
 	g.NoRoute(api.RouteNotFound)
 	g.NoMethod(api.RouteNotFound)
@@ -50,16 +53,17 @@ func NewRouter() *gin.Engine {
 	// metrics router 可以在 prometheus 中进行监控
 	// 通过 grafana 可视化查看 prometheus 的监控数据，使用插件6671查看
 	g.GET("/metrics", gin.WrapH(promhttp.Handler()))
-	// 认证相关路由
-	g.POST("/register", user.Register)
-	g.POST("/login", user.Login)
-	g.POST("/login/phone", user.PhoneLogin)
-	g.GET("/vcode", user.VCode)
 
 	// v1 router
 	apiV1 := g.Group("/v1")
 	apiV1.Use()
 	{
+		// 认证相关路由
+		apiV1.POST("/register", user.Register)
+		apiV1.POST("/login", user.Login)
+		apiV1.POST("/login/phone", user.PhoneLogin)
+		apiV1.GET("/vcode", user.VCode)
+
 		// 用户
 		apiV1.GET("/users/:id", user.Get)
 		apiV1.Use(middleware.JWT())
