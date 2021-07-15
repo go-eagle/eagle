@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/alicebob/miniredis"
+	"github.com/go-redis/redis/extra/redisotel/v8"
 	"github.com/go-redis/redis/v8"
 
 	"github.com/1024casts/snake/pkg/log"
@@ -28,6 +29,8 @@ type Config struct {
 	WriteTimeout time.Duration
 	PoolSize     int
 	PoolTimeout  time.Duration
+	// tracing switch
+	IsTrace bool
 }
 
 // Init 实例化一个redis client
@@ -50,7 +53,9 @@ func Init(c *Config) *redis.Client {
 	}
 
 	// hook tracing (with open telemetry)
-	RedisClient.AddHook(NewTracingHook())
+	if c.IsTrace {
+		RedisClient.AddHook(redisotel.NewTracingHook())
+	}
 
 	return RedisClient
 }
