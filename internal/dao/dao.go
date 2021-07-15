@@ -26,7 +26,7 @@ type Dao struct {
 func New(db *gorm.DB) *Dao {
 	return &Dao{
 		db:        db,
-		tracer:    otel.GetTracerProvider().Tracer("dao"),
+		tracer:    otel.Tracer("dao"),
 		userCache: cache.NewUserCache(),
 	}
 }
