@@ -3,6 +3,8 @@ package user
 import (
 	"net/http"
 
+	"github.com/1024casts/snake/pkg/auth"
+
 	"github.com/1024casts/snake/internal/ecode"
 
 	"github.com/gin-gonic/gin"
@@ -42,9 +44,9 @@ func DoLogin(c *gin.Context) {
 
 	log.Info("userbase", d.Password)
 	log.Info("req", req.Password)
-	// Compare the login password with the user password.
-	if err := d.Compare(req.Password); err != nil {
-		log.Warnf("[web.login] compare user password err: %v", err)
+	// ComparePasswords the login password with the user password.
+	if auth.ComparePasswords(d.Password, req.Password) {
+		log.Warnf("[web.login] compare user password, req:+v", req)
 		web.Response(c, ecode.ErrPasswordIncorrect, nil)
 		return
 	}

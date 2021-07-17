@@ -3,6 +3,8 @@ package user
 import (
 	"net/http"
 
+	"github.com/1024casts/snake/pkg/auth"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/internal/model"
@@ -43,12 +45,13 @@ func DoRegister(c *gin.Context) {
 	}
 
 	// Encrypt the user password.
-	if err := u.Encrypt(); err != nil {
+	hashedPwd, err := auth.HashAndSalt(r.Password)
+	if err != nil {
 		web.Response(c, errcode.ErrEncrypt, nil)
 		return
 	}
 	// Insert the user to the database.
-	err := service.UserSvc.Register(c, u.Username, u.Email, u.Password)
+	err = service.UserSvc.Register(c, u.Username, u.Email, hashedPwd)
 	if err != nil {
 		web.Response(c, errcode.ErrInternalServerError, nil)
 		return

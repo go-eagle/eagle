@@ -4,8 +4,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/1024casts/snake/pkg/auth"
-
 	validator "github.com/go-playground/validator/v10"
 )
 
@@ -59,16 +57,4 @@ type UserList struct {
 // Token represents a JSON web token.
 type Token struct {
 	Token string `json:"token"`
-}
-
-// Compare with the plain text password. Returns true if it's the same as the encrypted one (in the `User` struct).
-func (u *UserBaseModel) Compare(pwd string) (err error) {
-	err = auth.Compare(u.Password, pwd)
-	return
-}
-
-// Encrypt the user password.
-func (u *UserBaseModel) Encrypt() (err error) {
-	u.Password, err = auth.Encrypt(u.Password)
-	return
 }

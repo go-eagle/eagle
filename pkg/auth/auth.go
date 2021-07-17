@@ -2,13 +2,17 @@ package auth
 
 import "golang.org/x/crypto/bcrypt"
 
-// Encrypt encrypts the plain text with bcrypt.
-func Encrypt(source string) (string, error) {
-	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(source), bcrypt.DefaultCost)
-	return string(hashedBytes), err
+// HashAndSalt hash and salt the password
+func HashAndSalt(password string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hash), err
 }
 
-// Compare compares the encrypted text with the plain text if it's the same.
-func Compare(hashedPassword, password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+// ComparePasswords compare the hashed and plain passwords
+func ComparePasswords(hashed, plain string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(plain))
+	return err == nil
 }

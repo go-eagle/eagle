@@ -18,7 +18,7 @@ import (
 
 // Register 注册用户
 func (s *Service) Register(ctx context.Context, username, email, password string) error {
-	pwd, err := auth.Encrypt(password)
+	pwd, err := auth.HashAndSalt(password)
 	if err != nil {
 		return errors.Wrapf(err, "encrypt password err")
 	}
@@ -44,10 +44,9 @@ func (s *Service) EmailLogin(ctx context.Context, email, password string) (token
 		return "", errors.Wrapf(err, "get user info err by email")
 	}
 
-	// Compare the login password with the user password.
-	err = auth.Compare(u.Password, password)
-	if err != nil {
-		return "", errors.Wrapf(err, "password compare err")
+	// ComparePasswords the login password with the user password.
+	if !auth.ComparePasswords(u.Password, password) {
+		return "", errors.Wrapf(err, "invalid password")
 	}
 
 	// 签发签名 Sign the json web token.
