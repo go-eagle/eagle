@@ -15,16 +15,15 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/1024casts/snake/internal/model"
-
-	"github.com/1024casts/snake/pkg/app"
-
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
 	_ "go.uber.org/automaxprocs"
 
+	"github.com/1024casts/snake/internal/dao"
+	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/internal/server"
 	"github.com/1024casts/snake/internal/service"
+	"github.com/1024casts/snake/pkg/app"
 	"github.com/1024casts/snake/pkg/conf"
 	logger "github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/redis"
@@ -74,7 +73,7 @@ func main() {
 	}
 
 	// init service
-	svc := service.New(cfg)
+	svc := service.New(cfg, dao.New(model.GetDB()))
 
 	gin.SetMode(conf.Conf.App.Mode)
 

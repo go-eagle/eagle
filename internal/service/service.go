@@ -2,7 +2,6 @@ package service
 
 import (
 	"github.com/1024casts/snake/internal/dao"
-	"github.com/1024casts/snake/internal/model"
 	"github.com/1024casts/snake/pkg/conf"
 )
 
@@ -29,11 +28,10 @@ type Service struct {
 }
 
 // New init service
-func New(c *conf.Config) (s *Service) {
-	db := model.GetDB()
+func New(c *conf.Config, dao *dao.Dao) (s *Service) {
 	s = &Service{
 		c:   c,
-		dao: dao.New(db),
+		dao: dao,
 	}
 	UserSvc = s
 	VCodeSvc = s
