@@ -1,19 +1,30 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
-metadata:
-  name: awesome-project
+metadata: # Deployment的元数据
+  name: go-deployment
   labels:
-    app: awesome-project
+    app: go-app
 spec:
-  replicas: 2
+  replicas: 3 # ReplicaSet部分的定义
   selector:
     matchLabels:
-      app: awesome-project
-  template:
+      app: go-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template: # Pod 模板的定义
     metadata:
       labels:
-        app: awesome-project
-    spec:
+        app: go-app
+    spec: # Pod里容器相关的定义
       containers:
-        - name: awesome-project
-          image: 1024casts/awesome-project:v1.0.0
+        - name: go-app-container
+          image: 1024casts/go-app:v1.0.0
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m" # 0.1核，1000m = 1核心
+          ports:
+            - containerPort: 80
