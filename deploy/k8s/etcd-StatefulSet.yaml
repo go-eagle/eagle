@@ -1,0 +1,62 @@
+# etcd resource yaml for all kubernetes tools, not only minikube
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: etcd
+  namespace: etcd
+  labels:
+    component: etcd
+spec:
+  serviceName: etcd
+  replicas: 3
+  selector:
+    matchLabels:
+      component: etcd
+  template:
+    metadata:
+      name: etcd
+      labels:
+        component: etcd
+    spec:
+      volumes:
+        - name: etcd-storage
+          emptyDir: {}
+      containers:
+        - name: etcd
+          image: quay.io/coreos/etcd:latest
+          ports:
+            - containerPort: 2379
+              name: client
+            - containerPort: 2380
+              name: peer
+          env:
+            - name: CLUSTER_SIZE
+              value: "3"
+            - name: SET_NAME
+              value: "etcd"
+            - name: MINIKUBE_IP
+              value: "127.0.0.1"
+            - name: MINIKUBE_PORT
+              value: "32379"
+          volumeMounts:
+            - name: etcd-storage
+              mountPath: /var/run/etcd/default.etcd
+          command:
+            - /bin/sh
+            - -ecx
+            - |
+              IP=$(hostname -i)
+              PEERS=""
+              for i in $(seq 0 $((${CLUSTER_SIZE} - 1))); do
+                  PEERS="${PEERS}${PEERS:+,}${SET_NAME}-${i}=http://${SET_NAME}-${i}.${SET_NAME}:2380"
+              done
+              exec etcd --name ${HOSTNAME} \
+                --listen-peer-urls http://${IP}:2380 \
+                --listen-client-urls http://${IP}:2379,http://127.0.0.1:2379 \
+                --advertise-client-urls http://${HOSTNAME}.${SET_NAME}:2379,http://${MINIKUBE_IP}:${MINIKUBE_PORT} \
+                --initial-advertise-peer-urls http://${HOSTNAME}.${SET_NAME}:2380 \
+                --initial-cluster-token etcd-cluster-1 \
+                --initial-cluster ${PEERS} \
+                --initial-cluster-state new \
+                --data-dir /var/run/etcd/default.etcd

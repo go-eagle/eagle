@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: e3w-configmap
+  namespace: etcd
+  labels:
+    config: e3w.ini
+data:
+  e3w-config.default.ini: |
+    [app]
+    port=8080
+    auth=false
+    [etcd]
+    root_key=root
+    dir_value=
+    addr=etcd-0.etcd.etcd.svc.cluster.local:2379,etcd-1.etcd.etcd.svc.cluster.local:2379,etcd-2.etcd.etcd.svc.cluster.local:2379
+    username=
+    password=
+    cert_file=
+    key_file=
+    ca_file=

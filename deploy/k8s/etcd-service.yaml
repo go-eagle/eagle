@@ -1,0 +1,36 @@
+# https://sgotti.me/post/kubernetes-persistent-etcd/
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd
+  namespace: etcd
+  annotations:
+    # Create endpoints also if the related pod isn't ready
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  ports:
+    - port: 2379
+      name: client
+    - port: 2380
+      name: peer
+  clusterIP: None
+  selector:
+    component: etcd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: etcd-client
+  namespace: etcd
+spec:
+  ports:
+    - name: http
+      nodePort: 30453
+      port: 2379
+      targetPort: 2379
+      protocol: TCP
+  type: NodePort
+  selector:
+    component: etcd
+...
