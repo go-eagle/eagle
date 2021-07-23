@@ -70,7 +70,7 @@ require (
 	github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da // indirect
 	go.elastic.co/apm v1.11.0
 	go.elastic.co/apm/module/apmot v1.11.0
-	go.mongodb.org/mongo-driver v1.5.0
+	go.mongodb.org/mongo-driver v1.5.1
 	go.opentelemetry.io/contrib v0.21.0
 	go.opentelemetry.io/contrib/propagators v0.21.0
 	go.opentelemetry.io/otel v1.0.0-RC1
