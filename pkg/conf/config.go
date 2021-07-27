@@ -48,6 +48,7 @@ type AppConfig struct {
 
 // ServerConfig server config
 type ServerConfig struct {
+	Network      string
 	Addr         string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration

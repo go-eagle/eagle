@@ -60,10 +60,10 @@ func (a *App) Run() error {
 		srv := srv
 		eg.Go(func() error {
 			<-ctx.Done()
-			return srv.Stop()
+			return srv.Stop(ctx)
 		})
 		eg.Go(func() error {
-			return srv.Start()
+			return srv.Start(ctx)
 		})
 	}
 

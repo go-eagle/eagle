@@ -7,9 +7,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/1024casts/snake/pkg/log"
-
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/reflection"
+
+	"github.com/1024casts/snake/pkg/log"
 )
 
 // Server is a gRPC server wrapper.
@@ -25,6 +28,7 @@ type Server struct {
 	timeout  time.Duration
 	inters   []grpc.UnaryServerInterceptor
 	grpcOpts []grpc.ServerOption
+	health   *health.Server
 	log      log.Logger
 }
 
@@ -34,17 +38,31 @@ func NewServer(opts ...ServerOption) *Server {
 		network: "tcp",
 		address: ":0",
 		timeout: 1 * time.Second,
+		health:  health.NewServer(),
 		log:     log.GetLogger(),
 	}
 	for _, o := range opts {
 		o(srv)
 	}
-	srv.Server = grpc.NewServer()
+	var ints = []grpc.UnaryServerInterceptor{}
+	if len(srv.inters) > 0 {
+		ints = append(ints, srv.inters...)
+	}
+	var grpcOpts = []grpc.ServerOption{
+		grpc.ChainUnaryInterceptor(ints...),
+	}
+	srv.Server = grpc.NewServer(grpcOpts...)
+
+	// internal register
+	grpc_health_v1.RegisterHealthServer(srv.Server, srv.health)
+	reflection.Register(srv.Server)
+
 	return srv
 }
 
 // Start start the gRPC server.
 func (s *Server) Start(ctx context.Context) error {
+	s.ctx = ctx
 	s.log.Infof("[gRPC] server is listening on: %s", s.lis.Addr().String())
 	return s.Serve(s.lis)
 }

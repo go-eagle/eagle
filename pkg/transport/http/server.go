@@ -30,7 +30,9 @@ func NewServer(opts ...ServerOption) *Server {
 		o(srv)
 	}
 	// NOTE: must set server
-	srv.Server = &http.Server{Handler: srv}
+	srv.Server = &http.Server{
+		Handler: srv,
+	}
 	return srv
 }
 
@@ -39,7 +41,7 @@ func (s *Server) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	s.ServeHTTP(resp, req)
 }
 
-func (s *Server) Start() error {
+func (s *Server) Start(ctx context.Context) error {
 	lis, err := net.Listen(s.network, s.address)
 	if err != nil {
 		return err
@@ -52,7 +54,7 @@ func (s *Server) Start() error {
 	return nil
 }
 
-func (s *Server) Stop() error {
+func (s *Server) Stop(ctx context.Context) error {
 	s.log.Info("[HTTP] server is stopping")
-	return s.Shutdown(context.Background())
+	return s.Shutdown(ctx)
 }
