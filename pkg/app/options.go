@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"os"
+	"time"
 
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/transport"
@@ -20,9 +21,9 @@ type options struct {
 	sigs []os.Signal
 	ctx  context.Context
 
-	logger log.Logger
-
-	servers []transport.Server
+	logger           log.Logger
+	registrarTimeout time.Duration
+	servers          []transport.Server
 }
 
 // WithID with app id

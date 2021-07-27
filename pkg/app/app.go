@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
@@ -27,7 +28,8 @@ func New(c *conf.Config, opts ...Option) *App {
 		ctx:    context.Background(),
 		logger: log.GetLogger(),
 		// don not catch SIGKILL signal, need to waiting for kill self by other.
-		sigs: []os.Signal{syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT},
+		sigs:             []os.Signal{syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT},
+		registrarTimeout: 10 * time.Second,
 	}
 	if id, err := uuid.NewUUID(); err == nil {
 		options.id = id.String()
