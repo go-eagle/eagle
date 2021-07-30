@@ -68,7 +68,7 @@ email:
   ReplyTo: EMAIL       # 回复地址
   KeepAlive: 30         # 连接保持时长
 
-website:
+web:
   Name: snake
   Domain: http://snake.com
   Secret: abcdefg
