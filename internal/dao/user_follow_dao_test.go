@@ -40,9 +40,9 @@ func TestMain(m *testing.M) {
 	// init log
 	logger.Init(&cfg.Logger)
 	// init db
-	model.Init(&cfg.MySQL)
+	model.Init(&cfg.ORM)
 
-	d = New(model.GetDB())
+	d = New(cfg, model.GetDB())
 	if code := m.Run(); code != 0 {
 		panic(code)
 	}

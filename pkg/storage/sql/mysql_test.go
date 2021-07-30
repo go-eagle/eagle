@@ -6,11 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/1024casts/snake/pkg/conf"
-	logger "github.com/1024casts/snake/pkg/log"
 	"github.com/spf13/pflag"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/1024casts/snake/pkg/breaker"
+	"github.com/1024casts/snake/pkg/conf"
+	logger "github.com/1024casts/snake/pkg/log"
 	xtime "github.com/1024casts/snake/pkg/time"
 )
 
@@ -43,14 +44,14 @@ func TestMySQL(t *testing.T) {
 	}
 	dsn = dsn + "?timeout=5s&readTimeout=5s&writeTimeout=5s&parseTime=true&loc=Local&charset=utf8"
 	c := &Config{
-		DSN:          dsn,
-		Active:       10,
-		Idle:         5,
-		IdleTimeout:  xtime.Duration(time.Minute),
-		QueryTimeout: xtime.Duration(time.Minute),
-		ExecTimeout:  xtime.Duration(time.Minute),
-		TranTimeout:  xtime.Duration(time.Minute),
-		Breaker:      bc,
+		DSN:             dsn,
+		MaxOpenConn:     10,
+		MaxIdleConn:     5,
+		ConnMaxLifeTime: xtime.Duration(time.Minute),
+		QueryTimeout:    xtime.Duration(time.Minute),
+		ExecTimeout:     xtime.Duration(time.Minute),
+		TranTimeout:     xtime.Duration(time.Minute),
+		Breaker:         bc,
 	}
 
 	db := NewMySQL(c)
@@ -250,10 +251,10 @@ func testPrepare(t *testing.T, db *DB) {
 
 func BenchmarkMySQL(b *testing.B) {
 	c := &Config{
-		DSN:         "root:12345678@tcp(127.0.0.1:3306)/test?timeout=5s&readTimeout=5s&writeTimeout=5s&parseTime=true&loc=Local&charset=utf8",
-		Active:      10,
-		Idle:        5,
-		IdleTimeout: xtime.Duration(time.Minute),
+		DSN:             "root:12345678@tcp(127.0.0.1:3306)/test?timeout=5s&readTimeout=5s&writeTimeout=5s&parseTime=true&loc=Local&charset=utf8",
+		MaxOpenConn:     10,
+		MaxIdleConn:     5,
+		ConnMaxLifeTime: xtime.Duration(time.Minute),
 	}
 	db := NewMySQL(c)
 	defer db.Close()
@@ -271,5 +272,16 @@ func BenchmarkMySQL(b *testing.B) {
 				rows.Close()
 			}
 		}
+	})
+}
+
+func TestParseAddrDSN(t *testing.T) {
+	t.Run("test parse addr dsn", func(t *testing.T) {
+		addr := parseDSNAddr("test:test@tcp(127.0.0.1:3306)/test?timeout=5s&readTimeout=5s&writeTimeout=5s&parseTime=true&loc=Local&charset=utf8")
+		assert.Equal(t, "172.16.0.148:3306", addr)
+	})
+	t.Run("test password has @", func(t *testing.T) {
+		addr := parseDSNAddr("root:root@dev@tcp(1.2.3.4:3306)/abc?timeout=1s&readTimeout=1s&writeTimeout=1s&parseTime=true&loc=Local&charset=utf8mb4,utf8")
+		assert.Equal(t, "1.2.3.4:3306", addr)
 	})
 }

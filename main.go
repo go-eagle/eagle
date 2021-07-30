@@ -63,7 +63,7 @@ func main() {
 	}
 	logger.Init(&cfg.Logger)
 	// init db
-	model.Init(&cfg.MySQL)
+	model.Init(&cfg.ORM)
 	// init redis
 	redis.Init(&cfg.Redis)
 	// init tracer
@@ -73,7 +73,7 @@ func main() {
 	}
 
 	// init service
-	svc := service.New(cfg, dao.New(model.GetDB()))
+	svc := service.New(cfg, dao.New(cfg, model.GetDB()))
 
 	gin.SetMode(conf.Conf.App.Mode)
 

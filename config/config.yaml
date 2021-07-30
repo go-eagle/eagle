@@ -36,7 +36,7 @@ logger:
   LogRotateSize: 1
   LogBackupCount: 7
 
-mysql:
+orm:
   Name: snake                     # 数据库名称
   Addr: localhost:3306            # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
   UserName: root
@@ -44,7 +44,24 @@ mysql:
   ShowLog: true                   # 是否打印SQL日志
   MaxIdleConn: 10                 # 最大闲置的连接数，0意味着使用默认的大小2， 小于0表示不使用连接池
   MaxOpenConn: 60                 # 最大打开的连接数, 需要小于数据库配置中的max_connections数
-  ConnMaxLifeTime: 60m            # 单个连接最大存活时间，建议设置比数据库超时时长(wait_timeout)稍小一些
+  ConnMaxLifeTime: 4h             # 单个连接最大存活时间，建议设置比数据库超时时长(wait_timeout)稍小一些
+
+mysql:
+  Dsn: "root:123456@tcp(localhost:3306)/snake?timeout=2s&readTimeout=5s&writeTimeout=5s&parseTime=true&loc=Local&charset=utf8,utf8mb4"
+  ShowLog: true                   # 是否打印SQL日志
+  MaxIdleConn: 10                 # 最大闲置的连接数，0意味着使用默认的大小2， 小于0表示不使用连接池
+  MaxOpenConn: 60                 # 最大打开的连接数, 需要小于数据库配置中的max_connections数
+  ConnMaxLifeTime: 4h             # 单个连接最大存活时间，建议设置比数据库超时时长(wait_timeout)稍小一些
+  QueryTimeout: 200ms
+  ExecTimeout: 200ms
+  TranTimeout: 200ms
+  Braker:                         # 熔断器配置
+    window: 3s
+    sleep: 100ms
+    bucket: 100
+    ratio: 0.5
+    request: 100
+
 
 redis:
   Addr: 127.0.0.1:6379

@@ -3,11 +3,13 @@ package conf
 import (
 	"time"
 
+	"github.com/1024casts/snake/pkg/storage/orm"
+	"github.com/1024casts/snake/pkg/storage/sql"
+
 	"github.com/1024casts/snake/pkg/email"
 	"github.com/1024casts/snake/pkg/log"
 	"github.com/1024casts/snake/pkg/redis"
 	"github.com/1024casts/snake/pkg/storage/mongodb"
-	"github.com/1024casts/snake/pkg/storage/orm"
 	"github.com/1024casts/snake/pkg/trace"
 )
 
@@ -24,7 +26,8 @@ type Config struct {
 
 	// component config
 	Logger  log.Config
-	MySQL   orm.Config
+	ORM     orm.Config
+	MySQL   *sql.Config
 	Redis   redis.Config
 	Email   email.Config
 	Trace   trace.Config
