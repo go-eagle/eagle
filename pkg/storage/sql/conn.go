@@ -154,7 +154,7 @@ func (db *conn) query(ctx context.Context, query string, args ...interface{}) (r
 		semconv.DBSystemMySQL,
 		attribute.String("db.instance", db.addr),
 		semconv.PeerServiceKey.String("mysql"),
-		semconv.DBStatementKey.String(fmt.Sprintf("exec:%s, args:%+v", query, args)),
+		semconv.DBStatementKey.String(fmt.Sprintf("exec: %s, args: %+v", query, args)),
 	)
 
 	if err = db.breaker.Allow(); err != nil {
@@ -166,7 +166,7 @@ func (db *conn) query(ctx context.Context, query string, args ...interface{}) (r
 	db.onBreaker(&err)
 	_metricReqDur.Observe(int64(time.Since(now)/time.Millisecond), db.addr, db.addr, "query")
 	if err != nil {
-		err = errors.Wrapf(err, "query:%s, args:%+v", query, args)
+		err = errors.Wrapf(err, "query: %s, args: %+v", query, args)
 		cancel()
 		return
 	}
