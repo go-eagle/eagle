@@ -19,7 +19,7 @@ import (
 
 // CreateUser 创建用户
 func (d *Dao) CreateUser(ctx context.Context, user model.UserBaseModel) (id uint64, err error) {
-	err = d.db.Create(&user).Error
+	err = d.orm.Create(&user).Error
 	if err != nil {
 		//prom.BusinessErrCount.Incr("mysql: CreateUser")
 		return 0, errors.Wrap(err, "[repo.user_base] create user err")
@@ -42,7 +42,7 @@ func (d *Dao) UpdateUser(ctx context.Context, id uint64, userMap map[string]inte
 		log.Warnf("[repo.user_base] delete user cache err: %v", err)
 	}
 
-	err = d.db.Model(user).Updates(userMap).Error
+	err = d.orm.Model(user).Updates(userMap).Error
 	if err != nil {
 		//prom.BusinessErrCount.Incr("mysql: UpdateUser")
 	}
@@ -53,7 +53,8 @@ func (d *Dao) UpdateUser(ctx context.Context, id uint64, userMap map[string]inte
 // 缓存的更新策略使用 Cache Aside Pattern
 // see: https://coolshell.cn/articles/17416.html
 func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserBaseModel, err error) {
-	ctx, span := d.tracer.Start(ctx, "GetOneUser", oteltrace.WithAttributes(attribute.String("param.uid", cast.ToString(uid))))
+	ctx, span := d.tracer.Start(ctx, "GetOneUser",
+		oteltrace.WithAttributes(attribute.String("param.uid", cast.ToString(uid))))
 	defer span.End()
 
 	//var userBase *model.UserBaseModel
@@ -84,7 +85,7 @@ func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserB
 	getDataFn := func() (interface{}, error) {
 		data := new(model.UserBaseModel)
 		// 从数据库中获取
-		err = d.db.First(data, uid).Error
+		err = d.orm.First(data, uid).Error
 		// if data is empty, set not found cache to prevent cache penetration(缓存穿透)
 		if errors.Is(err, ErrNotFound) {
 			err = d.userCache.SetCacheWithNotFound(ctx, uid)
@@ -156,7 +157,7 @@ func (d *Dao) GetUsersByIds(ctx context.Context, userIDs []uint64) ([]*model.Use
 // GetUserByPhone 根据手机号获取用户
 func (d *Dao) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error) {
 	user := model.UserBaseModel{}
-	err := d.db.Where("phone = ?", phone).First(&user).Error
+	err := d.orm.Where("phone = ?", phone).First(&user).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errors.Wrap(err, "[repo.user_base] get user err by phone")
 	}
@@ -167,7 +168,7 @@ func (d *Dao) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseM
 // GetUserByEmail 根据邮箱获取手机号
 func (d *Dao) GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error) {
 	userBase := model.UserBaseModel{}
-	err := d.db.Where("email = ?", email).First(&userBase).Error
+	err := d.orm.Where("email = ?", email).First(&userBase).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errors.Wrap(err, "[repo.user_base] get user err by email")
 	}

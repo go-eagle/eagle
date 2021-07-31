@@ -5,10 +5,11 @@ import (
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
-
 	"gorm.io/gorm"
 
 	"github.com/1024casts/snake/internal/cache"
+	"github.com/1024casts/snake/pkg/conf"
+	"github.com/1024casts/snake/pkg/storage/sql"
 )
 
 var (
@@ -17,15 +18,17 @@ var (
 
 // Dao mysql struct
 type Dao struct {
-	db        *gorm.DB
+	orm       *gorm.DB
+	db        *sql.DB
 	tracer    trace.Tracer
 	userCache *cache.Cache
 }
 
 // New new a Dao and return
-func New(db *gorm.DB) *Dao {
+func New(cfg *conf.Config, db *gorm.DB) *Dao {
 	return &Dao{
-		db:        db,
+		orm:       db,
+		db:        sql.NewMySQL(cfg.MySQL),
 		tracer:    otel.Tracer("dao"),
 		userCache: cache.NewUserCache(),
 	}

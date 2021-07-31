@@ -8,6 +8,7 @@ type UserStatModel struct {
 	UserID        uint64    `gorm:"column:user_id;not null" json:"user_id" binding:"required"`
 	FollowCount   int       `gorm:"column:follow_count" json:"follow_count"`
 	FollowerCount int       `gorm:"column:follower_count" json:"follower_count"`
+	Status        int       `gorm:"column:status" json:"status"`
 	CreatedAt     time.Time `gorm:"column:created_at" json:"-"`
 	UpdatedAt     time.Time `gorm:"column:updated_at" json:"-"`
 }
