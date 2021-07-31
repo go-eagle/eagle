@@ -1,16 +1,13 @@
 package user
 
 import (
-	"context"
 	"strconv"
-
-	"github.com/1024casts/snake/internal/service"
-
-	"github.com/1024casts/snake/internal/ecode"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/1024casts/snake/api"
+	"github.com/1024casts/snake/internal/ecode"
+	"github.com/1024casts/snake/internal/service"
 	"github.com/1024casts/snake/pkg/errcode"
 	"github.com/1024casts/snake/pkg/log"
 )
@@ -31,7 +28,7 @@ func FollowList(c *gin.Context) {
 	curUserID := api.GetUserID(c)
 	log.Infof("cur uid: %d", curUserID)
 
-	_, err := service.UserSvc.GetUserByID(c, uint64(userID))
+	_, err := service.UserSvc.GetUserByID(c.Request.Context(), uint64(userID))
 	if err != nil {
 		api.SendResponse(c, ecode.ErrUserNotFound, nil)
 		return
@@ -41,7 +38,7 @@ func FollowList(c *gin.Context) {
 	lastID, _ := strconv.Atoi(lastIDStr)
 	limit := 10
 
-	userFollowList, err := service.UserSvc.GetFollowingUserList(context.TODO(), uint64(userID), uint64(lastID), limit+1)
+	userFollowList, err := service.UserSvc.GetFollowingUserList(c.Request.Context(), uint64(userID), uint64(lastID), limit+1)
 	if err != nil {
 		log.Warnf("get following user list err: %+v", err)
 		response.Error(c, errcode.ErrInternalServerError)
@@ -61,7 +58,7 @@ func FollowList(c *gin.Context) {
 		userIDs = append(userIDs, v.FollowedUID)
 	}
 
-	userOutList, err := service.UserSvc.BatchGetUsers(context.TODO(), curUserID, userIDs)
+	userOutList, err := service.UserSvc.BatchGetUsers(c.Request.Context(), curUserID, userIDs)
 	if err != nil {
 		log.Warnf("batch get users err: %v", err)
 		response.Error(c, errcode.ErrInternalServerError)
