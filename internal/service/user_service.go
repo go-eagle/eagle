@@ -117,6 +117,11 @@ func (s *Service) GetUserByID(ctx context.Context, id uint64) (*model.UserBaseMo
 	return s.dao.GetOneUser(ctx, id)
 }
 
+// GetUserByID 获取单条用户信息
+func (s *Service) GetUserStatByID(ctx context.Context, id uint64) (*model.UserStatModel, error) {
+	return s.dao.GetUserStatByID(ctx, id)
+}
+
 // GetUserInfoByID 获取组装好的用户数据
 func (s *Service) GetUserInfoByID(ctx context.Context, id uint64) (*model.UserInfo, error) {
 	userInfos, err := s.BatchGetUsers(ctx, id, []uint64{id})
@@ -131,16 +136,16 @@ func (s *Service) GetUserInfoByID(ctx context.Context, id uint64) (*model.UserIn
 // 2. 获取关注和粉丝数据
 func (s *Service) BatchGetUsers(ctx context.Context, userID uint64, userIDs []uint64) ([]*model.UserInfo, error) {
 	infos := make([]*model.UserInfo, 0)
-	// 批量获取用户信息
-	users, err := s.dao.GetUsersByIds(ctx, userIDs)
-	if err != nil {
-		return nil, errors.Wrap(err, "[user_service] batch get user err")
-	}
-
 	// 获取当前用户信息
 	curUser, err := s.dao.GetOneUser(ctx, userID)
 	if err != nil {
 		return nil, errors.Wrap(err, "[user_service] get one user err")
+	}
+
+	// 批量获取用户信息
+	users, err := s.dao.GetUsersByIds(ctx, userIDs)
+	if err != nil {
+		return nil, errors.Wrap(err, "[user_service] batch get user err")
 	}
 
 	// 保持原有id顺序
