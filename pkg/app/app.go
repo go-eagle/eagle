@@ -61,6 +61,7 @@ func (a *App) Run() error {
 	for _, srv := range a.opts.servers {
 		srv := srv
 		eg.Go(func() error {
+			// wait for stop signal
 			<-ctx.Done()
 			return srv.Stop(ctx)
 		})
