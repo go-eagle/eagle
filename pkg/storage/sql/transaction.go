@@ -68,7 +68,7 @@ func (tx *Tx) Rollback() (err error) {
 // UPDATE.
 func (tx *Tx) Exec(query string, args ...interface{}) (res sql.Result, err error) {
 	now := time.Now()
-	defer slowLog(fmt.Sprintf("Exec query(%s) args(%+v)", query, args), now)
+	defer slowLog(fmt.Sprintf("Exec query: %s, args: %+v", query, args), now)
 
 	if tx.trace != nil {
 		_, span := tx.trace.Start(tx.c, "tx.Exec")
@@ -104,7 +104,7 @@ func (tx *Tx) Query(query string, args ...interface{}) (rows *Rows, err error) {
 	}
 
 	now := time.Now()
-	defer slowLog(fmt.Sprintf("Query query(%s) args(%+v)", query, args), now)
+	defer slowLog(fmt.Sprintf("Query query: %s, args: %+v", query, args), now)
 	defer func() {
 		_metricReqDur.Observe(int64(time.Since(now)/time.Millisecond), tx.db.addr, tx.db.addr, "tx:query")
 	}()
@@ -134,7 +134,7 @@ func (tx *Tx) QueryRow(query string, args ...interface{}) *Row {
 	}
 
 	now := time.Now()
-	defer slowLog(fmt.Sprintf("QueryRow query(%s) args(%+v)", query, args), now)
+	defer slowLog(fmt.Sprintf("QueryRow query: %s, args: %+v", query, args), now)
 	defer func() {
 		_metricReqDur.Observe(int64(time.Since(now)/time.Millisecond), tx.db.addr, tx.db.addr, "tx:QueryRow")
 	}()
@@ -171,7 +171,7 @@ func (tx *Tx) Prepare(query string) (*Stmt, error) {
 		)
 	}
 
-	defer slowLog(fmt.Sprintf("Prepare query(%s)", query), time.Now())
+	defer slowLog(fmt.Sprintf("Prepare query: %s", query), time.Now())
 	stmt, err := tx.tx.Prepare(query)
 	if err != nil {
 		err = errors.Wrapf(err, "prepare %s", query)

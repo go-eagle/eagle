@@ -22,7 +22,7 @@ type Row struct {
 
 // Scan copies the columns from the matched row into the values pointed at by dest.
 func (r *Row) Scan(dest ...interface{}) (err error) {
-	defer slowLog(fmt.Sprintf("Scan query(%s) args(%+v)", r.query, r.args), time.Now())
+	defer slowLog(fmt.Sprintf("Scan query: %s args: %+v", r.query, r.args), time.Now())
 	if r.trace != nil {
 		//r.trace.
 		//defer r.trace.Finish(&err)
@@ -41,7 +41,7 @@ func (r *Row) Scan(dest ...interface{}) (err error) {
 	}
 	r.db.onBreaker(&err)
 	if err != ErrNoRows {
-		err = errors.Wrapf(err, "query %s args %+v", r.query, r.args)
+		err = errors.Wrapf(err, "query: %s, args: %+v", r.query, r.args)
 	}
 	return
 }

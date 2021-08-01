@@ -59,14 +59,14 @@ func (db *conn) begin(ctx context.Context) (tx *Tx, err error) {
 
 func (db *conn) exec(ctx context.Context, query string, args ...interface{}) (res sql.Result, err error) {
 	now := time.Now()
-	defer slowLog(fmt.Sprintf("Exec query(%s) args(%+v)", query, args), now)
+	defer slowLog(fmt.Sprintf("Exec query: %s args: %+v", query, args), now)
 	ctx, span := otel.Tracer("sql").Start(ctx, "conn.exec")
 	defer span.End()
 
 	span.SetAttributes(
 		semconv.DBSystemMySQL,
 		attribute.String("db.instance", db.addr),
-		semconv.DBStatementKey.String(fmt.Sprintf("exec:%s, args:%+v", query, args)),
+		semconv.DBStatementKey.String(fmt.Sprintf("exec: %s, args: %+v", query, args)),
 	)
 
 	if err = db.breaker.Allow(); err != nil {
@@ -79,7 +79,7 @@ func (db *conn) exec(ctx context.Context, query string, args ...interface{}) (re
 	db.onBreaker(&err)
 	_metricReqDur.Observe(int64(time.Since(now)/time.Millisecond), db.addr, db.addr, "exec")
 	if err != nil {
-		err = errors.Wrapf(err, "exec:%s, args:%+v", query, args)
+		err = errors.Wrapf(err, "exec: %s, args: %+v", query, args)
 	}
 	return
 }
@@ -146,7 +146,7 @@ func (db *conn) prepared(query string) (stmt *Stmt) {
 
 func (db *conn) query(ctx context.Context, query string, args ...interface{}) (rows *Rows, err error) {
 	now := time.Now()
-	defer slowLog(fmt.Sprintf("Query query(%s) args(%+v)", query, args), now)
+	defer slowLog(fmt.Sprintf("Query query: %s args: %+v", query, args), now)
 	ctx, span := otel.Tracer("sql").Start(ctx, "query")
 	defer span.End()
 
@@ -176,7 +176,7 @@ func (db *conn) query(ctx context.Context, query string, args ...interface{}) (r
 
 func (db *conn) queryRow(ctx context.Context, query string, args ...interface{}) *Row {
 	now := time.Now()
-	defer slowLog(fmt.Sprintf("QueryRow query(%s) args(%+v)", query, args), now)
+	defer slowLog(fmt.Sprintf("QueryRow query: %s args: %+v", query, args), now)
 	tr := otel.Tracer("sql")
 	ctx, span := tr.Start(ctx, "queryRow")
 	defer span.End()
@@ -185,7 +185,7 @@ func (db *conn) queryRow(ctx context.Context, query string, args ...interface{})
 		semconv.DBSystemMySQL,
 		attribute.String("db.instance", db.addr),
 		semconv.PeerServiceKey.String("mysql"),
-		semconv.DBStatementKey.String(fmt.Sprintf("exec:%s, args:%+v", query, args)),
+		semconv.DBStatementKey.String(fmt.Sprintf("exec: %s, args: %+v", query, args)),
 	)
 
 	if err := db.breaker.Allow(); err != nil {
@@ -194,6 +194,6 @@ func (db *conn) queryRow(ctx context.Context, query string, args ...interface{})
 	}
 	_, c, cancel := db.conf.QueryTimeout.Shrink(ctx)
 	r := db.DB.QueryRowContext(c, query, args...)
-	_metricReqDur.Observe(int64(time.Since(now)/time.Millisecond), db.addr, db.addr, "queryrow")
+	_metricReqDur.Observe(int64(time.Since(now)/time.Millisecond), db.addr, db.addr, "queryRow")
 	return &Row{db: db, Row: r, query: query, args: args, trace: tr, cancel: cancel}
 }
