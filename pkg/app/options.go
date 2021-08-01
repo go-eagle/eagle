@@ -48,6 +48,13 @@ func WithVersion(version string) Option {
 }
 
 // WithSignal .
+func WithContext(ctx context.Context) Option {
+	return func(o *options) {
+		o.ctx = ctx
+	}
+}
+
+// WithSignal .
 func WithSignal(sigs ...os.Signal) Option {
 	return func(o *options) {
 		o.sigs = sigs
