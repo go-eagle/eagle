@@ -20,6 +20,8 @@ func InitTracerProvider(serviceName, url string) (*tracesdk.TracerProvider, erro
 	}
 
 	tp := tracesdk.NewTracerProvider(
+		// set sample
+		tracesdk.WithSampler(tracesdk.AlwaysSample()),
 		// Always be sure to batch in production.
 		tracesdk.WithBatcher(exporter),
 		// Record information about this application in an Resource.
