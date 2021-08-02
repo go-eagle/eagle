@@ -1,6 +1,7 @@
 package trace
 
 import (
+	jaegerprop "go.opentelemetry.io/contrib/propagators/jaeger"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/jaeger"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -32,6 +33,7 @@ func InitTracerProvider(serviceName, url string) (*tracesdk.TracerProvider, erro
 	// Register our TracerProvider as the global so any imported
 	// instrumentation in the future will default to using it.
 	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(jaegerprop.Jaeger{})
 
 	return tp, nil
 }
