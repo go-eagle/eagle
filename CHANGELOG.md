@@ -3,6 +3,7 @@
 ## v1.3.2
 - 新增 run 命令工具
 - 优化 replace OpenTracing with OpenTelemetry
+- 优化 add trace for http client and sql
 
 ## v1.3.1
 - 优化 新建项目命令 `snake new`
