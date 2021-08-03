@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"testing"
 	"time"
 )
@@ -10,7 +11,7 @@ func TestDefaultClient(t *testing.T) {
 
 	t.Run("test http get func", func(t *testing.T) {
 		var ret interface{}
-		err := c.Get("http://httpbin.org/get", nil, 3*time.Second, &ret)
+		err := c.Get(context.Background(), "http://httpbin.org/get", nil, 3*time.Second, &ret)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -20,7 +21,7 @@ func TestDefaultClient(t *testing.T) {
 
 	t.Run("test http post func", func(t *testing.T) {
 		var ret interface{}
-		err := c.Post("http://httpbin.org/post", nil, 3*time.Second, &ret)
+		err := c.Post(context.Background(), "http://httpbin.org/post", nil, 3*time.Second, &ret)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -34,7 +35,7 @@ func TestRawClient(t *testing.T) {
 
 	t.Run("test http get func", func(t *testing.T) {
 		var ret interface{}
-		err := c.Get("http://httpbin.org/get", nil, 3*time.Second, &ret)
+		err := c.Get(context.Background(), "http://httpbin.org/get", nil, 3*time.Second, &ret)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -44,7 +45,7 @@ func TestRawClient(t *testing.T) {
 
 	t.Run("test http post func", func(t *testing.T) {
 		var ret interface{}
-		err := c.Post("http://httpbin.org/post", nil, 3*time.Second, &ret)
+		err := c.Post(context.Background(), "http://httpbin.org/post", nil, 3*time.Second, &ret)
 		if err != nil {
 			t.Fatal(err)
 		}

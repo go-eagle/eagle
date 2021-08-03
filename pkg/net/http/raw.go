@@ -2,11 +2,15 @@ package http
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
 )
 
 // raw 使用原生包封装的 http client
@@ -20,45 +24,68 @@ func newRawClient() Client {
 }
 
 // Get get data by get method
-func (r *rawClient) Get(url string, params map[string]string, duration time.Duration, out interface{}) error {
-	client := http.Client{Timeout: duration}
+func (r *rawClient) Get(ctx context.Context, url string, params map[string]string, duration time.Duration, out interface{}) error {
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		return err
+	}
 
-	resp, err := client.Get(url)
+	client := &http.Client{
+		Transport: otelhttp.NewTransport(http.DefaultTransport),
+		Timeout:   duration,
+	}
+
+	tr := otel.GetTracerProvider().Tracer("tracer from http client")
+	ctx, span := tr.Start(ctx, "http request")
+	defer span.End()
+
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
+	if resp.StatusCode >= 400 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		return errors.New(string(body))
 	}
-
-	if err := json.Unmarshal(b, &out); err != nil {
-		return fmt.Errorf("can't unmarshal to out, err: %s, body: %s", err, b)
-	}
-
-	return nil
+	decoder := json.NewDecoder(resp.Body)
+	return decoder.Decode(out)
 }
 
 // Post send data by post method
-func (r *rawClient) Post(url string, data []byte, duration time.Duration, out interface{}) error {
-	client := http.Client{Timeout: duration}
-	resp, err := client.Post(url, contentTypeJSON, bytes.NewBuffer(data))
+func (r *rawClient) Post(ctx context.Context, url string, data []byte, duration time.Duration, out interface{}) error {
+	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(data))
 	if err != nil {
 		return err
 	}
 
+	client := &http.Client{
+		Transport: otelhttp.NewTransport(http.DefaultTransport),
+		Timeout:   duration,
+	}
+	req.Header.Set("Content-Type", contentTypeJSON)
+
+	tr := otel.GetTracerProvider().Tracer("tracer from http client")
+	ctx, span := tr.Start(ctx, "http request")
+	defer span.End()
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
 	defer resp.Body.Close()
 
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
+	if resp.StatusCode >= 400 {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		return errors.New(string(body))
 	}
-
-	if err := json.Unmarshal(b, &out); err != nil {
-		return fmt.Errorf("can't unmarshal to out, err: %s, body: %s", err, b)
-	}
-
-	return nil
+	decoder := json.NewDecoder(resp.Body)
+	return decoder.Decode(out)
 }

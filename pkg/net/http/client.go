@@ -3,6 +3,7 @@
 package http
 
 import (
+	"context"
 	"log"
 	"time"
 )
@@ -21,8 +22,8 @@ var RawClient = New("raw")
 
 // Client 定义 http client 接口
 type Client interface {
-	Get(url string, params map[string]string, duration time.Duration, out interface{}) error
-	Post(url string, data []byte, duration time.Duration, out interface{}) error
+	Get(ctx context.Context, url string, params map[string]string, duration time.Duration, out interface{}) error
+	Post(ctx context.Context, url string, data []byte, duration time.Duration, out interface{}) error
 }
 
 // New 实例化一个client, default is raw http client

@@ -3,6 +3,7 @@
 package http
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -20,7 +21,7 @@ func newRestyClient() Client {
 }
 
 // Get request url by get method
-func (r *restyClient) Get(url string, params map[string]string, duration time.Duration, out interface{}) error {
+func (r *restyClient) Get(ctx context.Context, url string, params map[string]string, duration time.Duration, out interface{}) error {
 	client := resty.New()
 
 	if duration != 0 {
@@ -53,7 +54,7 @@ func (r *restyClient) Get(url string, params map[string]string, duration time.Du
 }
 
 // Post request url by post method
-func (r *restyClient) Post(url string, data []byte, duration time.Duration, out interface{}) error {
+func (r *restyClient) Post(ctx context.Context, url string, data []byte, duration time.Duration, out interface{}) error {
 	client := resty.New()
 
 	if duration != 0 {
