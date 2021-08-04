@@ -38,7 +38,8 @@ func New(c *conf.Config, opts ...Option) *App {
 		o(&options)
 	}
 
-	ctx, cancel := context.WithCancel(options.ctx)
+	// 5s 缓冲时间处理已有请求
+	ctx, cancel := context.WithTimeout(options.ctx, 5*time.Second)
 	return &App{
 		c:      c,
 		opts:   options,
