@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"sync"
 	"time"
@@ -148,14 +149,7 @@ func (s *Service) BatchGetUsers(ctx context.Context, userID uint64, userIDs []ui
 		return nil, errors.Wrap(err, "[user_service] batch get user err")
 	}
 
-	// 保持原有id顺序
-	ids := userIDs
-
 	wg := sync.WaitGroup{}
-	userList := model.UserList{
-		Lock:  new(sync.Mutex),
-		IDMap: make(map[uint64]*model.UserInfo, len(users)),
-	}
 
 	errChan := make(chan error, 1)
 	finished := make(chan bool, 1)
@@ -178,14 +172,13 @@ func (s *Service) BatchGetUsers(ctx context.Context, userID uint64, userIDs []ui
 		errChan <- err
 	}
 
+	var m sync.Map
+
 	// 并行处理
 	for _, u := range users {
 		wg.Add(1)
 		go func(u *model.UserBaseModel) {
 			defer wg.Done()
-
-			userList.Lock.Lock()
-			defer userList.Lock.Unlock()
 
 			isFollow := 0
 			_, ok := userFollowMap[u.ID]
@@ -216,7 +209,7 @@ func (s *Service) BatchGetUsers(ctx context.Context, userID uint64, userIDs []ui
 				errChan <- err
 				return
 			}
-			userList.IDMap[u.ID] = userInfo
+			m.Store(u.ID, &userInfo)
 		}(u)
 	}
 
@@ -230,11 +223,14 @@ func (s *Service) BatchGetUsers(ctx context.Context, userID uint64, userIDs []ui
 	case err := <-errChan:
 		log.Warnf("[user_service] batch get user err chan: %v", err)
 		return nil, err
+	case <-time.After(3 * time.Second):
+		return nil, fmt.Errorf("list users timeout after 3 seconds")
 	}
 
-	// 根据原有id合并数据
-	for _, id := range ids {
-		infos = append(infos, userList.IDMap[id])
+	// 保证顺序
+	for _, u := range users {
+		info, _ := m.Load(u.ID)
+		infos = append(infos, info.(*model.UserInfo))
 	}
 
 	return infos, nil
