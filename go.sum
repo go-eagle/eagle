@@ -11,6 +11,8 @@ cloud.google.com/go/firestore v1.1.0/go.mod h1:ulACoGHTpvq5r8rxGJ4ddJZBZqakUQqCl
 cloud.google.com/go/pubsub v1.0.1/go.mod h1:R0Gpsv3s54REJCy4fxDixWD93lHJMoZTyQ2kNxGRt3I=
 cloud.google.com/go/storage v1.0.0/go.mod h1:IhtSnM/ZTZV8YYJWCY8RULGVqBDmpoyjwiyrjsg+URw=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
+github.com/1024casts/gorm-opentelemetry v1.0.1-0.20210805144709-183269b54068 h1:XWMHFSEROBGd33gZNMsTb6zxECMN8xOJkO0ucOJdz58=
+github.com/1024casts/gorm-opentelemetry v1.0.1-0.20210805144709-183269b54068/go.mod h1:nEAgMK5Iab8nqYy8zn1tYjEjkeDA2PmszXOwZhlDrMs=
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
@@ -423,6 +425,7 @@ github.com/mattn/go-isatty v0.0.12 h1:wuysRhFDzyxgEmMf5xjvJ2M9dZoWAXNNr5LSBS7uHX
 github.com/mattn/go-isatty v0.0.12/go.mod h1:cbi8OIDigv2wuxKPP5vlRcQ1OAZbq2CE4Kysco4FUpU=
 github.com/mattn/go-runewidth v0.0.2/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
 github.com/mattn/go-sqlite3 v1.14.0/go.mod h1:JIl7NbARA7phWnGvh0LKTyg7S9BA+6gx71ShQilpsus=
+github.com/mattn/go-sqlite3 v1.14.5/go.mod h1:WVKg1VTActs4Qso6iwGbiFih2UIHo0ENGwNd0Lj+XmI=
 github.com/mattn/go-sqlite3 v2.0.1+incompatible h1:xQ15muvnzGBHpIpdrNi1DA5x0+TcBZzsIDwmw9uTHzw=
 github.com/mattn/go-sqlite3 v2.0.1+incompatible/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
 github.com/matttproud/golang_protobuf_extensions v1.0.1 h1:4hp9jkHxhMHkqkrB3Ix0jegS5sx/RkqARlsWZ6pIwiU=
@@ -474,8 +477,6 @@ github.com/onsi/gomega v1.10.5/go.mod h1:gza4q3jKQJijlu05nKWRCW/GavJumGt8aNRxWg7
 github.com/op/go-logging v0.0.0-20160315200505-970db520ece7/go.mod h1:HzydrMdWErDVzsI23lYNej1Htcns9BCg93Dk0bBINWk=
 github.com/opentracing-contrib/go-observer v0.0.0-20170622124052-a52f23424492 h1:lM6RxxfUMrYL/f8bWEUqdXrANWtrL7Nndbm9iFN0DlU=
 github.com/opentracing-contrib/go-observer v0.0.0-20170622124052-a52f23424492/go.mod h1:Ngi6UdF0k5OKD5t5wlmGhe/EDKPoUM3BXZSSfIuJbis=
-github.com/opentracing-contrib/go-stdlib v1.0.0 h1:TBS7YuVotp8myLon4Pv7BtCBzOTo1DeZCld0Z63mW2w=
-github.com/opentracing-contrib/go-stdlib v1.0.0/go.mod h1:qtI1ogk+2JhVPIXVc6q+NHziSmy2W5GbdQZFUHADCBU=
 github.com/opentracing/basictracer-go v1.0.0/go.mod h1:QfBfYuafItcjQuMwinw9GhYKwFXS9KnPs5lxoYwgW74=
 github.com/opentracing/opentracing-go v1.0.2/go.mod h1:UkNAQd3GIcIGf0SeVgPpRdFStlNbqXla1AfSYxPUl2o=
 github.com/opentracing/opentracing-go v1.1.0/go.mod h1:UkNAQd3GIcIGf0SeVgPpRdFStlNbqXla1AfSYxPUl2o=
@@ -675,8 +676,6 @@ go.opentelemetry.io/contrib v0.22.0 h1:0F7gDEjgb1WGn4ODIjaCAg75hmqF+UN0LiVgwxsCo
 go.opentelemetry.io/contrib v0.22.0/go.mod h1:EH4yDYeNoaTqn/8yCWQmfNB78VHfGX2Jt2bvnvzBlGM=
 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.22.0 h1:WHjZguqT+3UjTgFum33hWZYybDVnx8u9q5/kQDfaGTs=
 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.22.0/go.mod h1:o3MuU25bYroYnc2TOKe8mTk8f9X1oPFO6C5RCoPKtSU=
-go.opentelemetry.io/contrib/propagators v0.21.0 h1:Wnio4Ffi9MoLrUkN/J5yqtHf2F9a7wa2VClFkKcQcOk=
-go.opentelemetry.io/contrib/propagators v0.21.0/go.mod h1:7QCSkXB+JDNZfohtRS0z3qnY+zPjFbe01o4iyEoPmRk=
 go.opentelemetry.io/contrib/propagators v0.22.0 h1:KGdv58M2//veiYLIhb31mofaI2LgkIPXXAZVeYVyfd8=
 go.opentelemetry.io/contrib/propagators v0.22.0/go.mod h1:xGOuXr6lLIF9BXipA4pm6UuOSI0M98U6tsI3khbOiwU=
 go.opentelemetry.io/otel v0.15.0/go.mod h1:e4GKElweB8W2gWUqbghw0B8t5MCTccc9212eNHnOHwA=
@@ -1009,10 +1008,11 @@ gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b h1:h8qDotaEPuJATrMmW04NCwg7v
 gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 gorm.io/driver/mysql v1.0.4 h1:TATTzt+kR+IV0+h3iUB3dHUe8omCvQ0rOkmfCsUBohk=
 gorm.io/driver/mysql v1.0.4/go.mod h1:MEgp8tk2n60cSBCq5iTcPDw3ns8Gs+zOva9EUhkknTs=
+gorm.io/driver/sqlite v1.1.4 h1:PDzwYE+sI6De2+mxAneV9Xs11+ZyKV6oxD3wDGkaNvM=
+gorm.io/driver/sqlite v1.1.4/go.mod h1:mJCeTFr7+crvS+TRnWc5Z3UvwxUN1BGBLMrf5LA9DYw=
+gorm.io/gorm v1.20.7/go.mod h1:0HFTzE/SqkGTzK6TlDPPQbAYCluiVvhzoA1+aVyzenw=
 gorm.io/gorm v1.20.12 h1:ebZ5KrSHzet+sqOCVdH9mTjW91L298nX3v5lVxAzSUY=
 gorm.io/gorm v1.20.12/go.mod h1:0HFTzE/SqkGTzK6TlDPPQbAYCluiVvhzoA1+aVyzenw=
-gorm.io/plugin/opentracing v0.0.0-20210220121556-913c6b2318cc h1:tL8SF/QBRX5juQ4ZwEQSvaj5QUKlLFkpNqiHcQtHRAk=
-gorm.io/plugin/opentracing v0.0.0-20210220121556-913c6b2318cc/go.mod h1:s5hbp446ubTzH28/IHEucG9JoMmtGi+Z8x/vf0Xwzqg=
 honnef.co/go/tools v0.0.0-20180728063816-88497007e858/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.0-20190102054323-c2f93a96b099/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.0-20190106161140-3f1c8253044a/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=

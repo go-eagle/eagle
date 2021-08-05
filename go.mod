@@ -3,6 +3,7 @@ module github.com/1024casts/snake
 go 1.15
 
 require (
+	github.com/1024casts/gorm-opentelemetry v1.0.1-0.20210805144709-183269b54068
 	github.com/DATA-DOG/go-sqlmock v1.4.1
 	github.com/HdrHistogram/hdrhistogram-go v1.0.1 // indirect
 	github.com/Shopify/sarama v1.19.0
@@ -42,7 +43,6 @@ require (
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
-	github.com/opentracing-contrib/go-stdlib v1.0.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/openzipkin-contrib/zipkin-go-opentracing v0.4.5
 	github.com/openzipkin/zipkin-go v0.2.2
@@ -99,6 +99,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	gorm.io/driver/mysql v1.0.4
 	gorm.io/gorm v1.20.12
-	gorm.io/plugin/opentracing v0.0.0-20210220121556-913c6b2318cc
 	honnef.co/go/tools v0.0.1-2020.1.4 // indirect
 )

@@ -6,11 +6,12 @@ import (
 	"log"
 	"time"
 
+	otelgorm "github.com/1024casts/gorm-opentelemetry"
+
 	// MySQL driver.
 	"gorm.io/driver/mysql"
 	// GORM MySQL
 	"gorm.io/gorm"
-	gromopentracing "gorm.io/plugin/opentracing"
 )
 
 // Config mysql config
@@ -53,8 +54,13 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 	}
 	db.Set("gorm:table_options", "CHARSET=utf8mb4")
 
+	// Initialize otel plugin with options
+	plugin := otelgorm.NewPlugin(
+	// include any options here
+	)
+
 	// set trace
-	err = db.Use(gromopentracing.New())
+	err = db.Use(plugin)
 	if err != nil {
 		log.Panicf("using gorm opentracing, err: %+v", err)
 	}
