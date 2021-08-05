@@ -41,7 +41,7 @@ func Update(c *gin.Context) {
 	err := service.UserSvc.UpdateUser(context.TODO(), userID, userMap)
 	if err != nil {
 		log.Warnf("[user] update user err, %v", err)
-		response.Error(c, errcode.ErrInternalServerError)
+		response.Error(c, errcode.ErrInternalServer)
 		return
 	}
 

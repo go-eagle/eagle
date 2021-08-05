@@ -71,7 +71,7 @@ func Logging() gin.HandlerFunc {
 		if err := json.Unmarshal(blw.body.Bytes(), &response); err != nil {
 			log.Errorf("response body can not unmarshal to model.Response struct, body: `%s`, err: %+v",
 				blw.body.Bytes(), err)
-			code = errcode.ErrInternalServerError.Code()
+			code = errcode.ErrInternalServer.Code()
 			message = err.Error()
 		} else {
 			code = response.Code

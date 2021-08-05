@@ -41,7 +41,7 @@ func FollowList(c *gin.Context) {
 	userFollowList, err := service.UserSvc.GetFollowingUserList(c.Request.Context(), uint64(userID), uint64(lastID), limit+1)
 	if err != nil {
 		log.Warnf("get following user list err: %+v", err)
-		response.Error(c, errcode.ErrInternalServerError)
+		response.Error(c, errcode.ErrInternalServer)
 		return
 	}
 
@@ -61,7 +61,7 @@ func FollowList(c *gin.Context) {
 	userOutList, err := service.UserSvc.BatchGetUsers(c.Request.Context(), curUserID, userIDs)
 	if err != nil {
 		log.Warnf("batch get users err: %v", err)
-		response.Error(c, errcode.ErrInternalServerError)
+		response.Error(c, errcode.ErrInternalServer)
 		return
 	}
 

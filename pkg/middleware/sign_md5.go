@@ -17,7 +17,7 @@ func SignMd5Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sn, err := verifySign(c)
 		if err != nil {
-			api.SendResponse(c, errcode.ErrInternalServerError, nil)
+			api.SendResponse(c, errcode.ErrInternalServer, nil)
 			c.Abort()
 			return
 		}
