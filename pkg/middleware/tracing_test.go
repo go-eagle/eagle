@@ -145,7 +145,7 @@ func TestGetSpanNotInstrumented(t *testing.T) {
 func TestPropagationWithGlobalPropagators(t *testing.T) {
 	sr := new(oteltest.SpanRecorder)
 	provider := oteltest.NewTracerProvider(oteltest.WithSpanRecorder(sr))
-	otel.SetTextMapPropagator(b3prop.B3{})
+	otel.SetTextMapPropagator(b3prop.New())
 
 	r := httptest.NewRequest("GET", "/user/123", nil)
 	w := httptest.NewRecorder()
@@ -170,7 +170,7 @@ func TestPropagationWithGlobalPropagators(t *testing.T) {
 func TestPropagationWithCustomPropagators(t *testing.T) {
 	sr := new(oteltest.SpanRecorder)
 	provider := oteltest.NewTracerProvider(oteltest.WithSpanRecorder(sr))
-	b3 := b3prop.B3{}
+	b3 := b3prop.New()
 
 	r := httptest.NewRequest("GET", "/user/123", nil)
 	w := httptest.NewRecorder()
