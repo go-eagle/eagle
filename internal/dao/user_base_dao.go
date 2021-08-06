@@ -85,7 +85,7 @@ func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserB
 	getDataFn := func() (interface{}, error) {
 		data := new(model.UserBaseModel)
 		// 从数据库中获取
-		err = d.orm.First(data, uid).Error
+		err = d.orm.WithContext(ctx).First(data, uid).Error
 		// if data is empty, set not found cache to prevent cache penetration(缓存穿透)
 		if errors.Is(err, ErrNotFound) {
 			err = d.userCache.SetCacheWithNotFound(ctx, uid)

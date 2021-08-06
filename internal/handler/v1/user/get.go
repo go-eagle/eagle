@@ -39,7 +39,7 @@ func Get(c *gin.Context) {
 		return
 	}
 	if err != nil {
-		response.Error(c, errcode.ErrInternalServerError.WithDetails(err.Error()))
+		response.Error(c, errcode.ErrInternalServer.WithDetails(err.Error()))
 		return
 	}
 
