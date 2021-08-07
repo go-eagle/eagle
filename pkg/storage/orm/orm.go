@@ -6,6 +6,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/1024casts/snake/pkg/conf"
+
 	otelgorm "github.com/1024casts/gorm-opentelemetry"
 
 	// MySQL driver.
@@ -56,13 +58,13 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 
 	// Initialize otel plugin with options
 	plugin := otelgorm.NewPlugin(
-	// include any options here
+		otelgorm.WithServiceName(conf.Conf.Trace.ServiceName),
 	)
 
 	// set trace
 	err = db.Use(plugin)
 	if err != nil {
-		log.Panicf("using gorm opentracing, err: %+v", err)
+		log.Panicf("using gorm opentelemetry, err: %+v", err)
 	}
 
 	return db
