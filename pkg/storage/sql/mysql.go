@@ -43,7 +43,6 @@ type Config struct {
 	QueryTimeout    xtime.Duration  // query sql timeout
 	ExecTimeout     xtime.Duration  // execute sql timeout
 	TranTimeout     xtime.Duration  // transaction sql timeout
-	TestTimeout     time.Duration   // transaction sql timeout
 	Breaker         *breaker.Config // breaker
 }
 
