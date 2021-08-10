@@ -13,9 +13,9 @@ import (
 // the Jaeger exporter that will send spans to the provided url. The returned
 // TracerProvider will also use a Resource configured with all the information
 // about the application.
-func InitTracerProvider(serviceName, url string) (*tracesdk.TracerProvider, error) {
+func InitTracerProvider(serviceName, endpoint string) (*tracesdk.TracerProvider, error) {
 	// Create the Jaeger exporter
-	exporter, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
+	exporter, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(endpoint)))
 	if err != nil {
 		return nil, err
 	}
