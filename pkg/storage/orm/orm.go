@@ -62,7 +62,7 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 	// set trace
 	err = db.Use(plugin)
 	if err != nil {
-		log.Panicf("using gorm opentracing, err: %+v", err)
+		log.Panicf("using gorm opentelemetry, err: %+v", err)
 	}
 
 	return db
