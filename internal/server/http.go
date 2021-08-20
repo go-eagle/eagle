@@ -1,10 +1,10 @@
 package server
 
 import (
-	"github.com/1024casts/snake/internal/routers"
-	"github.com/1024casts/snake/internal/service"
-	"github.com/1024casts/snake/pkg/conf"
-	"github.com/1024casts/snake/pkg/transport/http"
+	"github.com/go-eagle/eagle/internal/routers"
+	"github.com/go-eagle/eagle/internal/service"
+	"github.com/go-eagle/eagle/pkg/conf"
+	"github.com/go-eagle/eagle/pkg/transport/http"
 )
 
 // NewHttpServer creates a HTTP server

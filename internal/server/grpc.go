@@ -4,12 +4,12 @@ import (
 	"log"
 	"net"
 
-	"github.com/1024casts/snake/pkg/conf"
+	"github.com/go-eagle/eagle/pkg/conf"
 
 	"google.golang.org/grpc"
 
-	v1 "github.com/1024casts/snake/api/grpc/user/v1"
-	"github.com/1024casts/snake/internal/service"
+	v1 "github.com/go-eagle/eagle/api/grpc/user/v1"
+	"github.com/go-eagle/eagle/internal/service"
 )
 
 // NewGRPCServer creates a gRPC server

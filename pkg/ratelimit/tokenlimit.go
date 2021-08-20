@@ -10,7 +10,7 @@ import (
 	"github.com/go-redis/redis"
 	xrate "golang.org/x/time/rate"
 
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 const (

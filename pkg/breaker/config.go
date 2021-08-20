@@ -3,7 +3,7 @@ package breaker
 import (
 	"time"
 
-	xtime "github.com/1024casts/snake/pkg/time"
+	xtime "github.com/go-eagle/eagle/pkg/time"
 )
 
 // Config broker config.

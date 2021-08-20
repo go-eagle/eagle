@@ -3,7 +3,7 @@ package app
 import (
 	"net/http"
 
-	"github.com/1024casts/snake/pkg/errcode"
+	"github.com/go-eagle/eagle/pkg/errcode"
 
 	"github.com/gin-gonic/gin"
 )

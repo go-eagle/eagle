@@ -42,5 +42,5 @@ bin/
 vendor
 
 # custom
-snake
+cmd/eagle
 config/config.yaml

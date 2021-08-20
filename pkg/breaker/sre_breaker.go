@@ -7,10 +7,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	metric2 "github.com/1024casts/snake/pkg/metric"
+	metric2 "github.com/go-eagle/eagle/pkg/metric"
 
-	"github.com/1024casts/snake/pkg/errcode"
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/pkg/errcode"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 // sreBreaker is a sre CircuitBreaker pattern.

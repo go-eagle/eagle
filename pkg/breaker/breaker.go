@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	xtime "github.com/1024casts/snake/pkg/time"
+	xtime "github.com/go-eagle/eagle/pkg/time"
 )
 
 // Breaker is a CircuitBreaker pattern.

@@ -9,14 +9,14 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/1024casts/snake/pkg/breaker"
-	"github.com/1024casts/snake/pkg/conf"
-	logger "github.com/1024casts/snake/pkg/log"
-	xtime "github.com/1024casts/snake/pkg/time"
+	"github.com/go-eagle/eagle/pkg/breaker"
+	"github.com/go-eagle/eagle/pkg/conf"
+	logger "github.com/go-eagle/eagle/pkg/log"
+	xtime "github.com/go-eagle/eagle/pkg/time"
 )
 
 var (
-	cfgFile = pflag.StringP("config", "c", "", "snake config file path.")
+	cfgFile = pflag.StringP("config", "c", "", "eagle config file path.")
 )
 
 func TestMySQL(t *testing.T) {

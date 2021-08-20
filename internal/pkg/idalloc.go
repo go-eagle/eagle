@@ -1,7 +1,7 @@
 // Package pkg ID 分配器，主要使用redis进行分配
 package pkg
 
-import "github.com/1024casts/snake/pkg/redis"
+import "github.com/go-eagle/eagle/pkg/redis"
 
 // IDAlloc define struct
 type IDAlloc struct {

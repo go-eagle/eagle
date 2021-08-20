@@ -1,4 +1,4 @@
-module github.com/1024casts/snake/cmd/snake
+module github.com/go-eagle/eagle/cmd/eagle
 
 go 1.15
 

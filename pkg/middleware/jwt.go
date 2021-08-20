@@ -3,8 +3,8 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/1024casts/snake/pkg/app"
-	"github.com/1024casts/snake/pkg/errcode"
+	"github.com/go-eagle/eagle/pkg/app"
+	"github.com/go-eagle/eagle/pkg/errcode"
 )
 
 // JWT 认证中间件

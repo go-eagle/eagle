@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/1024casts/snake/pkg/encoding"
+	"github.com/go-eagle/eagle/pkg/encoding"
 )
 
 func Test_NewMemoryCache(t *testing.T) {

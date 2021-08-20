@@ -11,7 +11,7 @@ import (
 var CmdCache = &cobra.Command{
 	Use:   "cache",
 	Short: "Create a cache by template",
-	Long:  "Create a cache using the cache template. Example: snake cache -name UserCache",
+	Long:  "Create a cache using the cache template. Example: eagle cache -name UserCache",
 	Run:   run,
 }
 
@@ -24,7 +24,7 @@ func init() {
 }
 
 func run(cmd *cobra.Command, args []string) {
-	// eg: snake cache UserLike
+	// eg: eagle cache UserLike
 	filename := args[0]
 
 	c := &Cache{

@@ -15,15 +15,15 @@ import (
 var CmdNew = &cobra.Command{
 	Use:   "new",
 	Short: "Create a project template",
-	Long:  "Create a project project using the repository template. Example: snake new helloworld",
+	Long:  "Create a project project using the repository template. Example: eagle new helloworld",
 	Run:   run,
 }
 
 var repoURL string
 
 func init() {
-	if repoURL = os.Getenv("SNAKE_LAYOUT_REPO"); repoURL == "" {
-		repoURL = "https://github.com/1024casts/snake-layout.git"
+	if repoURL = os.Getenv("eagle_LAYOUT_REPO"); repoURL == "" {
+		repoURL = "https://github.com/go-eagle/eagle-layout.git"
 	}
 	CmdNew.Flags().StringVarP(&repoURL, "-repo-url", "r", repoURL, "layout repo")
 }

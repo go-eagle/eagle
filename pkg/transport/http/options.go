@@ -3,7 +3,7 @@ package http
 import (
 	"time"
 
-	"github.com/1024casts/snake/pkg/transport"
+	"github.com/go-eagle/eagle/pkg/transport"
 )
 
 var _ transport.Server = (*Server)(nil)

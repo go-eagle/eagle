@@ -13,12 +13,12 @@ import (
 	"github.com/fatih/color"
 )
 
-func snakeHome() string {
+func eagleHome() string {
 	dir, err := os.UserHomeDir()
 	if err != nil {
 		log.Fatal(err)
 	}
-	home := path.Join(dir, ".snake")
+	home := path.Join(dir, ".eagle")
 	if _, err := os.Stat(home); os.IsNotExist(err) {
 		if err := os.MkdirAll(home, 0700); err != nil {
 			log.Fatal(err)
@@ -27,8 +27,8 @@ func snakeHome() string {
 	return home
 }
 
-func snakeHomeWithDir(dir string) string {
-	home := path.Join(snakeHome(), dir)
+func eagleHomeWithDir(dir string) string {
+	home := path.Join(eagleHome(), dir)
 	if _, err := os.Stat(home); os.IsNotExist(err) {
 		if err := os.MkdirAll(home, 0700); err != nil {
 			log.Fatal(err)

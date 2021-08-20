@@ -3,10 +3,10 @@ package cache
 import (
 	"context"
 
-	"github.com/1024casts/snake/internal/model"
-	"github.com/1024casts/snake/pkg/cache"
-	"github.com/1024casts/snake/pkg/encoding"
-	"github.com/1024casts/snake/pkg/redis"
+	"github.com/go-eagle/eagle/internal/model"
+	"github.com/go-eagle/eagle/pkg/cache"
+	"github.com/go-eagle/eagle/pkg/encoding"
+	"github.com/go-eagle/eagle/pkg/redis"
 )
 
 func getCacheClient(ctx context.Context) cache.Cache {

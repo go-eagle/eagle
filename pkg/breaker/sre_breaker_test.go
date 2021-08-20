@@ -6,11 +6,11 @@ import (
 	"testing"
 	"time"
 
-	metric2 "github.com/1024casts/snake/pkg/metric"
+	metric2 "github.com/go-eagle/eagle/pkg/metric"
 
 	"github.com/stretchr/testify/assert"
 
-	xtime "github.com/1024casts/snake/pkg/time"
+	xtime "github.com/go-eagle/eagle/pkg/time"
 )
 
 func getSRE() Breaker {

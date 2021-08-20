@@ -43,8 +43,8 @@ func ModuleVersion(path string) (string, error) {
 	}
 }
 
-// SnakeMod returns snake mod.
-func SnakeMod() string {
+// EagleMod returns eagle mod.
+func EagleMod() string {
 	// go 1.15+ read from env GOMODCACHE
 	cacheOut, _ := exec.Command("go", "env", "GOMODCACHE").Output()
 	cachePath := strings.Trim(string(cacheOut), "\n")
@@ -53,10 +53,10 @@ func SnakeMod() string {
 	if cachePath == "" {
 		cachePath = filepath.Join(gopath, "pkg", "mod")
 	}
-	if path, err := ModuleVersion("github.com/1024casts/snake/v2"); err == nil {
-		// $GOPATH/pkg/mod/github.com/1024casts/snake@v2
+	if path, err := ModuleVersion("github.com/go-eagle/eagle/v2"); err == nil {
+		// $GOPATH/pkg/mod/github.com/go-eagle/eagle@v2
 		return filepath.Join(cachePath, path)
 	}
-	// $GOPATH/src/github.com/1024casts/snake
-	return filepath.Join(gopath, "src", "github.com", "1024casts", "snake")
+	// $GOPATH/src/github.com/go-eagle/eagle
+	return filepath.Join(gopath, "src", "github.com", "go-eagle", "eagle")
 }

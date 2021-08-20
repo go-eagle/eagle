@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	v1 "github.com/1024casts/snake/api/grpc/user/v1"
-	"github.com/1024casts/snake/internal/model"
+	v1 "github.com/go-eagle/eagle/api/grpc/user/v1"
+	"github.com/go-eagle/eagle/internal/model"
 )
 
 // 用于触发编译期的接口的合理性检查机制

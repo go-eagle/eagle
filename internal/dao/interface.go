@@ -3,7 +3,7 @@ package dao
 import (
 	"context"
 
-	"github.com/1024casts/snake/internal/model"
+	"github.com/go-eagle/eagle/internal/model"
 	"gorm.io/gorm"
 )
 

@@ -8,8 +8,8 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
 
-	"github.com/1024casts/snake/pkg/encoding"
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/pkg/encoding"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 // redisCache redis cache结构体

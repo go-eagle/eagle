@@ -10,7 +10,7 @@ func TestModuleVersion(t *testing.T) {
 	t.Log(v)
 }
 
-func TestSnakeMod(t *testing.T) {
-	out := SnakeMod()
+func TestEagleMod(t *testing.T) {
+	out := EagleMod()
 	t.Log(out)
 }

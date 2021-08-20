@@ -6,12 +6,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	metric2 "github.com/1024casts/snake/pkg/metric"
+	metric2 "github.com/go-eagle/eagle/pkg/metric"
 
-	"github.com/1024casts/snake/pkg/container/group"
-	"github.com/1024casts/snake/pkg/errcode"
-	"github.com/1024casts/snake/pkg/log"
-	cpustat "github.com/1024casts/snake/pkg/stat/cpu"
+	"github.com/go-eagle/eagle/pkg/container/group"
+	"github.com/go-eagle/eagle/pkg/errcode"
+	"github.com/go-eagle/eagle/pkg/log"
+	cpustat "github.com/go-eagle/eagle/pkg/stat/cpu"
 )
 
 var (

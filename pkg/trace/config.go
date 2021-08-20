@@ -3,9 +3,9 @@ package trace
 import (
 	"fmt"
 
-	"github.com/1024casts/snake/pkg/trace/elastic"
-	"github.com/1024casts/snake/pkg/trace/jaeger"
-	"github.com/1024casts/snake/pkg/trace/zipkin"
+	"github.com/go-eagle/eagle/pkg/trace/elastic"
+	"github.com/go-eagle/eagle/pkg/trace/jaeger"
+	"github.com/go-eagle/eagle/pkg/trace/zipkin"
 )
 
 var (

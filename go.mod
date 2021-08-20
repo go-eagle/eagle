@@ -1,9 +1,10 @@
-module github.com/1024casts/snake
+module github.com/go-eagle/eagle
 
 go 1.15
 
 require (
 	github.com/1024casts/gorm-opentelemetry v1.0.1-0.20210805144709-183269b54068
+	github.com/AlecAivazis/survey/v2 v2.2.16 // indirect
 	github.com/DATA-DOG/go-sqlmock v1.4.1
 	github.com/HdrHistogram/hdrhistogram-go v1.0.1 // indirect
 	github.com/Shopify/sarama v1.19.0

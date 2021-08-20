@@ -11,7 +11,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 
-	"github.com/1024casts/snake/pkg/breaker"
+	"github.com/go-eagle/eagle/pkg/breaker"
 )
 
 // conn database connection

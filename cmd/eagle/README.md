@@ -1,8 +1,8 @@
-# snake 
+# eagle 
 
 ## 脚手架介绍
 
-### snake 脚手架工具集
+### eagle 脚手架工具集
 
 1. 快速生成模板项目
 2. ...
@@ -30,22 +30,22 @@ export GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
 下载
 
 ```bash
-go get -u -v github.com/1024casts/snake/cmd/snake
+go get -u -v github.com/go-eagle/eagle/cmd/eagle
 ```
 
 windows:
- 会在 `${GOPATH}/src/bin` 目录下生成 `snake.exe` 文件,若想方便的在任何地方使用 `snake` 命令,请将该 命令配置在系统的环境变量中
+ 会在 `${GOPATH}/src/bin` 目录下生成 `eagle.exe` 文件,若想方便的在任何地方使用 `eagle` 命令,请将该 命令配置在系统的环境变量中
 Linux、Mac:
-可以直接使用 `snake`
+可以直接使用 `eagle`
 
 ## 使用方式
 
-- snake -h
+- eagle -h
 
 ```bash
-$ snake -h
+$ eagle -h
 NAME:
-   snake - snake tools
+   eagle - eagle tools
 
 USAGE:
    cmd [global options] command [command options] [arguments...]
@@ -54,7 +54,7 @@ VERSION:
    1.0.0
 
 COMMANDS:
-     new, n   Create Snake template project
+     new, n   Create eagle template project
      help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -62,42 +62,42 @@ GLOBAL OPTIONS:
    --version, -v  print the version
 ```
 
-- snake new -h 
+- eagle new -h 
 
 ```bash
-$ snake new -h
+$ eagle new -h
 NAME:
-   cmd new - Create Snake template project
+   cmd new - Create eagle template project
 
 USAGE:
    
-snake [commands|flags]
+eagle [commands|flags]
 The commands & flags are:
-  new     Create Snake template project
+  new     Create Eagle template project
   -d      Build the specified directory for the template project
 Examples:
   # Build the specified directory for the template project
-  snake new (your project name) -d (project dir)
+  eagle new (your project name) -d (project dir)
 
 
 OPTIONS:
    -d value  Specify the directory of the project
 ```
 
-## 快速创建 snake 模板项目
+## 快速创建 eagle 模板项目
 
 ```bash
 cd ${GOPATH}/src
-snake new snake-demo -d ./
+eagle new eagle-demo -d ./
 ```
 
 命令解释:
 
-- new :创建 snake 模板项目
-- snake-demo: 项目名称
+- new :创建 eagle 模板项目
+- eagle-demo: 项目名称
 - -d: 生成项目所在路径
 
-然后就会在 `${GOPATH}/src` 下生成 `snake-demo` 项目
+然后就会在 `${GOPATH}/src` 下生成 `eagle-demo` 项目
 项目目录结构:
 
 ```bash

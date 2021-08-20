@@ -95,8 +95,8 @@ definitions:
 host: localhost:8080
 info:
   contact: {}
-  description: snake demo
-  title: snake docs api
+  description: eagle demo
+  title: eagle docs api
   version: "1.0"
 paths:
   /Register:

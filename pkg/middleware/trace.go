@@ -12,7 +12,7 @@ import (
 
 const (
 	// DefaultServiceName service name
-	DefaultServiceName = "snake"
+	DefaultServiceName = "eagle"
 )
 
 func Trace() gin.HandlerFunc {

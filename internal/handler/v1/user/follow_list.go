@@ -5,11 +5,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/1024casts/snake/api"
-	"github.com/1024casts/snake/internal/ecode"
-	"github.com/1024casts/snake/internal/service"
-	"github.com/1024casts/snake/pkg/errcode"
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/api"
+	"github.com/go-eagle/eagle/internal/ecode"
+	"github.com/go-eagle/eagle/internal/service"
+	"github.com/go-eagle/eagle/pkg/errcode"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 // FollowList 关注列表

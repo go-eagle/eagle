@@ -8,12 +8,12 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/pkg/errors"
 
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 // IDAlloc id生成器
 // key 为业务key, 由业务前缀+功能前缀+具体场景id组成
-// 比如生成用户id, 可以传入user_id， 完整示例: snake:idalloc:user_id
+// 比如生成用户id, 可以传入user_id， 完整示例: eagle:idalloc:user_id
 type IDAlloc struct {
 	// redis 实例，最好使用和业务独立的实例，最好可以部署集群，让 id alloc做到高可用
 	redisClient *redis.Client

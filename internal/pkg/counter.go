@@ -8,12 +8,12 @@ import (
 
 	"github.com/go-redis/redis"
 
-	redis2 "github.com/1024casts/snake/pkg/redis"
+	redis2 "github.com/go-eagle/eagle/pkg/redis"
 )
 
 const (
 	// PrefixCounter counter key
-	PrefixCounter = "snake:counter:%s"
+	PrefixCounter = "eagle:counter:%s"
 	// DefaultStep default step key
 	DefaultStep           = 1
 	DefaultExpirationTime = 600 * time.Second

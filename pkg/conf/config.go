@@ -3,14 +3,14 @@ package conf
 import (
 	"time"
 
-	"github.com/1024casts/snake/pkg/storage/orm"
-	"github.com/1024casts/snake/pkg/storage/sql"
+	"github.com/go-eagle/eagle/pkg/storage/orm"
+	"github.com/go-eagle/eagle/pkg/storage/sql"
 
-	"github.com/1024casts/snake/pkg/email"
-	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/pkg/redis"
-	"github.com/1024casts/snake/pkg/storage/mongodb"
-	"github.com/1024casts/snake/pkg/trace"
+	"github.com/go-eagle/eagle/pkg/email"
+	"github.com/go-eagle/eagle/pkg/log"
+	"github.com/go-eagle/eagle/pkg/redis"
+	"github.com/go-eagle/eagle/pkg/storage/mongodb"
+	"github.com/go-eagle/eagle/pkg/trace"
 )
 
 // Config global config

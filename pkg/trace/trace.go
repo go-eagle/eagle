@@ -8,7 +8,7 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 // TraceAgent is an abstraction for trace agent (Zipkin, Jaeger, Elastic).

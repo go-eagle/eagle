@@ -33,4 +33,4 @@ scrape_configs:
     static_configs:
       - targets: ["localhost:8080","app:8080"]
         labels:
-          instance: go-snake
+          instance: go-eagle

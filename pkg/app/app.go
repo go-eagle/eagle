@@ -11,8 +11,8 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/1024casts/snake/pkg/conf"
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/pkg/conf"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 type App struct {

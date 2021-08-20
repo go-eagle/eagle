@@ -11,10 +11,10 @@ import (
 	"golang.org/x/sync/singleflight"
 	"gorm.io/gorm"
 
-	"github.com/1024casts/snake/internal/model"
-	"github.com/1024casts/snake/pkg/cache"
-	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/pkg/redis"
+	"github.com/go-eagle/eagle/internal/model"
+	"github.com/go-eagle/eagle/pkg/cache"
+	"github.com/go-eagle/eagle/pkg/log"
+	"github.com/go-eagle/eagle/pkg/redis"
 )
 
 // CreateUser 创建用户

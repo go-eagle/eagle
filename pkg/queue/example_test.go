@@ -7,12 +7,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/1024casts/snake/pkg/testing/lich"
+	"github.com/go-eagle/eagle/pkg/testing/lich"
 
 	"github.com/Shopify/sarama"
 
-	"github.com/1024casts/snake/pkg/queue/kafka"
-	"github.com/1024casts/snake/pkg/queue/rabbitmq"
+	"github.com/go-eagle/eagle/pkg/queue/kafka"
+	"github.com/go-eagle/eagle/pkg/queue/rabbitmq"
 )
 
 func TestMain(m *testing.M) {

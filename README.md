@@ -1,13 +1,13 @@
-# 🐍 snake
+# 🦅 eagle
 
- [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/1024casts/snake/Go?style=flat-square)](https://github.com/1024casts/snake)
- [![codecov](https://codecov.io/gh/1024casts/snake/branch/master/graph/badge.svg)](https://codecov.io/gh/1024casts/snake)
+ [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/go-eagle/eagle/Go?style=flat-square)](https://github.com/go-eagle/eagle)
+ [![codecov](https://codecov.io/gh/go-eagle/eagle/branch/master/graph/badge.svg)](https://codecov.io/gh/go-eagle/eagle)
  [![GolangCI](https://golangci.com/badges/github.com/golangci/golangci-lint.svg)](https://golangci.com)
- [![godoc](https://godoc.org/github.com/1024casts/snake?status.svg)](https://godoc.org/github.com/1024casts/snake)
+ [![godoc](https://godoc.org/github.com/go-eagle/eagle?status.svg)](https://godoc.org/github.com/go-eagle/eagle)
  <a href="http://opentracing.io"><img src="https://img.shields.io/badge/OpenTracing-enabled-blue.svg" alt="OpenTracing Badge"></a>
- [![Go Report Card](https://goreportcard.com/badge/github.com/1024casts/snake)](https://goreportcard.com/report/github.com/1024casts/snake)
+ [![Go Report Card](https://goreportcard.com/badge/github.com/go-eagle/eagle)](https://goreportcard.com/report/github.com/go-eagle/eagle)
  [![gitmoji](https://img.shields.io/badge/gitmoji-%20%F0%9F%98%9C%20%F0%9F%98%8D-FFDD67.svg?style=flat-square)](https://github.com/carloscuesta/gitmoji)
- [![License](https://img.shields.io/github/license/1024casts/snake?style=flat-square)](/LICENSE)
+ [![License](https://img.shields.io/github/license/go-eagle/eagle?style=flat-square)](/LICENSE)
 
 一款适合于快速开发业务的 Go 框架，可快速构建 API 服务 或 Web 网站。
 
@@ -78,10 +78,10 @@ TIPS: 需要本地安装MySQL数据库和 Redis
 
 ```bash
 # 下载安装，可以不用是 GOPATH
-git clone https://github.com/1024casts/snake
+git clone https://github.com/go-eagle/eagle
 
 # 进入到下载目录
-cd snake
+cd eagle
 
 # 生成环境配置文件
 cd config
@@ -100,16 +100,16 @@ make build
 
 ```bash
 # 下载
-go get github.com/1024casts/snake/cmd/snake
+go get github.com/go-eagle/eagle/cmd/eagle
 
 export GO111MODULE=on
 # 或者在.bashrc 或 .zshrc中加入
 # source .bashrc 或 source .zshrc
 
 # 使用
-snake new snake-demo 
+eagle new eagle-demo 
 # 或者 
-snake new github.com/foo/bar
+eagle new github.com/foo/bar
 ```
 
 ## 💻 常用命令
@@ -148,11 +148,11 @@ snake new github.com/foo/bar
 
 ## 📖 开发规约
 
-- [配置说明](https://github.com/1024casts/snake/blob/master/conf)
-- [错误码设计](https://github.com/1024casts/snake/tree/master/pkg/errno)
-- [service 的使用规则](https://github.com/1024casts/snake/blob/master/internal/service)
-- [repository 的使用规则](https://github.com/1024casts/snake/blob/master/internal/repository)
-- [cache 使用说明](https://github.com/1024casts/snake/blob/master/pkg/cache)
+- [配置说明](https://github.com/go-eagle/eagle/blob/master/conf)
+- [错误码设计](https://github.com/go-eagle/eagle/tree/master/pkg/errno)
+- [service 的使用规则](https://github.com/go-eagle/eagle/blob/master/internal/service)
+- [repository 的使用规则](https://github.com/go-eagle/eagle/blob/master/internal/repository)
+- [cache 使用说明](https://github.com/go-eagle/eagle/blob/master/pkg/cache)
 
 ## 🚀 部署
 
@@ -181,7 +181,7 @@ http://127.0.0.1/health
 编译并生成二进制文件
 
 ```bash
-go build -o bin_snake
+go build -o bin_eagle
 ```
 
 如果应用有多台机器，可以在编译机器进行编译，然后使用rsync同步到对应的业务应用服务器
@@ -192,29 +192,29 @@ go build -o bin_snake
 export GOROOT=/usr/local/go1.13.8
 export GOPATH=/data/build/test/src
 export GO111MODULE=on
-cd /data/build/test/src/github.com/1024casts/snake
-/usr/local/go1.13.8/bin/go build -o /data/build/bin/bin_snake -mod vendor main.go
-rsync -av /data/build/bin/ x.x.x.x:/home/go/snake
-supervisorctl restart snake
+cd /data/build/test/src/github.com/go-eagle/eagle
+/usr/local/go1.13.8/bin/go build -o /data/build/bin/bin_eagle -mod vendor main.go
+rsync -av /data/build/bin/ x.x.x.x:/home/go/eagle
+supervisorctl restart eagle
 ```
 
 这里日志目录设定为 `/data/log`
 如果安装了 Supervisord，可以在配置文件中添加下面内容(默认：`/etc/supervisor/supervisord.conf`)：
 
 ```ini
-[program:snake]
+[program:eagle]
 # environment=
-directory=/home/go/snake
-command=/home/go/snake/bin_snake
+directory=/home/go/eagle
+command=/home/go/eagle/bin_eagle
 autostart=true
 autorestart=true
 user=root
-stdout_logfile=/data/log/snake_std.log
+stdout_logfile=/data/log/eagle_std.log
 startsecs = 2
 startretries = 2
 stdout_logfile_maxbytes=10MB
 stdout_logfile_backups=10
-stderr_logfile=/data/log/snake_err.log
+stderr_logfile=/data/log/eagle_err.log
 stderr_logfile_maxbytes=10MB
 stderr_logfile_backups=10
 ```
@@ -222,12 +222,12 @@ stderr_logfile_backups=10
 重启 Supervisord
 
 ```bash
-supervisorctl restart snake
+supervisorctl restart eagle
 ```
 
 ## 📜 CHANGELOG
 
-- [更新日志](https://github.com/1024casts/snake/blob/master/CHANGELOG.md)
+- [更新日志](https://github.com/go-eagle/eagle/blob/master/CHANGELOG.md)
 
 ## 🏘️ 谁在用
 
@@ -236,18 +236,18 @@ supervisorctl restart snake
 
 ## 💬 Discussion
 
-- Issue: https://github.com/1024casts/snake/issues
+- Issue: https://github.com/go-eagle/eagle/issues
 - QQ交流群：1074476202
 
 ## Stargazers over time
 
-[![Stargazers over time](https://starchart.cc/1024casts/snake.svg)](https://starchart.cc/1024casts/snake)
+[![Stargazers over time](https://starchart.cc/go-eagle/eagle.svg)](https://starchart.cc/go-eagle/eagle)
 
 ## 🔋 JetBrains 开源证书支持
 
-`snake` 项目一直以来都是在 JetBrains 公司旗下的 GoLand 集成开发环境中进行开发，基于 **free JetBrains Open Source license(s)** 正版免费授权，在此表达我的谢意。
+`eagle` 项目一直以来都是在 JetBrains 公司旗下的 GoLand 集成开发环境中进行开发，基于 **free JetBrains Open Source license(s)** 正版免费授权，在此表达我的谢意。
 
-<a href="https://www.jetbrains.com/?from=1024casts/snake" target="_blank"><img src="https://raw.githubusercontent.com/panjf2000/illustrations/master/jetbrains/jetbrains-variant-4.png" width="200" align="middle"/></a>
+<a href="https://www.jetbrains.com/?from=go-eagle/eagle" target="_blank"><img src="https://raw.githubusercontent.com/panjf2000/illustrations/master/jetbrains/jetbrains-variant-4.png" width="200" align="middle"/></a>
 
 ## 📄 License
 

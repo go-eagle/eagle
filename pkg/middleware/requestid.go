@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/1024casts/snake/pkg/requestid"
+	"github.com/go-eagle/eagle/pkg/requestid"
 )
 
 // RequestID request id middleware

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/1024casts/snake/pkg/breaker"
-	xtime "github.com/1024casts/snake/pkg/time"
+	"github.com/go-eagle/eagle/pkg/breaker"
+	xtime "github.com/go-eagle/eagle/pkg/time"
 )
 
 // ExampleGroup show group usage.

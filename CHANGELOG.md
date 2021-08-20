@@ -6,7 +6,7 @@
 - 优化 add trace for http client and sql
 
 ## v1.3.1
-- 优化 新建项目命令 `snake new`
+- 优化 新建项目命令 `eagle new`
 - 优化 目录结构
 - 新增 链路追踪 tracing 支持 jaeger、zipkin、elastic
 - 新增 SQL库，支持 tracing
@@ -28,7 +28,7 @@
 - 优化 graceful stop 方法
 - 优化 token sign 方法支持自定义参数payload
 - 优化 redis lock, 将token收敛到包内进行处理，减少使用的心智负担
-- 优化 创建项目命令 `snake new`
+- 优化 创建项目命令 `eagle new`
 - 优化 移除cache prefix, 由用户自己定义
 - 优化 数据获取，使用 singleflight，防止缓存击穿
 - 优化 数据为空时缓存一分钟，防止缓存穿透
@@ -43,7 +43,7 @@
 ## v1.2.1
 - 新增 增加job目录，可以在 `cmd/job` 中定义具体任务
 - 优化 http client, 支持原生(raw)包方式请求和第三方库resty
-- 优化 snake new 命令，使用新的 main.go 文件
+- 优化 eagle new 命令，使用新的 main.go 文件
 - 优化 `service` 和 `repository` 公共方法增加首个参数 `ctx Context.context`
 - 优化 修改目录 `pkg/util` 为 `pkg/utils`
 

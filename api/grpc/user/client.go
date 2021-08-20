@@ -7,8 +7,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/1024casts/snake/api/grpc/user/v1"
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/api/grpc/user/v1"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 func main() {

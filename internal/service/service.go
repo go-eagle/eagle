@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/1024casts/snake/internal/dao"
-	"github.com/1024casts/snake/pkg/conf"
+	"github.com/go-eagle/eagle/internal/dao"
+	"github.com/go-eagle/eagle/pkg/conf"
 )
 
 const (

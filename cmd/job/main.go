@@ -5,8 +5,8 @@ import (
 
 	"github.com/robfig/cron/v3"
 
-	"github.com/1024casts/snake/cmd/job/example"
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/cmd/job/example"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 // Run 计划任务

@@ -26,7 +26,7 @@ func NewRepo(url string) *Repo {
 	end := strings.LastIndex(url, "/")
 	return &Repo{
 		url:  url,
-		home: snakeHomeWithDir("repo/" + url[start:end]),
+		home: eagleHomeWithDir("repo/" + url[start:end]),
 	}
 }
 

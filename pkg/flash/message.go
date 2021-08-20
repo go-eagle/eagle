@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 var flashName = "flash"

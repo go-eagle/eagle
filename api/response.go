@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/1024casts/snake/pkg/errcode"
-	"github.com/1024casts/snake/pkg/utils"
+	"github.com/go-eagle/eagle/pkg/errcode"
+	"github.com/go-eagle/eagle/pkg/utils"
 )
 
 // Response api的返回结构体

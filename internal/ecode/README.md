@@ -1,6 +1,6 @@
 # 业务错误码定义
 
-> 公共错误码已经在 `github.com/1024casts/snake/pkg/errno` 包中，可以直接使用
+> 公共错误码已经在 `github.com/go-eagle/eagle/pkg/errno` 包中，可以直接使用
 
 业务的错误码可以根据模块按文件进行定义
 
@@ -10,12 +10,12 @@
 
 ```go
 // 公共错误码
-import "github.com/1024casts/snake/pkg/errno"
+import "github.com/go-eagle/eagle/pkg/errno"
 ...
 errno.InternalServerError
 
 // 业务错误码
-import "github.com/1024casts/snake/internal/ecode"
+import "github.com/go-eagle/eagle/internal/ecode"
 ...
 ecode.ErrUserNotFound
 ```

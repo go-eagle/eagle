@@ -5,18 +5,18 @@ import (
 	"flag"
 	"testing"
 
-	logger "github.com/1024casts/snake/pkg/log"
+	logger "github.com/go-eagle/eagle/pkg/log"
 
-	"github.com/1024casts/snake/internal/model"
+	"github.com/go-eagle/eagle/internal/model"
 
-	"github.com/1024casts/snake/pkg/conf"
-	"github.com/1024casts/snake/pkg/testing/lich"
+	"github.com/go-eagle/eagle/pkg/conf"
+	"github.com/go-eagle/eagle/pkg/testing/lich"
 	"github.com/spf13/pflag"
 )
 
 var (
 	d       *Dao
-	cfgFile = pflag.StringP("config", "c", "", "snake config file path.")
+	cfgFile = pflag.StringP("config", "c", "", "eagle config file path.")
 	cfg     *conf.Config
 )
 

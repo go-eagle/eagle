@@ -1,6 +1,6 @@
 package ecode
 
-import "github.com/1024casts/snake/pkg/errcode"
+import "github.com/go-eagle/eagle/pkg/errcode"
 
 var (
 	// user errors

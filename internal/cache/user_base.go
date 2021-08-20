@@ -8,16 +8,16 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
 
-	"github.com/1024casts/snake/internal/model"
-	"github.com/1024casts/snake/pkg/cache"
-	"github.com/1024casts/snake/pkg/encoding"
-	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/pkg/redis"
+	"github.com/go-eagle/eagle/internal/model"
+	"github.com/go-eagle/eagle/pkg/cache"
+	"github.com/go-eagle/eagle/pkg/encoding"
+	"github.com/go-eagle/eagle/pkg/log"
+	"github.com/go-eagle/eagle/pkg/redis"
 )
 
 const (
 	// PrefixUserBaseCacheKey cache前缀, 规则：业务+模块+{ID}
-	PrefixUserBaseCacheKey = "snake:user:base:%d"
+	PrefixUserBaseCacheKey = "eagle:user:base:%d"
 )
 
 // Cache cache

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVER="snake"
+SERVER="eagle"
 BASE_DIR=$PWD
 INTERVAL=2
 

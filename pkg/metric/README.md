@@ -111,36 +111,36 @@ promhttp_metric_handler_requests_in_flight 1
 promhttp_metric_handler_requests_total{code="200"} 1
 promhttp_metric_handler_requests_total{code="500"} 0
 promhttp_metric_handler_requests_total{code="503"} 0
-# HELP snake_http_request_count_total Total number of HTTP requests made.
-# TYPE snake_http_request_count_total counter
-snake_http_request_count_total{endpoint="/favicon.ico",method="GET",status="404"} 1
-# HELP snake_http_request_duration_seconds HTTP request latencies in seconds.
-# TYPE snake_http_request_duration_seconds histogram
-snake_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.005"} 1
-snake_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.01"} 1
-snake_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.025"} 1
-snake_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.05"} 1
-snake_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.1"} 1
-snake_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.25"} 1
-snake_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.5"} 1
-snake_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="1"} 1
-snake_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="2.5"} 1
-snake_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="5"} 1
-snake_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="10"} 1
-snake_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="+Inf"} 1
-snake_http_request_duration_seconds_sum{endpoint="/favicon.ico",method="GET",status="404"} 4.2263e-05
-snake_http_request_duration_seconds_count{endpoint="/favicon.ico",method="GET",status="404"} 1
-# HELP snake_http_request_size_bytes HTTP request sizes in bytes.
-# TYPE snake_http_request_size_bytes summary
-snake_http_request_size_bytes_sum{endpoint="/favicon.ico",method="GET",status="404"} 597
-snake_http_request_size_bytes_count{endpoint="/favicon.ico",method="GET",status="404"} 1
-# HELP snake_http_response_size_bytes HTTP request sizes in bytes.
-# TYPE snake_http_response_size_bytes summary
-snake_http_response_size_bytes_sum{endpoint="/favicon.ico",method="GET",status="404"} 19
-snake_http_response_size_bytes_count{endpoint="/favicon.ico",method="GET",status="404"} 1
-# HELP snake_uptime HTTP service uptime.
-# TYPE snake_uptime counter
-snake_uptime 9
+# HELP eagle_http_request_count_total Total number of HTTP requests made.
+# TYPE eagle_http_request_count_total counter
+eagle_http_request_count_total{endpoint="/favicon.ico",method="GET",status="404"} 1
+# HELP eagle_http_request_duration_seconds HTTP request latencies in seconds.
+# TYPE eagle_http_request_duration_seconds histogram
+eagle_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.005"} 1
+eagle_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.01"} 1
+eagle_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.025"} 1
+eagle_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.05"} 1
+eagle_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.1"} 1
+eagle_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.25"} 1
+eagle_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="0.5"} 1
+eagle_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="1"} 1
+eagle_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="2.5"} 1
+eagle_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="5"} 1
+eagle_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="10"} 1
+eagle_http_request_duration_seconds_bucket{endpoint="/favicon.ico",method="GET",status="404",le="+Inf"} 1
+eagle_http_request_duration_seconds_sum{endpoint="/favicon.ico",method="GET",status="404"} 4.2263e-05
+eagle_http_request_duration_seconds_count{endpoint="/favicon.ico",method="GET",status="404"} 1
+# HELP eagle_http_request_size_bytes HTTP request sizes in bytes.
+# TYPE eagle_http_request_size_bytes summary
+eagle_http_request_size_bytes_sum{endpoint="/favicon.ico",method="GET",status="404"} 597
+eagle_http_request_size_bytes_count{endpoint="/favicon.ico",method="GET",status="404"} 1
+# HELP eagle_http_response_size_bytes HTTP request sizes in bytes.
+# TYPE eagle_http_response_size_bytes summary
+eagle_http_response_size_bytes_sum{endpoint="/favicon.ico",method="GET",status="404"} 19
+eagle_http_response_size_bytes_count{endpoint="/favicon.ico",method="GET",status="404"} 1
+# HELP eagle_uptime HTTP service uptime.
+# TYPE eagle_uptime counter
+eagle_uptime 9
 ```
 
 ## Reference

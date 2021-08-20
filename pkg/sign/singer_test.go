@@ -37,8 +37,8 @@ func TestSigner_AddBody(t *testing.T) {
 	}
 
 	body.Add(KeyNameTimeStamp, "1594458195")
-	body.Add(KeyNameAppID, "snake")
-	body.Add(KeyNameNonceStr, "snake_nonce")
+	body.Add(KeyNameAppID, "eagle")
+	body.Add(KeyNameNonceStr, "eagle_nonce")
 
 	fmt.Println("生成签字字符串：" + signer.GetSignBodyString())
 	fmt.Println("输出URL字符串：" + signer.GetSignedQuery())
@@ -47,7 +47,7 @@ func TestSigner_AddBody(t *testing.T) {
 	verifier.ParseValues(body)
 
 	resigner := NewSignerHmac()
-	resigner.SetAppSecret("snake_key")
+	resigner.SetAppSecret("eagle_key")
 	resigner.SetBody(verifier.GetBodyWithoutSign())
 
 	fmt.Println("重新生成签字字符串：" + resigner.GetSignBodyString())

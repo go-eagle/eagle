@@ -11,7 +11,7 @@ import (
 
 const (
 	// LockKey redis lock key
-	LockKey = "snake:redis:lock:%s"
+	LockKey = "eagle:redis:lock:%s"
 	// DefaultTimeout default expire time
 	DefaultTimeout = 2 * time.Second
 )

@@ -11,7 +11,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 
-	"github.com/1024casts/snake/pkg/conf"
+	"github.com/go-eagle/eagle/pkg/conf"
 )
 
 var (

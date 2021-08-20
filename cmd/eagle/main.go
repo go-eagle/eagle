@@ -3,14 +3,12 @@ package main
 import (
 	"log"
 
-	"github.com/1024casts/snake/cmd/snake/internal/run"
-
-	"github.com/1024casts/snake/cmd/snake/internal/cache"
+	"github.com/go-eagle/eagle/cmd/eagle/internal/cache"
+	"github.com/go-eagle/eagle/cmd/eagle/internal/project"
+	"github.com/go-eagle/eagle/cmd/eagle/internal/run"
+	"github.com/go-eagle/eagle/cmd/eagle/internal/upgrade"
 
 	"github.com/spf13/cobra"
-
-	"github.com/1024casts/snake/cmd/snake/internal/project"
-	"github.com/1024casts/snake/cmd/snake/internal/upgrade"
 )
 
 var (
@@ -18,9 +16,9 @@ var (
 	Version = "v0.3.0"
 
 	rootCmd = &cobra.Command{
-		Use:     "snake",
-		Short:   "Snake: An develop kit for Go microservices.",
-		Long:    `Snake: An develop kit for Go microservices.`,
+		Use:     "eagle",
+		Short:   "Eagle: An develop kit for Go microservices.",
+		Long:    `Eagle: An develop kit for Go microservices.`,
 		Version: Version,
 	}
 )

@@ -5,8 +5,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/1024casts/snake/internal/model"
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/internal/model"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 const (

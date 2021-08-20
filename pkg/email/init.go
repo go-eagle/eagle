@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 // Client 邮件发送客户端

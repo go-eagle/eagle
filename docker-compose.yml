@@ -16,7 +16,7 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - snake
+      - eagle
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]   # 用于健康检查的指令
       interval: 1m30s   # 间隔时间
@@ -33,7 +33,7 @@ services:
       - "3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: snake
+      MYSQL_DATABASE: eagle
       MYSQL_USER: root
       MYSQL_PASSWORD: root
       TZ: Asia/Shanghai
@@ -59,7 +59,7 @@ services:
       - ./deploy/docker/mysql/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
       - ./deploy/docker/mysql/:/docker-entrypoint-initdb.d/
     networks:
-      - snake
+      - eagle
 
   # web 数据库管理工具，tips: host使用 db:3306
   adminer:
@@ -77,7 +77,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - snake
+      - eagle
     volumes:
       - redis_data:/var/lib/redis
 
@@ -89,7 +89,7 @@ services:
     depends_on:
       - app
     volumes:
-      - ./config/nginx_api.conf:/etc/nginx/conf.d/snake.conf
+      - ./config/nginx_api.conf:/etc/nginx/conf.d/eagle.conf
     command: nginx -g 'daemon off';
 
   prometheus:
@@ -107,7 +107,7 @@ services:
     ports:
       - '9090:9090'
     networks:
-      - snake
+      - eagle
 
   node_exporter:
     container_name: node_exporter_container
@@ -116,7 +116,7 @@ services:
     ports:
       - '9101:9100'
     networks:
-      - snake
+      - eagle
 
   grafana:
     container_name: grafana_container
@@ -125,7 +125,7 @@ services:
     ports:
       - '3000:3000'
     networks:
-      - snake
+      - eagle
   jaeger:
     container_name: jaeger_container
     image: jaegertracing/all-in-one:1.21
@@ -141,7 +141,7 @@ services:
       - 14250:14250
       - 9411:9411
     networks:
-      - snake
+      - eagle
 
   mongodb:
     image: mongo:latest
@@ -150,17 +150,17 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
-      MONGODB_DATABASE: snake
+      MONGODB_DATABASE: eagle
     ports:
       - 27017:27017
     volumes:
       - mongodb_data:/data/db
     networks:
-      - snake
+      - eagle
 
 
 networks:
-  snake:
+  eagle:
     driver: "bridge"
 
 volumes:

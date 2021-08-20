@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"sync/atomic"
 
-	"github.com/1024casts/snake/pkg/errcode"
+	"github.com/go-eagle/eagle/pkg/errcode"
 	"github.com/pkg/errors"
 )
 

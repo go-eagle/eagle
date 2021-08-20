@@ -10,9 +10,9 @@ import (
 	// database driver
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/1024casts/snake/pkg/breaker"
-	"github.com/1024casts/snake/pkg/log"
-	xtime "github.com/1024casts/snake/pkg/time"
+	"github.com/go-eagle/eagle/pkg/breaker"
+	"github.com/go-eagle/eagle/pkg/log"
+	xtime "github.com/go-eagle/eagle/pkg/time"
 )
 
 const (

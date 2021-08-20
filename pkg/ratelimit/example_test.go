@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/1024casts/snake/pkg/redis"
+	"github.com/go-eagle/eagle/pkg/redis"
 )
 
 func TestExampleTokenLimit(t *testing.T) {

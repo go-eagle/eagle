@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/pkg/log"
 	// Register go-sql-driver stuff
 	_ "github.com/go-sql-driver/mysql"
 )

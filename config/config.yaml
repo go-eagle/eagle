@@ -1,5 +1,5 @@
 app:
-  Name: snake
+  Name: eagle
   Version: 1.0.0
   PprofPort: :5555
   Mode: debug                 # debug, release, test
@@ -26,18 +26,18 @@ logger:
   DisableStacktrace: false
   Encoding: json                          # json or console
   Level: info                             # 日志级别，DEBUG, INFO, WARN, ERROR, FATAL
-  Name: snake
+  Name: eagle
   Writers: console                        # 有2个可选项：file,console 选择file会将日志记录到logger_file指定的日志文件中，选择console会将日志输出到标准输出，当然也可以两者同时选择
-  LoggerFile: /tmp/log/snake.log
-  LoggerWarnFile: /tmp/log/snake.wf.log
-  LoggerErrorFile: /tmp/log/snake.err.log
+  LoggerFile: /tmp/log/eagle.log
+  LoggerWarnFile: /tmp/log/eagle.wf.log
+  LoggerErrorFile: /tmp/log/eagle.err.log
   LogRollingPolicy: daily
   LogRotateDate: 1
   LogRotateSize: 1
   LogBackupCount: 7
 
 orm:
-  Name: snake                     # 数据库名称
+  Name: eagle                     # 数据库名称
   Addr: localhost:3306            # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
   UserName: root
   Password: 123456
@@ -47,7 +47,7 @@ orm:
   ConnMaxLifeTime: 4h             # 单个连接最大存活时间，建议设置比数据库超时时长(wait_timeout)稍小一些
 
 mysql:
-  Dsn: "root:123456@tcp(localhost:3306)/snake?timeout=2s&readTimeout=5s&writeTimeout=5s&parseTime=true&loc=Local&charset=utf8,utf8mb4"
+  Dsn: "root:123456@tcp(localhost:3306)/eagle?timeout=2s&readTimeout=5s&writeTimeout=5s&parseTime=true&loc=Local&charset=utf8,utf8mb4"
   ShowLog: true                   # 是否打印SQL日志
   MaxIdleConn: 10                 # 最大闲置的连接数，0意味着使用默认的大小2， 小于0表示不使用连接池
   MaxOpenConn: 60                 # 最大打开的连接数, 需要小于数据库配置中的max_connections数
@@ -80,14 +80,14 @@ email:
   Port: 25              # 端口
   Username: USER        # 用户名
   Password: PASSWORD    # 密码
-  Name: snake           # 发送者名称
+  Name: eagle           # 发送者名称
   Address: SEND_EMAIL   # 发送者邮箱
   ReplyTo: EMAIL       # 回复地址
   KeepAlive: 30         # 连接保持时长
 
 web:
-  Name: snake
-  Domain: http://snake.com
+  Name: eagle
+  Domain: http://eagle.com
   Secret: abcdefg
   Static: /data/static
 
@@ -96,13 +96,13 @@ cookie:
   MaxAge: 86400
   Secure: false
   HttpOnly: true
-  Domain: http://snake.com
+  Domain: http://eagle.com
   Secret: abcdefg
 
 qiniu:
   AccessKey: ACCESS_KEY
   SecretKey: SECRET_KEY
-  CdnURL: http://cdn.snake.com
+  CdnURL: http://cdn.eagle.com
   SignatureID: signature_id  # 短信签名id
   TemplateID: template_id    # 模板id
 
@@ -114,11 +114,11 @@ MongoDB:
   URI: "mongodb://localhost:27017"
   User: "admin"
   Password: "admin"
-  DB: "snake"
+  DB: "eagle"
 
 trace:
   # trace config
-  ServiceName: "snake"
+  ServiceName: "eagle"
   TraceAgent: "jaeger"
   OpenDebug: "false"
 

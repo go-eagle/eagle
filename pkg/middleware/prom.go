@@ -6,9 +6,9 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/1024casts/snake/pkg/conf"
+	"github.com/go-eagle/eagle/pkg/conf"
 
-	"github.com/1024casts/snake/pkg/metric"
+	"github.com/go-eagle/eagle/pkg/metric"
 
 	"github.com/gin-gonic/gin"
 )

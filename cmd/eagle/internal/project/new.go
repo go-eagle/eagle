@@ -6,9 +6,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/1024casts/snake/cmd/snake/internal/base"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
+	"github.com/go-eagle/eagle/cmd/eagle/internal/base"
 )
 
 // Project is a project template.
@@ -50,6 +50,6 @@ func (p *Project) New(ctx context.Context, dir string, layout string) error {
 	fmt.Println(color.WhiteString("$ cd %s", p.Name))
 	fmt.Println(color.WhiteString("$ go build"))
 	fmt.Println(color.WhiteString("$ ./%s\n", p.Name))
-	fmt.Println("🤝 Thanks for using Snake")
+	fmt.Println("🤝 Thanks for using Eagle")
 	return nil
 }

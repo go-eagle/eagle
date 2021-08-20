@@ -3,14 +3,14 @@ package web
 import (
 	"net/http"
 
-	"github.com/1024casts/snake/pkg/conf"
+	"github.com/go-eagle/eagle/pkg/conf"
 
 	"github.com/spf13/viper"
 
-	"github.com/1024casts/snake/pkg/errcode"
-	"github.com/1024casts/snake/pkg/flash"
-	"github.com/1024casts/snake/pkg/log"
 	"github.com/gin-gonic/gin"
+	"github.com/go-eagle/eagle/pkg/errcode"
+	"github.com/go-eagle/eagle/pkg/flash"
+	"github.com/go-eagle/eagle/pkg/log"
 	"github.com/gorilla/sessions"
 )
 

@@ -1,10 +1,13 @@
 /**
- *    ____          __
- *   / __/__  ___ _/ /_____
- *  _\ \/ _ \/ _ `/  '_/ -_)
- * /___/_//_/\_,_/_/\_\\__/
  *
- * generate by http://patorjk.com/software/taag/#p=display&f=Small%20Slant&t=Snake
+ *    ____          __
+ *   / __/__ ____ _/ /__
+ *  / _// _ `/ _ `/ / -_)
+ * /___/\_,_/\_, /_/\__/
+ *         /___/
+ *
+ *
+ * generate by http://patorjk.com/software/taag/#p=display&f=Small%20Slant&t=Eagle
  */
 package main
 
@@ -19,26 +22,26 @@ import (
 	"github.com/spf13/pflag"
 	_ "go.uber.org/automaxprocs"
 
-	"github.com/1024casts/snake/internal/dao"
-	"github.com/1024casts/snake/internal/model"
-	"github.com/1024casts/snake/internal/server"
-	"github.com/1024casts/snake/internal/service"
-	"github.com/1024casts/snake/pkg/app"
-	"github.com/1024casts/snake/pkg/conf"
-	logger "github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/pkg/redis"
-	"github.com/1024casts/snake/pkg/trace"
-	v "github.com/1024casts/snake/pkg/version"
+	"github.com/go-eagle/eagle/internal/dao"
+	"github.com/go-eagle/eagle/internal/model"
+	"github.com/go-eagle/eagle/internal/server"
+	"github.com/go-eagle/eagle/internal/service"
+	"github.com/go-eagle/eagle/pkg/app"
+	"github.com/go-eagle/eagle/pkg/conf"
+	logger "github.com/go-eagle/eagle/pkg/log"
+	"github.com/go-eagle/eagle/pkg/redis"
+	"github.com/go-eagle/eagle/pkg/trace"
+	v "github.com/go-eagle/eagle/pkg/version"
 )
 
 var (
-	cfgFile = pflag.StringP("config", "c", "", "snake config file path.")
+	cfgFile = pflag.StringP("config", "c", "", "eagle config file path.")
 	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
-// @title snake docs api
+// @title eagle docs api
 // @version 1.0
-// @description snake demo
+// @description eagle demo
 
 // @host localhost:8080
 // @BasePath /v1

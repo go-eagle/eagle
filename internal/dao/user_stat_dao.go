@@ -10,9 +10,9 @@ import (
 	"github.com/spf13/cast"
 	"gorm.io/gorm"
 
-	"github.com/1024casts/snake/internal/model"
-	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/pkg/storage/sql"
+	"github.com/go-eagle/eagle/internal/model"
+	"github.com/go-eagle/eagle/pkg/log"
+	"github.com/go-eagle/eagle/pkg/storage/sql"
 )
 
 var (

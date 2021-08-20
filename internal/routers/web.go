@@ -4,13 +4,13 @@ import (
 	"html/template"
 	"time"
 
-	"github.com/1024casts/snake/pkg/flash"
-	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/web"
-	webUser "github.com/1024casts/snake/web/user"
 	gintemplate "github.com/foolin/gin-template"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/go-eagle/eagle/pkg/flash"
+	"github.com/go-eagle/eagle/pkg/log"
+	"github.com/go-eagle/eagle/web"
+	webUser "github.com/go-eagle/eagle/web/user"
 )
 
 // LoadWebRouter loads the middlewares, routes, handlers.

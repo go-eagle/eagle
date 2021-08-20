@@ -7,8 +7,8 @@ import (
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 
-	"github.com/1024casts/snake/internal/model"
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/internal/model"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 func (d *Dao) CreateUserFollow(ctx context.Context, db *gorm.DB, userID, followedUID uint64) error {

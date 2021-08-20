@@ -1,12 +1,12 @@
 package user
 
 import (
-	"github.com/1024casts/snake/internal/ecode"
-	"github.com/1024casts/snake/internal/service"
 	"github.com/gin-gonic/gin"
+	"github.com/go-eagle/eagle/internal/ecode"
+	"github.com/go-eagle/eagle/internal/service"
 	"github.com/pkg/errors"
 
-	"github.com/1024casts/snake/pkg/log"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 // VCode 获取验证码

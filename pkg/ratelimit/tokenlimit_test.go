@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/1024casts/snake/pkg/redis"
+	"github.com/go-eagle/eagle/pkg/redis"
 
 	"github.com/stretchr/testify/assert"
 )

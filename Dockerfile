@@ -16,7 +16,7 @@ ENV GO111MODULE=on \
     TZ=Asia/Shanghai
 
 # 移动到工作目录
-WORKDIR /go/src/github.com/1024casts/snake
+WORKDIR /go/src/github.com/go-eagle/eagle
 
 # 复制项目中的 go.mod 和 go.sum文件并下载依赖信息
 COPY go.mod .
@@ -37,8 +37,8 @@ FROM debian:stretch-slim
 WORKDIR /app
 
 # 从builder镜像中把 /build 拷贝到当前目录
-COPY --from=builder /go/src/github.com/1024casts/snake/snake    /app/snake
-COPY --from=builder /go/src/github.com/1024casts/snake/config   /app/config
+COPY --from=builder /go/src/github.com/go-eagle/eagle/eagle    /app/eagle
+COPY --from=builder /go/src/github.com/go-eagle/eagle/config   /app/config
 
 RUN mkdir -p /data/logs/
 
@@ -46,9 +46,9 @@ RUN mkdir -p /data/logs/
 EXPOSE 8080
 
 # 需要运行的命令
-CMD ["/app/snake", "-c", "config/config.docker.yaml"]
+CMD ["/app/eagle", "-c", "config/config.docker.yaml"]
 
-# 1. build image: docker build -t snake:v1 -f Dockerfile .
-# 2. start: docker run --rm -it -p 8080:8080 snake:v1
+# 1. build image: docker build -t eagle:v1 -f Dockerfile .
+# 2. start: docker run --rm -it -p 8080:8080 eagle:v1
 # 3. test: curl -i http://localhost:8080/health
 

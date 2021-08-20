@@ -9,12 +9,12 @@ import (
 
 	"github.com/pkg/errors"
 
-	v1 "github.com/1024casts/snake/api/grpc/user/v1"
-	"github.com/1024casts/snake/internal/model"
-	"github.com/1024casts/snake/pkg/app"
-	"github.com/1024casts/snake/pkg/auth"
-	"github.com/1024casts/snake/pkg/conf"
-	"github.com/1024casts/snake/pkg/log"
+	v1 "github.com/go-eagle/eagle/api/grpc/user/v1"
+	"github.com/go-eagle/eagle/internal/model"
+	"github.com/go-eagle/eagle/pkg/app"
+	"github.com/go-eagle/eagle/pkg/auth"
+	"github.com/go-eagle/eagle/pkg/conf"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 // Register 注册用户

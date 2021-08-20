@@ -2,7 +2,7 @@ SHELL := /bin/bash
 BASEDIR = $(shell pwd)
 
 # build with version infos
-versionDir = "github.com/1024casts/snake/pkg/version"
+versionDir = "github.com/go-eagle/eagle/pkg/version"
 gitTag = $(shell if [ "`git describe --tags --abbrev=0 2>/dev/null`" != "" ];then git describe --tags --abbrev=0; else git log --pretty=format:'%h' -n 1; fi)
 buildDate = $(shell TZ=Asia/Shanghai date +%FT%T%z)
 gitCommit = $(shell git log --pretty=format:'%H' -n 1)
@@ -10,7 +10,7 @@ gitTreeState = $(shell if git status|grep -q 'clean';then echo clean; else echo 
 
 ldflags="-w -X ${versionDir}.gitTag=${gitTag} -X ${versionDir}.buildDate=${buildDate} -X ${versionDir}.gitCommit=${gitCommit} -X ${versionDir}.gitTreeState=${gitTreeState}"
 
-PROJECT_NAME := "github.com/1024casts/snake"
+PROJECT_NAME := "github.com/go-eagle/eagle"
 PKG := "$(PROJECT_NAME)"
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
@@ -85,12 +85,12 @@ gen-coverage:
 .PHONY: docker
 # make docker  生成docker镜像
 docker:
-	docker build -t snake:$(versionDir) -f Dockeffile .
+	docker build -t eagle:$(versionDir) -f Dockeffile .
 
 .PHONY: clean
 # make clean
 clean:
-	@-rm -vrf snake
+	@-rm -vrf eagle
 	@-rm -vrf cover.out
 	@-rm -vrf coverage.txt
 	@go mod tidy
@@ -119,7 +119,7 @@ graph:
   		go get -u github.com/ofabry/go-callvis; \
   	fi
 	@echo "generating graph"
-	@go-callvis github.com/1024casts/snake
+	@go-callvis github.com/go-eagle/eagle
 
 .PHONY: mockgen
 # make mockgen gen mock file

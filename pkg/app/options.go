@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/1024casts/snake/pkg/log"
-	"github.com/1024casts/snake/pkg/transport"
+	"github.com/go-eagle/eagle/pkg/log"
+	"github.com/go-eagle/eagle/pkg/transport"
 )
 
 // Option is func for application

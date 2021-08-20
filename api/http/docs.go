@@ -487,8 +487,8 @@ var SwaggerInfo = swaggerInfo{
 	Host:        "localhost:8080",
 	BasePath:    "/v1",
 	Schemes:     []string{},
-	Title:       "snake docs api",
-	Description: "snake demo",
+	Title:       "eagle docs api",
+	Description: "eagle demo",
 }
 
 type s struct{}
