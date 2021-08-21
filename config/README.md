@@ -26,10 +26,10 @@ cp config.sample.yaml config.dev.yaml
  ```bash
 # 本地启动
 # 也可以直接 ./eagle
-./eagle -c conf/config.local.yaml
+./eagle -c config/config.local.yaml
 # 开发环境启动
-./eagle -c conf/config.dev.yaml
+./eagle -c config/config.dev.yaml
 # 线上环境启动
-./eagle -c conf/config.prod.yaml
+./eagle -c config/config.prod.yaml
 
 ```
