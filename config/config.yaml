@@ -51,10 +51,10 @@ mysql:
   ShowLog: true                   # 是否打印SQL日志
   MaxIdleConn: 10                 # 最大闲置的连接数，0意味着使用默认的大小2， 小于0表示不使用连接池
   MaxOpenConn: 60                 # 最大打开的连接数, 需要小于数据库配置中的max_connections数
-  ConnMaxLifeTime: 4h             # 单个连接最大存活时间，建议设置比数据库超时时长(wait_timeout)稍小一些
-  QueryTimeout: 200ms
-  ExecTimeout: 200ms
-  TranTimeout: 200ms
+  ConnMaxLifeTime: 4000           # 单个连接最大存活时间，建议设置比数据库超时时长(wait_timeout)稍小一些
+  QueryTimeout: 200
+  ExecTimeout: 200
+  TranTimeout: 200
   Braker:                         # 熔断器配置
     window: 3s
     sleep: 100ms
