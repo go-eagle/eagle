@@ -59,7 +59,6 @@ func ParseConfig(v *viper.Viper) (*Config, error) {
 
 	err := v.Unmarshal(&c)
 	if err != nil {
-		log.Printf("unable to decode into struct, %v", err)
 		return nil, err
 	}
 
