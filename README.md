@@ -47,7 +47,6 @@
 ```shell
 ├── Makefile                     # 项目管理文件
 ├── api                          # grpc客户端和Swagger 文档
-├── build                        # 编译目录
 ├── cmd                          # 脚手架目录
 ├── config                       # 配置文件统一存放目录
 ├── docs                         # 框架相关文档
@@ -233,6 +232,7 @@ supervisorctl restart eagle
 
 - [1024课堂](https://1024casts.com)
 - [FastIM](https://github.com/1024casts/fastim)
+- [Go微服务实战项目](https://github.com/go-microservice)
 
 ## 💬 Discussion
 
