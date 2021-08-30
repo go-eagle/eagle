@@ -48,7 +48,7 @@ func WithTracerProvider(provider oteltrace.TracerProvider) Option {
 // Tracing returns middleware that will trace incoming requests.
 // The service parameter should describe the name of the (virtual)
 // server handling the request.
-func Tracing(service string, opts ...Option) gin.HandlerFunc {
+func Tracing(serviceName string, opts ...Option) gin.HandlerFunc {
 	cfg := config{}
 	for _, opt := range opts {
 		opt(&cfg)
@@ -70,13 +70,14 @@ func Tracing(service string, opts ...Option) gin.HandlerFunc {
 			c.Request = c.Request.WithContext(savedCtx)
 		}()
 		ctx := cfg.Propagators.Extract(savedCtx, propagation.HeaderCarrier(c.Request.Header))
+		route := c.FullPath()
 		opts := []oteltrace.SpanStartOption{
 			oteltrace.WithAttributes(semconv.NetAttributesFromHTTPRequest("tcp", c.Request)...),
 			oteltrace.WithAttributes(semconv.EndUserAttributesFromHTTPRequest(c.Request)...),
-			oteltrace.WithAttributes(semconv.HTTPServerAttributesFromHTTPRequest(service, c.FullPath(), c.Request)...),
+			oteltrace.WithAttributes(semconv.HTTPServerAttributesFromHTTPRequest(serviceName, route, c.Request)...),
 			oteltrace.WithSpanKind(oteltrace.SpanKindServer),
 		}
-		spanName := c.FullPath()
+		spanName := route
 		if spanName == "" {
 			spanName = fmt.Sprintf("HTTP %s route not found", c.Request.Method)
 		}
