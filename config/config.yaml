@@ -128,13 +128,8 @@ trace:
     ID128Bit: true
     SampleRate: "1.0"
   Jaeger:
-    SamplingServerURL: "http://127.0.0.1:5778/sampling"
-    SamplingType: "const"
-    SamplingParam: "1.0"
+    SamplingRatio: "1.0"
     LocalAgentHostPort: "127.0.0.1:6831"
-    Propagation: "jaeger"
-    Gen128Bit: true
-    TraceContextHeaderName: "uber-trace-id"
     CollectorEndpoint: "http://localhost:14268/api/traces"
     CollectorUser: ""
     CollectorPassword: ""

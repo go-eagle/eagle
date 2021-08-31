@@ -1,6 +1,9 @@
 package trace
 
 import (
+	"errors"
+	"strings"
+
 	jaegerprop "go.opentelemetry.io/contrib/propagators/jaeger"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/jaeger"
@@ -13,16 +16,27 @@ import (
 // the Jaeger exporter that will send spans to the provided url. The returned
 // TracerProvider will also use a Resource configured with all the information
 // about the application.
-func InitTracerProvider(serviceName, endpoint string) (*tracesdk.TracerProvider, error) {
+func InitTracerProvider(serviceName, endpoint string, options ...Option) (*tracesdk.TracerProvider, error) {
+	var endpointOption jaeger.EndpointOption
+	if serviceName == "" {
+		return nil, errors.New("no service name provided")
+	}
+	if strings.HasPrefix(endpoint, "http") {
+		endpointOption = jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(endpoint))
+	} else {
+		endpointOption = jaeger.WithAgentEndpoint(jaeger.WithAgentHost(endpoint))
+	}
+
 	// Create the Jaeger exporter
-	exporter, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(endpoint)))
+	exporter, err := jaeger.New(endpointOption)
 	if err != nil {
 		return nil, err
 	}
 
+	opts := applyOptions(options...)
 	tp := tracesdk.NewTracerProvider(
 		// set sample
-		tracesdk.WithSampler(tracesdk.AlwaysSample()),
+		tracesdk.WithSampler(tracesdk.TraceIDRatioBased(opts.SamplingRatio)),
 		// Always be sure to batch in production.
 		tracesdk.WithBatcher(exporter),
 		// Record information about this application in an Resource.
