@@ -7,8 +7,7 @@ import (
 )
 
 func TestDefaultClient(t *testing.T) {
-	c := DefaultClient
-
+	c := New(WithClientType(DefaultClient))
 	t.Run("test http get func", func(t *testing.T) {
 		var ret interface{}
 		err := c.Get(context.Background(), "http://httpbin.org/get", nil, 3*time.Second, &ret)
@@ -31,7 +30,7 @@ func TestDefaultClient(t *testing.T) {
 }
 
 func TestRawClient(t *testing.T) {
-	c := RawClient
+	c := New(WithClientType(RawClient))
 
 	t.Run("test http get func", func(t *testing.T) {
 		var ret interface{}

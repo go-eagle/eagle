@@ -12,13 +12,14 @@ import (
 
 const (
 	contentTypeJSON = "application/json"
+	contentTypeForm = "application/x-www-form-urlencoded"
 )
 
 // DefaultClient 默认的http client，基于resty库进行封装
-var DefaultClient = New("resty")
+var DefaultClient = "resty"
 
 // RawClient 原生http client
-var RawClient = New("raw")
+var RawClient = "raw"
 
 // Client 定义 http client 接口
 type Client interface {
@@ -26,19 +27,26 @@ type Client interface {
 	Post(ctx context.Context, url string, data []byte, duration time.Duration, out interface{}) error
 }
 
-// New 实例化一个client, default is raw http client
-func New(typ string) Client {
+// New 实例化一个client
+func New(opts ...Option) Client {
+	cfg := config{
+		ClientTyp: DefaultClient,
+	}
+	for _, opt := range opts {
+		opt(&cfg)
+	}
+
 	var c Client
-	if typ == "resty" {
+	if cfg.ClientTyp == DefaultClient {
 		c = newRestyClient()
 	} else {
 		c = newRawClient()
 	}
 
 	if c == nil {
-		panic("unknown http client type " + typ)
+		panic("unknown http client type " + cfg.ClientTyp)
 	}
 
-	log.Println(typ, "ready to serve")
+	log.Println(cfg.ClientTyp, "ready to serve")
 	return c
 }

@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"go.opentelemetry.io/otel"
 )
 
 // raw 使用原生包封装的 http client
@@ -35,8 +34,7 @@ func (r *rawClient) Get(ctx context.Context, url string, params map[string]strin
 		Timeout:   duration,
 	}
 
-	tr := otel.GetTracerProvider().Tracer("tracer from http client")
-	ctx, span := tr.Start(ctx, "http request")
+	ctx, span := tracer.Start(ctx, "HTTP Get")
 	defer span.End()
 
 	resp, err := client.Do(req)
@@ -45,7 +43,7 @@ func (r *rawClient) Get(ctx context.Context, url string, params map[string]strin
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode >= http.StatusBadRequest {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return err
@@ -69,8 +67,7 @@ func (r *rawClient) Post(ctx context.Context, url string, data []byte, duration 
 	}
 	req.Header.Set("Content-Type", contentTypeJSON)
 
-	tr := otel.GetTracerProvider().Tracer("tracer from http client")
-	ctx, span := tr.Start(ctx, "http request")
+	ctx, span := tracer.Start(ctx, "HTTP Post")
 	defer span.End()
 
 	resp, err := client.Do(req)
@@ -79,7 +76,7 @@ func (r *rawClient) Post(ctx context.Context, url string, data []byte, duration 
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode >= http.StatusBadRequest {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return err
