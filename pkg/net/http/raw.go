@@ -5,9 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/go-eagle/eagle/pkg/log"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
@@ -15,7 +18,9 @@ import (
 // raw 使用原生包封装的 http client
 
 // rawClient
-type rawClient struct{}
+type rawClient struct {
+	resp *http.Response
+}
 
 // newRawClient 实例化 http 客户端
 func newRawClient() Client {
@@ -24,7 +29,7 @@ func newRawClient() Client {
 
 // Get get data by get method
 func (r *rawClient) Get(ctx context.Context, url string, params map[string]string, duration time.Duration, out interface{}) error {
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if err != nil {
 		return err
 	}
@@ -43,9 +48,13 @@ func (r *rawClient) Get(ctx context.Context, url string, params map[string]strin
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= http.StatusBadRequest {
+	r.resp = resp
+
+	if !r.isSuccess() {
 		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
+		if err != nil && err != io.ErrUnexpectedEOF {
+			log.WithContext(ctx).Errorf("[httpClient] get url: %s, status code: %s, err: %s",
+				url, resp.StatusCode, err.Error())
 			return err
 		}
 		return errors.New(string(body))
@@ -56,7 +65,7 @@ func (r *rawClient) Get(ctx context.Context, url string, params map[string]strin
 
 // Post send data by post method
 func (r *rawClient) Post(ctx context.Context, url string, data []byte, duration time.Duration, out interface{}) error {
-	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(data))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(data))
 	if err != nil {
 		return err
 	}
@@ -67,7 +76,7 @@ func (r *rawClient) Post(ctx context.Context, url string, data []byte, duration 
 	}
 	req.Header.Set("Content-Type", contentTypeJSON)
 
-	ctx, span := tracer.Start(ctx, "HTTP Post")
+	ctx, span := tracer.Start(req.Context(), "HTTP Post")
 	defer span.End()
 
 	resp, err := client.Do(req)
@@ -76,13 +85,22 @@ func (r *rawClient) Post(ctx context.Context, url string, data []byte, duration 
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= http.StatusBadRequest {
+	r.resp = resp
+
+	if !r.isSuccess() {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
+			log.WithContext(ctx).Errorf("[httpClient] post url: %s, status code: %s, err: %s",
+				url, resp.StatusCode, err.Error())
 			return err
 		}
 		return errors.New(string(body))
 	}
 	decoder := json.NewDecoder(resp.Body)
 	return decoder.Decode(out)
+}
+
+// isSuccess check is success
+func (r *rawClient) isSuccess() bool {
+	return r.resp.StatusCode < http.StatusBadRequest
 }
