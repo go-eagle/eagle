@@ -7,7 +7,10 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"net/http"
 	"time"
+
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -22,7 +25,10 @@ func newRestyClient() Client {
 
 // Get request url by get method
 func (r *restyClient) Get(ctx context.Context, url string, params map[string]string, duration time.Duration, out interface{}) error {
-	client := resty.New()
+	httpClient := &http.Client{
+		Transport: otelhttp.NewTransport(http.DefaultTransport),
+	}
+	client := resty.NewWithClient(httpClient)
 
 	if duration != 0 {
 		client.SetTimeout(duration)
@@ -33,6 +39,7 @@ func (r *restyClient) Get(ctx context.Context, url string, params map[string]str
 	}
 
 	resp, err := client.R().
+		SetContext(ctx).
 		SetHeaders(map[string]string{
 			"Content-Type": contentTypeJSON,
 		}).
@@ -42,7 +49,7 @@ func (r *restyClient) Get(ctx context.Context, url string, params map[string]str
 	}
 	defer resp.RawResponse.Body.Close()
 
-	if resp.StatusCode() >= 400 {
+	if resp.StatusCode() >= http.StatusBadRequest {
 		body, err := ioutil.ReadAll(resp.RawBody())
 		if err != nil {
 			return err
@@ -55,13 +62,17 @@ func (r *restyClient) Get(ctx context.Context, url string, params map[string]str
 
 // Post request url by post method
 func (r *restyClient) Post(ctx context.Context, url string, data []byte, duration time.Duration, out interface{}) error {
-	client := resty.New()
+	httpClient := &http.Client{
+		Transport: otelhttp.NewTransport(http.DefaultTransport),
+	}
+	client := resty.NewWithClient(httpClient)
 
 	if duration != 0 {
 		client.SetTimeout(duration)
 	}
 
 	cr := client.R().
+		SetContext(ctx).
 		SetBody(string(data)).
 		SetHeaders(map[string]string{
 			"Content-Type": contentTypeJSON,
@@ -73,7 +84,7 @@ func (r *restyClient) Post(ctx context.Context, url string, data []byte, duratio
 	}
 	defer resp.RawBody().Close()
 
-	if resp.StatusCode() >= 400 {
+	if resp.StatusCode() >= http.StatusBadRequest {
 		body, err := ioutil.ReadAll(resp.RawBody())
 		if err != nil {
 			return err
