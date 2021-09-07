@@ -24,7 +24,7 @@ func NewRouter() *gin.Engine {
 	g.Use(middleware.Secure)
 	g.Use(middleware.Logging())
 	g.Use(middleware.RequestID())
-	g.Use(middleware.Prom(nil))
+	g.Use(middleware.Metrics(nil))
 	g.Use(middleware.Tracing("eagle-service"))
 	g.Use(mw.Translations())
 
