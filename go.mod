@@ -4,7 +4,6 @@ go 1.15
 
 require (
 	github.com/1024casts/gorm-opentelemetry v1.0.1-0.20210805144709-183269b54068
-	github.com/AlecAivazis/survey/v2 v2.2.16 // indirect
 	github.com/DATA-DOG/go-sqlmock v1.4.1
 	github.com/HdrHistogram/hdrhistogram-go v1.0.1 // indirect
 	github.com/Shopify/sarama v1.19.0
@@ -19,7 +18,6 @@ require (
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gin-contrib/static v0.0.0-20200916080430-d45d9a37d28e
 	github.com/gin-gonic/gin v1.7.2
-	github.com/go-eagle/eagle/cmd/eagle v0.0.0-20210821143248-d6e41f0e0795 // indirect
 	github.com/go-mail/mail v2.3.1+incompatible
 	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
@@ -76,11 +74,11 @@ require (
 	go.opentelemetry.io/contrib v0.22.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.22.0
 	go.opentelemetry.io/contrib/propagators v0.22.0
-	go.opentelemetry.io/otel v1.0.0-RC2
-	go.opentelemetry.io/otel/exporters/jaeger v1.0.0-RC2
-	go.opentelemetry.io/otel/oteltest v1.0.0-RC2
-	go.opentelemetry.io/otel/sdk v1.0.0-RC2
-	go.opentelemetry.io/otel/trace v1.0.0-RC2
+	go.opentelemetry.io/otel v1.0.0-RC3
+	go.opentelemetry.io/otel/exporters/jaeger v1.0.0-RC3
+	go.opentelemetry.io/otel/oteltest v1.0.0-RC3
+	go.opentelemetry.io/otel/sdk v1.0.0-RC3
+	go.opentelemetry.io/otel/trace v1.0.0-RC3
 	//go.opentelemetry.io/otel/unit v0.20.0
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/automaxprocs v1.4.0

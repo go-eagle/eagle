@@ -1,15 +1,16 @@
-package redis
+package lock
 
 import (
 	"context"
+	"github.com/go-eagle/eagle/pkg/redis"
 	"testing"
 	"time"
 )
 
 func TestLockWithDefaultTimeout(t *testing.T) {
-	InitTestRedis()
+	redis.InitTestRedis()
 
-	lock := NewLock(RedisClient, "test:lock")
+	lock := NewLock(redis.RedisClient, "test:lock")
 	ok, err := lock.Lock(context.Background())
 	if err != nil {
 		t.Error(err)
@@ -24,8 +25,8 @@ func TestLockWithDefaultTimeout(t *testing.T) {
 }
 
 func TestLockWithTimeout(t *testing.T) {
-	InitTestRedis()
-	lock := NewLock(RedisClient, "test:lock", WithTimeout(3*time.Second))
+	redis.InitTestRedis()
+	lock := NewLock(redis.RedisClient, "test:lock", WithTimeout(3*time.Second))
 	ok, err := lock.Lock(context.Background())
 	if err != nil {
 		t.Error(err)

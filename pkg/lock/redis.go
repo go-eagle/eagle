@@ -1,4 +1,4 @@
-package redis
+package lock
 
 import (
 	"context"
@@ -9,34 +9,28 @@ import (
 	"github.com/google/uuid"
 )
 
-const (
-	// LockKey redis lock key
-	LockKey = "eagle:redis:lock:%s"
-	// DefaultTimeout default expire time
-	DefaultTimeout = 2 * time.Second
-)
-
-// Lock 定义lock结构体
-type Lock struct {
+// redisLock 定义lock结构体
+type redisLock struct {
 	key         string
 	redisClient *redis.Client
 	token       string
 	timeout     time.Duration
+
 	// todo: support retry
 	// maxRetries int
 }
 
-type Option func(*Lock)
+type Option func(*redisLock)
 
 func WithTimeout(expiration time.Duration) Option {
-	return func(l *Lock) {
+	return func(l *redisLock) {
 		l.timeout = expiration
 	}
 }
 
 // NewLock new a lock instance
-func NewLock(conn *redis.Client, key string, opts ...Option) *Lock {
-	lock := Lock{
+func NewLock(conn *redis.Client, key string, opts ...Option) *redisLock {
+	lock := redisLock{
 		key:         key,
 		redisClient: conn,
 		token:       genToken(),
@@ -50,7 +44,7 @@ func NewLock(conn *redis.Client, key string, opts ...Option) *Lock {
 }
 
 // Lock 加锁
-func (l *Lock) Lock(ctx context.Context) (bool, error) {
+func (l *redisLock) Lock(ctx context.Context) (bool, error) {
 	ok, err := l.redisClient.SetNX(ctx, l.GetKey(), l.token, l.timeout).Result()
 	if err == redis.Nil {
 		err = nil
@@ -60,7 +54,7 @@ func (l *Lock) Lock(ctx context.Context) (bool, error) {
 
 // Unlock 解锁
 // token 一致才会执行删除，避免误删，这里用了lua脚本进行事务处理
-func (l *Lock) Unlock(ctx context.Context) error {
+func (l *redisLock) Unlock(ctx context.Context) error {
 	script := "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end"
 	_, err := l.redisClient.Eval(ctx, script, []string{l.GetKey()}, l.token).Result()
 	if err != nil {
@@ -70,7 +64,7 @@ func (l *Lock) Unlock(ctx context.Context) error {
 }
 
 // GetKey 获取key
-func (l *Lock) GetKey() string {
+func (l *redisLock) GetKey() string {
 	return fmt.Sprintf(LockKey, l.key)
 }
 
