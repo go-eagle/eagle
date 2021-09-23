@@ -70,6 +70,7 @@ func watchConfig(v *viper.Viper) {
 	go func() {
 		v.WatchConfig()
 		v.OnConfigChange(func(e fsnotify.Event) {
+			_ = v.Unmarshal(&Conf)
 			log.Printf("Config file changed: %s", e.Name)
 		})
 	}()

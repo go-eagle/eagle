@@ -47,7 +47,7 @@ func (s *Service) EmailLogin(ctx context.Context, email, password string) (token
 
 	// ComparePasswords the login password with the user password.
 	if !auth.ComparePasswords(u.Password, password) {
-		return "", errors.Wrapf(err, "invalid password")
+		return "", errors.New("invalid password")
 	}
 
 	// 签发签名 Sign the json web token.
