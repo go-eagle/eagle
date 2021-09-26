@@ -39,7 +39,7 @@ func (r *restyClient) Get(ctx context.Context, url string, params map[string]str
 	}
 
 	resp, err := client.R().
-		//SetDoNotParseResponse(true).
+		SetDoNotParseResponse(true).
 		SetContext(ctx).
 		SetHeaders(map[string]string{
 			"Content-Type": contentTypeJSON,
