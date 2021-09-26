@@ -26,7 +26,7 @@ import (
 	"github.com/go-eagle/eagle/internal/model"
 	"github.com/go-eagle/eagle/internal/server"
 	"github.com/go-eagle/eagle/internal/service"
-	"github.com/go-eagle/eagle/pkg/app"
+	eagle "github.com/go-eagle/eagle/pkg/app"
 	"github.com/go-eagle/eagle/pkg/conf"
 	logger "github.com/go-eagle/eagle/pkg/log"
 	"github.com/go-eagle/eagle/pkg/redis"
@@ -88,11 +88,11 @@ func main() {
 		}
 	}()
 
-	app := app.New(cfg,
-		app.WithName(cfg.App.Name),
-		app.WithVersion(cfg.App.Version),
-		app.WithLogger(logger.GetLogger()),
-		app.Server(
+	app := eagle.New(cfg,
+		eagle.WithName(cfg.App.Name),
+		eagle.WithVersion(cfg.App.Version),
+		eagle.WithLogger(logger.GetLogger()),
+		eagle.Server(
 			// init http server
 			server.NewHttpServer(conf.Conf, svc),
 			// init grpc server
