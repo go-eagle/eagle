@@ -36,6 +36,15 @@ var (
 			Labels:    labels,
 		})
 
+	// 当前正在处理请求的QPS
+	curReqCount = metric.NewGaugeVec(
+		&metric.GaugeVecOpts{
+			Namespace: namespace,
+			Name:      "http_request_in_flight",
+			Help:      "Current number of http requests in flight.",
+			Labels:    labels,
+		})
+
 	// 接口响应时间
 	reqDuration = metric.NewHistogramVec(
 		&metric.HistogramVecOpts{
@@ -172,6 +181,8 @@ func Metrics(promOpts *PromOpts) gin.HandlerFunc {
 		if respSize < 0 {
 			respSize = 0
 		}
+		curReqCount.Inc(labels...)
+		defer curReqCount.Dec(labels...)
 		reqCount.Inc(labels...)
 		reqDuration.Observe(int64(time.Since(start).Seconds()), labels...)
 		reqSizeBytes.Observe(int64(calcRequestSize(c.Request)), labels...)
