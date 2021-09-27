@@ -126,11 +126,11 @@ func (c *Consumer) ReConnect() {
 		select {
 		case err := <-c.connNotify:
 			if err != nil {
-				log.Fatalf("rabbitmq consumer - connection NotifyClose: ", err)
+				log.Fatalf("rabbitmq consumer - connection NotifyClose: %+v", err)
 			}
 		case err := <-c.channelNotify:
 			if err != nil {
-				log.Fatalf("rabbitmq consumer - channel NotifyClose: ", err)
+				log.Fatalf("rabbitmq consumer - channel NotifyClose: %+v", err)
 			}
 		case <-c.quit:
 			return
@@ -140,10 +140,10 @@ func (c *Consumer) ReConnect() {
 		if !c.conn.IsClosed() {
 			// 关闭 SubMsg message delivery
 			if err := c.channel.Cancel(c.consumerTag, true); err != nil {
-				log.Fatalf("rabbitmq consumer - channel cancel failed: ", err)
+				log.Fatalf("rabbitmq consumer - channel cancel failed: %+v", err)
 			}
 			if err := c.conn.Close(); err != nil {
-				log.Fatalf("rabbitmq consumer - conn cancel failed: ", err)
+				log.Fatalf("rabbitmq consumer - conn cancel failed: %+v", err)
 			}
 		}
 

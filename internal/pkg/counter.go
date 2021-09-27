@@ -3,10 +3,11 @@
 package pkg
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 
 	redis2 "github.com/go-eagle/eagle/pkg/redis"
 )
@@ -37,26 +38,26 @@ func (c *Counter) GetKey(key string) string {
 }
 
 // SetCounter set counter
-func (c *Counter) SetCounter(idStr string, expiration time.Duration) (int64, error) {
+func (c *Counter) SetCounter(ctx context.Context, idStr string, expiration time.Duration) (int64, error) {
 	key := c.GetKey(idStr)
-	ret, err := c.client.IncrBy(key, DefaultStep).Result()
+	ret, err := c.client.IncrBy(ctx, key, DefaultStep).Result()
 	if err != nil {
 		return 0, err
 	}
-	_, _ = c.client.Expire(key, expiration).Result()
+	_, _ = c.client.Expire(ctx, key, expiration).Result()
 	return ret, nil
 }
 
 // GetCounter get total count
-func (c *Counter) GetCounter(idStr string) (int64, error) {
+func (c *Counter) GetCounter(ctx context.Context, idStr string) (int64, error) {
 	key := c.GetKey(idStr)
-	return c.client.Get(key).Int64()
+	return c.client.Get(ctx, key).Int64()
 }
 
 // DelCounter del count
-func (c *Counter) DelCounter(idStr string) int64 {
+func (c *Counter) DelCounter(ctx context.Context, idStr string) int64 {
 	key := c.GetKey(idStr)
 	var keys []string
 	keys = append(keys, key)
-	return c.client.Del(keys...).Val()
+	return c.client.Del(ctx, keys...).Val()
 }
