@@ -35,7 +35,7 @@ func DoLogin(c *gin.Context) {
 	}
 
 	// Get the user information by the login username.
-	d, err := service.UserSvc.GetUserByEmail(c, req.Email)
+	d, err := service.Svc.Users().GetUserByEmail(c, req.Email)
 	if err != nil {
 		log.Warnf("[web.login] get user by email err: %v", err)
 		web.Response(c, ecode.ErrUserNotFound, nil)

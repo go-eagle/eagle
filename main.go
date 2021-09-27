@@ -76,7 +76,7 @@ func main() {
 	}
 
 	// init service
-	svc := service.New(cfg, dao.New(cfg, model.GetDB()))
+	service.Svc = service.New(cfg, dao.New(cfg, model.GetDB()))
 
 	gin.SetMode(conf.Conf.App.Mode)
 
@@ -94,7 +94,7 @@ func main() {
 		eagle.WithLogger(logger.GetLogger()),
 		eagle.Server(
 			// init http server
-			server.NewHttpServer(conf.Conf, svc),
+			server.NewHttpServer(conf.Conf),
 			// init grpc server
 			//grpcSrv := server.NewGRPCServer(svc)
 		),

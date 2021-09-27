@@ -31,7 +31,7 @@ func Login(c *gin.Context) {
 
 	log.Infof("login req %#v", req)
 
-	t, err := service.UserSvc.EmailLogin(c, req.Email, req.Password)
+	t, err := service.Svc.Users().EmailLogin(c, req.Email, req.Password)
 	if err != nil {
 		log.Warnf("email login err: %v", err)
 		response.Error(c, ecode.ErrEmailOrPassword)
@@ -69,13 +69,13 @@ func PhoneLogin(c *gin.Context) {
 	}
 
 	// 验证校验码
-	if !service.UserSvc.CheckLoginVCode(req.Phone, req.VerifyCode) {
+	if !service.Svc.VCode().CheckLoginVCode(req.Phone, req.VerifyCode) {
 		response.Error(c, ecode.ErrVerifyCode)
 		return
 	}
 
 	// 登录
-	t, err := service.UserSvc.PhoneLogin(c, req.Phone, req.VerifyCode)
+	t, err := service.Svc.Users().PhoneLogin(c, req.Phone, req.VerifyCode)
 	if err != nil {
 		response.Error(c, ecode.ErrVerifyCode)
 		return

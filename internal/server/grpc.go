@@ -13,14 +13,14 @@ import (
 )
 
 // NewGRPCServer creates a gRPC server
-func NewGRPCServer(svc *service.Service) *grpc.Server {
+func NewGRPCServer() *grpc.Server {
 	lis, err := net.Listen("tcp", conf.Conf.Grpc.Addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	grpcServer := grpc.NewServer()
-	v1.RegisterUserServiceServer(grpcServer, service.UserSvc)
+	v1.RegisterUserServiceServer(grpcServer, service.Svc.Users())
 	err = grpcServer.Serve(lis)
 	if err != nil {
 		log.Fatalf("failed to serve grpc server: %v", err)

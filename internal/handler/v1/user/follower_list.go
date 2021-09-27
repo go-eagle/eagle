@@ -30,7 +30,7 @@ func FollowerList(c *gin.Context) {
 
 	curUserID := api.GetUserID(c)
 
-	_, err := service.UserSvc.GetUserByID(c, uint64(userID))
+	_, err := service.Svc.Users().GetUserByID(c, uint64(userID))
 	if err != nil {
 		response.Error(c, ecode.ErrUserNotFound)
 		return
@@ -40,7 +40,7 @@ func FollowerList(c *gin.Context) {
 	lastID, _ := strconv.Atoi(lastIDStr)
 	limit := 10
 
-	userFollowerList, err := service.UserSvc.GetFollowerUserList(context.TODO(), uint64(userID), uint64(lastID), limit+1)
+	userFollowerList, err := service.Svc.Relations().GetFollowerUserList(context.TODO(), uint64(userID), uint64(lastID), limit+1)
 	if err != nil {
 		log.Warnf("get follower user list err: %+v", err)
 		response.Error(c, errcode.ErrInternalServer)
@@ -60,7 +60,7 @@ func FollowerList(c *gin.Context) {
 		userIDs = append(userIDs, v.FollowerUID)
 	}
 
-	userOutList, err := service.UserSvc.BatchGetUsers(context.TODO(), curUserID, userIDs)
+	userOutList, err := service.Svc.Users().BatchGetUsers(context.TODO(), curUserID, userIDs)
 	if err != nil {
 		log.Warnf("batch get users err: %v", err)
 		response.Error(c, errcode.ErrInternalServer)

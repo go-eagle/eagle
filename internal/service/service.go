@@ -5,6 +5,8 @@ import (
 	"github.com/go-eagle/eagle/pkg/conf"
 )
 
+var Svc Service
+
 const (
 	// DefaultLimit 默认分页数
 	DefaultLimit = 50
@@ -20,6 +22,7 @@ type Service interface {
 	Users() UserService
 	Relations() RelationService
 	SMS() SMSService
+	VCode() VCodeService
 }
 
 // service struct
@@ -46,4 +49,8 @@ func (s *service) Relations() RelationService {
 
 func (s *service) SMS() SMSService {
 	return newSMS(s)
+}
+
+func (s *service) VCode() VCodeService {
+	return newVCode(s)
 }

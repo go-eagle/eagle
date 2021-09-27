@@ -32,7 +32,7 @@ func Get(c *gin.Context) {
 	}
 
 	// Get the user by the `user_id` from the database.
-	u, err := service.UserSvc.GetUserByID(c.Request.Context(), userID)
+	u, err := service.Svc.Users().GetUserByID(c.Request.Context(), userID)
 	if errors.Is(err, dao.ErrNotFound) {
 		log.Errorf("get user info err: %+v", err)
 		response.Error(c, ecode.ErrUserNotFound)

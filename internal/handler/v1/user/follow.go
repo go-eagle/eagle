@@ -3,9 +3,8 @@ package user
 import (
 	"context"
 
-	"github.com/go-eagle/eagle/internal/service"
-
 	"github.com/go-eagle/eagle/internal/ecode"
+	"github.com/go-eagle/eagle/internal/service"
 
 	"github.com/gin-gonic/gin"
 
@@ -32,7 +31,7 @@ func Follow(c *gin.Context) {
 	}
 
 	// Get the user by the `user_id` from the database.
-	_, err := service.UserSvc.GetUserByID(c, req.UserID)
+	_, err := service.Svc.Users().GetUserByID(c, req.UserID)
 	if err != nil {
 		response.Error(c, ecode.ErrUserNotFound.WithDetails(err.Error()))
 		return
@@ -46,7 +45,7 @@ func Follow(c *gin.Context) {
 	}
 
 	// 检查是否已经关注过
-	isFollowed := service.UserSvc.IsFollowing(context.TODO(), userID, req.UserID)
+	isFollowed := service.Svc.Relations().IsFollowing(context.TODO(), userID, req.UserID)
 	if isFollowed {
 		response.Error(c, errcode.Success)
 		return
@@ -54,7 +53,7 @@ func Follow(c *gin.Context) {
 
 	if isFollowed {
 		// 取消关注
-		err = service.UserSvc.Unfollow(context.TODO(), userID, req.UserID)
+		err = service.Svc.Relations().Unfollow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] cancel user follow err: %v", err)
 			response.Error(c, errcode.ErrInternalServer.WithDetails(err.Error()))
@@ -62,7 +61,7 @@ func Follow(c *gin.Context) {
 		}
 	} else {
 		// 添加关注
-		err = service.UserSvc.Follow(context.TODO(), userID, req.UserID)
+		err = service.Svc.Relations().Follow(context.TODO(), userID, req.UserID)
 		if err != nil {
 			log.Warnf("[follow] add user follow err: %v", err)
 			response.Error(c, errcode.ErrInternalServer.WithDetails(err.Error()))

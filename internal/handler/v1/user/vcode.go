@@ -37,7 +37,7 @@ func VCode(c *gin.Context) {
 	// TODO: 频率控制，以防攻击
 
 	// 生成短信验证码
-	verifyCode, err := service.VCodeSvc.GenLoginVCode(phone)
+	verifyCode, err := service.Svc.VCode().GenLoginVCode(phone)
 	if err != nil {
 		log.Warnf("gen login verify code err, %v", errors.WithStack(err))
 		response.Error(c, ecode.ErrGenVCode)
@@ -45,7 +45,7 @@ func VCode(c *gin.Context) {
 	}
 
 	// 发送短信
-	err = service.VCodeSvc.SendSMS(phone, verifyCode)
+	err = service.Svc.SMS().SendSMS(phone, verifyCode)
 	if err != nil {
 		log.Warnf("send phone sms err, %v", errors.WithStack(err))
 		response.Error(c, ecode.ErrSendSMS)
