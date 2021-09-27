@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"reflect"
 	"testing"
 	"time"
@@ -19,6 +20,8 @@ func Test_redisCache_SetGet(t *testing.T) {
 	cache := NewRedisCache(redisClient, "unit-test", encoding.JSONEncoding{}, func() interface{} {
 		return new(int64)
 	})
+
+	ctx := context.Background()
 
 	// test set
 	type setArgs struct {
@@ -44,7 +47,7 @@ func Test_redisCache_SetGet(t *testing.T) {
 	for _, tt := range setTests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := tt.cache
-			if err := c.Set(tt.args.key, tt.args.value, tt.args.expiration); (err != nil) != tt.wantErr {
+			if err := c.Set(ctx, tt.args.key, tt.args.value, tt.args.expiration); (err != nil) != tt.wantErr {
 				t.Errorf("Set() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -74,7 +77,7 @@ func Test_redisCache_SetGet(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := tt.cache
 			var gotVal interface{}
-			err := c.Get(tt.args.key, &gotVal)
+			err := c.Get(ctx, tt.args.key, &gotVal)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
 				return

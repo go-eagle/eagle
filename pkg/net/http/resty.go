@@ -39,6 +39,7 @@ func (r *restyClient) Get(ctx context.Context, url string, params map[string]str
 	}
 
 	resp, err := client.R().
+		SetDoNotParseResponse(true).
 		SetContext(ctx).
 		SetHeaders(map[string]string{
 			"Content-Type": contentTypeJSON,
@@ -72,6 +73,7 @@ func (r *restyClient) Post(ctx context.Context, url string, data []byte, duratio
 	}
 
 	cr := client.R().
+		SetDoNotParseResponse(true).
 		SetContext(ctx).
 		SetBody(string(data)).
 		SetHeaders(map[string]string{
