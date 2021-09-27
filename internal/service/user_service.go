@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/go-eagle/eagle/internal/dao"
 	"strconv"
 	"sync"
 	"time"
@@ -17,8 +18,31 @@ import (
 	"github.com/go-eagle/eagle/pkg/log"
 )
 
+type UserService interface {
+	Register(ctx context.Context, username, email, password string) error
+	EmailLogin(ctx context.Context, email, password string) (tokenStr string, err error)
+	PhoneLogin(ctx context.Context, phone int64, verifyCode int) (tokenStr string, err error)
+	LoginByPhone(ctx context.Context, req *v1.PhoneLoginRequest) (reply *v1.PhoneLoginReply, err error)
+	GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error)
+	GetUserInfoByID(ctx context.Context, id uint64) (*model.UserInfo, error)
+	GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error)
+	GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error)
+	UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error
+	BatchGetUsers(ctx context.Context, userID uint64, userIDs []uint64) ([]*model.UserInfo, error)
+}
+
+type userService struct {
+	dao *dao.Dao
+}
+
+var _ UserService = (*userService)(nil)
+
+func newUsers(svc *service) *userService {
+	return &userService{dao: svc.dao}
+}
+
 // Register 注册用户
-func (s *Service) Register(ctx context.Context, username, email, password string) error {
+func (s *userService) Register(ctx context.Context, username, email, password string) error {
 	pwd, err := auth.HashAndSalt(password)
 	if err != nil {
 		return errors.Wrapf(err, "encrypt password err")
@@ -39,7 +63,7 @@ func (s *Service) Register(ctx context.Context, username, email, password string
 }
 
 // EmailLogin 邮箱登录
-func (s *Service) EmailLogin(ctx context.Context, email, password string) (tokenStr string, err error) {
+func (s *userService) EmailLogin(ctx context.Context, email, password string) (tokenStr string, err error) {
 	u, err := s.GetUserByEmail(ctx, email)
 	if err != nil {
 		return "", errors.Wrapf(err, "get user info err by email")
@@ -61,7 +85,7 @@ func (s *Service) EmailLogin(ctx context.Context, email, password string) (token
 }
 
 // LoginByPhone phone login, grpc wrapper
-func (s *Service) LoginByPhone(ctx context.Context, req *v1.PhoneLoginRequest) (reply *v1.PhoneLoginReply, err error) {
+func (s *userService) LoginByPhone(ctx context.Context, req *v1.PhoneLoginRequest) (reply *v1.PhoneLoginReply, err error) {
 	tokenStr, err := s.PhoneLogin(ctx, req.Phone, int(req.VerifyCode))
 	if err != nil {
 		log.Warnf("[service.user] phone login err: %v, params: %v", err, req)
@@ -74,7 +98,7 @@ func (s *Service) LoginByPhone(ctx context.Context, req *v1.PhoneLoginRequest) (
 }
 
 // PhoneLogin 邮箱登录
-func (s *Service) PhoneLogin(ctx context.Context, phone int64, verifyCode int) (tokenStr string, err error) {
+func (s *userService) PhoneLogin(ctx context.Context, phone int64, verifyCode int) (tokenStr string, err error) {
 	// 如果是已经注册用户，则通过手机号获取用户信息
 	u, err := s.GetUserByPhone(ctx, phone)
 	if err != nil {
@@ -103,7 +127,7 @@ func (s *Service) PhoneLogin(ctx context.Context, phone int64, verifyCode int) (
 }
 
 // UpdateUser update user info
-func (s *Service) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
+func (s *userService) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
 	err := s.dao.UpdateUser(ctx, id, userMap)
 
 	if err != nil {
@@ -114,17 +138,17 @@ func (s *Service) UpdateUser(ctx context.Context, id uint64, userMap map[string]
 }
 
 // GetUserByID 获取单条用户信息
-func (s *Service) GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error) {
+func (s *userService) GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error) {
 	return s.dao.GetOneUser(ctx, id)
 }
 
 // GetUserByID 获取单条用户信息
-func (s *Service) GetUserStatByID(ctx context.Context, id uint64) (*model.UserStatModel, error) {
+func (s *userService) GetUserStatByID(ctx context.Context, id uint64) (*model.UserStatModel, error) {
 	return s.dao.GetUserStatByID(ctx, id)
 }
 
 // GetUserInfoByID 获取组装好的用户数据
-func (s *Service) GetUserInfoByID(ctx context.Context, id uint64) (*model.UserInfo, error) {
+func (s *userService) GetUserInfoByID(ctx context.Context, id uint64) (*model.UserInfo, error) {
 	userInfos, err := s.BatchGetUsers(ctx, id, []uint64{id})
 	if err != nil {
 		return nil, err
@@ -135,7 +159,7 @@ func (s *Service) GetUserInfoByID(ctx context.Context, id uint64) (*model.UserIn
 // BatchGetUsers 批量获取用户信息
 // 1. 处理关注和被关注状态
 // 2. 获取关注和粉丝数据
-func (s *Service) BatchGetUsers(ctx context.Context, userID uint64, userIDs []uint64) ([]*model.UserInfo, error) {
+func (s *userService) BatchGetUsers(ctx context.Context, userID uint64, userIDs []uint64) ([]*model.UserInfo, error) {
 	infos := make([]*model.UserInfo, 0)
 	// 获取当前用户信息
 	curUser, err := s.dao.GetOneUser(ctx, userID)
@@ -236,7 +260,7 @@ func (s *Service) BatchGetUsers(ctx context.Context, userID uint64, userIDs []ui
 	return infos, nil
 }
 
-func (s *Service) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error) {
+func (s *userService) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error) {
 	userModel, err := s.dao.GetUserByPhone(ctx, phone)
 	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by phone: %d", phone)
@@ -245,7 +269,7 @@ func (s *Service) GetUserByPhone(ctx context.Context, phone int64) (*model.UserB
 	return userModel, nil
 }
 
-func (s *Service) GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error) {
+func (s *userService) GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error) {
 	userModel, err := s.dao.GetUserByEmail(ctx, email)
 	if err != nil {
 		return userModel, errors.Wrapf(err, "get user info err from db by email: %s", email)

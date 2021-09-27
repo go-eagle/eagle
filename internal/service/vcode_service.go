@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/go-eagle/eagle/internal/dao"
 	"math/rand"
 	"strconv"
 	"time"
@@ -20,8 +21,24 @@ const (
 	maxDurationTime    = 10 * time.Minute     // 验证码有效期
 )
 
+type VCodeService interface {
+	GenLoginVCode(phone string) (int, error)
+	CheckLoginVCode(phone int64, vCode int) bool
+	GetLoginVCode(phone int64) (int, error)
+}
+
+type vcodeService struct {
+	dao *dao.Dao
+}
+
+var _ VCodeService = (*vcodeService)(nil)
+
+func newVCode(svc *service) *vcodeService {
+	return &vcodeService{dao: svc.dao}
+}
+
 // GenLoginVCode 生成校验码
-func (s *Service) GenLoginVCode(phone string) (int, error) {
+func (s *vcodeService) GenLoginVCode(phone string) (int, error) {
 	// step1: 生成随机数
 	vCodeStr := fmt.Sprintf("%06v", rand.New(rand.NewSource(time.Now().UnixNano())).Int31n(1000000))
 
@@ -57,7 +74,7 @@ func isTestPhone(phone int64) bool {
 }
 
 // CheckLoginVCode 验证校验码是否正确
-func (s *Service) CheckLoginVCode(phone int64, vCode int) bool {
+func (s *vcodeService) CheckLoginVCode(phone int64, vCode int) bool {
 	if isTestPhone(phone) {
 		return true
 	}
@@ -76,7 +93,7 @@ func (s *Service) CheckLoginVCode(phone int64, vCode int) bool {
 }
 
 // GetLoginVCode 获得校验码
-func (s *Service) GetLoginVCode(phone int64) (int, error) {
+func (s *vcodeService) GetLoginVCode(phone int64) (int, error) {
 	// 直接从redis里获取
 	key := fmt.Sprintf(verifyCodeRedisKey, phone)
 	vcode, err := redis.RedisClient.Get(context.Background(), key).Result()

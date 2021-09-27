@@ -16,34 +16,34 @@ const (
 	DefaultAvatar = "default_avatar.png"
 )
 
-var (
-	UserSvc  *Service
-	VCodeSvc *Service
-)
+type Service interface {
+	Users() UserService
+	Relations() RelationService
+	SMS() SMSService
+}
 
-// Service struct
-type Service struct {
+// service struct
+type service struct {
 	c   *conf.Config
 	dao *dao.Dao
 }
 
 // New init service
-func New(c *conf.Config, dao *dao.Dao) (s *Service) {
-	s = &Service{
+func New(c *conf.Config, dao *dao.Dao) Service {
+	return &service{
 		c:   c,
 		dao: dao,
 	}
-	UserSvc = s
-	VCodeSvc = s
-	return s
 }
 
-// Ping service
-func (s *Service) Ping() error {
-	return nil
+func (s *service) Users() UserService {
+	return newUsers(s)
 }
 
-// Close service
-func (s *Service) Close() {
-	s.dao.Close()
+func (s *service) Relations() RelationService {
+	return newRelations(s)
+}
+
+func (s *service) SMS() SMSService {
+	return newSMS(s)
 }

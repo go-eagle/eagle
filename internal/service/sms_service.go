@@ -1,14 +1,29 @@
 package service
 
 import (
+	"github.com/go-eagle/eagle/internal/dao"
 	"github.com/go-eagle/eagle/pkg/conf"
 	"github.com/pkg/errors"
 	"github.com/qiniu/api.v7/auth"
 	"github.com/qiniu/api.v7/sms"
 )
 
+type SMSService interface {
+	SendSMS(phoneNumber string, verifyCode int) error
+}
+
+type smsService struct {
+	dao *dao.Dao
+}
+
+var _ SMSService = (*smsService)(nil)
+
+func newSMS(svc *service) *smsService {
+	return &smsService{dao: svc.dao}
+}
+
 // Send 发送短信
-func (s *Service) SendSMS(phoneNumber string, verifyCode int) error {
+func (s *smsService) SendSMS(phoneNumber string, verifyCode int) error {
 	// 校验参数的正确性
 	if phoneNumber == "" || verifyCode == 0 {
 		return errors.New("param phone or verify_code error")

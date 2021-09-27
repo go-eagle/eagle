@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/go-eagle/eagle/internal/dao"
 
 	"github.com/pkg/errors"
 
@@ -16,8 +17,26 @@ const (
 	FollowStatusDelete = 0 // 删除
 )
 
+type RelationService interface {
+	Follow(ctx context.Context, userID uint64, followedUID uint64) error
+	Unfollow(ctx context.Context, userID uint64, followedUID uint64) error
+	IsFollowing(ctx context.Context, userID uint64, followedUID uint64) bool
+	GetFollowingUserList(ctx context.Context, userID uint64, lastID uint64, limit int) ([]*model.UserFollowModel, error)
+	GetFollowerUserList(ctx context.Context, userID uint64, lastID uint64, limit int) ([]*model.UserFansModel, error)
+}
+
+type relationService struct {
+	dao *dao.Dao
+}
+
+var _ RelationService = (*relationService)(nil)
+
+func newRelations(svc *service) *relationService {
+	return &relationService{dao: svc.dao}
+}
+
 // IsFollowing 是否正在关注某用户
-func (s *Service) IsFollowing(ctx context.Context, userID uint64, followedUID uint64) bool {
+func (s *relationService) IsFollowing(ctx context.Context, userID uint64, followedUID uint64) bool {
 	userFollowModel := &model.UserFollowModel{}
 	result := model.GetDB().
 		Where("user_id=? AND followed_uid=? ", userID, followedUID).
@@ -36,7 +55,7 @@ func (s *Service) IsFollowing(ctx context.Context, userID uint64, followedUID ui
 }
 
 // Follow 关注目标用户
-func (s *Service) Follow(ctx context.Context, userID uint64, followedUID uint64) error {
+func (s *relationService) Follow(ctx context.Context, userID uint64, followedUID uint64) error {
 	db := model.GetDB()
 	tx := db.Begin()
 	defer func() {
@@ -82,7 +101,7 @@ func (s *Service) Follow(ctx context.Context, userID uint64, followedUID uint64)
 }
 
 // Unfollow 取消用户关注
-func (s *Service) Unfollow(ctx context.Context, userID uint64, followedUID uint64) error {
+func (s *relationService) Unfollow(ctx context.Context, userID uint64, followedUID uint64) error {
 	db := model.GetDB()
 	tx := db.Begin()
 	defer func() {
@@ -129,7 +148,7 @@ func (s *Service) Unfollow(ctx context.Context, userID uint64, followedUID uint6
 }
 
 // GetFollowingUserList 获取正在关注的用户列表
-func (s *Service) GetFollowingUserList(ctx context.Context, userID uint64, lastID uint64, limit int) ([]*model.UserFollowModel, error) {
+func (s *relationService) GetFollowingUserList(ctx context.Context, userID uint64, lastID uint64, limit int) ([]*model.UserFollowModel, error) {
 	if lastID == 0 {
 		lastID = MaxID
 	}
@@ -142,7 +161,7 @@ func (s *Service) GetFollowingUserList(ctx context.Context, userID uint64, lastI
 }
 
 // GetFollowerUserList 获取粉丝用户列表
-func (s *Service) GetFollowerUserList(ctx context.Context, userID uint64, lastID uint64, limit int) ([]*model.UserFansModel, error) {
+func (s *relationService) GetFollowerUserList(ctx context.Context, userID uint64, lastID uint64, limit int) ([]*model.UserFansModel, error) {
 	if lastID == 0 {
 		lastID = MaxID
 	}
