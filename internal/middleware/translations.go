@@ -12,9 +12,10 @@ import (
 	zh_translations "github.com/go-playground/validator/v10/translations/zh"
 )
 
+var uni = ut.New(en.New(), zh.New(), zh_Hant_TW.New())
+
 func Translations() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		uni := ut.New(en.New(), zh.New(), zh_Hant_TW.New())
 		locale := c.GetHeader("locale")
 		trans, _ := uni.GetTranslator(locale)
 		v, ok := binding.Validator.Engine().(*validator.Validate)
