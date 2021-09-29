@@ -1,11 +1,12 @@
 package ratelimit
 
 import (
+	"context"
 	"errors"
 	"strconv"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 )
 
 const (
@@ -77,7 +78,7 @@ func NewPeriodLimit(period, quota int, limitStore *redis.Client, keyPrefix strin
 
 // Take requests a permit, it returns the permit state.
 func (h *PeriodLimit) Take(key string) (int, error) {
-	resp, err := h.limitStore.Eval(periodLuaScript, []string{h.keyPrefix + key}, []string{
+	resp, err := h.limitStore.Eval(context.Background(), periodLuaScript, []string{h.keyPrefix + key}, []string{
 		strconv.Itoa(h.quota),
 		strconv.Itoa(h.calcExpireSeconds()),
 	}).Result()

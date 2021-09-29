@@ -1,13 +1,14 @@
 package ratelimit
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	xrate "golang.org/x/time/rate"
 
 	"github.com/go-eagle/eagle/pkg/log"
@@ -94,6 +95,7 @@ func (lim *TokenLimiter) reserveN(now time.Time, n int) bool {
 	}
 
 	resp, err := lim.store.Eval(
+		context.Background(),
 		script,
 		[]string{
 			lim.tokenKey,
