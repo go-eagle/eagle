@@ -154,7 +154,7 @@ func (lim *TokenLimiter) waitForRedis() {
 
 	for range ticker.C {
 		// TODO: optimize
-		val, _ := lim.store.Ping().Result()
+		val, _ := lim.store.Ping(context.Background()).Result()
 		if val == "PONG" {
 			atomic.StoreUint32(&lim.redisAlive, 1)
 			return
