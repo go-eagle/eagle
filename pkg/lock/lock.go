@@ -14,5 +14,5 @@ const (
 
 type Lock interface {
 	Lock(ctx context.Context) (bool, error)
-	Unlock(ctx context.Context) error
+	Unlock(ctx context.Context) (bool, error)
 }
