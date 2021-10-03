@@ -51,7 +51,7 @@ func (l *redisLock) Lock(ctx context.Context) (bool, error) {
 		log.Errorf("acquires the lock err, key: %s, err: %s", l.GetKey(), err.Error())
 		return false, err
 	}
-	return isSet, err
+	return isSet, nil
 }
 
 // Unlock del the lock.

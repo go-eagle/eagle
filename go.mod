@@ -9,8 +9,7 @@ require (
 	github.com/Shopify/sarama v1.19.0
 	github.com/StackExchange/wmi v0.0.0-20210224194228-fe8f1750fd46 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
-	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
-	github.com/alicebob/miniredis v2.5.0+incompatible
+	github.com/alicebob/miniredis/v2 v2.15.1
 	github.com/dgraph-io/ristretto v0.0.3
 	github.com/dgrijalva/jwt-go v3.2.1-0.20210802184156-9742bd7fca1c+incompatible
 	github.com/foolin/gin-template v0.0.0-20190415034731-41efedfb393b
@@ -34,7 +33,6 @@ require (
 	github.com/go-test/deep v1.0.6
 	github.com/golang/protobuf v1.4.3
 	github.com/golang/snappy v0.0.2
-	github.com/gomodule/redigo/redis v0.0.0-20200429221454-e14091dffc1b // indirect
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/sessions v1.2.1
 	github.com/jinzhu/gorm v1.9.16
@@ -67,7 +65,6 @@ require (
 	github.com/uber/jaeger-lib v2.4.0+incompatible
 	github.com/vmihailenco/msgpack v4.0.4+incompatible
 	github.com/willf/pad v0.0.0-20190207183901-eccfe5d84172
-	github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da // indirect
 	go.elastic.co/apm v1.11.0
 	go.elastic.co/apm/module/apmot v1.11.0
 	go.mongodb.org/mongo-driver v1.5.1
