@@ -30,7 +30,7 @@ type Config struct {
 	PoolSize     int
 	PoolTimeout  time.Duration
 	// tracing switch
-	IsTrace bool
+	EnableTrace bool
 }
 
 // Init 实例化一个redis client
@@ -52,8 +52,8 @@ func Init(c *Config) *redis.Client {
 		log.Panicf("[redis] redis ping err: %+v", err)
 	}
 
-	// hook tracing (with open telemetry)
-	if c.IsTrace {
+	// hook tracing (using open telemetry)
+	if c.EnableTrace {
 		RedisClient.AddHook(redisotel.NewTracingHook())
 	}
 
