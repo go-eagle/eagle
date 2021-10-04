@@ -65,7 +65,7 @@ func ParseConfig(v *viper.Viper) (*Config, error) {
 	return &c, nil
 }
 
-// 监控配置文件变化并热加载程序
+// watchConfig 监听配置文件变化并热加载程序
 func watchConfig(v *viper.Viper) {
 	go func() {
 		v.WatchConfig()
