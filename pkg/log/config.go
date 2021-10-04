@@ -14,7 +14,5 @@ type Config struct {
 	LoggerErrorFile   string
 	LogFormatText     bool
 	LogRollingPolicy  string
-	LogRotateDate     int
-	LogRotateSize     int
 	LogBackupCount    uint
 }

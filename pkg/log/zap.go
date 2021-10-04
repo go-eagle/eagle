@@ -182,9 +182,11 @@ func getLogWriterWithTime(cfg *Config, filename string) io.Writer {
 	rotationPolicy := cfg.LogRollingPolicy
 	backupCount := cfg.LogBackupCount
 	// 默认
-	rotateDuration := time.Hour * 24
+	var rotateDuration time.Duration
 	if rotationPolicy == RotateTimeHourly {
 		rotateDuration = time.Hour
+	} else if rotationPolicy == RotateTimeDaily {
+		rotateDuration = time.Hour * 24
 	}
 	hook, err := rotatelogs.New(
 		logFullPath+".%Y%m%d%H",                     // 时间格式使用shell的date时间格式
