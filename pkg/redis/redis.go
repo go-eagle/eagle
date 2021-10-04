@@ -8,8 +8,6 @@ import (
 	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redis/extra/redisotel/v8"
 	"github.com/go-redis/redis/v8"
-
-	"github.com/go-eagle/eagle/pkg/log"
 )
 
 // RedisClient redis 客户端
@@ -49,7 +47,7 @@ func Init(c *Config) *redis.Client {
 
 	_, err := RedisClient.Ping(context.Background()).Result()
 	if err != nil {
-		log.Panicf("[redis] redis ping err: %+v", err)
+		panic(err)
 	}
 
 	// hook tracing (using open telemetry)

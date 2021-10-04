@@ -50,11 +50,7 @@ func New(c *conf.Config, opts ...Option) *App {
 
 // Run start app
 func (a *App) Run() error {
-	a.log.Infof("app_id: %s, app_name: %s, version: %s",
-		a.opts.id,
-		a.opts.name,
-		a.opts.version,
-	)
+	a.log.Infof("app_name: %s, version: %s", a.opts.name, a.opts.version)
 	eg, ctx := errgroup.WithContext(a.ctx)
 
 	// start server

@@ -18,17 +18,6 @@ type spanLogger struct {
 	spanFields []zapcore.Field
 }
 
-func (sl spanLogger) Debug(args ...interface{}) {
-	panic("implement me")
-}
-
-func (sl spanLogger) Debugf(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
-	var fields []zap.Field
-	sl.logToSpan("info", msg)
-	sl.logger.Debug(msg, append(sl.spanFields, fields...)...)
-}
-
 func (sl spanLogger) Info(args ...interface{}) {
 	msg := fmt.Sprint(args...)
 	var fields []zap.Field
@@ -72,22 +61,6 @@ func (sl spanLogger) Errorf(format string, args ...interface{}) {
 	sl.logToSpan("Errorf", msg)
 	sl.span.RecordError(errors.New(msg))
 	sl.logger.Error(msg, append(sl.spanFields, fields...)...)
-}
-
-func (sl spanLogger) Fatal(args ...interface{}) {
-	msg := fmt.Sprint(args...)
-	var fields []zap.Field
-	sl.logToSpan("fatal", msg)
-	sl.span.RecordError(errors.New(msg))
-	sl.logger.Fatal(msg, append(sl.spanFields, fields...)...)
-}
-
-func (sl spanLogger) Fatalf(format string, args ...interface{}) {
-	panic("implement me")
-}
-
-func (sl spanLogger) Panicf(format string, args ...interface{}) {
-	panic("implement me")
 }
 
 func (sl spanLogger) WithFields(keyValues Fields) Logger {
