@@ -120,7 +120,10 @@ func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserB
 		span.RecordError(err)
 		return nil, errors.Wrap(err, "[repo.user_base] get user base err via single flight do")
 	}
-	data := val.(*model.UserBaseModel)
+	var data *model.UserBaseModel
+	if val != nil {
+		data = val.(*model.UserBaseModel)
+	}
 
 	// cache miss
 	//prom.CacheMiss.Incr("getOneUser")
