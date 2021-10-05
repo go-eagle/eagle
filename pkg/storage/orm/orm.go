@@ -4,7 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"time"
+
+	"gorm.io/gorm/logger"
 
 	otelgorm "github.com/1024casts/gorm-opentelemetry"
 
@@ -24,6 +27,7 @@ type Config struct {
 	MaxIdleConn     int
 	MaxOpenConn     int
 	ConnMaxLifeTime time.Duration
+	SlowThreshold   time.Duration // 慢查询时长，默认500ms
 }
 
 // NewMySQL 链接数据库，生成数据库实例
@@ -48,7 +52,29 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 	sqlDB.SetMaxIdleConns(c.MaxIdleConn)
 	sqlDB.SetConnMaxLifetime(c.ConnMaxLifeTime)
 
-	db, err = gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), &gorm.Config{})
+	var gormLogger logger.Interface
+	// 打印所有SQL
+	if c.ShowLog {
+		gormLogger = logger.Default.LogMode(logger.Info)
+	}
+	// 只打印慢查询
+	if c.SlowThreshold > 0 {
+		gormLogger = logger.New(
+			//将标准输出作为Writer
+			log.New(os.Stdout, "\r\n", log.LstdFlags),
+			logger.Config{
+				//设定慢查询时间阈值
+				SlowThreshold: c.SlowThreshold,
+				Colorful:      true,
+				//设置日志级别，只有指定级别以上会输出慢查询日志
+				LogLevel: logger.Warn,
+			},
+		)
+	}
+
+	db, err = gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), &gorm.Config{
+		Logger: gormLogger,
+	})
 	if err != nil {
 		log.Panicf("database connection failed. database name: %s, err: %+v", c.Name, err)
 	}
