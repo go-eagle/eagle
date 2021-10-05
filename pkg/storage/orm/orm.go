@@ -3,6 +3,7 @@ package orm
 import (
 	"database/sql"
 	"fmt"
+	"gorm.io/gorm/logger"
 	"log"
 	"time"
 
@@ -48,7 +49,7 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 	sqlDB.SetMaxIdleConns(c.MaxIdleConn)
 	sqlDB.SetConnMaxLifetime(c.ConnMaxLifeTime)
 
-	db, err = gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), &gorm.Config{})
+	db, err = gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), gormConfig(c))
 	if err != nil {
 		log.Panicf("database connection failed. database name: %s, err: %+v", c.Name, err)
 	}
@@ -66,4 +67,15 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 	}
 
 	return db
+}
+
+//gormConfig 根据配置决定是否开启日志
+func gormConfig(c *Config) *gorm.Config {
+	config := &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true} // 禁止外键约束, 生产环境不建议使用外键约束
+	if c.ShowLog {
+		config.Logger = logger.Default.LogMode(logger.Info)
+	} else {
+		config.Logger = logger.Default.LogMode(logger.Silent)
+	}
+	return config
 }
