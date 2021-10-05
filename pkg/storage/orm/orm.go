@@ -7,14 +7,13 @@ import (
 	"os"
 	"time"
 
-	"gorm.io/gorm/logger"
-
 	otelgorm "github.com/1024casts/gorm-opentelemetry"
 
 	// MySQL driver.
 	"gorm.io/driver/mysql"
 	// GORM MySQL
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // Config mysql config
@@ -52,29 +51,7 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 	sqlDB.SetMaxIdleConns(c.MaxIdleConn)
 	sqlDB.SetConnMaxLifetime(c.ConnMaxLifeTime)
 
-	var gormLogger logger.Interface
-	// 打印所有SQL
-	if c.ShowLog {
-		gormLogger = logger.Default.LogMode(logger.Info)
-	}
-	// 只打印慢查询
-	if c.SlowThreshold > 0 {
-		gormLogger = logger.New(
-			//将标准输出作为Writer
-			log.New(os.Stdout, "\r\n", log.LstdFlags),
-			logger.Config{
-				//设定慢查询时间阈值
-				SlowThreshold: c.SlowThreshold,
-				Colorful:      true,
-				//设置日志级别，只有指定级别以上会输出慢查询日志
-				LogLevel: logger.Warn,
-			},
-		)
-	}
-
-	db, err = gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), &gorm.Config{
-		Logger: gormLogger,
-	})
+	db, err = gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), gormConfig(c))
 	if err != nil {
 		log.Panicf("database connection failed. database name: %s, err: %+v", c.Name, err)
 	}
@@ -92,4 +69,30 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 	}
 
 	return db
+}
+
+// gormConfig 根据配置决定是否开启日志
+func gormConfig(c *Config) *gorm.Config {
+	config := &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true} // 禁止外键约束, 生产环境不建议使用外键约束
+	// 打印所有SQL
+	if c.ShowLog {
+		config.Logger = logger.Default.LogMode(logger.Info)
+	} else {
+		config.Logger = logger.Default.LogMode(logger.Silent)
+	}
+	// 只打印慢查询
+	if c.SlowThreshold > 0 {
+		config.Logger = logger.New(
+			//将标准输出作为Writer
+			log.New(os.Stdout, "\r\n", log.LstdFlags),
+			logger.Config{
+				//设定慢查询时间阈值
+				SlowThreshold: c.SlowThreshold,
+				Colorful:      true,
+				//设置日志级别，只有指定级别以上会输出慢查询日志
+				LogLevel: logger.Warn,
+			},
+		)
+	}
+	return config
 }
