@@ -12,6 +12,7 @@ import (
 	"github.com/go-eagle/eagle/api"
 	"github.com/go-eagle/eagle/internal/handler/v1/user"
 	mw "github.com/go-eagle/eagle/internal/middleware"
+	"github.com/go-eagle/eagle/pkg/conf"
 	"github.com/go-eagle/eagle/pkg/middleware"
 )
 
@@ -25,7 +26,7 @@ func NewRouter() *gin.Engine {
 	g.Use(middleware.Logging())
 	g.Use(middleware.RequestID())
 	g.Use(middleware.Metrics(nil))
-	g.Use(middleware.Tracing("eagle-service"))
+	g.Use(middleware.Tracing(conf.Conf.Trace.ServiceName))
 	g.Use(mw.Translations())
 
 	// load web router
