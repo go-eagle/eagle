@@ -161,10 +161,10 @@ func (c *Consumer) ReConnect() {
 			case <-c.quit:
 				return
 			default:
-				log.Fatal("rabbitmq consumer - reconnect")
+				log.Println("rabbitmq consumer - reconnect")
 
 				if err := c.Run(); err != nil {
-					log.Println("rabbitmq consumer - failCheck:", err)
+					log.Printf("rabbitmq consumer - failCheck: %+v", err)
 
 					// sleep 5s reconnect
 					time.Sleep(time.Second * 5)
