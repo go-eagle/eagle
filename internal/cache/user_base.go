@@ -29,10 +29,10 @@ type Cache struct {
 
 // NewUserCache new一个用户cache
 func NewUserCache() *Cache {
-	encoding := encoding.JSONEncoding{}
+	jsonEncoding := encoding.JSONEncoding{}
 	cachePrefix := ""
 	return &Cache{
-		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, encoding, func() interface{} {
+		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, jsonEncoding, func() interface{} {
 			return &model.UserBaseModel{}
 		},
 		),
@@ -53,7 +53,7 @@ func (c *Cache) SetUserBaseCache(ctx context.Context, userID uint64, user *model
 	if user == nil || user.ID == 0 {
 		return nil
 	}
-	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
+	cacheKey := c.GetUserBaseCacheKey(userID)
 	err := c.cache.Set(ctx, cacheKey, user, duration)
 	if err != nil {
 		return err
@@ -68,7 +68,7 @@ func (c *Cache) GetUserBaseCache(ctx context.Context, userID uint64) (data *mode
 
 	client := getCacheClient(ctx)
 
-	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
+	cacheKey := c.GetUserBaseCacheKey(userID)
 	//err = u.cache.Get(cacheKey, &data)
 	err = client.Get(ctx, cacheKey, &data)
 	if err != nil {
@@ -84,7 +84,7 @@ func (c *Cache) MultiGetUserBaseCache(ctx context.Context, userIDs []uint64) (ma
 	defer span.End()
 	var keys []string
 	for _, v := range userIDs {
-		cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, v)
+		cacheKey := c.GetUserBaseCacheKey(v)
 		keys = append(keys, cacheKey)
 	}
 
@@ -101,7 +101,7 @@ func (c *Cache) MultiGetUserBaseCache(ctx context.Context, userIDs []uint64) (ma
 func (c *Cache) DelUserBaseCache(ctx context.Context, userID uint64) error {
 	ctx, span := c.tracer.Start(ctx, "DelUserBaseCache")
 	defer span.End()
-	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
+	cacheKey := c.GetUserBaseCacheKey(userID)
 	err := c.cache.Del(ctx, cacheKey)
 	if err != nil {
 		return err
@@ -113,7 +113,7 @@ func (c *Cache) DelUserBaseCache(ctx context.Context, userID uint64) error {
 func (c *Cache) SetCacheWithNotFound(ctx context.Context, userID uint64) error {
 	ctx, span := c.tracer.Start(ctx, "SetCacheWithNotFound")
 	defer span.End()
-	cacheKey := fmt.Sprintf(PrefixUserBaseCacheKey, userID)
+	cacheKey := c.GetUserBaseCacheKey(userID)
 	err := c.cache.SetCacheWithNotFound(ctx, cacheKey)
 	if err != nil {
 		return err
