@@ -7,8 +7,8 @@ import (
 	"github.com/go-eagle/eagle/pkg/errcode"
 )
 
-// JWT 认证中间件
-func JWT() gin.HandlerFunc {
+// Auth authorize user
+func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Parse the json web token.
 		ctx, err := app.ParseRequest(c)
