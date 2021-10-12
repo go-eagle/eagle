@@ -12,7 +12,7 @@ var _ dao = (*Dao)(nil)
 // dao 定义用户仓库接口
 type dao interface {
 	// BaseUser
-	CreateUser(ctx context.Context, user model.UserBaseModel) (id uint64, err error)
+	CreateUser(ctx context.Context, user *model.UserBaseModel) (id uint64, err error)
 	UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error
 	GetOneUser(ctx context.Context, id uint64) (*model.UserBaseModel, error)
 	GetUsersByIds(ctx context.Context, ids []uint64) ([]*model.UserBaseModel, error)
