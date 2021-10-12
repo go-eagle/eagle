@@ -18,7 +18,7 @@ import (
 )
 
 // CreateUser 创建用户
-func (d *Dao) CreateUser(ctx context.Context, user model.UserBaseModel) (id uint64, err error) {
+func (d *Dao) CreateUser(ctx context.Context, user *model.UserBaseModel) (id uint64, err error) {
 	err = d.orm.Create(&user).Error
 	if err != nil {
 		//prom.BusinessErrCount.Incr("mysql: CreateUser")
@@ -177,4 +177,15 @@ func (d *Dao) GetUserByEmail(ctx context.Context, email string) (*model.UserBase
 	}
 
 	return &userBase, nil
+}
+
+// UserIsExist 判断用户是否存在, 用户名和邮箱要保持唯一
+func (d *Dao) UserIsExist(user *model.UserBaseModel) (bool, error) {
+	err := d.orm.Where("username = ? or email = ?", user.Username, user.Email).First(&model.UserBaseModel{}).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+	return true, nil
 }

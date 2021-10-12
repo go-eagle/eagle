@@ -55,7 +55,14 @@ func (s *userService) Register(ctx context.Context, username, email, password st
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
 	}
-	_, err = s.dao.CreateUser(ctx, u)
+	isExist, err := s.dao.UserIsExist(&u)
+	if err != nil {
+		return errors.Wrapf(err, "create user")
+	}
+	if isExist {
+		return errors.New("用户已存在")
+	}
+	_, err = s.dao.CreateUser(ctx, &u)
 	if err != nil {
 		return errors.Wrapf(err, "create user")
 	}
@@ -111,7 +118,7 @@ func (s *userService) PhoneLogin(ctx context.Context, phone int64, verifyCode in
 			Phone:    phone,
 			Username: strconv.Itoa(int(phone)),
 		}
-		u.ID, err = s.dao.CreateUser(ctx, u)
+		u.ID, err = s.dao.CreateUser(ctx, &u)
 		if err != nil {
 			return "", errors.Wrapf(err, "[login] create user err")
 		}
