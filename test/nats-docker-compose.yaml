@@ -1,0 +1,13 @@
+version: "3.3"
+
+services:
+  nats:
+    container_name: "nats"
+    image: "nats"
+    hostname: "nats"
+    ports:
+      - "4222:4222"
+      - "6222:6222"
+      - "8222:8222"
+    labels:
+      NAME: "nats"
