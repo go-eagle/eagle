@@ -38,6 +38,7 @@ cover.out
 .idea
 .idea/*
 bin/
+.DS_Store
 
 vendor
 
