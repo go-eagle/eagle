@@ -12,26 +12,35 @@ import (
 
 type Server struct {
 	*http.Server
-	lis     net.Listener
-	network string
-	address string
-	timeout time.Duration
-	log     log.Logger
+	lis          net.Listener
+	network      string
+	address      string
+	readTimeout  time.Duration
+	writeTimeout time.Duration
+	log          log.Logger
+}
+
+func defaultServer() *Server {
+	return &Server{
+		network:      "tcp",
+		address:      ":8080",
+		readTimeout:  time.Second,
+		writeTimeout: time.Second,
+		log:          log.GetLogger(),
+	}
 }
 
 func NewServer(opts ...ServerOption) *Server {
-	srv := &Server{
-		network: "tcp",
-		address: ":8080",
-		timeout: time.Second,
-		log:     log.GetLogger(),
-	}
+	srv := defaultServer()
+	// apply options
 	for _, o := range opts {
 		o(srv)
 	}
 	// NOTE: must set server
 	srv.Server = &http.Server{
-		Handler: srv,
+		ReadTimeout:  srv.readTimeout,
+		WriteTimeout: srv.writeTimeout,
+		Handler:      srv,
 	}
 	return srv
 }

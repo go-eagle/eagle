@@ -11,23 +11,30 @@ var _ transport.Server = (*Server)(nil)
 // ServerOption is HTTP server option
 type ServerOption func(*Server)
 
-// Network with server network.
-func Network(network string) ServerOption {
+// WithNetwork with server network.
+func WithNetwork(network string) ServerOption {
 	return func(s *Server) {
 		s.network = network
 	}
 }
 
-// Address with server address.
-func Address(addr string) ServerOption {
+// WithAddress with server address.
+func WithAddress(addr string) ServerOption {
 	return func(s *Server) {
 		s.address = addr
 	}
 }
 
-// Timeout with server timeout.
-func Timeout(timeout time.Duration) ServerOption {
+// WithReadTimeout with read timeout.
+func WithReadTimeout(timeout time.Duration) ServerOption {
 	return func(s *Server) {
-		s.timeout = timeout
+		s.readTimeout = timeout
+	}
+}
+
+// WithWriteTimeout with write timeout.
+func WithWriteTimeout(timeout time.Duration) ServerOption {
+	return func(s *Server) {
+		s.writeTimeout = timeout
 	}
 }
