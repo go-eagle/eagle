@@ -3,6 +3,7 @@
 - RocketMQ
 - RabbitMQ
 - Kafka
+- Nats
 
 
 ## 作用
@@ -15,6 +16,7 @@
 
 - RocketMQ Go客户端: https://github.com/apache/rocketmq-client-go
 - kafka-go: https://github.com/segmentio/kafka-go
+- Nats.go: github.com/nats-io/nats.go
 
 > 如果是阿里云RocketMQ: 可以使用官方自己出的库
 
