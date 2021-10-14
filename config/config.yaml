@@ -13,12 +13,12 @@ app:
 
 Http:
   Addr: :8080
-  ReadTimeout: 5
-  WriteTimeout: 5
+  ReadTimeout: 3s
+  WriteTimeout: 3s
 Grpc:
   Addr: :9090
-  ReadTimeout: 5
-  WriteTimeout: 5
+  ReadTimeout: 5s
+  WriteTimeout: 5s
 
 logger:
   Development: false
@@ -72,8 +72,8 @@ redis:
   DialTimeout: 60s
   ReadTimeout: 500ms
   WriteTimeout: 500ms
-  PoolSize: 12000
-  PoolTimeout: 240
+  PoolSize: 100
+  PoolTimeout: 240s
   IsTrace: true
 
 email:
