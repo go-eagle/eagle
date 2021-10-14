@@ -4,14 +4,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
-	"io"
 	"io/ioutil"
 	"net/http"
-	"time"
 
-	"github.com/go-eagle/eagle/pkg/log"
-
+	"github.com/pkg/errors"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -23,84 +19,69 @@ type rawClient struct {
 }
 
 // newRawClient 实例化 http 客户端
-func newRawClient() Client {
+func newRawClient() *rawClient {
 	return &rawClient{}
 }
 
 // Get get data by get method
-func (r *rawClient) Get(ctx context.Context, url string, params map[string]string, duration time.Duration, out interface{}) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
-	if err != nil {
-		return err
-	}
-
-	client := &http.Client{
-		Transport: otelhttp.NewTransport(http.DefaultTransport),
-		Timeout:   duration,
-	}
-
-	ctx, span := tracer.Start(ctx, "HTTP Get")
-	defer span.End()
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	r.resp = resp
-
-	if !r.isSuccess() {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil && err != io.ErrUnexpectedEOF {
-			log.WithContext(ctx).Errorf("[httpClient] get url: %s, status code: %s, err: %s",
-				url, resp.StatusCode, err.Error())
-			return err
-		}
-		return errors.New(string(body))
-	}
-	decoder := json.NewDecoder(resp.Body)
-	return decoder.Decode(out)
+func (r *rawClient) GetJSON(ctx context.Context, url string, options ...Option) ([]byte, error) {
+	return r.withJSONBody(ctx, http.MethodGet, url, nil, options...)
 }
 
 // Post send data by post method
-func (r *rawClient) Post(ctx context.Context, url string, data []byte, duration time.Duration, out interface{}) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(data))
+func (r *rawClient) PostJSON(ctx context.Context, url string, data json.RawMessage, options ...Option) ([]byte, error) {
+	return r.withJSONBody(ctx, http.MethodPost, url, data, options...)
+}
+
+func (r *rawClient) withJSONBody(ctx context.Context, method, url string, raw json.RawMessage, options ...Option) (body []byte, err error) {
+	opt := &option{}
+	for _, f := range options {
+		f(opt)
+	}
+	opt.header["Content-Type"] = []string{"application/json; charset=utf-8"}
+	return doRequest(ctx, method, url, raw, opt)
+}
+
+func doRequest(ctx context.Context, method, url string, payload []byte, opt *option) (ret []byte, err error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(payload))
 	if err != nil {
-		return err
+		return nil, errors.Wrapf(err, "[httpClient] get req err")
 	}
 
 	client := &http.Client{
 		Transport: otelhttp.NewTransport(http.DefaultTransport),
-		Timeout:   duration,
+		Timeout:   opt.timeout,
 	}
-	req.Header.Set("Content-Type", contentTypeJSON)
+
+	// set header
+	for key, value := range opt.header {
+		req.Header.Set(key, value[0])
+	}
 
 	ctx, span := tracer.Start(req.Context(), "HTTP Post")
 	defer span.End()
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return nil, errors.Wrapf(err, "[httpClient] do request from [%s %s] err", method, url)
 	}
-	defer resp.Body.Close()
-
-	r.resp = resp
-
-	if !r.isSuccess() {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.WithContext(ctx).Errorf("[httpClient] post url: %s, status code: %s, err: %s",
-				url, resp.StatusCode, err.Error())
-			return err
-		}
-		return errors.New(string(body))
+	if resp != nil {
+		defer func() {
+			_ = resp.Body.Close()
+		}()
 	}
-	decoder := json.NewDecoder(resp.Body)
-	return decoder.Decode(out)
+
+	if !isSuccess(resp) {
+		return nil, errors.New("request")
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "[httpClient] read resp body from [%s %s] err", method, url)
+	}
+	return body, nil
 }
 
 // isSuccess check is success
-func (r *rawClient) isSuccess() bool {
-	return r.resp.StatusCode < http.StatusBadRequest
+func isSuccess(resp *http.Response) bool {
+	return resp.StatusCode < http.StatusBadRequest
 }

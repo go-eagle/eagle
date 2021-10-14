@@ -29,7 +29,7 @@ type Client interface {
 
 // New 实例化一个client
 func New(opts ...Option) Client {
-	cfg := config{
+	cfg := option{
 		ClientTyp: DefaultClient,
 	}
 	for _, opt := range opts {
@@ -40,7 +40,7 @@ func New(opts ...Option) Client {
 	if cfg.ClientTyp == DefaultClient {
 		c = newRestyClient()
 	} else {
-		c = newRawClient()
+		// c = newRawClient()
 	}
 
 	if c == nil {
