@@ -33,7 +33,7 @@ func main() {
 	}
 	reply, err := userClient.LoginByPhone(ctx, userReq)
 	if err != nil {
-		log.Fatalf("[rpc] user login by phone err: %v", err)
+		log.Errorf("[rpc] user login by phone err: %v", err)
 	}
 	fmt.Printf("UserService LoginByPhone : %+v", reply)
 }
