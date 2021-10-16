@@ -12,6 +12,8 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/go-eagle/eagle/pkg/utils"
+
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
@@ -61,7 +63,7 @@ func withFormBody(ctx context.Context, method, url string, form url.Values, opti
 	}
 	opt.header["Content-Type"] = []string{ContentTypeForm}
 	formValue := form.Encode()
-	return doRequest(ctx, method, url, []byte(formValue), opt)
+	return doRequest(ctx, method, url, utils.StringToBytes(formValue), opt)
 }
 
 func doRequest(ctx context.Context, method, url string, payload []byte, opt *option) (ret []byte, err error) {
