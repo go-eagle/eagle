@@ -11,16 +11,16 @@ import (
 	"github.com/go-eagle/eagle/pkg/log"
 )
 
-// Follow 关注
-// @Summary 通过用户id关注用户
+// Follow 取消关注
+// @Summary 通过用户id取消关注用户
 // @Description Get an user by user id
 // @Tags 用户
 // @Accept  json
 // @Produce  json
 // @Param user_id body string true "用户id"
 // @Success 200 {object} model.UserInfo "用户信息"
-// @Router /users/follow [post]
-func Follow(c *gin.Context) {
+// @Router /users/unfollow [post]
+func Unfollow(c *gin.Context) {
 	var req FollowRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Warnf("follow bind param err: %v", err)
@@ -38,23 +38,25 @@ func Follow(c *gin.Context) {
 	userID := api.GetUserID(c)
 	// 不能关注自己
 	if userID == req.UserID {
-		response.Error(c, ecode.ErrCannotFollowSelf)
+		response.Error(c, ecode.ErrUserNotFound)
 		return
 	}
 
 	// 检查是否已经关注过
 	isFollowed := service.Svc.Relations().IsFollowing(c.Request.Context(), userID, req.UserID)
-	if isFollowed {
+	if !isFollowed {
 		response.Error(c, errcode.Success)
 		return
 	}
 
-	// 添加关注
-	err = service.Svc.Relations().Follow(c.Request.Context(), userID, req.UserID)
-	if err != nil {
-		log.Warnf("[follow] add user follow err: %v", err)
-		response.Error(c, errcode.ErrInternalServer.WithDetails(err.Error()))
-		return
+	if isFollowed {
+		// 取消关注
+		err = service.Svc.Relations().Unfollow(c.Request.Context(), userID, req.UserID)
+		if err != nil {
+			log.Warnf("[follow] cancel user follow err: %v", err)
+			response.Error(c, errcode.ErrInternalServer.WithDetails(err.Error()))
+			return
+		}
 	}
 
 	response.Success(c, nil)

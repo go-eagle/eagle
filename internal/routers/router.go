@@ -71,6 +71,7 @@ func NewRouter() *gin.Engine {
 		{
 			apiV1.PUT("/users/:id", user.Update)
 			apiV1.POST("/users/follow", user.Follow)
+			apiV1.POST("/users/unfollow", user.Unfollow)
 			apiV1.GET("/users/:id/following", user.FollowList)
 			apiV1.GET("/users/:id/followers", user.FollowerList)
 		}

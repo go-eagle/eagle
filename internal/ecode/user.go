@@ -15,4 +15,6 @@ var (
 	ErrEmailOrPassword       = errcode.NewError(20109, "邮箱或密码错误")
 	ErrTwicePasswordNotMatch = errcode.NewError(20110, "两次密码输入不一致")
 	ErrRegisterFailed        = errcode.NewError(20111, "注册失败")
+
+	ErrCannotFollowSelf = errcode.NewError(20201, "不能关注自己")
 )
