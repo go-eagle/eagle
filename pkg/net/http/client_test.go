@@ -2,53 +2,48 @@ package http
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
-	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestDefaultClient(t *testing.T) {
-	c := New(WithClientType(DefaultClient))
-	t.Run("test http get func", func(t *testing.T) {
-		var ret interface{}
-		err := c.Get(context.Background(), "http://httpbin.org/get", nil, 3*time.Second, &ret)
+func TestHttpClient(t *testing.T) {
+	t.Run("test http get json func", func(t *testing.T) {
+		var ret []byte
+		var want = "http://httpbin.org/get"
+		ret, err := GetJSON(context.Background(), "http://httpbin.org/get")
+		if err != nil {
+			t.Log(err)
+		}
+		type resp struct {
+			Url string `json:"url"`
+		}
+		r := resp{}
+
+		err = json.Unmarshal(ret, &r)
 		if err != nil {
 			t.Fatal(err)
 		}
-
-		t.Log(ret)
+		assert.Equal(t, r.Url, want)
 	})
 
-	t.Run("test http post func", func(t *testing.T) {
-		var ret interface{}
-		err := c.Post(context.Background(), "http://httpbin.org/post", nil, 3*time.Second, &ret)
+	t.Run("test http post json func", func(t *testing.T) {
+		var ret []byte
+		jsonStr := `{"key1":"value1"}`
+		ret, err := PostJSON(context.Background(), "http://httpbin.org/post", []byte(jsonStr))
 		if err != nil {
 			t.Fatal(err)
 		}
+		type resp struct {
+			Data string `json:"data"`
+		}
+		r := resp{}
 
-		t.Log(ret)
-	})
-}
-
-func TestRawClient(t *testing.T) {
-	c := New(WithClientType(RawClient))
-
-	t.Run("test http get func", func(t *testing.T) {
-		var ret interface{}
-		err := c.Get(context.Background(), "http://httpbin.org/get", nil, 3*time.Second, &ret)
+		err = json.Unmarshal(ret, &r)
 		if err != nil {
 			t.Fatal(err)
 		}
-
-		t.Log(ret)
-	})
-
-	t.Run("test http post func", func(t *testing.T) {
-		var ret interface{}
-		err := c.Post(context.Background(), "http://httpbin.org/post", nil, 3*time.Second, &ret)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		t.Log(ret)
+		assert.Equal(t, r.Data, jsonStr)
 	})
 }

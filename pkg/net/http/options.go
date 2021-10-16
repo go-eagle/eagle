@@ -7,14 +7,20 @@ type Option func(c *option)
 
 // Options control behavior of the client.
 type option struct {
-	ClientTyp string
-	header    map[string][]string
+	header map[string][]string
 	// timeout of per request
 	timeout time.Duration
 }
 
-func WithClientType(clientType string) Option {
+func defaultOptions() *option {
+	return &option{
+		header:  make(map[string][]string),
+		timeout: DefaultTimeout,
+	}
+}
+
+func WithTimeout(duration time.Duration) Option {
 	return func(cfg *option) {
-		cfg.ClientTyp = clientType
+		cfg.timeout = duration
 	}
 }

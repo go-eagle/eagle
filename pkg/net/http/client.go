@@ -3,50 +3,107 @@
 package http
 
 import (
+	"bytes"
 	"context"
-	"log"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
 	"time"
+
+	"github.com/pkg/errors"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 // see: https://github.com/iiinsomnia/gochat/blob/master/utils/http.go
 
 const (
-	contentTypeJSON = "application/json"
-	contentTypeForm = "application/x-www-form-urlencoded"
+	ContentTypeJSON = "application/json; charset=utf-8"
+	ContentTypeForm = "application/x-www-form-urlencoded; charset=utf-8"
+
+	// DefaultTimeout max exec time for a request
+	DefaultTimeout = 3 * time.Second
 )
 
-// DefaultClient 默认的http client，基于resty库进行封装
-var DefaultClient = "resty"
+// ------------------ JSON ------------------
 
-// RawClient 原生http client
-var RawClient = "raw"
-
-// Client 定义 http client 接口
-type Client interface {
-	Get(ctx context.Context, url string, params map[string]string, duration time.Duration, out interface{}) error
-	Post(ctx context.Context, url string, data []byte, duration time.Duration, out interface{}) error
+// GetJSON get json data by get method
+func GetJSON(ctx context.Context, url string, options ...Option) ([]byte, error) {
+	return withJSONBody(ctx, http.MethodGet, url, nil, options...)
 }
 
-// New 实例化一个client
-func New(opts ...Option) Client {
-	cfg := option{
-		ClientTyp: DefaultClient,
+// PostJSON send json data by post method
+func PostJSON(ctx context.Context, url string, data json.RawMessage, options ...Option) ([]byte, error) {
+	return withJSONBody(ctx, http.MethodPost, url, data, options...)
+}
+
+func withJSONBody(ctx context.Context, method, url string, raw json.RawMessage, options ...Option) (body []byte, err error) {
+	opt := defaultOptions()
+	for _, o := range options {
+		o(opt)
 	}
-	for _, opt := range opts {
-		opt(&cfg)
+	opt.header["Content-Type"] = []string{ContentTypeJSON}
+	return doRequest(ctx, method, url, raw, opt)
+}
+
+// ------------------ request form ------------------
+
+// Post send form data by post method
+func PostForm(ctx context.Context, url string, form url.Values, options ...Option) ([]byte, error) {
+	return withFormBody(ctx, http.MethodPost, url, form, options...)
+}
+
+func withFormBody(ctx context.Context, method, url string, form url.Values, options ...Option) (body []byte, err error) {
+	opt := defaultOptions()
+	for _, o := range options {
+		o(opt)
+	}
+	opt.header["Content-Type"] = []string{ContentTypeForm}
+	formValue := form.Encode()
+	return doRequest(ctx, method, url, []byte(formValue), opt)
+}
+
+func doRequest(ctx context.Context, method, url string, payload []byte, opt *option) (ret []byte, err error) {
+	req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewBuffer(payload))
+	if err != nil {
+		return nil, errors.Wrapf(err, "[httpClient] get req err")
 	}
 
-	var c Client
-	if cfg.ClientTyp == DefaultClient {
-		c = newRestyClient()
-	} else {
-		// c = newRawClient()
+	client := &http.Client{
+		Transport: otelhttp.NewTransport(http.DefaultTransport),
+		Timeout:   opt.timeout,
 	}
 
-	if c == nil {
-		panic("unknown http client type " + cfg.ClientTyp)
+	// set header
+	for key, value := range opt.header {
+		req.Header.Set(key, value[0])
 	}
 
-	log.Println(cfg.ClientTyp, "ready to serve")
-	return c
+	ctx, span := tracer.Start(req.Context(), fmt.Sprintf("HTTP %s", method))
+	defer span.End()
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, errors.Wrapf(err, "[httpClient] do request from [%s %s] err", method, url)
+	}
+	if resp != nil {
+		defer func() {
+			_ = resp.Body.Close()
+		}()
+	}
+
+	if !isSuccess(resp.StatusCode) {
+		return nil, errors.Errorf("[httpClient] status code is %d", resp.StatusCode)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "[httpClient] read resp body from [%s %s] err", method, url)
+	}
+	return body, nil
+}
+
+// isSuccess check is success
+func isSuccess(statusCode int) bool {
+	return statusCode < http.StatusBadRequest
 }
