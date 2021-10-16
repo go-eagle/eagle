@@ -72,7 +72,7 @@ func (s *Suite) Test_repository_Create() {
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(newID))
 	s.mock.ExpectCommit()
 
-	_, err := s.repository.CreateUser(context.TODO(), user)
+	_, err := s.repository.CreateUser(context.TODO(), &user)
 
 	require.NoError(s.T(), err)
 }
