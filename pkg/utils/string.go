@@ -71,13 +71,13 @@ func StringToInt(str string) (int, error) {
 // --------- 字节切片和字符串转换 ----------
 // 性能很高, 原因在于底层无新的内存申请与拷贝
 
-// Bytes2String 字节切片转字符串
-func Bytes2String(b []byte) string {
+// BytesToString 字节切片转字符串
+func BytesToString(b []byte) string {
 	return *(*string)(unsafe.Pointer(&b))
 }
 
-// String2Bytes 字符串转字节切片
-func String2Bytes(s string) []byte {
+// StringToBytes 字符串转字节切片
+func StringToBytes(s string) []byte {
 	x := (*[2]uintptr)(unsafe.Pointer(&s))
 	h := [3]uintptr{x[0], x[1], x[1]}
 	return *(*[]byte)(unsafe.Pointer(&h))
