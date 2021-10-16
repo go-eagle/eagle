@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -45,5 +46,28 @@ func TestHttpClient(t *testing.T) {
 			t.Fatal(err)
 		}
 		assert.Equal(t, r.Data, jsonStr)
+	})
+
+	t.Run("test http post form func", func(t *testing.T) {
+		var ret []byte
+
+		form := url.Values{}
+		form.Set("comments", "test desc")
+
+		ret, err := PostForm(context.Background(), "http://httpbin.org/post", form)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		type resp struct {
+			Form interface{} `json:"form"`
+		}
+		r := resp{}
+
+		err = json.Unmarshal(ret, &r)
+		if err != nil {
+			t.Fatal(err)
+		}
+		assert.NotEmpty(t, r.Form)
 	})
 }

@@ -49,7 +49,7 @@ func withJSONBody(ctx context.Context, method, url string, raw json.RawMessage, 
 
 // ------------------ request form ------------------
 
-// Post send form data by post method
+// PostForm send form data by post method
 func PostForm(ctx context.Context, url string, form url.Values, options ...Option) ([]byte, error) {
 	return withFormBody(ctx, http.MethodPost, url, form, options...)
 }
