@@ -19,6 +19,7 @@ func defaultOptions() *option {
 	}
 }
 
+// WithTimeout with a timeout for per request
 func WithTimeout(duration time.Duration) Option {
 	return func(cfg *option) {
 		cfg.timeout = duration

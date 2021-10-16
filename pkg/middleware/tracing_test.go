@@ -21,6 +21,7 @@ import (
 	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
+// nolint
 func init() {
 	gin.SetMode(gin.ReleaseMode) // silence annoying log msgs
 }

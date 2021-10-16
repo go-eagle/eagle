@@ -2,11 +2,11 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-eagle/eagle/internal/ecode"
-	"github.com/go-eagle/eagle/pkg/app"
 
+	"github.com/go-eagle/eagle/internal/ecode"
 	"github.com/go-eagle/eagle/internal/model"
 	"github.com/go-eagle/eagle/internal/service"
+	"github.com/go-eagle/eagle/pkg/app"
 	"github.com/go-eagle/eagle/pkg/errcode"
 	"github.com/go-eagle/eagle/pkg/log"
 )

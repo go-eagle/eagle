@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/go-eagle/eagle/internal/dao"
 	"math/rand"
 	"strconv"
 	"time"
+
+	"github.com/go-eagle/eagle/internal/dao"
 
 	"github.com/pkg/errors"
 
@@ -21,6 +22,7 @@ const (
 	maxDurationTime    = 10 * time.Minute     // 验证码有效期
 )
 
+// VCodeService define interface func
 type VCodeService interface {
 	GenLoginVCode(phone string) (int, error)
 	CheckLoginVCode(phone int64, vCode int) bool

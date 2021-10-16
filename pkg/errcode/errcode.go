@@ -6,6 +6,7 @@ import (
 )
 
 // Error 返回错误码和消息的结构体
+// nolint: govet
 type Error struct {
 	code    int      `json:"code"`
 	msg     string   `json:"msg"`
@@ -14,6 +15,7 @@ type Error struct {
 
 var codes = map[int]struct{}{}
 
+// NewError create a error
 func NewError(code int, msg string) *Error {
 	if _, ok := codes[code]; ok {
 		panic(fmt.Sprintf("code %d is exsit, please change one", code))
@@ -22,32 +24,36 @@ func NewError(code int, msg string) *Error {
 	return &Error{code: code, msg: msg}
 }
 
+// Error return a error string
 func (e Error) Error() string {
 	return fmt.Sprintf("code：%d, msg:：%s", e.Code(), e.Msg())
 }
 
+// Code return error code
 func (e *Error) Code() int {
 	return e.code
 }
 
+// Msg return error msg
 func (e *Error) Msg() string {
 	return e.msg
 }
 
+// Msgf format error string
 func (e *Error) Msgf(args []interface{}) string {
 	return fmt.Sprintf(e.msg, args...)
 }
 
+// Details return more error details
 func (e *Error) Details() []string {
 	return e.details
 }
 
+// WithDetails return err with detail
 func (e *Error) WithDetails(details ...string) *Error {
 	newError := *e
 	newError.details = []string{}
-	for _, d := range details {
-		newError.details = append(newError.details, d)
-	}
+	newError.details = append(newError.details, details...)
 
 	return &newError
 }
@@ -83,6 +89,7 @@ type Err struct {
 	Err     error
 }
 
+// Error return error string
 func (err *Err) Error() string {
 	return fmt.Sprintf("Err - code: %d, message: %s, error: %s", err.Code, err.Message, err.Err)
 }

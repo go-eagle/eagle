@@ -6,8 +6,8 @@ import (
 	"github.com/go-eagle/eagle/pkg/transport/http"
 )
 
-// NewHttpServer creates a HTTP server
-func NewHttpServer(c *conf.Config) *http.Server {
+// NewHTTPServer creates a HTTP server
+func NewHTTPServer(c *conf.Config) *http.Server {
 	router := routers.NewRouter()
 
 	srv := http.NewServer(

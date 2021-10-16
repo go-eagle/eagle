@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/go-eagle/eagle/internal/dao"
 
 	"github.com/pkg/errors"
@@ -17,6 +18,7 @@ const (
 	FollowStatusDelete = 0 // 删除
 )
 
+// RelationService .
 type RelationService interface {
 	Follow(ctx context.Context, userID uint64, followedUID uint64) error
 	Unfollow(ctx context.Context, userID uint64, followedUID uint64) error

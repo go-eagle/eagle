@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	// ErrNotFound data is not exist
 	ErrNotFound = gorm.ErrRecordNotFound
 )
 

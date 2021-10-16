@@ -4,13 +4,15 @@ import (
 	"database/sql"
 	"time"
 
+	breaker "github.com/go-kratos/aegis/circuitbreaker"
+	"github.com/go-kratos/aegis/circuitbreaker/sre"
 	"github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
 
 	// database driver
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/go-eagle/eagle/pkg/breaker"
+	"github.com/go-eagle/eagle/pkg/container/group"
 	"github.com/go-eagle/eagle/pkg/log"
 	xtime "github.com/go-eagle/eagle/pkg/time"
 )
@@ -35,15 +37,14 @@ var (
 
 // Config mysql config.
 type Config struct {
-	DSN             string          // write data source name.
-	ReadDSN         []string        // read data source name.
-	MaxOpenConn     int             // open pool
-	MaxIdleConn     int             // idle pool
-	ConnMaxLifeTime xtime.Duration  // connect max life time.
-	QueryTimeout    xtime.Duration  // query sql timeout
-	ExecTimeout     xtime.Duration  // execute sql timeout
-	TranTimeout     xtime.Duration  // transaction sql timeout
-	Breaker         *breaker.Config // breaker
+	DSN             string         // write data source name.
+	ReadDSN         []string       // read data source name.
+	MaxOpenConn     int            // open pool
+	MaxIdleConn     int            // idle pool
+	ConnMaxLifeTime xtime.Duration // connect max life time.
+	QueryTimeout    xtime.Duration // query sql timeout
+	ExecTimeout     xtime.Duration // execute sql timeout
+	TranTimeout     xtime.Duration // transaction sql timeout
 }
 
 // NewMySQL new db and retry connection when has error.
@@ -69,9 +70,11 @@ func Open(c *Config) (*DB, error) {
 		return nil, err
 	}
 	addr := parseDSNAddr(c.DSN)
-	brkGroup := breaker.NewGroup(c.Breaker)
+	brkGroup := group.NewGroup(func() interface{} {
+		return sre.NewBreaker()
+	})
 	brk := brkGroup.Get(addr)
-	w := &conn{DB: d, breaker: brk, conf: c, addr: addr}
+	w := &conn{DB: d, breaker: brk.(breaker.CircuitBreaker), conf: c, addr: addr}
 	rs := make([]*conn, 0, len(c.ReadDSN))
 	for _, rd := range c.ReadDSN {
 		d, err := connect(c, rd)
@@ -80,7 +83,7 @@ func Open(c *Config) (*DB, error) {
 		}
 		addr = parseDSNAddr(rd)
 		brk := brkGroup.Get(addr)
-		r := &conn{DB: d, breaker: brk, conf: c, addr: addr}
+		r := &conn{DB: d, breaker: brk.(breaker.CircuitBreaker), conf: c, addr: addr}
 		rs = append(rs, r)
 	}
 	db.write = w

@@ -5,6 +5,7 @@ import (
 	"github.com/go-eagle/eagle/pkg/conf"
 )
 
+// Svc global var
 var Svc Service
 
 const (
@@ -18,6 +19,7 @@ const (
 	DefaultAvatar = "default_avatar.png"
 )
 
+// Service define all service
 type Service interface {
 	Users() UserService
 	Relations() RelationService

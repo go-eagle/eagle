@@ -18,7 +18,7 @@ func TestHttpClient(t *testing.T) {
 			t.Log(err)
 		}
 		type resp struct {
-			Url string `json:"url"`
+			URL string `json:"url"`
 		}
 		r := resp{}
 
@@ -26,7 +26,7 @@ func TestHttpClient(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		assert.Equal(t, r.Url, want)
+		assert.Equal(t, r.URL, want)
 	})
 
 	t.Run("test http post json func", func(t *testing.T) {

@@ -1,13 +1,15 @@
 package service
 
 import (
-	"github.com/go-eagle/eagle/internal/dao"
-	"github.com/go-eagle/eagle/pkg/conf"
 	"github.com/pkg/errors"
 	"github.com/qiniu/api.v7/auth"
 	"github.com/qiniu/api.v7/sms"
+
+	"github.com/go-eagle/eagle/internal/dao"
+	"github.com/go-eagle/eagle/pkg/conf"
 )
 
+// SMSService define interface func
 type SMSService interface {
 	SendSMS(phoneNumber string, verifyCode int) error
 }

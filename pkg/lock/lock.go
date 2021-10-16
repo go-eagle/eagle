@@ -12,6 +12,7 @@ const (
 	DefaultTimeout = 2 * time.Second
 )
 
+// Lock define common func
 type Lock interface {
 	Lock(ctx context.Context) (bool, error)
 	Unlock(ctx context.Context) (bool, error)

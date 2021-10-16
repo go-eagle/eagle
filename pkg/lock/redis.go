@@ -19,8 +19,10 @@ type redisLock struct {
 	timeout     time.Duration
 }
 
+// Option .
 type Option func(*redisLock)
 
+// WithTimeout with a timeout
 func WithTimeout(expiration time.Duration) Option {
 	return func(l *redisLock) {
 		l.timeout = expiration
@@ -28,6 +30,7 @@ func WithTimeout(expiration time.Duration) Option {
 }
 
 // NewRedisLock new a redis lock instance
+// nolint
 func NewRedisLock(rdb *redis.Client, key string, opts ...Option) *redisLock {
 	lock := redisLock{
 		key:         key,

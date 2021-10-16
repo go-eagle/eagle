@@ -89,6 +89,7 @@ func TestIdAlloc_GetKey(t *testing.T) {
 	}
 }
 
+// nolint
 func TestIdAlloc_GetNewID(t *testing.T) {
 	type fields struct {
 		key         string

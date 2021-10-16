@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/go-eagle/eagle/internal/dao"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/go-eagle/eagle/internal/dao"
 
 	"github.com/pkg/errors"
 
@@ -18,6 +19,7 @@ import (
 	"github.com/go-eagle/eagle/pkg/log"
 )
 
+// UserService define interface func
 type UserService interface {
 	Register(ctx context.Context, username, email, password string) error
 	EmailLogin(ctx context.Context, email, password string) (tokenStr string, err error)

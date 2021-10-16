@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"sync/atomic"
 
-	"github.com/go-eagle/eagle/pkg/errcode"
 	"github.com/pkg/errors"
+
+	"github.com/go-eagle/eagle/pkg/errcode"
 )
 
 // DB database.

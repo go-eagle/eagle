@@ -3,15 +3,14 @@ package web
 import (
 	"net/http"
 
-	"github.com/go-eagle/eagle/pkg/conf"
-
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 	"github.com/spf13/viper"
 
-	"github.com/gin-gonic/gin"
+	"github.com/go-eagle/eagle/pkg/conf"
 	"github.com/go-eagle/eagle/pkg/errcode"
 	"github.com/go-eagle/eagle/pkg/flash"
 	"github.com/go-eagle/eagle/pkg/log"
-	"github.com/gorilla/sessions"
 )
 
 // Resp web response struct

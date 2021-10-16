@@ -21,6 +21,7 @@ var (
 	services map[string]*Container
 )
 
+// nolint
 func init() {
 	flag.StringVar(&yamlPath, "f", "docker-compose.yaml", "composer yaml path.")
 	flag.BoolVar(&noDown, "nodown", false, "containers are not recycled.")
@@ -51,7 +52,7 @@ func Setup() (err error) {
 	}
 	defer func() {
 		if err != nil {
-			Teardown()
+			_ = Teardown()
 		}
 	}()
 	if _, err = getServices(); err != nil {
@@ -106,7 +107,7 @@ func checkServices() (output []byte, err error) {
 	defer func() {
 		if err != nil && retry < 4 {
 			retry++
-			getServices()
+			_, _ = getServices()
 			time.Sleep(time.Second * 5)
 			output, err = checkServices()
 			return

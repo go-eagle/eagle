@@ -119,6 +119,7 @@ func TestNats(t *testing.T) {
 	}()
 	go func() {
 		for {
+			// nolint: gosimple
 			select {
 			default:
 				handler := func(message []byte) error {

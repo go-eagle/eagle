@@ -7,7 +7,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/go-eagle/eagle/api/grpc/user/v1"
+	userv1 "github.com/go-eagle/eagle/api/grpc/user/v1"
 	"github.com/go-eagle/eagle/pkg/log"
 )
 
@@ -23,11 +23,11 @@ func main() {
 		_ = conn.Close()
 	}()
 
-	userClient := v1.NewUserServiceClient(conn)
+	userClient := userv1.NewUserServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	userReq := &v1.PhoneLoginRequest{
+	userReq := &userv1.PhoneLoginRequest{
 		Phone:      13010102020,
 		VerifyCode: 123456,
 	}

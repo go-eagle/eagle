@@ -1,6 +1,6 @@
 package log
 
-// Logger config
+// Config  log config
 type Config struct {
 	Development       bool
 	DisableCaller     bool

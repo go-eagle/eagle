@@ -18,15 +18,6 @@ var namespace = conf.Conf.App.Name
 var (
 	labels = []string{"status", "endpoint", "method"}
 
-	// 应用时长
-	uptime = metric.NewCounterVec(
-		&metric.CounterVecOpts{
-			Namespace: namespace,
-			Name:      "uptime",
-			Help:      "HTTP service uptime.",
-			Labels:    labels,
-		})
-
 	// QPS
 	reqCount = metric.NewCounterVec(
 		&metric.CounterVecOpts{
@@ -73,18 +64,6 @@ var (
 		})
 )
 
-// init registers the prometheus metrics
-func init() {
-	// go recordUptime()
-}
-
-// recordUptime increases service uptime per second.
-func recordUptime() {
-	for range time.Tick(time.Second) {
-		uptime.Inc()
-	}
-}
-
 // calcRequestSize returns the size of request object.
 func calcRequestSize(r *http.Request) float64 {
 	size := 0
@@ -110,6 +89,7 @@ func calcRequestSize(r *http.Request) float64 {
 	return float64(size)
 }
 
+// RequestLabelMappingFn .
 type RequestLabelMappingFn func(c *gin.Context) string
 
 // PromOpts represents the Prometheus middleware Options.

@@ -253,6 +253,7 @@ func TestWithCancel(t *testing.T) {
 	})
 	var doneErr error
 	g.Go(func(ctx context.Context) error {
+		// nolint: gosimple
 		select {
 		case <-ctx.Done():
 			doneErr = ctx.Err()

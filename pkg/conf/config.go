@@ -15,6 +15,7 @@ import (
 
 // Config global config
 // include common and biz config
+// nolint
 type Config struct {
 	// common
 	App    AppConfig
@@ -66,6 +67,7 @@ type WebConfig struct {
 }
 
 // CookieConfig cookie config
+// nolint: golint
 type CookieConfig struct {
 	Name     string
 	MaxAge   int

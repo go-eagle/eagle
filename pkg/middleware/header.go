@@ -42,5 +42,4 @@ func Secure(c *gin.Context) {
 	if c.Request.TLS != nil {
 		c.Header("Strict-Transport-Security", "max-age=31536000")
 	}
-
 }

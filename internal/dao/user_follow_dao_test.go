@@ -5,19 +5,17 @@ import (
 	"flag"
 	"testing"
 
-	logger "github.com/go-eagle/eagle/pkg/log"
+	"github.com/spf13/pflag"
 
 	"github.com/go-eagle/eagle/internal/model"
-
 	"github.com/go-eagle/eagle/pkg/conf"
+	logger "github.com/go-eagle/eagle/pkg/log"
 	"github.com/go-eagle/eagle/pkg/testing/lich"
-	"github.com/spf13/pflag"
 )
 
 var (
 	d       *Dao
 	cfgFile = pflag.StringP("config", "c", "", "eagle config file path.")
-	cfg     *conf.Config
 )
 
 func TestMain(m *testing.M) {

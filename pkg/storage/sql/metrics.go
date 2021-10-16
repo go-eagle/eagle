@@ -6,6 +6,7 @@ import (
 
 const namespace = "mysql_client"
 
+// nolint
 var (
 	_metricReqDur = metric.NewHistogramVec(&metric.HistogramVecOpts{
 		Namespace: namespace,

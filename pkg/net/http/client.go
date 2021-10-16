@@ -21,7 +21,9 @@ import (
 // see: https://github.com/iiinsomnia/gochat/blob/master/utils/http.go
 
 const (
+	// ContentTypeJSON json format
 	ContentTypeJSON = "application/json; charset=utf-8"
+	// ContentTypeForm form format
 	ContentTypeForm = "application/x-www-form-urlencoded; charset=utf-8"
 
 	// DefaultTimeout max exec time for a request

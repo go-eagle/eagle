@@ -10,6 +10,7 @@ import (
 	"github.com/go-eagle/eagle/pkg/log"
 )
 
+// Server http server struct
 type Server struct {
 	*http.Server
 	lis          net.Listener
@@ -20,6 +21,7 @@ type Server struct {
 	log          log.Logger
 }
 
+// defaultServer return a default config server
 func defaultServer() *Server {
 	return &Server{
 		network:      "tcp",
@@ -30,6 +32,7 @@ func defaultServer() *Server {
 	}
 }
 
+// NewServer create a server
 func NewServer(opts ...ServerOption) *Server {
 	srv := defaultServer()
 	// apply options
@@ -50,6 +53,7 @@ func (s *Server) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	s.ServeHTTP(resp, req)
 }
 
+// Start start a server
 func (s *Server) Start(ctx context.Context) error {
 	lis, err := net.Listen(s.network, s.address)
 	if err != nil {
@@ -63,6 +67,7 @@ func (s *Server) Start(ctx context.Context) error {
 	return nil
 }
 
+// Stop stop server
 func (s *Server) Stop(ctx context.Context) error {
 	s.log.Info("[HTTP] server is stopping")
 	return s.Shutdown(ctx)

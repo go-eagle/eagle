@@ -8,6 +8,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
+// Producer define struct for rabbitmq
 type Producer struct {
 	addr          string
 	conn          *amqp.Connection
@@ -19,6 +20,7 @@ type Producer struct {
 	quit          chan struct{}
 }
 
+// NewProducer create a producer
 func NewProducer(addr, exchange string) *Producer {
 	p := &Producer{
 		addr:       addr,
@@ -30,6 +32,7 @@ func NewProducer(addr, exchange string) *Producer {
 	return p
 }
 
+// Start start a producer
 func (p *Producer) Start() error {
 	if err := p.Run(); err != nil {
 		return err
@@ -39,6 +42,7 @@ func (p *Producer) Start() error {
 	return nil
 }
 
+// Stop .
 func (p *Producer) Stop() {
 	close(p.quit)
 
@@ -49,6 +53,7 @@ func (p *Producer) Stop() {
 	}
 }
 
+// Run .
 func (p *Producer) Run() error {
 	var err error
 	if p.conn, err = OpenConnection(p.addr); err != nil {
@@ -56,7 +61,7 @@ func (p *Producer) Run() error {
 	}
 
 	if p.channel, err = NewChannel(p.conn).Create(); err != nil {
-		p.conn.Close()
+		_ = p.conn.Close()
 		return err
 	}
 
@@ -66,6 +71,7 @@ func (p *Producer) Run() error {
 	return err
 }
 
+// ReConnect .
 func (p *Producer) ReConnect() {
 	for {
 		select {
@@ -118,6 +124,7 @@ func (p *Producer) ReConnect() {
 	}
 }
 
+// Publish push data to queue
 func (p *Producer) Publish(message string) error {
 	return p.channel.Publish(
 		p.exchange,   // exchange

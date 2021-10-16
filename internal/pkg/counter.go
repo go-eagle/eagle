@@ -16,7 +16,8 @@ const (
 	// PrefixCounter counter key
 	PrefixCounter = "eagle:counter:%s"
 	// DefaultStep default step key
-	DefaultStep           = 1
+	DefaultStep = 1
+	// DefaultExpirationTime .
 	DefaultExpirationTime = 600 * time.Second
 )
 

@@ -110,6 +110,7 @@ func (s *Stmt) Query(ctx context.Context, args ...interface{}) (rows *Rows, err 
 		return
 	}
 	_, c, cancel := s.db.conf.QueryTimeout.Shrink(ctx)
+	// nolint: rowserrcheck
 	rs, err := stmt.QueryContext(c, args...)
 	s.db.onBreaker(&err)
 	_metricReqDur.Observe(int64(time.Since(now)/time.Millisecond), s.db.addr, s.db.addr, "stmt:query")

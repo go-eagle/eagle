@@ -11,7 +11,7 @@ import (
 	"github.com/go-eagle/eagle/pkg/log"
 )
 
-// Follow 取消关注
+// Unfollow 取消关注
 // @Summary 通过用户id取消关注用户
 // @Description Get an user by user id
 // @Tags 用户

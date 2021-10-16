@@ -40,21 +40,21 @@ func WithName(name string) Option {
 	}
 }
 
-// WithVersion .
+// WithVersion with a version
 func WithVersion(version string) Option {
 	return func(o *options) {
 		o.version = version
 	}
 }
 
-// WithSignal .
+// WithContext with a context
 func WithContext(ctx context.Context) Option {
 	return func(o *options) {
 		o.ctx = ctx
 	}
 }
 
-// WithSignal .
+// WithSignal with some system signal
 func WithSignal(sigs ...os.Signal) Option {
 	return func(o *options) {
 		o.sigs = sigs
@@ -68,7 +68,8 @@ func WithLogger(logger log.Logger) Option {
 	}
 }
 
-func Server(srv ...transport.Server) Option {
+// WithServer with a server , http or grpc
+func WithServer(srv ...transport.Server) Option {
 	return func(o *options) {
 		o.servers = srv
 	}

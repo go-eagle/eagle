@@ -15,6 +15,7 @@ import (
 	"github.com/go-eagle/eagle/pkg/log"
 )
 
+// App global app
 type App struct {
 	c      *conf.Config
 	opts   options
@@ -23,8 +24,9 @@ type App struct {
 	log    log.Logger
 }
 
+// New create a app globally
 func New(c *conf.Config, opts ...Option) *App {
-	options := options{
+	defaultOptions := options{
 		ctx:    context.Background(),
 		logger: log.GetLogger(),
 		// don not catch SIGKILL signal, need to waiting for kill self by other.
@@ -32,16 +34,16 @@ func New(c *conf.Config, opts ...Option) *App {
 		registrarTimeout: 10 * time.Second,
 	}
 	if id, err := uuid.NewUUID(); err == nil {
-		options.id = id.String()
+		defaultOptions.id = id.String()
 	}
 	for _, o := range opts {
-		o(&options)
+		o(&defaultOptions)
 	}
 
-	ctx, cancel := context.WithCancel(options.ctx)
+	ctx, cancel := context.WithCancel(defaultOptions.ctx)
 	return &App{
 		c:      c,
-		opts:   options,
+		opts:   defaultOptions,
 		ctx:    ctx,
 		log:    log.GetLogger(),
 		cancel: cancel,

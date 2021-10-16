@@ -16,6 +16,7 @@ import (
 )
 
 // Server is a gRPC server wrapper.
+// nolint
 type Server struct {
 	*grpc.Server
 	ctx      context.Context

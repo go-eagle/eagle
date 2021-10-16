@@ -7,6 +7,7 @@ import (
 	gintemplate "github.com/foolin/gin-template"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
+
 	"github.com/go-eagle/eagle/pkg/flash"
 	"github.com/go-eagle/eagle/pkg/log"
 	"github.com/go-eagle/eagle/web"

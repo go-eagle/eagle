@@ -7,6 +7,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
+// Consumer define consumer for rabbitmq
 type Consumer struct {
 	addr          string
 	conn          *amqp.Connection
@@ -22,6 +23,7 @@ type Consumer struct {
 	handler       func(body []byte) error // 业务自定义消费函数
 }
 
+// NewConsumer instance a consumer
 func NewConsumer(addr, exchange, queueName string, autoDelete bool, handler func(body []byte) error) *Consumer {
 	return &Consumer{
 		addr:        addr,
@@ -35,6 +37,7 @@ func NewConsumer(addr, exchange, queueName string, autoDelete bool, handler func
 	}
 }
 
+// Start start a service
 func (c *Consumer) Start() error {
 	if err := c.Run(); err != nil {
 		return err
@@ -45,6 +48,7 @@ func (c *Consumer) Start() error {
 	return nil
 }
 
+// Stop a consumer
 func (c *Consumer) Stop() {
 	close(c.quit)
 
@@ -60,6 +64,7 @@ func (c *Consumer) Stop() {
 	}
 }
 
+// Run .
 func (c *Consumer) Run() error {
 	var err error
 	if c.conn, err = OpenConnection(c.addr); err != nil {
@@ -67,20 +72,20 @@ func (c *Consumer) Run() error {
 	}
 
 	if c.channel, err = NewChannel(c.conn).Create(); err != nil {
-		c.conn.Close()
+		_ = c.conn.Close()
 		return err
 	}
 
 	// bind queue
 	if _, err = c.channel.QueueDeclare(c.queueName, true, c.autoDelete, false, false, nil); err != nil {
-		c.channel.Close()
-		c.conn.Close()
+		_ = c.channel.Close()
+		_ = c.conn.Close()
 		return err
 	}
 
 	if err = c.channel.QueueBind(c.queueName, c.routingKey, c.exchange, false, nil); err != nil {
-		c.channel.Close()
-		c.conn.Close()
+		_ = c.channel.Close()
+		_ = c.conn.Close()
 		return err
 	}
 
@@ -88,8 +93,8 @@ func (c *Consumer) Run() error {
 	// NOTE: autoAck param
 	delivery, err = c.channel.Consume(c.queueName, c.consumerTag, true, false, false, false, nil)
 	if err != nil {
-		c.channel.Close()
-		c.conn.Close()
+		_ = c.channel.Close()
+		_ = c.conn.Close()
 		return err
 	}
 
@@ -101,6 +106,7 @@ func (c *Consumer) Run() error {
 	return nil
 }
 
+// Handle handle data
 func (c *Consumer) Handle(delivery <-chan amqp.Delivery) {
 	for d := range delivery {
 		log.Printf("Consumer received a message: %s in queue: %s", d.Body, c.queueName)
@@ -111,16 +117,17 @@ func (c *Consumer) Handle(delivery <-chan amqp.Delivery) {
 				// 那么前 9 条消息都会被 delivery.Ack(true) 给确认掉。后续 9 条消息处理完毕时，
 				// 再执行 delivery.Ack(true)，显然就会导致消息重复确认
 				// 报 406 PRECONDITION_FAILED 错误， 所以这里为 false
-				delivery.Ack(false)
+				_ = delivery.Ack(false)
 			} else {
 				// 重新入队，否则未确认的消息会持续占用内存
-				delivery.Reject(true)
+				_ = delivery.Reject(true)
 			}
 		}(d)
 	}
 	log.Println("handle: async deliveries channel closed")
 }
 
+// ReConnect .
 func (c *Consumer) ReConnect() {
 	for {
 		select {
@@ -175,5 +182,4 @@ func (c *Consumer) ReConnect() {
 			}
 		}
 	}
-
 }

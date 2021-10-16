@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	// ErrNotAPointer .
 	ErrNotAPointer = errors.New("v argument must be a pointer")
 )
 

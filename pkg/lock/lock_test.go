@@ -61,5 +61,4 @@ func TestLockWithTimeout(t *testing.T) {
 		assert.Nil(t, err)
 		assert.False(t, ok)
 	})
-
 }

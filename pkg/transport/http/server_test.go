@@ -7,7 +7,6 @@ import (
 )
 
 func TestServer(t *testing.T) {
-
 	srv := NewServer()
 
 	//go func() {

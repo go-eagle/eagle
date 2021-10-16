@@ -16,10 +16,11 @@ import (
 	"github.com/go-eagle/eagle/pkg/middleware"
 )
 
-// Load loads the middlewares, routes, handlers.
+// NewRouter loads the middlewares, routes, handlers.
 func NewRouter() *gin.Engine {
 	g := gin.New()
 	// 使用中间件
+	g.Use(gin.Recovery())
 	g.Use(middleware.NoCache)
 	g.Use(middleware.Options)
 	g.Use(middleware.Secure)

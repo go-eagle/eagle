@@ -7,7 +7,6 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.4.1
 	github.com/HdrHistogram/hdrhistogram-go v1.0.1 // indirect
 	github.com/Shopify/sarama v1.19.0
-	github.com/StackExchange/wmi v0.0.0-20210224194228-fe8f1750fd46 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/alicebob/miniredis/v2 v2.15.1
 	github.com/dgraph-io/ristretto v0.0.3
@@ -18,8 +17,8 @@ require (
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/static v0.0.0-20200916080430-d45d9a37d28e
 	github.com/gin-gonic/gin v1.7.2
+	github.com/go-kratos/aegis v0.1.1
 	github.com/go-mail/mail v2.3.1+incompatible
-	github.com/go-ole/go-ole v1.2.5 // indirect
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-openapi/spec v0.20.3 // indirect
 	github.com/go-openapi/swag v0.19.15 // indirect
@@ -28,7 +27,6 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis/extra/redisotel/v8 v8.10.0
 	github.com/go-redis/redis/v8 v8.11.0
-	github.com/go-resty/resty/v2 v2.6.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-test/deep v1.0.6
 	github.com/golang/protobuf v1.4.3
@@ -41,7 +39,7 @@ require (
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
-	github.com/nats-io/nats.go v1.9.1
+	github.com/nats-io/nats.go v1.13.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/openzipkin-contrib/zipkin-go-opentracing v0.4.5
 	github.com/openzipkin/zipkin-go v0.2.2
@@ -60,7 +58,6 @@ require (
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.7.0
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
-	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/toolkits/net v0.0.0-20160910085801-3f39ab6fe3ce
 	github.com/uber/jaeger-client-go v2.25.0+incompatible
 	github.com/uber/jaeger-lib v2.4.0+incompatible
@@ -81,11 +78,10 @@ require (
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/automaxprocs v1.4.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0
 	golang.org/x/tools v0.1.4 // indirect
 	google.golang.org/genproto v0.0.0-20200729003335-053ba62fc06f // indirect

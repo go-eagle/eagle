@@ -87,7 +87,7 @@ func gormConfig(c *Config) *gorm.Config {
 			log.New(os.Stdout, "\r\n", log.LstdFlags),
 			logger.Config{
 				//设定慢查询时间阈值
-				SlowThreshold: c.SlowThreshold,
+				SlowThreshold: c.SlowThreshold, // nolint: golint
 				Colorful:      true,
 				//设置日志级别，只有指定级别以上会输出慢查询日志
 				LogLevel: logger.Warn,

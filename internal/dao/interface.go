@@ -3,8 +3,9 @@ package dao
 import (
 	"context"
 
-	"github.com/go-eagle/eagle/internal/model"
 	"gorm.io/gorm"
+
+	"github.com/go-eagle/eagle/internal/model"
 )
 
 var _ dao = (*Dao)(nil)

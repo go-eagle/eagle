@@ -53,7 +53,7 @@ func LoadConfig(confPath string) (*viper.Viper, error) {
 	return v, nil
 }
 
-// Parse config file
+// ParseConfig Parse config file
 func ParseConfig(v *viper.Viper) (*Config, error) {
 	var c Config
 

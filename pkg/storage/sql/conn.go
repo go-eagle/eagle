@@ -11,13 +11,13 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 
-	"github.com/go-eagle/eagle/pkg/breaker"
+	breaker "github.com/go-kratos/aegis/circuitbreaker"
 )
 
 // conn database connection
 type conn struct {
 	*sql.DB
-	breaker breaker.Breaker
+	breaker breaker.CircuitBreaker
 	conf    *Config
 	addr    string
 }
@@ -162,6 +162,7 @@ func (db *conn) query(ctx context.Context, query string, args ...interface{}) (r
 		return
 	}
 	_, c, cancel := db.conf.QueryTimeout.Shrink(ctx)
+	// nolint: rowserrcheck
 	rs, err := db.DB.QueryContext(c, query, args...)
 	db.onBreaker(&err)
 	_metricReqDur.Observe(int64(time.Since(now)/time.Millisecond), db.addr, db.addr, "query")

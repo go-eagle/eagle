@@ -16,7 +16,9 @@ const (
 )
 
 var (
-	ErrPlaceholder           = errors.New("cache: placeholder")
+	// ErrPlaceholder .
+	ErrPlaceholder = errors.New("cache: placeholder")
+	// ErrSetMemoryWithNotFound .
 	ErrSetMemoryWithNotFound = errors.New("cache: set memory cache err for not found")
 )
 
@@ -58,6 +60,7 @@ func Del(ctx context.Context, keys ...string) error {
 	return Client.Del(ctx, keys...)
 }
 
+// SetCacheWithNotFound .
 func SetCacheWithNotFound(ctx context.Context, key string) error {
 	return Client.SetCacheWithNotFound(ctx, key)
 }

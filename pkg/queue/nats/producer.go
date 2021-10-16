@@ -7,6 +7,7 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
+// Producer define a nats producer
 type Producer struct {
 	addr      string
 	conn      *nats.Conn
@@ -14,6 +15,7 @@ type Producer struct {
 	quit      chan struct{}
 }
 
+// NewProducer create a producer
 func NewProducer(addr string) *Producer {
 	p := &Producer{
 		addr:      addr,
@@ -26,6 +28,7 @@ func NewProducer(addr string) *Producer {
 	return p
 }
 
+// Start .
 func (p *Producer) Start() error {
 	if err := p.Run(); err != nil {
 		return err
@@ -37,6 +40,7 @@ func (p *Producer) Start() error {
 	return nil
 }
 
+// Stop .
 func (p *Producer) Stop() {
 	close(p.quit)
 	if !p.conn.IsClosed() {
@@ -44,6 +48,7 @@ func (p *Producer) Stop() {
 	}
 }
 
+// Run .
 func (p *Producer) Run() error {
 	var err error
 	opts := nats.Options{
@@ -66,6 +71,7 @@ func (p *Producer) Run() error {
 	return err
 }
 
+// ReConnect .
 func (p *Producer) ReConnect() {
 	for {
 		select {
@@ -103,6 +109,7 @@ func (p *Producer) ReConnect() {
 	}
 }
 
+// Publish push data to queue
 func (p *Producer) Publish(topic string, data interface{}) error {
 	encodeConn, err := nats.NewEncodedConn(p.conn, nats.JSON_ENCODER)
 	if err != nil {

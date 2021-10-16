@@ -53,7 +53,7 @@ func getRemotePipelineRedisData(i []int) []int {
 
 // getGoroutinePipelineRedisData 分段后通过goroutine并发获取数据
 func getGoroutinePipelineRedisData(ids []int) []int {
-	idsNew := make(map[int][]int, 0)
+	idsNew := make(map[int][]int)
 	idsNew[0] = ids[0:30]
 	idsNew[1] = ids[30:60]
 	idsNew[2] = ids[60:90]

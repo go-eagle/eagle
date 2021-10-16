@@ -92,9 +92,9 @@ func main() {
 		eagle.WithName(cfg.App.Name),
 		eagle.WithVersion(cfg.App.Version),
 		eagle.WithLogger(logger.GetLogger()),
-		eagle.Server(
+		eagle.WithServer(
 			// init http server
-			server.NewHttpServer(conf.Conf),
+			server.NewHTTPServer(conf.Conf),
 			// init grpc server
 			//grpcSrv := server.NewGRPCServer(svc)
 		),

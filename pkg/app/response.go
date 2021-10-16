@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Response define a response struct
 type Response struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
@@ -15,10 +16,12 @@ type Response struct {
 	Details []string    `json:"details"`
 }
 
+// NewResponse return a response
 func NewResponse() *Response {
 	return &Response{}
 }
 
+// Success return a success response
 func (r *Response) Success(c *gin.Context, data interface{}) {
 	if data == nil {
 		data = gin.H{}

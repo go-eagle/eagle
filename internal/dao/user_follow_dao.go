@@ -11,28 +11,33 @@ import (
 	"github.com/go-eagle/eagle/pkg/log"
 )
 
+// CreateUserFollow .
 func (d *Dao) CreateUserFollow(ctx context.Context, db *gorm.DB, userID, followedUID uint64) error {
 	return db.Exec("insert into user_follow set user_id=?, followed_uid=?, status=1, created_at=? on duplicate key update status=1, updated_at=?",
 		userID, followedUID, time.Now(), time.Now()).Error
 }
 
+// CreateUserFans .
 func (d *Dao) CreateUserFans(ctx context.Context, db *gorm.DB, userID, followerUID uint64) error {
 	return db.Exec("insert into user_fans set user_id=?, follower_uid=?, status=1, created_at=? on duplicate key update status=1, updated_at=?",
 		userID, followerUID, time.Now(), time.Now()).Error
 }
 
+// UpdateUserFollowStatus .
 func (d *Dao) UpdateUserFollowStatus(ctx context.Context, db *gorm.DB, userID, followedUID uint64, status int) error {
 	userFollow := model.UserFollowModel{}
 	return db.Model(&userFollow).Where("user_id=? and followed_uid=?", userID, followedUID).
 		Updates(map[string]interface{}{"status": status, "updated_at": time.Now()}).Error
 }
 
+// UpdateUserFansStatus .
 func (d *Dao) UpdateUserFansStatus(ctx context.Context, db *gorm.DB, userID, followerUID uint64, status int) error {
 	userFans := model.UserFansModel{}
 	return db.Model(&userFans).Where("user_id=? and follower_uid=?", userID, followerUID).
 		Updates(map[string]interface{}{"status": status, "updated_at": time.Now()}).Error
 }
 
+// GetFollowingUserList .
 func (d *Dao) GetFollowingUserList(ctx context.Context, userID, lastID uint64, limit int) ([]*model.UserFollowModel, error) {
 	userFollowList := make([]*model.UserFollowModel, 0)
 	db := model.GetDB()

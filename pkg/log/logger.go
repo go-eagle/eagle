@@ -37,19 +37,20 @@ func Init(cfg *Config) Logger {
 	// new zap logger
 	zl, err = newZapLogger(cfg)
 	if err != nil {
-		fmt.Errorf("init newZapLogger err: %v", err)
+		_ = fmt.Errorf("init newZapLogger err: %v", err)
 	}
 	_ = zl
 
 	// new sugar logger
 	log, err = newLogger(cfg)
 	if err != nil {
-		fmt.Errorf("init newLogger err: %v", err)
+		_ = fmt.Errorf("init newLogger err: %v", err)
 	}
 
 	return log
 }
 
+// GetLogger return a log
 func GetLogger() Logger {
 	return log
 }

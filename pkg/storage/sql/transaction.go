@@ -108,6 +108,7 @@ func (tx *Tx) Query(query string, args ...interface{}) (rows *Rows, err error) {
 	defer func() {
 		_metricReqDur.Observe(int64(time.Since(now)/time.Millisecond), tx.db.addr, tx.db.addr, "tx:query")
 	}()
+	// nolint: rowserrcheck
 	rs, err := tx.tx.QueryContext(tx.c, query, args...)
 	if err == nil {
 		rows = &Rows{Rows: rs}

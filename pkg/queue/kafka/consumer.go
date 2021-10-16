@@ -9,12 +9,15 @@ import (
 	"github.com/Shopify/sarama"
 )
 
+// Consumer kafka consumer
 type Consumer struct {
 	group   sarama.ConsumerGroup
 	topics  []string
 	groupID string
 }
 
+// NewConsumer create a consumer
+// nolint
 func NewConsumer(config *sarama.Config, logger *log.Logger, topic string, groupID string, brokers []string) *Consumer {
 	// Init config, specify appropriate versio
 	sarama.Logger = log.New(os.Stderr, "[sarama_logger]", log.LstdFlags)
@@ -42,6 +45,7 @@ func NewConsumer(config *sarama.Config, logger *log.Logger, topic string, groupI
 	}
 }
 
+// Consume consume data
 func (c Consumer) Consume() {
 	// Track errors
 	go func() {
@@ -62,6 +66,7 @@ func (c Consumer) Consume() {
 	}
 }
 
+// CloseConnection close conn
 func (c Consumer) CloseConnection() {
-	c.group.Close()
+	_ = c.group.Close()
 }

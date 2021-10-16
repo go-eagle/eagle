@@ -7,6 +7,7 @@ import (
 	"github.com/nats-io/nats.go"
 )
 
+// Consumer define a nats consumer
 type Consumer struct {
 	addr      string
 	conn      *nats.Conn
@@ -15,6 +16,7 @@ type Consumer struct {
 	quit      chan struct{}
 }
 
+// NewConsumer create consumer
 func NewConsumer(addr string) *Consumer {
 	c := &Consumer{
 		addr:      addr,
@@ -27,6 +29,7 @@ func NewConsumer(addr string) *Consumer {
 	return c
 }
 
+// Start .
 func (c *Consumer) Start() error {
 	if err := c.Run(); err != nil {
 		return err
@@ -38,6 +41,7 @@ func (c *Consumer) Start() error {
 	return nil
 }
 
+// Stop .
 func (c *Consumer) Stop() {
 	close(c.quit)
 	if !c.conn.IsClosed() {
@@ -46,6 +50,7 @@ func (c *Consumer) Stop() {
 	}
 }
 
+// Run .
 func (c *Consumer) Run() error {
 	var err error
 	opts := nats.Options{
@@ -68,6 +73,7 @@ func (c *Consumer) Run() error {
 	return err
 }
 
+// ReConnect .
 func (c *Consumer) ReConnect() {
 	for {
 		select {
@@ -105,6 +111,7 @@ func (c *Consumer) ReConnect() {
 	}
 }
 
+// Consume consume data from nats queue
 func (c *Consumer) Consume(topic string, handler interface{}) error {
 	encodeConn, err := nats.NewEncodedConn(c.conn, nats.JSON_ENCODER)
 	if err != nil {

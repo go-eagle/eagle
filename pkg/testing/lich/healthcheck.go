@@ -41,7 +41,7 @@ func (c *Container) Healthcheck() (err error) {
 				log.Errorf("net.DialTCP(%s:%s) error(%v)", publish.HostIP, publish.HostPort, err)
 				return
 			}
-			tcpConn.Close()
+			_ = tcpConn.Close()
 		}
 	}
 	return
@@ -80,6 +80,8 @@ func checkMysql(c *Container) (err error) {
 	if err = db.Ping(); err != nil {
 		log.Errorf("ping(db) dsn(%s) error(%v)", dsn, err)
 	}
-	defer db.Close()
+	defer func() {
+		_ = db.Close()
+	}()
 	return
 }

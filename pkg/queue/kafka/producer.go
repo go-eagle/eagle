@@ -9,12 +9,15 @@ import (
 	"github.com/Shopify/sarama"
 )
 
+// Producer kafka producer
 type Producer struct {
 	asyncProducer sarama.AsyncProducer
 	topic         string
 	enqueued      int
 }
 
+// NewProducer create producer
+// nolint
 func NewProducer(config *sarama.Config, logger *log.Logger, topic string, brokers []string) *Producer {
 	sarama.Logger = logger
 
@@ -32,6 +35,7 @@ func NewProducer(config *sarama.Config, logger *log.Logger, topic string, broker
 	}
 }
 
+// Publish push data to queue
 func (p *Producer) Publish(message string) {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)
@@ -50,5 +54,4 @@ func (p *Producer) Publish(message string) {
 			return
 		}
 	}
-
 }
