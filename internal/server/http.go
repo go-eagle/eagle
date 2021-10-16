@@ -11,9 +11,9 @@ func NewHTTPServer(c *conf.Config) *http.Server {
 	router := routers.NewRouter()
 
 	srv := http.NewServer(
-		http.WithAddress(c.Http.Addr),
-		http.WithReadTimeout(c.Http.ReadTimeout),
-		http.WithWriteTimeout(c.Http.WriteTimeout),
+		http.WithAddress(c.HTTP.Addr),
+		http.WithReadTimeout(c.HTTP.ReadTimeout),
+		http.WithWriteTimeout(c.HTTP.WriteTimeout),
 	)
 
 	srv.Handler = router

@@ -11,8 +11,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// redisLock is a redis lock.
-type redisLock struct {
+// RedisLock is a redis lock.
+type RedisLock struct {
 	key         string
 	redisClient *redis.Client
 	token       string
@@ -20,19 +20,19 @@ type redisLock struct {
 }
 
 // Option .
-type Option func(*redisLock)
+type Option func(*RedisLock)
 
 // WithTimeout with a timeout
 func WithTimeout(expiration time.Duration) Option {
-	return func(l *redisLock) {
+	return func(l *RedisLock) {
 		l.timeout = expiration
 	}
 }
 
 // NewRedisLock new a redis lock instance
 // nolint
-func NewRedisLock(rdb *redis.Client, key string, opts ...Option) *redisLock {
-	lock := redisLock{
+func NewRedisLock(rdb *redis.Client, key string, opts ...Option) *RedisLock {
+	lock := RedisLock{
 		key:         key,
 		redisClient: rdb,
 		token:       genToken(),
@@ -46,7 +46,7 @@ func NewRedisLock(rdb *redis.Client, key string, opts ...Option) *redisLock {
 }
 
 // Lock acquires the lock.
-func (l *redisLock) Lock(ctx context.Context) (bool, error) {
+func (l *RedisLock) Lock(ctx context.Context) (bool, error) {
 	isSet, err := l.redisClient.SetNX(ctx, l.GetKey(), l.token, l.timeout).Result()
 	if err == redis.Nil {
 		return false, nil
@@ -59,7 +59,7 @@ func (l *redisLock) Lock(ctx context.Context) (bool, error) {
 
 // Unlock del the lock.
 // NOTE: token 一致才会执行删除，避免误删，这里用了lua脚本进行事务处理
-func (l *redisLock) Unlock(ctx context.Context) (bool, error) {
+func (l *RedisLock) Unlock(ctx context.Context) (bool, error) {
 	luaScript := "if redis.call('GET',KEYS[1]) == ARGV[1] then return redis.call('DEL',KEYS[1]) else return 0 end"
 	ret, err := l.redisClient.Eval(ctx, luaScript, []string{l.GetKey()}, l.token).Result()
 	if err != nil {
@@ -73,7 +73,7 @@ func (l *redisLock) Unlock(ctx context.Context) (bool, error) {
 }
 
 // GetKey 获取key
-func (l *redisLock) GetKey() string {
+func (l *RedisLock) GetKey() string {
 	return fmt.Sprintf(LockKey, l.key)
 }
 

@@ -19,7 +19,7 @@ import (
 type Config struct {
 	// common
 	App    AppConfig
-	Http   ServerConfig
+	HTTP   ServerConfig
 	Grpc   ServerConfig
 	Web    WebConfig
 	Cookie CookieConfig
@@ -72,7 +72,7 @@ type CookieConfig struct {
 	Name     string
 	MaxAge   int
 	Secure   bool
-	HttpOnly bool
+	HTTPOnly bool
 	Domain   string
 	Secret   string
 }
