@@ -68,7 +68,7 @@ func withFormBody(ctx context.Context, method, url string, form url.Values, opti
 	return doRequest(ctx, method, url, utils.StringToBytes(formValue), opt)
 }
 
-func doRequest(ctx context.Context, method, url string, payload []byte, opt *option) (ret []byte, err error) {
+func doRequest(ctx context.Context, method, url string, payload []byte, opt *options) (ret []byte, err error) {
 	req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, errors.Wrapf(err, "[httpClient] get req err")
