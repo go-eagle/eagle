@@ -32,7 +32,7 @@ func WithTimeout(expiration time.Duration) Option {
 // NewRedisLock new a redis lock instance
 // nolint
 func NewRedisLock(rdb *redis.Client, key string, opts ...Option) *RedisLock {
-	lock := RedisLock{
+	opt := RedisLock{
 		key:         key,
 		redisClient: rdb,
 		token:       genToken(),
@@ -40,9 +40,9 @@ func NewRedisLock(rdb *redis.Client, key string, opts ...Option) *RedisLock {
 	}
 
 	for _, o := range opts {
-		o(&lock)
+		o(&opt)
 	}
-	return &lock
+	return &opt
 }
 
 // Lock acquires the lock.
