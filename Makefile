@@ -60,7 +60,7 @@ prepare-lint:
 .PHONY: test
 # make test
 test: test-case vet
-	@go test -short ${PKG_LIST}
+	@go test -short ${PKG_LIST} -tags test
 
 .PHONY: test-case
 # make test-case
