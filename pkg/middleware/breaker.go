@@ -15,7 +15,7 @@ import (
 // ErrNotAllowed is request failed due to circuit breaker triggered.
 var ErrNotAllowed = errors.New("[BREAKER] request failed due to circuit breaker is open")
 
-// Option is circuit breaker option.
+// BreakerOption is circuit breaker option.
 type BreakerOption func(*options)
 
 // WithGroup with circuit breaker group.

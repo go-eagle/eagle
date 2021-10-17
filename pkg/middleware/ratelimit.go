@@ -2,16 +2,17 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-eagle/eagle/pkg/app"
 	"github.com/go-kratos/aegis/ratelimit"
 	"github.com/go-kratos/aegis/ratelimit/bbr"
 	"github.com/pkg/errors"
+
+	"github.com/go-eagle/eagle/pkg/app"
 )
 
 // ErrLimitExceed is service unavailable due to rate limit exceeded.
 var ErrLimitExceed = errors.New("[RATELIMIT] service unavailable due to rate limit exceeded")
 
-// Option is ratelimit option.
+// LimiterOption is ratelimit option.
 type LimiterOption func(*limiterOptions)
 
 // WithLimiter set Limiter implementation,
@@ -26,7 +27,7 @@ type limiterOptions struct {
 	limiter ratelimit.Limiter
 }
 
-// Breaker a circuit breaker middleware
+// Ratelimit a circuit breaker middleware
 func Ratelimit(opts ...LimiterOption) gin.HandlerFunc {
 	options := &limiterOptions{
 		limiter: bbr.NewLimiter(),
