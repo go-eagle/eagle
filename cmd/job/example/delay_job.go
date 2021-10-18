@@ -14,5 +14,5 @@ type DelayJob struct {
 func (d *DelayJob) Run() {
 	time.Sleep(2 * time.Second)
 	d.count++
-	log.Printf("%d: hello world\n", d.count)
+	log.Printf("[deplay] %d: hello world\n", d.count)
 }

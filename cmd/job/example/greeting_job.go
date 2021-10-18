@@ -9,5 +9,5 @@ type GreetingJob struct {
 
 // Run run job
 func (g GreetingJob) Run() {
-	fmt.Println("Hello ", g.Name)
+	fmt.Println("[greeting] Hello ", g.Name)
 }

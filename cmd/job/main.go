@@ -1,4 +1,4 @@
-package job
+package main
 
 import (
 	"time"
@@ -17,7 +17,7 @@ import (
 // Recover：捕获内部Job产生的 panic；
 // DelayIfStillRunning：触发时，如果上一次任务还未执行完成（耗时太长），则等待上一次任务完成之后再执行；
 // SkipIfStillRunning：触发时，如果上一次任务还未完成，则跳过此次执行。
-func Run() {
+func main() {
 	c := cron.New()
 	// support to second
 	// c = cron.New(cron.WithSeconds())
@@ -42,5 +42,7 @@ func Run() {
 	// 执行具体的任务
 	// _, _ = c.AddJob("@every 3s", example.GreetingJob{"dj"})
 
+	a := make(chan struct{})
 	c.Start()
+	<-a
 }

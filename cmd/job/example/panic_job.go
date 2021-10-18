@@ -14,5 +14,5 @@ func (p *PanicJob) Run() {
 		panic("oooooooooooooops!!!")
 	}
 
-	fmt.Println("hello world")
+	fmt.Println("[panic] hello world")
 }
