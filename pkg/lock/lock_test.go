@@ -14,7 +14,7 @@ func TestLockWithDefaultTimeout(t *testing.T) {
 	redis.InitTestRedis()
 
 	lock := NewRedisLock(redis.RedisClient, "lock1")
-	ok, err := lock.Lock(context.Background())
+	ok, err := lock.Lock(context.Background(), 2*time.Second)
 	if err != nil {
 		t.Error(err)
 	}
@@ -38,8 +38,8 @@ func TestLockWithTimeout(t *testing.T) {
 
 	t.Run("should lock/unlock success", func(t *testing.T) {
 		ctx := context.Background()
-		lock1 := NewRedisLock(redis.RedisClient, "lock2", WithTimeout(2*time.Second))
-		ok, err := lock1.Lock(ctx)
+		lock1 := NewRedisLock(redis.RedisClient, "lock2")
+		ok, err := lock1.Lock(ctx, 2*time.Second)
 		assert.Nil(t, err)
 		assert.True(t, ok)
 
@@ -50,8 +50,8 @@ func TestLockWithTimeout(t *testing.T) {
 
 	t.Run("should unlock failed", func(t *testing.T) {
 		ctx := context.Background()
-		lock2 := NewRedisLock(redis.RedisClient, "lock3", WithTimeout(2*time.Second))
-		ok, err := lock2.Lock(ctx)
+		lock2 := NewRedisLock(redis.RedisClient, "lock3")
+		ok, err := lock2.Lock(ctx, 2*time.Second)
 		assert.Nil(t, err)
 		assert.True(t, ok)
 

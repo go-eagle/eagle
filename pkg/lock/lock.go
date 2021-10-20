@@ -8,7 +8,7 @@ import (
 const (
 	// RedisLockKey redis lock key
 	RedisLockKey = "eagle:redis:lock:%s"
-	// EtcdLockKey
+	// EtcdLockKey etcd lock key
 	EtcdLockKey = "/eagle/lock/%s"
 )
 
