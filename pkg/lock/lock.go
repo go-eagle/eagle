@@ -6,14 +6,14 @@ import (
 )
 
 const (
-	// LockKey redis lock key
-	LockKey = "eagle:redis:lock:%s"
-	// DefaultTimeout default expire time
-	DefaultTimeout = 2 * time.Second
+	// RedisLockKey redis lock key
+	RedisLockKey = "eagle:redis:lock:%s"
+	// EtcdLockKey
+	EtcdLockKey = "/eagle/lock/%s"
 )
 
 // Lock define common func
 type Lock interface {
-	Lock(ctx context.Context) (bool, error)
+	Lock(ctx context.Context, timeout time.Duration) (bool, error)
 	Unlock(ctx context.Context) (bool, error)
 }
