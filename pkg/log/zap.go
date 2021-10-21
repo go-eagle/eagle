@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-eagle/eagle/pkg/utils"
+
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-
-	"github.com/go-eagle/eagle/pkg/net/ip"
 )
 
 const (
@@ -83,7 +83,7 @@ func buildLogger(cfg *Config) *zap.Logger {
 	// init option
 	hostname, _ := os.Hostname()
 	option := zap.Fields(
-		zap.String("ip", ip.GetLocalIP()),
+		zap.String("ip", utils.GetLocalIP()),
 		zap.String("app_id", cfg.Name),
 		zap.String("instance_id", hostname),
 	)
