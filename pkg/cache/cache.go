@@ -6,24 +6,22 @@ import (
 	"time"
 )
 
-const (
+var (
 	// DefaultExpireTime 默认过期时间
 	DefaultExpireTime = time.Hour * 24
 	// DefaultNotFoundExpireTime 结果为空时的过期时间 1分钟, 常用于数据为空时的缓存时间(缓存穿透)
 	DefaultNotFoundExpireTime = time.Minute
 	// NotFoundPlaceholder .
 	NotFoundPlaceholder = "*"
-)
 
-var (
+	// DefaultClient 生成一个缓存客户端，其中keyPrefix 一般为业务前缀
+	DefaultClient Cache
+
 	// ErrPlaceholder .
 	ErrPlaceholder = errors.New("cache: placeholder")
 	// ErrSetMemoryWithNotFound .
 	ErrSetMemoryWithNotFound = errors.New("cache: set memory cache err for not found")
 )
-
-// Client 生成一个缓存客户端，其中keyPrefix 一般为业务前缀
-var Client Cache
 
 // Cache 定义cache驱动接口
 type Cache interface {
@@ -37,30 +35,30 @@ type Cache interface {
 
 // Set 数据
 func Set(ctx context.Context, key string, val interface{}, expiration time.Duration) error {
-	return Client.Set(ctx, key, val, expiration)
+	return DefaultClient.Set(ctx, key, val, expiration)
 }
 
 // Get 数据
 func Get(ctx context.Context, key string, val interface{}) error {
-	return Client.Get(ctx, key, val)
+	return DefaultClient.Get(ctx, key, val)
 }
 
 // MultiSet 批量set
 func MultiSet(ctx context.Context, valMap map[string]interface{}, expiration time.Duration) error {
-	return Client.MultiSet(ctx, valMap, expiration)
+	return DefaultClient.MultiSet(ctx, valMap, expiration)
 }
 
 // MultiGet 批量获取
 func MultiGet(ctx context.Context, keys []string, valueMap interface{}) error {
-	return Client.MultiGet(ctx, keys, valueMap)
+	return DefaultClient.MultiGet(ctx, keys, valueMap)
 }
 
 // Del 批量删除
 func Del(ctx context.Context, keys ...string) error {
-	return Client.Del(ctx, keys...)
+	return DefaultClient.Del(ctx, keys...)
 }
 
 // SetCacheWithNotFound .
 func SetCacheWithNotFound(ctx context.Context, key string) error {
-	return Client.SetCacheWithNotFound(ctx, key)
+	return DefaultClient.SetCacheWithNotFound(ctx, key)
 }
