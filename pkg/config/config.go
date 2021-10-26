@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// LoadConfig load config file from given path
+// Load load config file from given path
 func Load(confPath string, out interface{}) error {
 	v := viper.New()
 	if confPath != "" {
