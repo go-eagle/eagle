@@ -9,11 +9,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Load load config file from given path
-func Load(confPath string, out interface{}) error {
+// Load load config file to target struct
+func Load(confFile string, out interface{}) error {
 	v := viper.New()
-	if confPath != "" {
-		v.SetConfigFile(confPath) // 如果指定了配置文件，则解析指定的配置文件
+	if confFile != "" {
+		v.SetConfigFile(confFile) // 如果指定了配置文件，则解析指定的配置文件
 	} else {
 		v.AddConfigPath("config") // 如果没有指定配置文件，则解析默认的配置文件
 		v.SetConfigName("config")
