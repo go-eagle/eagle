@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-eagle/eagle/pkg/utils"
@@ -37,6 +38,9 @@ var loggerLevelMap = map[string]zapcore.Level{
 	"panic":  zapcore.PanicLevel,
 	"fatal":  zapcore.FatalLevel,
 }
+
+// Prevent data race from occurring during zap.AddStacktrace
+var zapStacktraceMutex sync.Mutex
 
 func getLoggerLevel(cfg *Config) zapcore.Level {
 	level, exist := loggerLevelMap[cfg.Level]
@@ -156,7 +160,9 @@ func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option
 	var stacktrace zap.Option
 	warnLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		if !cfg.DisableCaller {
+			zapStacktraceMutex.Lock()
 			stacktrace = zap.AddStacktrace(zapcore.WarnLevel)
+			zapStacktraceMutex.Unlock()
 		}
 		return lvl == zapcore.WarnLevel
 	})
@@ -169,7 +175,9 @@ func getErrorCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Optio
 	var stacktrace zap.Option
 	errorLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		if !cfg.DisableCaller {
+			zapStacktraceMutex.Lock()
 			stacktrace = zap.AddStacktrace(zapcore.ErrorLevel)
+			zapStacktraceMutex.Unlock()
 		}
 		return lvl >= zapcore.ErrorLevel
 	})
