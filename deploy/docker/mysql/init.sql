@@ -1,6 +1,11 @@
 use mysql;
 ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'root';
 GRANT ALL ON *.* to root@'%' IDENTIFIED BY 'root';
+
+# create test_user
+CREATE USER 'test_user'@'%' IDENTIFIED BY '123456';
+GRANT ALL ON *.* to test_user@'%' IDENTIFIED BY '123456';
+
 FLUSH PRIVILEGES;
 
 -- 创建数据库

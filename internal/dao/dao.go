@@ -28,8 +28,8 @@ type Dao struct {
 // New new a Dao and return
 func New(cfg *conf.Config, db *gorm.DB) *Dao {
 	return &Dao{
-		orm:       db,
-		db:        sql.NewMySQL(cfg.MySQL),
+		orm: db,
+		//db:        sql.NewMySQL(cfg.MySQL),
 		tracer:    otel.Tracer("dao"),
 		userCache: cache.NewUserCache(),
 	}

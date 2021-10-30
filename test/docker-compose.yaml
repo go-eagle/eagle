@@ -1,24 +1,173 @@
+# yaml 配置
+# 官方文档：https://docs.docker.com/compose/compose-file/
 version: "3.7"
 
 services:
-  db:
-    image: mysql:5.6
+  app:
+    container_name: app_container
+    build: .
+    restart: on-failure
+    depends_on:
+      - db
+      - redis
+    links:
+      - db
+      - redis
     ports:
-      - 3306:3306
+      - "8080:8080"
+    networks:
+      - eagle
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]   # 用于健康检查的指令
+      interval: 1m30s   # 间隔时间
+      timeout: 10s  # 超时时间
+      retries: 3    # 重试次数
+      start_period: 40s # 启动多久后开始检查
+
+  db:
+    container_name: mysql_container
+    image: mysql:5.7.33
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: eagle
       MYSQL_USER: root
       MYSQL_PASSWORD: root
       TZ: Asia/Shanghai
-    volumes:
-      - .:/docker-entrypoint-initdb.d
+    # 解决外部无法访问 for mysql8
     command: [
         '--character-set-server=utf8',
-        '--collation-server=utf8_unicode_ci'
+        '--collation-server=utf8_unicode_ci',
+        '--default-authentication-plugin=mysql_native_password'
     ]
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]   # 用于健康检查的指令
+      timeout: 20s  # 超时时间
+      retries: 10   # 重试次数
+      start_period: 40s # 启动多久后开始检查
+    stdin_open: true
+    tty: true
+    # 修复问题 mbind: Operation not permitted
+    security_opt:
+      - seccomp:unconfined
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./deploy/docker/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./deploy/docker/mysql/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+      - ./deploy/docker/mysql/:/docker-entrypoint-initdb.d/
+    networks:
+      - eagle
+
+  # web 数据库管理工具，tips: host使用 db:3306
+  adminer:
+    container_name: adminer_container
+    image: adminer
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 8036:8036
+    networks:
+      - eagle
 
   redis:
-    image: redis
+    container_name: redis_container
+    image: redis:6.0.9-alpine
     ports:
-      - 6379:6379
+      - "6379:6379"
+    networks:
+      - eagle
+    volumes:
+      - redis_data:/var/lib/redis
+
+  nginx:
+    container_name: nginx_container
+    image: nginx:1.17.10-alpine
+    ports:
+      - 80:80
+    depends_on:
+      - app
+    volumes:
+      - ./config/nginx_api.conf:/etc/nginx/conf.d/eagle.conf
+    command: nginx -g 'daemon off';
+    networks:
+      - eagle
+
+  prometheus:
+    container_name: prometheus_container
+    image: prom/prometheus
+    restart: always
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:Z
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention=20d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - '9090:9090'
+    networks:
+      - eagle
+
+  node_exporter:
+    container_name: node_exporter_container
+    restart: always
+    image: prom/node-exporter
+    ports:
+      - '9101:9100'
+    networks:
+      - eagle
+
+  grafana:
+    container_name: grafana_container
+    restart: always
+    image: grafana/grafana
+    ports:
+      - '3000:3000'
+    networks:
+      - eagle
+  jaeger:
+    container_name: jaeger_container
+    image: jaegertracing/all-in-one:1.21
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+    ports:
+      - 5775:5775/udp
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 5778:5778
+      - 16686:16686
+      - 14268:14268
+      - 14250:14250
+      - 9411:9411
+    networks:
+      - eagle
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_container
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGODB_DATABASE: eagle
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - eagle
+
+
+networks:
+  eagle:
+    driver: "bridge"
+
+volumes:
+  mysql_data:
+  redis_data:
+  mongodb_data:
