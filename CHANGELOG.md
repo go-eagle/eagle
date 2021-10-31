@@ -2,6 +2,7 @@
 
 ## v1.3.2
 - 新增 run 命令工具
+- 新增 服务注册
 - 优化 replace OpenTracing with OpenTelemetry
 - 优化 add trace for http client and sql
 
