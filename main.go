@@ -20,6 +20,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
+	etcdclient "go.etcd.io/etcd/client/v3"
 	_ "go.uber.org/automaxprocs"
 
 	"github.com/go-eagle/eagle/internal/dao"
@@ -30,6 +31,7 @@ import (
 	"github.com/go-eagle/eagle/pkg/conf"
 	logger "github.com/go-eagle/eagle/pkg/log"
 	"github.com/go-eagle/eagle/pkg/redis"
+	"github.com/go-eagle/eagle/pkg/registry/etcd"
 	"github.com/go-eagle/eagle/pkg/trace"
 	v "github.com/go-eagle/eagle/pkg/version"
 )
@@ -88,16 +90,25 @@ func main() {
 		}
 	}()
 
-	app := eagle.New(cfg,
+	// create a etcd register
+	client, err := etcdclient.New(etcdclient.Config{
+		Endpoints: []string{"127.0.0.1:2379"},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	r := etcd.New(client)
+
+	// start app
+	app := eagle.New(
 		eagle.WithName(cfg.App.Name),
 		eagle.WithVersion(cfg.App.Version),
 		eagle.WithLogger(logger.GetLogger()),
 		eagle.WithServer(
 			// init http server
 			server.NewHTTPServer(conf.Conf),
-			// init grpc server
-			//grpcSrv := server.NewGRPCServer(svc)
 		),
+		eagle.WithRegistry(r),
 	)
 
 	if err := app.Run(); err != nil {

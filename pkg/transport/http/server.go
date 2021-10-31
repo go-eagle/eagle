@@ -5,9 +5,19 @@ import (
 	"errors"
 	"net"
 	"net/http"
+	"net/url"
 	"time"
 
+	"github.com/go-eagle/eagle/pkg/utils"
+
+	"github.com/go-eagle/eagle/pkg/transport"
+
 	"github.com/go-eagle/eagle/pkg/log"
+)
+
+var (
+	_ transport.Server   = (*Server)(nil)
+	_ transport.Endpoint = (*Server)(nil)
 )
 
 // Server http server struct
@@ -18,6 +28,7 @@ type Server struct {
 	address      string
 	readTimeout  time.Duration
 	writeTimeout time.Duration
+	endpoint     *url.URL
 	log          log.Logger
 }
 
@@ -53,6 +64,18 @@ func (s *Server) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	s.ServeHTTP(resp, req)
 }
 
+// Endpoint return a real address to registry endpoint.
+// examples:
+//   http://127.0.0.1:8080
+func (s *Server) Endpoint() (*url.URL, error) {
+	addr, err := utils.Extract(s.address, s.lis)
+	if err != nil {
+		return nil, err
+	}
+	s.endpoint = &url.URL{Scheme: "http", Host: addr}
+	return s.endpoint, nil
+}
+
 // Start start a server
 func (s *Server) Start(ctx context.Context) error {
 	lis, err := net.Listen(s.network, s.address)
@@ -60,6 +83,10 @@ func (s *Server) Start(ctx context.Context) error {
 		return err
 	}
 	s.lis = lis
+
+	if _, err := s.Endpoint(); err != nil {
+		return err
+	}
 	s.log.Infof("[HTTP] server is listening on: %s", lis.Addr().String())
 	if err := s.Serve(lis); !errors.Is(err, http.ErrServerClosed) {
 		return err
