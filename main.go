@@ -85,7 +85,7 @@ func main() {
 	// init pprof server
 	go func() {
 		fmt.Printf("Listening and serving PProf HTTP on %s\n", conf.Conf.App.PprofPort)
-		if err := http.ListenAndServe(conf.Conf.App.PprofPort, http.DefaultServeMux); err != nil && err != http.ErrServerClosed {
+		if err = http.ListenAndServe(conf.Conf.App.PprofPort, http.DefaultServeMux); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen ListenAndServe for PProf, err: %s", err.Error())
 		}
 	}()
