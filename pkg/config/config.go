@@ -3,44 +3,89 @@ package config
 import (
 	"errors"
 	"log"
-	"strings"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
 
-// Load load config file to target struct
-func Load(confFile string, out interface{}) error {
-	v := viper.New()
-	if confFile != "" {
-		v.SetConfigFile(confFile) // 如果指定了配置文件，则解析指定的配置文件
-	} else {
-		v.AddConfigPath("config") // 如果没有指定配置文件，则解析默认的配置文件
-		v.SetConfigName("config")
-	}
-	v.SetConfigType("yaml") // 设置配置文件格式为YAML
+var Conf config
 
-	replacer := strings.NewReplacer(".", "_")
-	viper.SetEnvKeyReplacer(replacer)
-	if err := v.ReadInConfig(); err != nil {
+// config conf struct
+type config struct {
+	vp *viper.Viper
+	// configDir conf root dir
+	configDir string
+	// configType conf file type, eg: yaml, json, toml, default yaml
+	configType string
+}
+
+type Option func(*config)
+
+// WithConfigDir config root dir
+func WithConfigDir(cfgDir string) Option {
+	return func(c *config) {
+		c.configDir = cfgDir
+	}
+}
+
+// WithFileType config dir
+func WithFileType(typ string) Option {
+	return func(c *config) {
+		c.configType = typ
+	}
+}
+
+// New create a config instance
+func New(opts ...Option) *config {
+	c := config{
+		vp:         viper.New(),
+		configType: "yaml",
+	}
+	for _, opt := range opts {
+		opt(&c)
+	}
+
+	Conf = c
+
+	return &c
+}
+
+// Load load file
+func (c *config) Load(cfgName string) error {
+	c.vp.AddConfigPath(c.configDir)
+	if cfgName != "" {
+		c.vp.SetConfigName(cfgName)
+	}
+	c.vp.SetConfigType(c.configType)
+
+	if err := c.vp.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			return errors.New("config file not found")
 		}
 		return err
 	}
-	err := v.Unmarshal(&out)
+	return nil
+}
+
+// Scan load data to val
+func (c *config) Scan(val interface{}) error {
+	err := c.vp.Unmarshal(&val)
 	if err != nil {
 		return err
 	}
 
-	// watch file change
+	c.watch(&val)
+
+	return nil
+}
+
+// watch listen file change
+func (c *config) watch(v interface{}) {
 	go func() {
-		v.WatchConfig()
-		v.OnConfigChange(func(e fsnotify.Event) {
-			_ = v.Unmarshal(&out)
+		c.vp.WatchConfig()
+		c.vp.OnConfigChange(func(e fsnotify.Event) {
+			_ = c.vp.Unmarshal(&v)
 			log.Printf("Config file changed: %s", e.Name)
 		})
 	}()
-
-	return nil
 }

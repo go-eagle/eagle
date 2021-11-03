@@ -75,6 +75,7 @@ func doRequest(ctx context.Context, method, url string, payload []byte, opt *opt
 	}
 
 	client := &http.Client{
+		// add header and set response status for tracing
 		Transport: otelhttp.NewTransport(http.DefaultTransport),
 		Timeout:   opt.timeout,
 	}
