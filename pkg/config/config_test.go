@@ -46,5 +46,4 @@ func TestLoad(t *testing.T) {
 		}
 		t.Log(appConfig.Name)
 	})
-
 }

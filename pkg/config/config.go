@@ -8,7 +8,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-var Conf config
+// Conf global conf var
+var Conf Config
+
+// Config define config interface
+type Config interface {
+	Load(cfgName string) error
+	Scan(val interface{}) error
+}
 
 // config conf struct
 type config struct {
@@ -19,6 +26,7 @@ type config struct {
 	configType string
 }
 
+// Option config option
 type Option func(*config)
 
 // WithConfigDir config root dir
@@ -36,7 +44,7 @@ func WithFileType(typ string) Option {
 }
 
 // New create a config instance
-func New(opts ...Option) *config {
+func New(opts ...Option) Config {
 	c := config{
 		vp:         viper.New(),
 		configType: "yaml",
@@ -45,7 +53,7 @@ func New(opts ...Option) *config {
 		opt(&c)
 	}
 
-	Conf = c
+	Conf = &c
 
 	return &c
 }
