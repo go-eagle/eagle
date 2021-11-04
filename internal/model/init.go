@@ -1,8 +1,11 @@
 package model
 
 import (
+	"fmt"
+
 	"gorm.io/gorm"
 
+	"github.com/go-eagle/eagle/pkg/config"
 	"github.com/go-eagle/eagle/pkg/storage/orm"
 )
 
@@ -10,7 +13,12 @@ import (
 var DB *gorm.DB
 
 // Init 初始化数据库
-func Init(cfg *orm.Config) *gorm.DB {
+func Init() *gorm.DB {
+	cfg, err := loadConf()
+	if err != nil {
+		panic(fmt.Sprintf("load orm conf err: %v", err))
+	}
+
 	DB = orm.NewMySQL(cfg)
 	return DB
 }
@@ -18,4 +26,14 @@ func Init(cfg *orm.Config) *gorm.DB {
 // GetDB 返回默认的数据库
 func GetDB() *gorm.DB {
 	return DB
+}
+
+// loadConf load gorm config
+func loadConf() (ret *orm.Config, err error) {
+	var cfg orm.Config
+	if err := config.Conf.Load("database", &cfg); err != nil {
+		return nil, err
+	}
+
+	return &cfg, nil
 }

@@ -5,9 +5,10 @@ import (
 	"fmt"
 
 	"go.opentelemetry.io/otel/trace"
-
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	"github.com/go-eagle/eagle/pkg/config"
 )
 
 // log is A global variable so that log functions can be directly accessed
@@ -31,9 +32,23 @@ type Logger interface {
 	WithFields(keyValues Fields) Logger
 }
 
+// loadConf load logger config
+func loadConf() (ret *Config, err error) {
+	var cfg Config
+	if err := config.Conf.Load("logger", &cfg); err != nil {
+		return nil, err
+	}
+	return &cfg, nil
+}
+
 // Init init log
-func Init(cfg *Config) Logger {
+func Init() Logger {
 	var err error
+	cfg, err := loadConf()
+	if err != nil {
+		panic(fmt.Sprintf("load logger conf err: %v", err))
+	}
+
 	// new zap logger
 	zl, err = newZapLogger(cfg)
 	if err != nil {

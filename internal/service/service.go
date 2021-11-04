@@ -2,7 +2,6 @@ package service
 
 import (
 	"github.com/go-eagle/eagle/internal/dao"
-	"github.com/go-eagle/eagle/pkg/conf"
 )
 
 // Svc global var
@@ -29,14 +28,12 @@ type Service interface {
 
 // service struct
 type service struct {
-	c   *conf.Config
 	dao *dao.Dao
 }
 
 // New init service
-func New(c *conf.Config, dao *dao.Dao) Service {
+func New(dao *dao.Dao) Service {
 	return &service{
-		c:   c,
 		dao: dao,
 	}
 }

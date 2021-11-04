@@ -3,18 +3,54 @@ package config
 import (
 	"errors"
 	"log"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
 
-// Conf global conf var
-var Conf Config
+var (
+	// Conf global conf var
+	Conf Config
+	// App global app var
+	App AppConfig
+)
+
+// Config global config
+// nolint
+type AppConfig struct {
+	CommonConfig
+	HTTP ServerConfig
+	GRPC ServerConfig
+}
+
+// CommonConfig app config
+type CommonConfig struct {
+	Name              string
+	Version           string
+	Mode              string
+	PprofPort         string
+	URL               string
+	JwtSecret         string
+	JwtTimeout        int
+	SSL               bool
+	CtxDefaultTimeout time.Duration
+	CSRF              bool
+	Debug             bool
+	EnableTrace       bool
+}
+
+// ServerConfig server config
+type ServerConfig struct {
+	Network      string
+	Addr         string
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
+}
 
 // Config define config interface
 type Config interface {
-	Load(cfgName string) error
-	Scan(val interface{}) error
+	Load(cfgName string, val interface{}) error
 }
 
 // config conf struct
@@ -24,23 +60,6 @@ type config struct {
 	configDir string
 	// configType conf file type, eg: yaml, json, toml, default yaml
 	configType string
-}
-
-// Option config option
-type Option func(*config)
-
-// WithConfigDir config root dir
-func WithConfigDir(cfgDir string) Option {
-	return func(c *config) {
-		c.configDir = cfgDir
-	}
-}
-
-// WithFileType config dir
-func WithFileType(typ string) Option {
-	return func(c *config) {
-		c.configType = typ
-	}
 }
 
 // New create a config instance
@@ -59,7 +78,7 @@ func New(opts ...Option) Config {
 }
 
 // Load load file
-func (c *config) Load(cfgName string) error {
+func (c *config) Load(cfgName string, val interface{}) error {
 	c.vp.AddConfigPath(c.configDir)
 	if cfgName != "" {
 		c.vp.SetConfigName(cfgName)
@@ -72,11 +91,7 @@ func (c *config) Load(cfgName string) error {
 		}
 		return err
 	}
-	return nil
-}
 
-// Scan load data to val
-func (c *config) Scan(val interface{}) error {
 	err := c.vp.Unmarshal(&val)
 	if err != nil {
 		return err

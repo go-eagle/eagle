@@ -1,0 +1,14 @@
+Development: false
+DisableCaller: false
+DisableStacktrace: false
+Encoding: json                          # json or console
+Level: info                             # 日志级别，INFO, WARN, ERROR
+Name: eagle
+Writers: console                        # 有2个可选项：file,console 选择file会将日志记录到logger_file指定的日志文件中，选择console会将日志输出到标准输出，当然也可以两者同时选择
+LoggerFile: /tmp/log/eagle.log
+LoggerWarnFile: /tmp/log/eagle.wf.log
+LoggerErrorFile: /tmp/log/eagle.err.log
+LogRollingPolicy: daily
+LogRotateDate: 1
+LogRotateSize: 1
+LogBackupCount: 7

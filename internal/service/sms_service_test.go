@@ -17,7 +17,7 @@ func Test_smsService_Send(t *testing.T) {
 		// TODO: Add test cases.
 	}
 
-	s := New(nil, nil)
+	s := New(nil)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := s.SMS().SendSMS(tt.args.phoneNumber, tt.args.verifyCode); (err != nil) != tt.wantErr {

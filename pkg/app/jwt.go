@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-eagle/eagle/pkg/config"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-
-	"github.com/go-eagle/eagle/pkg/conf"
 )
 
 var (
@@ -61,7 +61,7 @@ func ParseRequest(c *gin.Context) (*Payload, error) {
 	header := c.Request.Header.Get("Authorization")
 
 	// Load the jwt secret from config
-	secret := conf.Conf.App.JwtSecret
+	secret := config.App.JwtSecret
 
 	if len(header) == 0 {
 		return &Payload{}, ErrMissingHeader

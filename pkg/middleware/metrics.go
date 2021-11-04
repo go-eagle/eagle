@@ -6,14 +6,13 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/go-eagle/eagle/pkg/conf"
-
-	"github.com/go-eagle/eagle/pkg/metric"
-
 	"github.com/gin-gonic/gin"
+
+	conf "github.com/go-eagle/eagle/pkg/config"
+	"github.com/go-eagle/eagle/pkg/metric"
 )
 
-var namespace = conf.Conf.App.Name
+var namespace = conf.App.Name
 
 var (
 	labels = []string{"status", "endpoint", "method"}

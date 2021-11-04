@@ -8,26 +8,27 @@ import (
 	"github.com/spf13/pflag"
 
 	"github.com/go-eagle/eagle/internal/model"
-	"github.com/go-eagle/eagle/pkg/conf"
+	"github.com/go-eagle/eagle/pkg/config"
 	logger "github.com/go-eagle/eagle/pkg/log"
 	"github.com/go-eagle/eagle/pkg/testing/lich"
 )
 
 var (
-	d       *Dao
-	cfgFile = pflag.StringP("config", "c", "", "eagle config file path.")
+	d      *Dao
+	cfgDir = pflag.StringP("config", "c", "", "eagle config file path.")
 )
 
 func TestMain(m *testing.M) {
 	pflag.Parse()
 
-	*cfgFile = "../../config/config.yaml"
+	*cfgDir = "../../config/config"
 
 	flag.Set("f", "../../test/docker-compose.yaml")
 	flag.Parse()
 
-	cfg, err := conf.Init(*cfgFile)
-	if err != nil {
+	c := config.New(config.WithConfigDir(*cfgDir))
+	var cfg config.AppConfig
+	if err := c.Load("app", &cfg); err != nil {
 		panic(err)
 	}
 	if err := lich.Setup(); err != nil {
@@ -36,11 +37,11 @@ func TestMain(m *testing.M) {
 	defer lich.Teardown()
 
 	// init log
-	logger.Init(&cfg.Logger)
+	logger.Init()
 	// init db
-	model.Init(&cfg.ORM)
+	model.Init()
 
-	d = New(cfg, model.GetDB())
+	d = New(model.GetDB())
 	if code := m.Run(); code != 0 {
 		panic(code)
 	}

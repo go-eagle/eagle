@@ -7,7 +7,6 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/spf13/viper"
 
-	"github.com/go-eagle/eagle/pkg/conf"
 	"github.com/go-eagle/eagle/pkg/errcode"
 	"github.com/go-eagle/eagle/pkg/flash"
 	"github.com/go-eagle/eagle/pkg/log"
@@ -50,7 +49,7 @@ func SetLoginCookie(ctx *gin.Context, userID uint64) {
 
 	session := GetCookieSession(ctx)
 	session.Options = &sessions.Options{
-		Domain:   conf.Conf.Cookie.Domain,
+		Domain:   "",
 		MaxAge:   86400,
 		Path:     "/",
 		HttpOnly: true,
@@ -74,7 +73,7 @@ func SetLoginCookie(ctx *gin.Context, userID uint64) {
 
 // GetCookieSession get cookie
 func GetCookieSession(ctx *gin.Context) *sessions.Session {
-	session, err := Store.Get(ctx.Request, conf.Conf.Cookie.Name)
+	session, err := Store.Get(ctx.Request, "")
 	if err != nil {
 		log.Warnf("[handler] store get err, %v", err)
 	}

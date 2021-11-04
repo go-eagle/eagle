@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-eagle/eagle/pkg/config"
+
 	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redis/extra/redisotel/v8"
 	"github.com/go-redis/redis/v8"
@@ -32,7 +34,12 @@ type Config struct {
 }
 
 // Init 实例化一个redis client
-func Init(c *Config) *redis.Client {
+func Init() *redis.Client {
+	c, err := loadConf()
+	if err != nil {
+		panic(fmt.Sprintf("load redis conf err: %v", err))
+	}
+
 	RedisClient = redis.NewClient(&redis.Options{
 		Addr:         c.Addr,
 		Password:     c.Password,
@@ -45,7 +52,7 @@ func Init(c *Config) *redis.Client {
 		PoolTimeout:  c.PoolTimeout,
 	})
 
-	_, err := RedisClient.Ping(context.Background()).Result()
+	_, err = RedisClient.Ping(context.Background()).Result()
 	if err != nil {
 		panic(err)
 	}
@@ -56,6 +63,16 @@ func Init(c *Config) *redis.Client {
 	}
 
 	return RedisClient
+}
+
+// loadConf load redis config
+func loadConf() (ret *Config, err error) {
+	var cfg Config
+	if err := config.Conf.Load("redis", &cfg); err != nil {
+		return nil, err
+	}
+
+	return &cfg, nil
 }
 
 // InitTestRedis 实例化一个可以用于单元测试的redis

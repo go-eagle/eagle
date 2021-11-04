@@ -8,7 +8,6 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/go-eagle/eagle/internal/cache"
-	"github.com/go-eagle/eagle/pkg/conf"
 	"github.com/go-eagle/eagle/pkg/storage/sql"
 )
 
@@ -26,7 +25,7 @@ type Dao struct {
 }
 
 // New new a Dao and return
-func New(cfg *conf.Config, db *gorm.DB) *Dao {
+func New(db *gorm.DB) *Dao {
 	return &Dao{
 		orm: db,
 		//db:        sql.NewMySQL(cfg.MySQL),

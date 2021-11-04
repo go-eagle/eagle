@@ -2,18 +2,18 @@ package server
 
 import (
 	"github.com/go-eagle/eagle/internal/routers"
-	"github.com/go-eagle/eagle/pkg/conf"
+	"github.com/go-eagle/eagle/pkg/config"
 	"github.com/go-eagle/eagle/pkg/transport/http"
 )
 
 // NewHTTPServer creates a HTTP server
-func NewHTTPServer(c *conf.Config) *http.Server {
+func NewHTTPServer(c *config.ServerConfig) *http.Server {
 	router := routers.NewRouter()
 
 	srv := http.NewServer(
-		http.WithAddress(c.HTTP.Addr),
-		http.WithReadTimeout(c.HTTP.ReadTimeout),
-		http.WithWriteTimeout(c.HTTP.WriteTimeout),
+		http.WithAddress(c.Addr),
+		http.WithReadTimeout(c.ReadTimeout),
+		http.WithWriteTimeout(c.WriteTimeout),
 	)
 
 	srv.Handler = router

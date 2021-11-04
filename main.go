@@ -18,6 +18,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-eagle/eagle/pkg/config"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
 	etcdclient "go.etcd.io/etcd/client/v3"
@@ -28,7 +30,6 @@ import (
 	"github.com/go-eagle/eagle/internal/server"
 	"github.com/go-eagle/eagle/internal/service"
 	eagle "github.com/go-eagle/eagle/pkg/app"
-	"github.com/go-eagle/eagle/pkg/conf"
 	logger "github.com/go-eagle/eagle/pkg/log"
 	"github.com/go-eagle/eagle/pkg/redis"
 	"github.com/go-eagle/eagle/pkg/registry/etcd"
@@ -37,7 +38,7 @@ import (
 )
 
 var (
-	cfgFile = pflag.StringP("config", "c", "", "eagle config file path.")
+	cfgDir  = pflag.StringP("config dir", "d", "config", "eagle config file dir.")
 	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
@@ -62,30 +63,39 @@ func main() {
 	}
 
 	// init config
-	cfg, err := conf.Init(*cfgFile)
-	if err != nil {
+	c := config.New(config.WithConfigDir(*cfgDir))
+	var cfg config.AppConfig
+	if err := c.Load("app", &cfg); err != nil {
 		panic(err)
 	}
-	logger.Init(&cfg.Logger)
+	// set global
+	config.App = cfg
+
+	// -------------- init resource -------------
+	logger.Init()
 	// init db
-	model.Init(&cfg.ORM)
+	model.Init()
 	// init redis
-	redis.Init(&cfg.Redis)
+	redis.Init()
 	// init tracer
-	_, err = trace.InitTracerProvider(cfg.Trace.ServiceName, cfg.Trace.Jaeger.CollectorEndpoint)
-	if err != nil {
-		panic(err)
+	if cfg.EnableTrace {
+		var traceCfg trace.Config
+		err := config.Conf.Load("trace", &traceCfg)
+		_, err = trace.InitTracerProvider(traceCfg.ServiceName, traceCfg.CollectorEndpoint)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	// init service
-	service.Svc = service.New(cfg, dao.New(cfg, model.GetDB()))
+	service.Svc = service.New(dao.New(model.GetDB()))
 
-	gin.SetMode(conf.Conf.App.Mode)
+	gin.SetMode(cfg.Mode)
 
 	// init pprof server
 	go func() {
-		fmt.Printf("Listening and serving PProf HTTP on %s\n", conf.Conf.App.PprofPort)
-		if err = http.ListenAndServe(conf.Conf.App.PprofPort, http.DefaultServeMux); err != nil && err != http.ErrServerClosed {
+		fmt.Printf("Listening and serving PProf HTTP on %s\n", cfg.PprofPort)
+		if err := http.ListenAndServe(cfg.PprofPort, http.DefaultServeMux); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen ListenAndServe for PProf, err: %s", err.Error())
 		}
 	}()
@@ -101,12 +111,12 @@ func main() {
 
 	// start app
 	app := eagle.New(
-		eagle.WithName(cfg.App.Name),
-		eagle.WithVersion(cfg.App.Version),
+		eagle.WithName(cfg.Name),
+		eagle.WithVersion(cfg.Version),
 		eagle.WithLogger(logger.GetLogger()),
 		eagle.WithServer(
 			// init http server
-			server.NewHTTPServer(conf.Conf),
+			server.NewHTTPServer(&cfg.HTTP),
 		),
 		eagle.WithRegistry(r),
 	)

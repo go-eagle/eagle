@@ -3,8 +3,6 @@ package user
 import (
 	"net/http"
 
-	"github.com/go-eagle/eagle/pkg/conf"
-
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
 
@@ -17,7 +15,7 @@ func Logout(c *gin.Context) {
 	// 删除cookie信息
 	session := web.GetCookieSession(c)
 	session.Options = &sessions.Options{
-		Domain: conf.Conf.Cookie.Domain,
+		Domain: "",
 		Path:   "/",
 		MaxAge: -1,
 	}

@@ -116,26 +116,3 @@ MongoDB:
   User: "admin"
   Password: "admin"
   DB: "eagle"
-
-trace:
-  # trace config
-  ServiceName: "eagle"
-  TraceAgent: "jaeger"
-  OpenDebug: "false"
-
-  Zipkin:
-    HTTPEndpoint: "http://127.0.0.1:9411/api/v2/spans"
-    SameSpan: false
-    ID128Bit: true
-    SampleRate: "1.0"
-  Jaeger:
-    SamplingRatio: "1.0"
-    LocalAgentHostPort: "127.0.0.1:6831"
-    CollectorEndpoint: "http://localhost:14268/api/traces"
-    CollectorUser: ""
-    CollectorPassword: ""
-
-  # Elastic, only useful when TraceAgent is elastic
-  Elastic:
-    ServerURL: "http://127.0.0.1:8200"
-    SecretToken: ""

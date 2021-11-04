@@ -6,7 +6,6 @@ import (
 	"github.com/qiniu/api.v7/sms"
 
 	"github.com/go-eagle/eagle/internal/dao"
-	"github.com/go-eagle/eagle/pkg/conf"
 )
 
 // SMSService define interface func
@@ -37,15 +36,15 @@ func (s *smsService) SendSMS(phoneNumber string, verifyCode int) error {
 
 // sendViaQiNiu 调用七牛短信服务
 func sendViaQiNiu(phoneNumber string, verifyCode int) error {
-	accessKey := conf.Conf.QiNiu.AccessKey
-	secretKey := conf.Conf.QiNiu.SecretKey
+	accessKey := ""
+	secretKey := ""
 
 	mac := auth.New(accessKey, secretKey)
 	manager := sms.NewManager(mac)
 
 	args := sms.MessagesRequest{
-		SignatureID: conf.Conf.QiNiu.SignatureID,
-		TemplateID:  conf.Conf.QiNiu.TemplateID,
+		SignatureID: "",
+		TemplateID:  "",
 		Mobiles:     []string{phoneNumber},
 		Parameters: map[string]interface{}{
 			"code": verifyCode,
