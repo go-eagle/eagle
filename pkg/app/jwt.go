@@ -60,7 +60,7 @@ func Parse(tokenString string, secret string) (*Payload, error) {
 func ParseRequest(c *gin.Context) (*Payload, error) {
 	header := c.Request.Header.Get("Authorization")
 
-	// Load the jwt secret from config
+	// Scan the jwt secret from config
 	secret := config.App.JwtSecret
 
 	if len(header) == 0 {

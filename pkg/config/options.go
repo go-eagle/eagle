@@ -10,9 +10,16 @@ func WithConfigDir(cfgDir string) Option {
 	}
 }
 
-// WithFileType config dir
-func WithFileType(typ string) Option {
+// WithFileType config file type
+func WithFileType(fileType string) Option {
 	return func(c *config) {
-		c.configType = typ
+		c.configType = fileType
+	}
+}
+
+// WithEnv env var
+func WithEnv(name string) Option {
+	return func(c *config) {
+		c.env = name
 	}
 }

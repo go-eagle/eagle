@@ -68,7 +68,7 @@ func Init() *redis.Client {
 // loadConf load redis config
 func loadConf() (ret *Config, err error) {
 	var cfg Config
-	if err := config.Conf.Load("redis", &cfg); err != nil {
+	if err := config.Conf.Scan("redis", &cfg); err != nil {
 		return nil, err
 	}
 

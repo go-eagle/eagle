@@ -38,7 +38,8 @@ import (
 )
 
 var (
-	cfgDir  = pflag.StringP("config dir", "d", "config", "eagle config file dir.")
+	cfgDir  = pflag.StringP("config dir", "c", "config", "config path.")
+	env     = pflag.StringP("env name", "e", "dev", "env var name.")
 	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
@@ -65,7 +66,7 @@ func main() {
 	// init config
 	c := config.New(config.WithConfigDir(*cfgDir))
 	var cfg config.AppConfig
-	if err := c.Load("app", &cfg); err != nil {
+	if err := c.Scan("app", &cfg); err != nil {
 		panic(err)
 	}
 	// set global
@@ -80,7 +81,7 @@ func main() {
 	// init tracer
 	if cfg.EnableTrace {
 		var traceCfg trace.Config
-		err := config.Conf.Load("trace", &traceCfg)
+		err := config.Conf.Scan("trace", &traceCfg)
 		_, err = trace.InitTracerProvider(traceCfg.ServiceName, traceCfg.CollectorEndpoint)
 		if err != nil {
 			panic(err)

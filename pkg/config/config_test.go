@@ -24,7 +24,7 @@ func TestLoad(t *testing.T) {
 
 	t.Run("using local var", func(t *testing.T) {
 		c := New(WithConfigDir("../../config/"))
-		if err := c.Load("app", &appConfig); err != nil {
+		if err := c.Scan("app", &appConfig); err != nil {
 			t.Fatal(err)
 		}
 		t.Log(appConfig.Name)
@@ -33,7 +33,7 @@ func TestLoad(t *testing.T) {
 	// test global conf
 	t.Run("using global conf", func(t *testing.T) {
 		_ = New(WithConfigDir("../../config/"))
-		if err := Conf.Load("app", &appConfig); err != nil {
+		if err := Conf.Scan("app", &appConfig); err != nil {
 			t.Fatal(err)
 		}
 

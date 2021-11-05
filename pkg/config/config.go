@@ -3,6 +3,9 @@ package config
 import (
 	"errors"
 	"log"
+	"os"
+	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -11,7 +14,7 @@ import (
 
 var (
 	// Conf global conf var
-	Conf Config
+	Conf *config
 	// App global app var
 	App AppConfig
 )
@@ -24,7 +27,7 @@ type AppConfig struct {
 	GRPC ServerConfig
 }
 
-// CommonConfig app config
+// CommonConfig app config.
 type CommonConfig struct {
 	Name              string
 	Version           string
@@ -40,7 +43,7 @@ type CommonConfig struct {
 	EnableTrace       bool
 }
 
-// ServerConfig server config
+// ServerConfig server config.
 type ServerConfig struct {
 	Network      string
 	Addr         string
@@ -48,25 +51,23 @@ type ServerConfig struct {
 	WriteTimeout time.Duration
 }
 
-// Config define config interface
-type Config interface {
-	Load(cfgName string, val interface{}) error
-}
-
-// config conf struct
+// config conf struct.
 type config struct {
-	vp *viper.Viper
+	// env environment var
+	env string
 	// configDir conf root dir
 	configDir string
 	// configType conf file type, eg: yaml, json, toml, default yaml
 	configType string
+	val        map[string]*viper.Viper
+	mu         sync.Mutex
 }
 
-// New create a config instance
-func New(opts ...Option) Config {
+// New create a config instance.
+func New(opts ...Option) *config {
 	c := config{
-		vp:         viper.New(),
 		configType: "yaml",
+		val:        make(map[string]*viper.Viper),
 	}
 	for _, opt := range opts {
 		opt(&c)
@@ -77,38 +78,73 @@ func New(opts ...Option) Config {
 	return &c
 }
 
-// Load load file
-func (c *config) Load(cfgName string, val interface{}) error {
-	c.vp.AddConfigPath(c.configDir)
-	if cfgName != "" {
-		c.vp.SetConfigName(cfgName)
-	}
-	c.vp.SetConfigType(c.configType)
-
-	if err := c.vp.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			return errors.New("config file not found")
-		}
-		return err
-	}
-
-	err := c.vp.Unmarshal(&val)
+// Scan scan data to struct.
+func (c *config) Scan(filename string, val interface{}) error {
+	v, err := c.LoadByType(filename, c.configType)
 	if err != nil {
 		return err
 	}
-
-	c.watch(&val)
-
+	err = v.Unmarshal(&val)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-// watch listen file change
-func (c *config) watch(v interface{}) {
-	go func() {
-		c.vp.WatchConfig()
-		c.vp.OnConfigChange(func(e fsnotify.Event) {
-			_ = c.vp.Unmarshal(&v)
-			log.Printf("Config file changed: %s", e.Name)
-		})
-	}()
+// LoadByType load conf by file type.
+func (c *config) LoadByType(filename string, cfgType string) (v *viper.Viper, err error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	v, ok := c.val[filename]
+	if ok {
+		return v, nil
+	}
+
+	v, err = c.load(filename, cfgType)
+	if err != nil {
+		return nil, err
+	}
+	c.val[filename] = v
+	return v, nil
+}
+
+// Scan load file.
+func (c *config) load(filename string, cfgType string) (*viper.Viper, error) {
+	// application parameters take precedence over environment variables
+	env := GetEnvString("APP_ENV", "")
+	path := filepath.Join(c.configDir, env)
+	if c.env != "" {
+		path = filepath.Join(c.configDir, c.env)
+	}
+
+	v := viper.New()
+	v.AddConfigPath(path)
+	v.SetConfigName(filename)
+	v.SetConfigType(c.configType)
+	if cfgType != "" {
+		v.SetConfigType(cfgType)
+	}
+
+	if err := v.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			return nil, errors.New("config file not found")
+		}
+		return nil, err
+	}
+
+	v.WatchConfig()
+	v.OnConfigChange(func(e fsnotify.Event) {
+		log.Printf("Config file changed: %s", e.Name)
+	})
+
+	return v, nil
+}
+
+// GetEnvString get value from env.
+func GetEnvString(key string, defaultValue string) string {
+	val, ok := os.LookupEnv(key)
+	if !ok {
+		return defaultValue
+	}
+	return val
 }

@@ -28,7 +28,7 @@ func TestMain(m *testing.M) {
 
 	c := config.New(config.WithConfigDir(*cfgDir))
 	var cfg config.AppConfig
-	if err := c.Load("app", &cfg); err != nil {
+	if err := c.Scan("app", &cfg); err != nil {
 		panic(err)
 	}
 	if err := lich.Setup(); err != nil {
