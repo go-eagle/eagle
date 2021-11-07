@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"flag"
+	"github.com/go-eagle/eagle/pkg/app"
 	"testing"
 
 	"github.com/spf13/pflag"
@@ -26,9 +27,9 @@ func TestMain(m *testing.M) {
 	flag.Set("f", "../../test/docker-compose.yaml")
 	flag.Parse()
 
-	c := config.New(config.WithConfigDir(*cfgDir))
-	var cfg config.AppConfig
-	if err := c.Scan("app", &cfg); err != nil {
+	c := config.New(*cfgDir)
+	var cfg app.Config
+	if err := c.Load("app", &cfg); err != nil {
 		panic(err)
 	}
 	if err := lich.Setup(); err != nil {

@@ -2,70 +2,36 @@ package config
 
 import (
 	"errors"
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/viper"
 	"log"
 	"os"
 	"path/filepath"
 	"sync"
-	"time"
-
-	"github.com/fsnotify/fsnotify"
-	"github.com/spf13/viper"
 )
 
 var (
-	// Conf global conf var
-	Conf *config
-	// App global app var
-	App AppConfig
+	// conf conf var
+	conf *Config
 )
 
-// Config global config
-// nolint
-type AppConfig struct {
-	CommonConfig
-	HTTP ServerConfig
-	GRPC ServerConfig
-}
-
-// CommonConfig app config.
-type CommonConfig struct {
-	Name              string
-	Version           string
-	Mode              string
-	PprofPort         string
-	URL               string
-	JwtSecret         string
-	JwtTimeout        int
-	SSL               bool
-	CtxDefaultTimeout time.Duration
-	CSRF              bool
-	Debug             bool
-	EnableTrace       bool
-}
-
-// ServerConfig server config.
-type ServerConfig struct {
-	Network      string
-	Addr         string
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-}
-
-// config conf struct.
-type config struct {
-	// env environment var
-	env string
-	// configDir conf root dir
-	configDir string
-	// configType conf file type, eg: yaml, json, toml, default yaml
-	configType string
+// Config conf struct.
+type Config struct {
+	env        string
+	configDir  string
+	configType string // file type, eg: yaml, json, toml, default is yaml
 	val        map[string]*viper.Viper
 	mu         sync.Mutex
 }
 
 // New create a config instance.
-func New(opts ...Option) *config {
-	c := config{
+func New(cfgDir string, opts ...Option) *Config {
+	// must set config dir
+	if cfgDir == "" {
+		panic("config dir is not set")
+	}
+	c := Config{
+		configDir:  cfgDir,
 		configType: "yaml",
 		val:        make(map[string]*viper.Viper),
 	}
@@ -73,14 +39,17 @@ func New(opts ...Option) *config {
 		opt(&c)
 	}
 
-	Conf = &c
+	conf = &c
 
 	return &c
 }
 
-// Scan scan data to struct.
-func (c *config) Scan(filename string, val interface{}) error {
-	v, err := c.LoadByType(filename, c.configType)
+// Load alias for config func.
+func Load(filename string, val interface{}) error { return conf.Load(filename, val) }
+
+// Load scan data to struct.
+func (c *Config) Load(filename string, val interface{}) error {
+	v, err := c.LoadWithType(filename, c.configType)
 	if err != nil {
 		return err
 	}
@@ -91,8 +60,13 @@ func (c *config) Scan(filename string, val interface{}) error {
 	return nil
 }
 
-// LoadByType load conf by file type.
-func (c *config) LoadByType(filename string, cfgType string) (v *viper.Viper, err error) {
+// LoadWithType load conf by file type.
+func LoadWithType(filename string, cfgType string) (*viper.Viper, error) {
+	return conf.LoadWithType(filename, cfgType)
+}
+
+// LoadWithType load conf by file type.
+func (c *Config) LoadWithType(filename string, cfgType string) (v *viper.Viper, err error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	v, ok := c.val[filename]
@@ -108,8 +82,8 @@ func (c *config) LoadByType(filename string, cfgType string) (v *viper.Viper, er
 	return v, nil
 }
 
-// Scan load file.
-func (c *config) load(filename string, cfgType string) (*viper.Viper, error) {
+// Load load file.
+func (c *Config) load(filename string, cfgType string) (*viper.Viper, error) {
 	// application parameters take precedence over environment variables
 	env := GetEnvString("APP_ENV", "")
 	path := filepath.Join(c.configDir, env)

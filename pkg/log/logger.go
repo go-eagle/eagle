@@ -35,7 +35,7 @@ type Logger interface {
 // loadConf load logger config
 func loadConf() (ret *Config, err error) {
 	var cfg Config
-	if err := config.Conf.Scan("logger", &cfg); err != nil {
+	if err := config.Load("logger", &cfg); err != nil {
 		return nil, err
 	}
 	return &cfg, nil

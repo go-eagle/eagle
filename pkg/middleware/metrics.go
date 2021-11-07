@@ -8,11 +8,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	conf "github.com/go-eagle/eagle/pkg/config"
 	"github.com/go-eagle/eagle/pkg/metric"
 )
 
-var namespace = conf.App.Name
+var namespace = "eagle"
 
 var (
 	labels = []string{"status", "endpoint", "method"}
@@ -125,7 +124,7 @@ func (po *PromOpts) checkLabel(label, pattern string) bool {
 }
 
 // Metrics returns a gin.HandlerFunc for exporting some Web metrics
-func Metrics(promOpts *PromOpts) gin.HandlerFunc {
+func Metrics(serviceName string, promOpts *PromOpts) gin.HandlerFunc {
 	// make sure promOpts is not nil
 	if promOpts == nil {
 		promOpts = NewDefaultOpts()
@@ -137,6 +136,8 @@ func Metrics(promOpts *PromOpts) gin.HandlerFunc {
 			return c.Request.URL.Path
 		}
 	}
+
+	namespace = serviceName
 
 	return func(c *gin.Context) {
 		start := time.Now()

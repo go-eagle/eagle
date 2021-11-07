@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/go-eagle/eagle/pkg/app"
 	"log"
 	"net"
 
@@ -8,12 +9,11 @@ import (
 
 	v1 "github.com/go-eagle/eagle/api/grpc/user/v1"
 	"github.com/go-eagle/eagle/internal/service"
-	"github.com/go-eagle/eagle/pkg/config"
 )
 
 // NewGRPCServer creates a gRPC server
-func NewGRPCServer() *grpc.Server {
-	lis, err := net.Listen("tcp", config.App.GRPC.Addr)
+func NewGRPCServer(cfg *app.ServerConfig) *grpc.Server {
+	lis, err := net.Listen("tcp", cfg.Addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -24,7 +24,7 @@ func NewGRPCServer() *grpc.Server {
 	if err != nil {
 		log.Fatalf("failed to serve grpc server: %v", err)
 	}
-	log.Printf("serve grpc server is success, port:%s", config.App.GRPC.Addr)
+	log.Printf("serve grpc server is success, port:%s", cfg.Addr)
 
 	return grpcServer
 }

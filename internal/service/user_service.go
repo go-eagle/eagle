@@ -15,7 +15,6 @@ import (
 	"github.com/go-eagle/eagle/internal/model"
 	"github.com/go-eagle/eagle/pkg/app"
 	"github.com/go-eagle/eagle/pkg/auth"
-	"github.com/go-eagle/eagle/pkg/config"
 	"github.com/go-eagle/eagle/pkg/log"
 )
 
@@ -85,7 +84,7 @@ func (s *userService) EmailLogin(ctx context.Context, email, password string) (t
 
 	// 签发签名 Sign the json web token.
 	payload := map[string]interface{}{"user_id": u.ID, "username": u.Username}
-	tokenStr, err = app.Sign(ctx, payload, config.App.JwtSecret, 86400)
+	tokenStr, err = app.Sign(ctx, payload, app.Conf.JwtSecret, 86400)
 	if err != nil {
 		return "", errors.Wrapf(err, "gen token sign err")
 	}
@@ -128,7 +127,7 @@ func (s *userService) PhoneLogin(ctx context.Context, phone int64, verifyCode in
 
 	// 签发签名 Sign the json web token.
 	payload := map[string]interface{}{"user_id": u.ID, "username": u.Username}
-	tokenStr, err = app.Sign(ctx, payload, config.App.JwtSecret, 86400)
+	tokenStr, err = app.Sign(ctx, payload, app.Conf.JwtSecret, 86400)
 	if err != nil {
 		return "", errors.Wrapf(err, "[login] gen token sign err")
 	}

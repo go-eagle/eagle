@@ -2,12 +2,12 @@ package server
 
 import (
 	"github.com/go-eagle/eagle/internal/routers"
-	"github.com/go-eagle/eagle/pkg/config"
+	"github.com/go-eagle/eagle/pkg/app"
 	"github.com/go-eagle/eagle/pkg/transport/http"
 )
 
 // NewHTTPServer creates a HTTP server
-func NewHTTPServer(c *config.ServerConfig) *http.Server {
+func NewHTTPServer(c *app.ServerConfig) *http.Server {
 	router := routers.NewRouter()
 
 	srv := http.NewServer(

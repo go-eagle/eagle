@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/go-eagle/eagle/pkg/app"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	ginSwagger "github.com/swaggo/gin-swagger" //nolint: goimports
 	"github.com/swaggo/gin-swagger/swaggerFiles"
@@ -12,7 +13,6 @@ import (
 	"github.com/go-eagle/eagle/api"
 	"github.com/go-eagle/eagle/internal/handler/v1/user"
 	mw "github.com/go-eagle/eagle/internal/middleware"
-	"github.com/go-eagle/eagle/pkg/config"
 	"github.com/go-eagle/eagle/pkg/middleware"
 )
 
@@ -26,8 +26,8 @@ func NewRouter() *gin.Engine {
 	g.Use(middleware.Secure)
 	g.Use(middleware.Logging())
 	g.Use(middleware.RequestID())
-	g.Use(middleware.Metrics(nil))
-	g.Use(middleware.Tracing(config.App.Name))
+	g.Use(middleware.Metrics(app.Conf.Name, nil))
+	g.Use(middleware.Tracing(app.Conf.Name))
 	g.Use(mw.Translations())
 
 	// load web router

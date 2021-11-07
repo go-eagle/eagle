@@ -42,6 +42,7 @@ func (r *Response) Error(c *gin.Context, err error) {
 			Message: errcode.Success.Msg(),
 			Data:    gin.H{},
 		})
+		return
 	}
 
 	if v, ok := err.(*errcode.Error); ok {

@@ -31,7 +31,7 @@ func GetDB() *gorm.DB {
 // loadConf load gorm config
 func loadConf() (ret *orm.Config, err error) {
 	var cfg orm.Config
-	if err := config.Conf.Scan("database", &cfg); err != nil {
+	if err := config.Load("database", &cfg); err != nil {
 		return nil, err
 	}
 

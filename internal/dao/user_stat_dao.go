@@ -85,7 +85,7 @@ func (d *Dao) GetUserStatByIDs(ctx context.Context, userID []uint64) (map[uint64
 	for rows.Next() {
 		r := &model.UserStatModel{}
 		if err = rows.Scan(&r.ID, &r.UserID, &r.FollowCount, &r.FollowerCount, &r.Status); err != nil {
-			log.Errorf("rows.Scan() err: %v", err)
+			log.Errorf("rows.Load() err: %v", err)
 			continue
 		}
 		if r.ID != 0 {
