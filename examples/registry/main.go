@@ -36,7 +36,7 @@ import (
 
 var (
 	cfgDir  = pflag.StringP("config dir", "c", "config", "config path.")
-	env     = pflag.StringP("env name", "e", "dev", "env var name.")
+	env     = pflag.StringP("env name", "e", "", "env var name.")
 	version = pflag.BoolP("version", "v", false, "show version info.")
 )
 
@@ -62,12 +62,12 @@ func main() {
 
 	// init config
 	c := config.New(*cfgDir, config.WithEnv(*env))
-	var cfg config.AppConfig
+	var cfg eagle.Config
 	if err := c.Load("app", &cfg); err != nil {
 		panic(err)
 	}
 	// set global
-	config.App = &cfg
+	eagle.Conf = &cfg
 
 	// init service
 	service.Svc = service.New(dao.New(model.GetDB()))
