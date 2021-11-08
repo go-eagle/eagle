@@ -3,12 +3,12 @@ package dao
 import (
 	"context"
 	"flag"
-	"github.com/go-eagle/eagle/pkg/app"
 	"testing"
 
 	"github.com/spf13/pflag"
 
 	"github.com/go-eagle/eagle/internal/model"
+	"github.com/go-eagle/eagle/pkg/app"
 	"github.com/go-eagle/eagle/pkg/config"
 	logger "github.com/go-eagle/eagle/pkg/log"
 	"github.com/go-eagle/eagle/pkg/testing/lich"

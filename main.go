@@ -18,8 +18,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/go-eagle/eagle/pkg/config"
-
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
 	_ "go.uber.org/automaxprocs"
@@ -29,6 +27,7 @@ import (
 	"github.com/go-eagle/eagle/internal/server"
 	"github.com/go-eagle/eagle/internal/service"
 	eagle "github.com/go-eagle/eagle/pkg/app"
+	"github.com/go-eagle/eagle/pkg/config"
 	logger "github.com/go-eagle/eagle/pkg/log"
 	"github.com/go-eagle/eagle/pkg/redis"
 	v "github.com/go-eagle/eagle/pkg/version"

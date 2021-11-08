@@ -2,7 +2,6 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-eagle/eagle/pkg/app"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	ginSwagger "github.com/swaggo/gin-swagger" //nolint: goimports
 	"github.com/swaggo/gin-swagger/swaggerFiles"
@@ -13,6 +12,7 @@ import (
 	"github.com/go-eagle/eagle/api"
 	"github.com/go-eagle/eagle/internal/handler/v1/user"
 	mw "github.com/go-eagle/eagle/internal/middleware"
+	"github.com/go-eagle/eagle/pkg/app"
 	"github.com/go-eagle/eagle/pkg/middleware"
 )
 

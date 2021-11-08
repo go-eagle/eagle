@@ -1,14 +1,15 @@
 package server
 
 import (
-	"github.com/go-eagle/eagle/pkg/app"
 	"log"
+
 	"net"
 
 	"google.golang.org/grpc"
 
 	v1 "github.com/go-eagle/eagle/api/grpc/user/v1"
 	"github.com/go-eagle/eagle/internal/service"
+	"github.com/go-eagle/eagle/pkg/app"
 )
 
 // NewGRPCServer creates a gRPC server

@@ -2,23 +2,17 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-eagle/eagle/pkg/config"
 	"log"
+
+	"github.com/go-eagle/eagle/pkg/config"
 )
 
-type Service struct {
-	Name    string
-	Version string
-}
-
-type Server struct {
-	HTTP struct {
-		Addr string
-		Port string
-	}
-}
-
 func main() {
+	type Service struct {
+		Name    string
+		Version string
+	}
+
 	c := config.New(".")
 
 	var svc Service

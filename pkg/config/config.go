@@ -2,12 +2,13 @@ package config
 
 import (
 	"errors"
-	"github.com/fsnotify/fsnotify"
-	"github.com/spf13/viper"
 	"log"
 	"os"
 	"path/filepath"
 	"sync"
+
+	"github.com/fsnotify/fsnotify"
+	"github.com/spf13/viper"
 )
 
 var (
