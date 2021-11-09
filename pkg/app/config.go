@@ -12,13 +12,6 @@ var (
 // Config global config
 // nolint
 type Config struct {
-	CommonConfig
-	HTTP ServerConfig
-	GRPC ServerConfig
-}
-
-// CommonConfig app config.
-type CommonConfig struct {
 	Name              string
 	Version           string
 	Mode              string
@@ -31,6 +24,8 @@ type CommonConfig struct {
 	CSRF              bool
 	Debug             bool
 	EnableTrace       bool
+	HTTP              ServerConfig
+	GRPC              ServerConfig
 }
 
 // ServerConfig server config.
