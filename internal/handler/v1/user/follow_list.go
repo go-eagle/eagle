@@ -22,54 +22,83 @@ import (
 // @Success 200 {object} model.UserInfo "用户信息"
 // @Router /users/{id}/following [get]
 func FollowList(c *gin.Context) {
-	userIDStr := c.Param("id")
-	userID, _ := strconv.Atoi(userIDStr)
+	// get the underlying request context
+	ctx := c.Request.Context()
 
-	curUserID := api.GetUserID(c)
-	log.Infof("cur uid: %d", curUserID)
+	// create a done channel to tell the request it's done
+	doneChan := make(chan ListResponse)
 
-	_, err := service.Svc.Users().GetUserByID(c.Request.Context(), uint64(userID))
-	if err != nil {
-		api.SendResponse(c, ecode.ErrUserNotFound, nil)
+	// here you put the actual work needed for the request
+	// and then send the doneChan with the status and body
+	// to finish the request by writing the response
+	go func() {
+
+		userIDStr := c.Param("id")
+		userID, _ := strconv.Atoi(userIDStr)
+
+		curUserID := api.GetUserID(c)
+		log.Infof("cur uid: %d", curUserID)
+
+		_, err := service.Svc.Users().GetUserByID(ctx, uint64(userID))
+		if err != nil {
+			api.SendResponse(c, ecode.ErrUserNotFound, nil)
+			return
+		}
+
+		lastIDStr := c.DefaultQuery("last_id", "0")
+		lastID, _ := strconv.Atoi(lastIDStr)
+		limit := 10
+
+		userFollowList, err := service.Svc.Relations().GetFollowingUserList(ctx, uint64(userID), uint64(lastID), limit+1)
+		if err != nil {
+			log.Warnf("get following user list err: %+v", err)
+			response.Error(c, errcode.ErrInternalServer)
+			return
+		}
+
+		hasMore := 0
+		pageValue := lastID
+		if len(userFollowList) > limit {
+			hasMore = 1
+			userFollowList = userFollowList[0 : len(userFollowList)-1]
+			pageValue = lastID + 1
+		}
+
+		var userIDs []uint64
+		for _, v := range userFollowList {
+			userIDs = append(userIDs, v.FollowedUID)
+		}
+
+		userOutList, err := service.Svc.Users().BatchGetUsers(ctx, curUserID, userIDs)
+		if err != nil {
+			log.Warnf("batch get users err: %v", err)
+			response.Error(c, errcode.ErrInternalServer)
+			return
+		}
+
+		doneChan <- ListResponse{
+			TotalCount: 0,
+			HasMore:    hasMore,
+			PageKey:    "last_id",
+			PageValue:  pageValue,
+			Items:      userOutList,
+		}
+
+	}()
+
+	// non-blocking select on two channels see if the request
+	// times out or finishes
+	select {
+
+	// if the context is done it timed out or was cancelled
+	// so don't return anything
+	case <-ctx.Done():
 		return
+
+	// if the request finished then finish the request by
+	// writing the response
+	case resp := <-doneChan:
+		response.Success(c, resp)
 	}
 
-	lastIDStr := c.DefaultQuery("last_id", "0")
-	lastID, _ := strconv.Atoi(lastIDStr)
-	limit := 10
-
-	userFollowList, err := service.Svc.Relations().GetFollowingUserList(c.Request.Context(), uint64(userID), uint64(lastID), limit+1)
-	if err != nil {
-		log.Warnf("get following user list err: %+v", err)
-		response.Error(c, errcode.ErrInternalServer)
-		return
-	}
-
-	hasMore := 0
-	pageValue := lastID
-	if len(userFollowList) > limit {
-		hasMore = 1
-		userFollowList = userFollowList[0 : len(userFollowList)-1]
-		pageValue = lastID + 1
-	}
-
-	var userIDs []uint64
-	for _, v := range userFollowList {
-		userIDs = append(userIDs, v.FollowedUID)
-	}
-
-	userOutList, err := service.Svc.Users().BatchGetUsers(c.Request.Context(), curUserID, userIDs)
-	if err != nil {
-		log.Warnf("batch get users err: %v", err)
-		response.Error(c, errcode.ErrInternalServer)
-		return
-	}
-
-	response.Success(c, ListResponse{
-		TotalCount: 0,
-		HasMore:    hasMore,
-		PageKey:    "last_id",
-		PageValue:  pageValue,
-		Items:      userOutList,
-	})
 }
