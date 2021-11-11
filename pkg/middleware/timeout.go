@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-eagle/eagle/pkg/app"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,7 +21,10 @@ func Timeout(t time.Duration) gin.HandlerFunc {
 			if ctx.Err() == context.DeadlineExceeded {
 				// write response and abort the request
 				c.Writer.WriteHeader(http.StatusGatewayTimeout)
-				c.Abort()
+				c.AbortWithStatusJSON(http.StatusGatewayTimeout, app.Response{
+					Code:    http.StatusGatewayTimeout,
+					Message: ctx.Err().Error(),
+				})
 			}
 		}()
 

@@ -27,6 +27,8 @@ func FollowList(c *gin.Context) {
 
 	// create a done channel to tell the request it's done
 	doneChan := make(chan ListResponse)
+	// create a err channel
+	errChan := make(chan error)
 
 	// here you put the actual work needed for the request
 	// and then send the doneChan with the status and body
@@ -41,7 +43,7 @@ func FollowList(c *gin.Context) {
 
 		_, err := service.Svc.Users().GetUserByID(ctx, uint64(userID))
 		if err != nil {
-			api.SendResponse(c, ecode.ErrUserNotFound, nil)
+			errChan <- ecode.ErrUserNotFound
 			return
 		}
 
@@ -52,7 +54,7 @@ func FollowList(c *gin.Context) {
 		userFollowList, err := service.Svc.Relations().GetFollowingUserList(ctx, uint64(userID), uint64(lastID), limit+1)
 		if err != nil {
 			log.Warnf("get following user list err: %+v", err)
-			response.Error(c, errcode.ErrInternalServer)
+			errChan <- errcode.ErrInternalServer
 			return
 		}
 
@@ -72,7 +74,7 @@ func FollowList(c *gin.Context) {
 		userOutList, err := service.Svc.Users().BatchGetUsers(ctx, curUserID, userIDs)
 		if err != nil {
 			log.Warnf("batch get users err: %v", err)
-			response.Error(c, errcode.ErrInternalServer)
+			errChan <- errcode.ErrInternalServer
 			return
 		}
 
@@ -94,6 +96,10 @@ func FollowList(c *gin.Context) {
 	// so don't return anything
 	case <-ctx.Done():
 		return
+
+	// if err is not nil return error response
+	case err := <-errChan:
+		response.Error(c, err)
 
 	// if the request finished then finish the request by
 	// writing the response
