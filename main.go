@@ -21,6 +21,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
 	_ "go.uber.org/automaxprocs"
+	_ "net/http/pprof"
 
 	"github.com/go-eagle/eagle/internal/dao"
 	"github.com/go-eagle/eagle/internal/model"
