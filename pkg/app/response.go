@@ -13,7 +13,7 @@ type Response struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
-	Details []string    `json:"details"`
+	Details []string    `json:"details,omitempty"`
 }
 
 // NewResponse return a response
@@ -31,7 +31,6 @@ func (r *Response) Success(c *gin.Context, data interface{}) {
 		Code:    errcode.Success.Code(),
 		Message: errcode.Success.Msg(),
 		Data:    data,
-		Details: []string{},
 	})
 }
 

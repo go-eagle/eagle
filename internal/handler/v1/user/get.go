@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
@@ -25,23 +26,58 @@ import (
 func Get(c *gin.Context) {
 	log.Info("Get function called.")
 
-	userID := cast.ToUint64(c.Param("id"))
-	if userID == 0 {
-		response.Error(c, errcode.ErrInvalidParam)
-		return
-	}
+	// get the underlying request context
+	ctx := c.Request.Context()
 
-	// Get the user by the `user_id` from the database.
-	u, err := service.Svc.Users().GetUserByID(c.Request.Context(), userID)
-	if errors.Is(err, dao.ErrNotFound) {
-		log.Errorf("get user info err: %+v", err)
-		response.Error(c, ecode.ErrUserNotFound)
-		return
-	}
-	if err != nil {
-		response.Error(c, errcode.ErrInternalServer.WithDetails(err.Error()))
-		return
-	}
+	// create a done channel to tell the request it's done
+	doneChan := make(chan interface{})
+	// create a err channel
+	errChan := make(chan error)
 
-	response.Success(c, u)
+	// here you put the actual work needed for the request
+	// and then send the doneChan with the status and body
+	// to finish the request by writing the response
+	go func() {
+
+		userID := cast.ToUint64(c.Param("id"))
+		if userID == 0 {
+			errChan <- errcode.ErrInvalidParam
+			return
+		}
+
+		// Get the user by the `user_id` from the database.
+		u, err := service.Svc.Users().GetUserByID(c.Request.Context(), userID)
+		if errors.Is(err, dao.ErrNotFound) {
+			log.Errorf("get user info err: %+v", err)
+			errChan <- ecode.ErrUserNotFound
+			return
+		}
+		if err != nil {
+			errChan <- errcode.ErrInternalServer.WithDetails(err.Error())
+			return
+		}
+
+		time.Sleep(4 * time.Second)
+
+		doneChan <- u
+	}()
+
+	// non-blocking select on two channels see if the request
+	// times out or finishes
+	select {
+
+	// if the context is done it timed out or was cancelled
+	// so don't return anything
+	case <-ctx.Done():
+		return
+
+	// if err is not nil return error response
+	case err := <-errChan:
+		response.Error(c, err)
+
+	// if the request finished then finish the request by
+	// writing the response
+	case resp := <-doneChan:
+		response.Success(c, resp)
+	}
 }
