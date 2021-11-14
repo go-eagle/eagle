@@ -10,6 +10,7 @@ CtxDefaultTimeout: 12
 CSRF: true
 Debug: false
 EnableTrace: false
+EnablePprof: true
 
 HTTP:
   Addr: :8080
