@@ -24,6 +24,7 @@ type Config struct {
 	CSRF              bool
 	Debug             bool
 	EnableTrace       bool
+	EnablePprof       bool
 	HTTP              ServerConfig
 	GRPC              ServerConfig
 }
