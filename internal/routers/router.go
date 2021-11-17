@@ -3,6 +3,7 @@ package routers
 import (
 	"time"
 
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	ginSwagger "github.com/swaggo/gin-swagger" //nolint: goimports
@@ -51,7 +52,9 @@ func NewRouter() *gin.Engine {
 	// 通过 HOST/debug/pprof/profile 生成profile
 	// 查看分析图 go tool pprof -http=:5000 profile
 	// see: https://github.com/gin-contrib/pprof
-	// pprof.Register(g)
+	if app.Conf.EnablePprof {
+		pprof.Register(g)
+	}
 
 	// HealthCheck 健康检查路由
 	g.GET("/health", api.HealthCheck)
