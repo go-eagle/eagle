@@ -239,7 +239,8 @@ supervisorctl restart eagle
 - Issue: https://github.com/go-eagle/eagle/issues
 - QQ交流群：1074476202
 - 微信交流群
-<img src="https://user-images.githubusercontent.com/3043638/140840784-9d6a524d-714e-43c4-bb28-26ee69da46de.png" width="300px">
+
+<img src="https://user-images.githubusercontent.com/3043638/142301926-c1ae1e6c-aa2a-4b47-b81b-108c62505f33.png" width="300px">
 
 ## Stargazers over time
 
