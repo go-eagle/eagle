@@ -4,6 +4,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+var _ HistogramVec = (*promHistogramVec)(nil)
+
 // HistogramVecOpts is histogram vector opts.
 type HistogramVecOpts struct {
 	Namespace string
@@ -12,12 +14,6 @@ type HistogramVecOpts struct {
 	Help      string
 	Labels    []string
 	Buckets   []float64
-}
-
-// HistogramVec gauge vec.
-type HistogramVec interface {
-	// Observe adds a single observation to the histogram.
-	Observe(v int64, labels ...string)
 }
 
 // Histogram prom histogram collection.

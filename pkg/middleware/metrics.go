@@ -3,7 +3,6 @@ package middleware
 import (
 	"fmt"
 	"net/http"
-	"regexp"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +13,7 @@ import (
 var namespace = "eagle"
 
 var (
-	labels = []string{"status", "endpoint", "method"}
+	labels = []string{"status", "endpoint", "method", "service"}
 
 	// QPS
 	reqCount = metric.NewCounterVec(
@@ -87,75 +86,18 @@ func calcRequestSize(r *http.Request) float64 {
 	return float64(size)
 }
 
-// RequestLabelMappingFn .
-type RequestLabelMappingFn func(c *gin.Context) string
-
-// PromOpts represents the Prometheus middleware Options.
-// It is used for filtering labels by regex.
-type PromOpts struct {
-	ExcludeRegexStatus     string
-	ExcludeRegexEndpoint   string
-	ExcludeRegexMethod     string
-	EndpointLabelMappingFn RequestLabelMappingFn
-}
-
-// NewDefaultOpts return the default ProOpts
-func NewDefaultOpts() *PromOpts {
-	return &PromOpts{
-		EndpointLabelMappingFn: func(c *gin.Context) string {
-			//by default do nothing, return URL as is
-			return c.Request.URL.Path
-		},
-	}
-}
-
-// checkLabel returns the match result of labels.
-// Return true if regex-pattern compiles failed.
-func (po *PromOpts) checkLabel(label, pattern string) bool {
-	if pattern == "" {
-		return true
-	}
-
-	matched, err := regexp.MatchString(pattern, label)
-	if err != nil {
-		return true
-	}
-	return !matched
-}
-
 // Metrics returns a gin.HandlerFunc for exporting some Web metrics
-func Metrics(serviceName string, promOpts *PromOpts) gin.HandlerFunc {
-	// make sure promOpts is not nil
-	if promOpts == nil {
-		promOpts = NewDefaultOpts()
-	}
-
-	// make sure EndpointLabelMappingFn is callable
-	if promOpts.EndpointLabelMappingFn == nil {
-		promOpts.EndpointLabelMappingFn = func(c *gin.Context) string {
-			return c.Request.URL.Path
-		}
-	}
-
-	namespace = serviceName
-
+func Metrics(serviceName string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
 		c.Next()
 
 		status := fmt.Sprintf("%d", c.Writer.Status())
-		endpoint := promOpts.EndpointLabelMappingFn(c)
+		endpoint := c.Request.URL.Path
 		method := c.Request.Method
 
-		labels := []string{status, endpoint, method}
+		labels := []string{status, endpoint, method, serviceName}
 
-		isOk := promOpts.checkLabel(status, promOpts.ExcludeRegexStatus) &&
-			promOpts.checkLabel(endpoint, promOpts.ExcludeRegexEndpoint) &&
-			promOpts.checkLabel(method, promOpts.ExcludeRegexMethod)
-
-		if !isOk {
-			return
-		}
 		// no response content will return -1
 		respSize := c.Writer.Size()
 		if respSize < 0 {
@@ -167,12 +109,5 @@ func Metrics(serviceName string, promOpts *PromOpts) gin.HandlerFunc {
 		reqDuration.Observe(int64(time.Since(start).Seconds()), labels...)
 		reqSizeBytes.Observe(int64(calcRequestSize(c.Request)), labels...)
 		respSizeBytes.Observe(int64(respSize), labels...)
-	}
-}
-
-// PromHandler wrappers the standard http.Handler to gin.HandlerFunc
-func PromHandler(handler http.Handler) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		handler.ServeHTTP(c.Writer, c.Request)
 	}
 }
