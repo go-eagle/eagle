@@ -2,7 +2,6 @@ package user
 
 import (
 	"errors"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
@@ -56,8 +55,6 @@ func Get(c *gin.Context) {
 			errChan <- errcode.ErrInternalServer.WithDetails(err.Error())
 			return
 		}
-
-		time.Sleep(4 * time.Second)
 
 		doneChan <- u
 	}()
