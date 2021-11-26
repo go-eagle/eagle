@@ -39,14 +39,18 @@ dep:
 fmt:
 	@gofmt -s -w .
 
-.PHONY: lint
-# make lint
-lint:
+.PHONY: golint
+# make golint
+golint:
+	@if ! which golint &>/dev/null; then \
+  		echo "Installing golint"; \
+  		go get -u golang.org/x/lint/golint; \
+  	fi
 	@golint -set_exit_status ${PKG_LIST}
 
-.PHONY: ci-lint
-# make ci-lint
-ci-lint: prepare-lint
+.PHONY: lint
+# make lint
+lint: prepare-lint
 	${GOPATH}/bin/golangci-lint run ./...
 
 .PHONY: prepare-lint
