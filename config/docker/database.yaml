@@ -1,0 +1,9 @@
+Name: eagle                     # 数据库名称
+Addr: db:3306            # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
+UserName: root
+Password: root
+ShowLog: true                   # 是否打印所有SQL日志
+MaxIdleConn: 10                 # 最大闲置的连接数，0意味着使用默认的大小2， 小于0表示不使用连接池
+MaxOpenConn: 60                 # 最大打开的连接数, 需要小于数据库配置中的max_connections数
+ConnMaxLifeTime: 4h             # 单个连接最大存活时间，建议设置比数据库超时时长(wait_timeout)稍小一些
+SlowThreshold: 500ms            # 慢查询阈值，设置后只打印慢查询日志，默认为200ms
