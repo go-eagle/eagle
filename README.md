@@ -11,6 +11,9 @@
 
 一款适合于快速开发业务的 Go 框架，可快速构建 API 服务 或 Web 网站。
 
+## 官方文档
+ - 开发文档 [https://go-eagle.org/](https://go-eagle.org/)
+
 **Pro Tip:** 每个目录下基本都有 `README`，可以让框架使用起来更轻松 ^_^
 
 ## 设计思想和原则
@@ -81,10 +84,6 @@ git clone https://github.com/go-eagle/eagle
 
 # 进入到下载目录
 cd eagle
-
-# 生成环境配置文件
-cd config
-cp config.yaml config.{ENV}.yaml
 
 # 编译
 make build
