@@ -3,8 +3,6 @@ package user
 import (
 	"net/http"
 
-	"github.com/go-eagle/eagle/pkg/auth"
-
 	"github.com/gin-gonic/gin"
 
 	"github.com/go-eagle/eagle/internal/model"
@@ -44,14 +42,8 @@ func DoRegister(c *gin.Context) {
 		return
 	}
 
-	// Encrypt the user password.
-	hashedPwd, err := auth.HashAndSalt(r.Password)
-	if err != nil {
-		web.Response(c, errcode.ErrEncrypt, nil)
-		return
-	}
 	// Insert the user to the database.
-	err = service.Svc.Users().Register(c, u.Username, u.Email, hashedPwd)
+	err := service.Svc.Users().Register(c, u.Username, u.Email, r.Password)
 	if err != nil {
 		web.Response(c, errcode.ErrInternalServer, nil)
 		return
