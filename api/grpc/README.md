@@ -27,7 +27,7 @@ libprotoc 3.12.1
 运行：
 
 ```shell script
-go get -u github.com/golang/protobuf/{proto,protoc-gen-go}
+go get -u github.com/golang/protobuf/{protos,protoc-gen-go}
 ```
 
 编译后会安装 `protoc-gen-go` 到 `$GOBIN` 目录, 默认在 `$GOPATH/bin`.   
