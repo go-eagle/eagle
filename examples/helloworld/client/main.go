@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	serviceAddress := "127.0.0.1:1234"
+	serviceAddress := "127.0.0.1:9090"
 	conn, err := grpc.Dial(serviceAddress, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		fmt.Printf("grpc dial err: %v", err)
@@ -31,7 +31,7 @@ func main() {
 	}
 	reply, err := cli.SayHello(ctx, req)
 	if err != nil {
-		log.Errorf("[rpc] user login by phone err: %v", err)
+		log.Errorf("[rpc] SayHello err: %v", err)
 	}
-	fmt.Printf("UserService LoginByPhone : %+v", reply)
+	fmt.Printf("service SayHello : %+v", reply)
 }
