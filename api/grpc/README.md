@@ -44,8 +44,10 @@ $ go get -u google.golang.org/grpc@v1.27.0
 ### 编辑 proto 文件
 
 ```shell script
-protoc -I . --go_out=plugins=grpc:. user.proto
+protoc -I . --go_out=plugins=grpc,paths=source_relative:. user.proto
 ```
+
+> paths 选项：import(default)，source_relative
 
 会在 `user.proto.go` 里生成服务端和客户端的代码。
 
