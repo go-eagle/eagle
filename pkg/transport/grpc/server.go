@@ -45,12 +45,12 @@ func NewServer(opts ...ServerOption) *Server {
 	for _, o := range opts {
 		o(srv)
 	}
-	var ints = []grpc.UnaryServerInterceptor{}
+	var inters []grpc.UnaryServerInterceptor
 	if len(srv.inters) > 0 {
-		ints = append(ints, srv.inters...)
+		inters = append(inters, srv.inters...)
 	}
 	var grpcOpts = []grpc.ServerOption{
-		grpc.ChainUnaryInterceptor(ints...),
+		grpc.ChainUnaryInterceptor(inters...),
 	}
 	srv.Server = grpc.NewServer(grpcOpts...)
 
