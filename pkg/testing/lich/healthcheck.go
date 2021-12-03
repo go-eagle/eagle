@@ -27,7 +27,7 @@ func (c *Container) Healthcheck() (err error) {
 	}
 	for proto, ports := range c.NetworkSettings.Ports {
 		if id := c.GetID(); !strings.Contains(proto, "tcp") {
-			log.Errorf("container: %s protos(%s) unsupported.", id, proto)
+			log.Errorf("container: %s helloworld(%s) unsupported.", id, proto)
 			continue
 		}
 		for _, publish := range ports {

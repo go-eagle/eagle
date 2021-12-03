@@ -2,18 +2,27 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"time"
 
-	"github.com/go-eagle/eagle/examples/helloworld/protos"
-
-	"github.com/go-eagle/eagle/pkg/log"
 	"google.golang.org/grpc"
+
+	pb "github.com/go-eagle/eagle/examples/helloworld/helloworld"
+	"github.com/go-eagle/eagle/pkg/log"
+)
+
+const (
+	defaultName = "eagle"
+)
+
+var (
+	addr = flag.String("addr", "localhost:9090", "the address to connect to")
+	name = flag.String("name", defaultName, "Name to greet")
 )
 
 func main() {
-	serviceAddress := "127.0.0.1:9090"
-	conn, err := grpc.Dial(serviceAddress, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(*addr, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		fmt.Printf("grpc dial err: %v", err)
 		panic("grpc dial err")
@@ -22,12 +31,12 @@ func main() {
 		_ = conn.Close()
 	}()
 
-	cli := protos.NewGreeterClient(conn)
+	cli := pb.NewGreeterClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	req := &protos.HelloRequest{
-		Name: "eagle",
+	req := &pb.HelloRequest{
+		Name: *name,
 	}
 	reply, err := cli.SayHello(ctx, req)
 	if err != nil {

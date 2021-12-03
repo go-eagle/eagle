@@ -2,38 +2,45 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
+	"log"
 	"time"
 
 	"google.golang.org/grpc"
 
-	userv1 "github.com/go-eagle/eagle/api/grpc/user/v1"
-	"github.com/go-eagle/eagle/pkg/log"
+	pb "github.com/go-eagle/eagle/api/grpc/user/v1"
+)
+
+const (
+	defaultName = "world"
+)
+
+var (
+	addr = flag.String("addr", "localhost:50051", "the address to connect to")
+	name = flag.String("name", defaultName, "Name to greet")
 )
 
 func main() {
-	// todo: 配置可以从环境变量或配置文件读取
-	serviceAddress := "127.0.0.1:1234"
-	conn, err := grpc.Dial(serviceAddress, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(*addr, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		fmt.Printf("grpc dial err: %v", err)
-		panic("grpc dial err")
+		log.Fatalf("did not connect: %v", err)
 	}
 	defer func() {
 		_ = conn.Close()
 	}()
 
-	userClient := userv1.NewUserServiceClient(conn)
+	userClient := pb.NewUserServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	userReq := &userv1.PhoneLoginRequest{
+	userReq := &pb.PhoneLoginRequest{
 		Phone:      13010102020,
 		VerifyCode: 123456,
 	}
 	reply, err := userClient.LoginByPhone(ctx, userReq)
 	if err != nil {
-		log.Errorf("[rpc] user login by phone err: %v", err)
+		log.Fatalf("[rpc] user login by phone err: %v", err)
 	}
 	fmt.Printf("UserService LoginByPhone : %+v", reply)
 }

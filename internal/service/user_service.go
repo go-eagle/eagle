@@ -11,7 +11,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	v1 "github.com/go-eagle/eagle/api/grpc/user/v1"
+	pb "github.com/go-eagle/eagle/api/grpc/user/v1"
 	"github.com/go-eagle/eagle/internal/model"
 	"github.com/go-eagle/eagle/pkg/app"
 	"github.com/go-eagle/eagle/pkg/auth"
@@ -23,7 +23,7 @@ type UserService interface {
 	Register(ctx context.Context, username, email, password string) error
 	EmailLogin(ctx context.Context, email, password string) (tokenStr string, err error)
 	PhoneLogin(ctx context.Context, phone int64, verifyCode int) (tokenStr string, err error)
-	LoginByPhone(ctx context.Context, req *v1.PhoneLoginRequest) (reply *v1.PhoneLoginReply, err error)
+	// LoginByPhone(ctx context.Context, req *pb.PhoneLoginRequest) (reply *pb.PhoneLoginReply, err error)
 	GetUserByID(ctx context.Context, id uint64) (*model.UserBaseModel, error)
 	GetUserInfoByID(ctx context.Context, id uint64) (*model.UserInfo, error)
 	GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error)
@@ -93,12 +93,12 @@ func (s *userService) EmailLogin(ctx context.Context, email, password string) (t
 }
 
 // LoginByPhone phone login, grpc wrapper
-func (s *userService) LoginByPhone(ctx context.Context, req *v1.PhoneLoginRequest) (reply *v1.PhoneLoginReply, err error) {
+func (s *userService) LoginByPhone(ctx context.Context, req *pb.PhoneLoginRequest) (reply *pb.PhoneLoginReply, err error) {
 	tokenStr, err := s.PhoneLogin(ctx, req.Phone, int(req.VerifyCode))
 	if err != nil {
 		log.Warnf("[service.user] phone login err: %v, params: %v", err, req)
 	}
-	reply = &v1.PhoneLoginReply{
+	reply = &pb.PhoneLoginReply{
 		Ret: tokenStr,
 		Err: "",
 	}
