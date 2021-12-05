@@ -4,12 +4,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"time"
 
 	"google.golang.org/grpc"
 
 	pb "github.com/go-eagle/eagle/examples/helloworld/helloworld"
-	"github.com/go-eagle/eagle/pkg/log"
 )
 
 const (
@@ -40,7 +40,7 @@ func main() {
 	}
 	reply, err := cli.SayHello(ctx, req)
 	if err != nil {
-		log.Errorf("[rpc] SayHello err: %v", err)
+		log.Fatalf("could not greet: %v", err)
 	}
-	fmt.Printf("service SayHello : %+v", reply)
+	fmt.Printf("Greeting : %s", reply.GetMessage())
 }
