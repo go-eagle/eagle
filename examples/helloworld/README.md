@@ -6,17 +6,14 @@ enter the project root directory
 
 ```bash
 cd {root_path}
+
 go get -v google.golang.org/protobuf/cmd/protoc-gen-go@v1.26
 go get -v google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1
 ```
 
-### gen proto
+## gen proto
 
 ```bash
-// old
-$ protoc -I . --go_out=plugins=grpc,paths=source_relative:. examples/helloworld/protos/greeter.proto
-
-// new
 $ protoc --go_out=. --go_opt=paths=source_relative \
     --go-grpc_out=. --go-grpc_opt=paths=source_relative \
     examples/helloworld/protos/greeter.proto
@@ -24,24 +21,26 @@ $ protoc --go_out=. --go_opt=paths=source_relative \
 
 > https://grpc.io/docs/languages/go/quickstart/#regenerate-grpc-code
 
-### run server
+## Run
+
+1. run the server
 
 ```bash
 cd examples/helloworld/server
 go run main.go
 ```
 
-### run client
+2. run the client from another terminal
 
 ```bash
 cd examples/helloworld/client
 go run main.go
 ```
 
-### run result from client
+3. You’ll see the following output:
 
 ```bash
-service SayHello : message:"Hello eagle"
+Greeting : "Hello eagle"
 ```
 
 ## Reference
