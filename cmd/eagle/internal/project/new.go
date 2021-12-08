@@ -26,11 +26,17 @@ func (p *Project) New(ctx context.Context, dir string, layout string) error {
 			Message: "📂 Do you want to override the folder ?",
 			Help:    "Delete the existing folder and create the project.",
 		}
-		survey.AskOne(prompt, &override)
+		e := survey.AskOne(prompt, &override)
+		if e != nil {
+			return e
+		}
 		if !override {
 			return err
 		}
-		os.RemoveAll(to)
+		e = os.RemoveAll(to)
+		if e != nil {
+			return e
+		}
 	}
 
 	fmt.Printf("🚀 Creating service %s, layout repo is %s, please wait a moment.\n\n", p.Name, layout)
@@ -38,10 +44,13 @@ func (p *Project) New(ctx context.Context, dir string, layout string) error {
 	if err := repo.CopyTo(ctx, to, p.Name, []string{".git", ".github"}); err != nil {
 		return err
 	}
-	os.Rename(
+	e := os.Rename(
 		path.Join(to, "cmd", "server"),
 		path.Join(to, "cmd", p.Name),
 	)
+	if e != nil {
+		return e
+	}
 	base.Tree(to, dir)
 
 	fmt.Printf("\n🍺 Project creation succeeded %s\n", color.GreenString(p.Name))
@@ -51,5 +60,6 @@ func (p *Project) New(ctx context.Context, dir string, layout string) error {
 	fmt.Println(color.WhiteString("$ go build"))
 	fmt.Println(color.WhiteString("$ ./%s\n", p.Name))
 	fmt.Println("🤝 Thanks for using Eagle")
+	fmt.Println("📚 Tutorial: https://go-eagle.org/docs/getting-started/start")
 	return nil
 }
