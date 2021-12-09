@@ -44,13 +44,13 @@ func (p *Project) New(ctx context.Context, dir string, layout string) error {
 	if err := repo.CopyTo(ctx, to, p.Name, []string{".git", ".github"}); err != nil {
 		return err
 	}
-	e := os.Rename(
-		path.Join(to, "cmd", "server"),
-		path.Join(to, "cmd", p.Name),
-	)
-	if e != nil {
-		return e
-	}
+	//e := os.Rename(
+	//	path.Join(to, "cmd", "server"),
+	//	path.Join(to, "cmd", p.Name),
+	//)
+	//if e != nil {
+	//	return e
+	//}
 	base.Tree(to, dir)
 
 	fmt.Printf("\n🍺 Project creation succeeded %s\n", color.GreenString(p.Name))
