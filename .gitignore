@@ -43,6 +43,5 @@ bin/
 vendor
 
 # custom
-cmd/eagle
 eagle
 config/config.yaml
