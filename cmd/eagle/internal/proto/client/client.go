@@ -96,8 +96,6 @@ func generate(proto string, args []string) error {
 		"--proto_path=" + filepath.Join(base.EagleMod(), "third_party"),
 		"--go_out=paths=source_relative:.",
 		"--go-grpc_out=paths=source_relative:.",
-		"--go-http_out=paths=source_relative:.",
-		"--go-errors_out=paths=source_relative:.",
 	}
 	input = append(input, inputExt...)
 	protoBytes, err := os.ReadFile(proto)
