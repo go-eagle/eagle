@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"github.com/go-eagle/eagle/cmd/eagle/internal/proto"
+
 	"github.com/go-eagle/eagle/cmd/eagle/internal/cache"
 	"github.com/go-eagle/eagle/cmd/eagle/internal/project"
 	"github.com/go-eagle/eagle/cmd/eagle/internal/run"
@@ -27,6 +29,7 @@ func init() {
 	rootCmd.AddCommand(project.CmdNew)
 	rootCmd.AddCommand(run.CmdRun)
 	rootCmd.AddCommand(cache.CmdCache)
+	rootCmd.AddCommand(proto.CmdProto)
 	rootCmd.AddCommand(upgrade.CmdUpgrade)
 }
 

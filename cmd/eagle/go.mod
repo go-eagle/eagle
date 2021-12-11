@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/AlecAivazis/survey/v2 v2.2.12
 	github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc
+	github.com/emicklei/proto v1.9.1
 	github.com/fatih/color v1.7.0
 	github.com/kr/text v0.2.0 // indirect
 	github.com/spf13/cobra v1.1.3
