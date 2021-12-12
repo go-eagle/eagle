@@ -1,5 +1,39 @@
 # rpc server and client
 
+## define a proto
+
+```proto
+syntax = "proto3";
+
+package helloworld;
+
+option go_package="github.com/go-eagle/eagle/examples/helloworld/helloworld";
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
+}
+```
+
+## generated helper code
+
+the protocol buffer compiler generates codes that has
+
+- message serialization code(*.pb.go)
+- remote interface stub for Client to call with the methods(*_grpc.pb.go)
+- abstract interface for Server code to implement(*_grpc.pb.go)
+
 ## try it out.
 
 enter the project root directory
@@ -31,6 +65,7 @@ $ protoc --go_out=. --go_opt=paths=source_relative \
     examples/helloworld/protos/greeter.proto
 ```
 > 会生成两个文件 `*.pb.go` 和 `*._grpc.pb.go`, 分别是消息序列化代码和 `gRPC` 代码.
+
 > 官方说明：https://github.com/protocolbuffers/protobuf-go/releases/tag/v1.20.0#v1.20-grpc-support
 
 > https://grpc.io/docs/languages/go/quickstart/#regenerate-grpc-code
@@ -64,3 +99,4 @@ Greeting : "Hello eagle"
 - https://grpc.io/docs/guides/error/
 - https://github.com/avinassh/grpc-errors/blob/master/go/client.go
 - https://stackoverflow.com/questions/64828054/differences-between-protoc-gen-go-and-protoc-gen-go-grpc
+- https://www.youtube.com/watch?v=g44zR3cyC-I
