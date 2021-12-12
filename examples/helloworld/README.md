@@ -61,4 +61,6 @@ Greeting : "Hello eagle"
 
 - https://grpc.io/docs/languages/go/quickstart/
 - https://developers.google.com/protocol-buffers/docs/proto3
+- https://grpc.io/docs/guides/error/
+- https://github.com/avinassh/grpc-errors/blob/master/go/client.go
 - https://stackoverflow.com/questions/64828054/differences-between-protoc-gen-go-and-protoc-gen-go-grpc
