@@ -99,4 +99,3 @@ Greeting : "Hello eagle"
 - https://grpc.io/docs/guides/error/
 - https://github.com/avinassh/grpc-errors/blob/master/go/client.go
 - https://stackoverflow.com/questions/64828054/differences-between-protoc-gen-go-and-protoc-gen-go-grpc
-- https://www.youtube.com/watch?v=g44zR3cyC-I
