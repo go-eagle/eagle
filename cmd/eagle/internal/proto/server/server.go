@@ -73,7 +73,7 @@ func run(cmd *cobra.Command, args []string) {
 		return
 	}
 	for _, s := range res {
-		to := path.Join(targetDir, strings.ToLower(s.Service)+".go")
+		to := path.Join(targetDir, strings.ToLower(s.Service)+"_grpc.go")
 		if _, err := os.Stat(to); !os.IsNotExist(err) {
 			fmt.Fprintf(os.Stderr, "%s already exists: %s\n", s.Service, to)
 			continue
