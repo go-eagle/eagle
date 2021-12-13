@@ -37,5 +37,4 @@ func (p *Proto) Generate() error {
 		return fmt.Errorf("%s already exists", p.Name)
 	}
 	return os.WriteFile(name, body, 0644)
-	return nil
 }
