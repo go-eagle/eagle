@@ -100,3 +100,5 @@ Greeting : "Hello eagle"
 - https://github.com/avinassh/grpc-errors/blob/master/go/client.go
 - https://stackoverflow.com/questions/64828054/differences-between-protoc-gen-go-and-protoc-gen-go-grpc
 - https://jbrandhorst.com/post/grpc-errors/
+- https://godoc.org/google.golang.org/genproto/googleapis/rpc/errdetails
+- https://cloud.google.com/apis/design/errors
