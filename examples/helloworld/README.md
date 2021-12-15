@@ -102,3 +102,4 @@ Greeting : "Hello eagle"
 - https://jbrandhorst.com/post/grpc-errors/
 - https://godoc.org/google.golang.org/genproto/googleapis/rpc/errdetails
 - https://cloud.google.com/apis/design/errors
+- https://github.com/grpc/grpc/blob/master/doc/health-checking.md
