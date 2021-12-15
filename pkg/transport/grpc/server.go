@@ -8,12 +8,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-eagle/eagle/pkg/utils"
-
+	grpcRecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
-	"google.golang.org/grpc/health/grpc_health_v1"
+	healthPb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
+
+	"github.com/go-eagle/eagle/pkg/utils"
 )
 
 // Server is a gRPC server wrapper.
@@ -32,6 +35,11 @@ type Server struct {
 	grpcOpts []grpc.ServerOption
 	health   *health.Server
 	log      log.Logger
+
+	// EnableTracer enables distributed tracing using OpenTelemetry protocol
+	EnableTracing bool
+	// TracerOptions are options for OpenTelemetry gRPC interceptor.
+	TracerOptions []otelgrpc.Option
 }
 
 // NewServer creates a gRPC server by options.
@@ -45,18 +53,46 @@ func NewServer(opts ...ServerOption) *Server {
 	for _, o := range opts {
 		o(srv)
 	}
-	var inters []grpc.UnaryServerInterceptor
+	// Unary
+	chainUnaryInterceptors := []grpc.UnaryServerInterceptor{
+		grpcPrometheus.UnaryServerInterceptor,
+		grpcRecovery.UnaryServerInterceptor(),
+	}
 	if len(srv.inters) > 0 {
-		inters = append(inters, srv.inters...)
+		chainUnaryInterceptors = append(chainUnaryInterceptors, srv.inters...)
 	}
-	var grpcOpts = []grpc.ServerOption{
-		grpc.ChainUnaryInterceptor(inters...),
-	}
-	srv.Server = grpc.NewServer(grpcOpts...)
 
-	// internal register
-	grpc_health_v1.RegisterHealthServer(srv.Server, srv.health)
-	reflection.Register(srv.Server)
+	// stream
+	chainStreamInterceptors := []grpc.StreamServerInterceptor{
+		grpcPrometheus.StreamServerInterceptor,
+		grpcRecovery.StreamServerInterceptor(),
+	}
+
+	// enable tracing
+	if srv.EnableTracing {
+		chainUnaryInterceptors = append(chainUnaryInterceptors, otelgrpc.UnaryServerInterceptor(srv.TracerOptions...))
+		chainStreamInterceptors = append(chainStreamInterceptors, otelgrpc.StreamServerInterceptor(srv.TracerOptions...))
+	}
+
+	grpcOpts := []grpc.ServerOption{
+		grpc.ChainUnaryInterceptor(chainUnaryInterceptors...),
+		grpc.ChainStreamInterceptor(chainStreamInterceptors...),
+	}
+	if len(srv.grpcOpts) > 0 {
+		grpcOpts = append(grpcOpts, srv.grpcOpts...)
+	}
+
+	grpcServer := grpc.NewServer(grpcOpts...)
+
+	// see https://github.com/grpc/grpc/blob/master/doc/health-checking.md for more
+	srv.health.SetServingStatus("", healthPb.HealthCheckResponse_SERVING)
+	healthPb.RegisterHealthServer(grpcServer, srv.health)
+	reflection.Register(grpcServer)
+
+	// set zero values for metrics registered for this grpc server
+	grpcPrometheus.Register(grpcServer)
+
+	srv.Server = grpcServer
 
 	return srv
 }
