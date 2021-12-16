@@ -27,7 +27,7 @@ libprotoc 3.12.1
 运行：
 
 ```shell script
-go get -u github.com/golang/protobuf/{proto,protoc-gen-go}
+go get -u github.com/golang/protobuf/{helloworld,protoc-gen-go}
 ```
 
 编译后会安装 `protoc-gen-go` 到 `$GOBIN` 目录, 默认在 `$GOPATH/bin`.   
@@ -44,8 +44,10 @@ $ go get -u google.golang.org/grpc@v1.27.0
 ### 编辑 proto 文件
 
 ```shell script
-protoc -I . --go_out=plugins=grpc:. user.proto
+protoc -I . --go_out=plugins=grpc,paths=source_relative:. user.proto
 ```
+
+> paths 选项：import(default)，source_relative
 
 会在 `user.proto.go` 里生成服务端和客户端的代码。
 

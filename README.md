@@ -11,6 +11,9 @@
 
 一款适合于快速开发业务的 Go 框架，可快速构建 API 服务 或 Web 网站。
 
+## 官方文档
+ - 开发文档 [https://go-eagle.org/](https://go-eagle.org/)
+
 **Pro Tip:** 每个目录下基本都有 `README`，可以让框架使用起来更轻松 ^_^
 
 ## 设计思想和原则
@@ -81,10 +84,6 @@ git clone https://github.com/go-eagle/eagle
 
 # 进入到下载目录
 cd eagle
-
-# 生成环境配置文件
-cd config
-cp config.yaml config.{ENV}.yaml
 
 # 编译
 make build
@@ -239,7 +238,8 @@ supervisorctl restart eagle
 - Issue: https://github.com/go-eagle/eagle/issues
 - QQ交流群：1074476202
 - 微信交流群
-<img src="https://user-images.githubusercontent.com/3043638/140840784-9d6a524d-714e-43c4-bb28-26ee69da46de.png" width="300px">
+
+<img src="https://user-images.githubusercontent.com/3043638/142301926-c1ae1e6c-aa2a-4b47-b81b-108c62505f33.png" width="300px">
 
 ## Stargazers over time
 

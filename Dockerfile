@@ -46,7 +46,7 @@ RUN mkdir -p /data/logs/
 EXPOSE 8080
 
 # 需要运行的命令
-CMD ["/app/eagle", "-c", "config/config.docker.yaml"]
+CMD ["/app/eagle", "-c", "config"]
 
 # 1. build image: docker build -t eagle:v1 -f Dockerfile .
 # 2. start: docker run --rm -it -p 8080:8080 eagle:v1

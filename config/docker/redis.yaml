@@ -1,0 +1,11 @@
+default:
+  Addr: redis:6379
+  Password: ""
+  DB: 0
+  MinIdleConn: 200
+  DialTimeout: 60s
+  ReadTimeout: 500ms
+  WriteTimeout: 500ms
+  PoolSize: 100
+  PoolTimeout: 240s
+  EnableTrace: true

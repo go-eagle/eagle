@@ -17,17 +17,17 @@ Http:
   WriteTimeout: 3s
 Grpc:
   Addr: :9090
-  ReadTimeout: 3s
-  WriteTimeout: 3s
+  ReadTimeout: 5s
+  WriteTimeout: 5s
 
 logger:
-  Development: true
+  Development: false
   DisableCaller: false
   DisableStacktrace: false
-  Encoding: json
-  Level: info
+  Encoding: json                          # json or console
+  Level: info                             # 日志级别，INFO, WARN, ERROR
   Name: eagle
-  Writers: file,stdout
+  Writers: console                        # 有2个可选项：file,console 选择file会将日志记录到logger_file指定的日志文件中，选择console会将日志输出到标准输出，当然也可以两者同时选择
   LoggerFile: /tmp/log/eagle.log
   LoggerWarnFile: /tmp/log/eagle.wf.log
   LoggerErrorFile: /tmp/log/eagle.err.log
@@ -38,13 +38,14 @@ logger:
 
 orm:
   Name: eagle                     # 数据库名称
-  Addr: db:3306                   # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
+  Addr: localhost:3306            # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
   UserName: root
-  Password: root 
-  ShowLog: true                   # 是否打印SQL日志
+  Password: 123456
+  ShowLog: true                   # 是否打印所有SQL日志
   MaxIdleConn: 10                 # 最大闲置的连接数，0意味着使用默认的大小2， 小于0表示不使用连接池
   MaxOpenConn: 60                 # 最大打开的连接数, 需要小于数据库配置中的max_connections数
-  ConnMaxLifeTime: 60m            # 单个连接最大存活时间，建议设置比数据库超时时长(wait_timeout)稍小一些
+  ConnMaxLifeTime: 4h             # 单个连接最大存活时间，建议设置比数据库超时时长(wait_timeout)稍小一些
+  SlowThreshold: 0                # 慢查询阈值，设置后只打印慢查询日志，默认为500ms
 
 mysql:
   Dsn: "root:123456@tcp(localhost:3306)/eagle?timeout=2s&readTimeout=5s&writeTimeout=5s&parseTime=true&loc=Local&charset=utf8,utf8mb4"
@@ -62,20 +63,18 @@ mysql:
     ratio: 0.5
     request: 100
 
+
 redis:
-  Addr: redis:6379
+  Addr: 127.0.0.1:6379
   Password: ""
   DB: 0
   MinIdleConn: 200
   DialTimeout: 60s
   ReadTimeout: 500ms
   WriteTimeout: 500ms
-  PoolSize: 12000
-  PoolTimeout: 240
-
-cache:
-  Driver: "redis"                 # 缓存驱动，可以选memory、redis, 默认redis
-  Prefix: "eagle:"                # cache key前缀，一般为项目名称即可
+  PoolSize: 100
+  PoolTimeout: 240s
+  IsTrace: true
 
 email:
   Host: SMTP_HOST       # SMTP地址
@@ -112,41 +111,8 @@ metrics:
   Url: 0.0.0.0:7070
   ServiceName: api
 
-jaeger:
-  Host: jaeger:6831
-  ServiceName: REST_API
-  LogSpans: false
-
 MongoDB:
   URI: "mongodb://localhost:27017"
   User: "admin"
   Password: "admin"
   DB: "eagle"
-
-trace:
-  # trace config
-  ServiceName: "eagle"
-  TraceAgent: "jaeger"
-  OpenDebug: "false"
-
-  Zipkin:
-    HTTPEndpoint: "http://127.0.0.1:9411/api/v2/spans"
-    SameSpan: false
-    ID128Bit: true
-    SampleRate: "1.0"
-  Jaeger:
-    SamplingServerURL: "http://127.0.0.1:5778/sampling"
-    SamplingType: "const"
-    SamplingParam: "1.0"
-    LocalAgentHostPort: "127.0.0.1:6831"
-    Propagation: "jaeger"
-    Gen128Bit: true
-    TraceContextHeaderName: "uber-trace-id"
-    CollectorEndpoint: ""
-    CollectorUser: ""
-    CollectorPassword: ""
-
-  # Elastic, only useful when TraceAgent is elastic
-  Elastic:
-    ServerURL: "http://127.0.0.1:8200"
-    SecretToken: ""

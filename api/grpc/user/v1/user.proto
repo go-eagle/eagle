@@ -1,8 +1,9 @@
 syntax = "proto3";
+
 package user.v1; // 包名与目录名保持一致
 
 // 指定 go 的包路径及包名
-option go_package = "v1";
+option go_package = "api/grpc/user/v1;v1";
 
 service UserService{
     rpc LoginByPhone(PhoneLoginRequest) returns (PhoneLoginReply) {}

@@ -29,7 +29,7 @@ func NewRouter() *gin.Engine {
 	g.Use(middleware.Secure)
 	g.Use(middleware.Logging())
 	g.Use(middleware.RequestID())
-	g.Use(middleware.Metrics(app.Conf.Name, nil))
+	g.Use(middleware.Metrics(app.Conf.Name))
 	g.Use(middleware.Tracing(app.Conf.Name))
 	g.Use(middleware.Timeout(3 * time.Second))
 	g.Use(mw.Translations())

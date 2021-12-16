@@ -15,6 +15,8 @@ services:
       - redis
     ports:
       - "8080:8080"
+    environment:
+      APP_ENV: docker
     networks:
       - eagle
     healthcheck:

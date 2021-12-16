@@ -1,7 +1,41 @@
 package metric
 
-// Opts contains the common arguments for creating Metric.
-type Opts struct {
+// CounterVec counter vec.
+type CounterVec interface {
+	// Inc increments the counter by 1. Use Add to increment it by arbitrary
+	// non-negative values.
+	Inc(labels ...string)
+	// Add adds the given value to the counter. It panics if the value is <
+	// 0.
+	Add(v float64, labels ...string)
+}
+
+// GaugeVec gauge vec.
+type GaugeVec interface {
+	// Set sets the Gauge to an arbitrary value.
+	Set(v float64, labels ...string)
+	// Inc increments the Gauge by 1. Use Add to increment it by arbitrary
+	// values.
+	Inc(labels ...string)
+	Dec(labels ...string)
+	// Add adds the given value to the Gauge. (The value can be negative,
+	// resulting in a decrease of the Gauge.)
+	Add(v float64, labels ...string)
+}
+
+// HistogramVec gauge vec.
+type HistogramVec interface {
+	// Observe adds a single observation to the histogram.
+	Observe(v int64, labels ...string)
+}
+
+// VectorOpts contains the common arguments for creating vec Metric..
+type VectorOpts struct {
+	Namespace string
+	Subsystem string
+	Name      string
+	Help      string
+	Labels    []string
 }
 
 // Metric is a sample interface.
@@ -27,13 +61,4 @@ type Aggregation interface {
 	Avg() float64
 	// Sum computes sum value within the window.
 	Sum() float64
-}
-
-// VectorOpts contains the common arguments for creating vec Metric..
-type VectorOpts struct {
-	Namespace string
-	Subsystem string
-	Name      string
-	Help      string
-	Labels    []string
 }

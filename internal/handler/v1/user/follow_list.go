@@ -34,7 +34,6 @@ func FollowList(c *gin.Context) {
 	// and then send the doneChan with the status and body
 	// to finish the request by writing the response
 	go func() {
-
 		userIDStr := c.Param("id")
 		userID, _ := strconv.Atoi(userIDStr)
 
@@ -85,26 +84,21 @@ func FollowList(c *gin.Context) {
 			PageValue:  pageValue,
 			Items:      userOutList,
 		}
-
 	}()
 
 	// non-blocking select on two channels see if the request
 	// times out or finishes
 	select {
-
-	// if the context is done it timed out or was cancelled
+	// if the context is done it timed out or was canceled
 	// so don't return anything
 	case <-ctx.Done():
 		return
-
 	// if err is not nil return error response
 	case err := <-errChan:
 		response.Error(c, err)
-
 	// if the request finished then finish the request by
 	// writing the response
 	case resp := <-doneChan:
 		response.Success(c, resp)
 	}
-
 }

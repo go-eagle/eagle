@@ -1,0 +1,3 @@
+ServiceName: "eagle"
+LocalAgentHostPort: "127.0.0.1:6831"
+CollectorEndpoint: "http://localhost:14268/api/traces"

@@ -3,7 +3,7 @@ package redis
 import (
 	"context"
 	"fmt"
-	"time"
+	"sync"
 
 	"github.com/go-eagle/eagle/pkg/config"
 
@@ -15,32 +15,57 @@ import (
 // RedisClient redis 客户端
 var RedisClient *redis.Client
 
-// ErrRedisNotFound not exist in redis
-const ErrRedisNotFound = redis.Nil
+const (
+	// ErrRedisNotFound not exist in redis
+	ErrRedisNotFound = redis.Nil
+	// DefaultRedisName default redis name
+	DefaultRedisName = "default"
+)
 
-// Config redis config
-type Config struct {
-	Addr         string
-	Password     string
-	DB           int
-	MinIdleConn  int
-	DialTimeout  time.Duration
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-	PoolSize     int
-	PoolTimeout  time.Duration
-	// tracing switch
-	EnableTrace bool
+// RedisManager define a redis manager
+//nolint
+type RedisManager struct {
+	clients map[string]*redis.Client
+	*sync.RWMutex
 }
 
-// Init 实例化一个redis client
-func Init() *redis.Client {
-	c, err := loadConf()
+// Init init a default redis instance
+func Init() {
+	clientManager := NewRedisManager()
+	rdb, err := clientManager.GetClient(DefaultRedisName)
+	if err != nil {
+		panic(fmt.Sprintf("init redis err: %s", err.Error()))
+	}
+	RedisClient = rdb
+}
+
+// NewRedisManager create a redis manager
+func NewRedisManager() *RedisManager {
+	return &RedisManager{
+		clients: make(map[string]*redis.Client),
+		RWMutex: &sync.RWMutex{},
+	}
+}
+
+// GetClient get a redis instance
+func (r *RedisManager) GetClient(name string) (*redis.Client, error) {
+	// get client from map
+	r.RLock()
+	if client, ok := r.clients[name]; ok {
+		r.RUnlock()
+		return client, nil
+	}
+	r.RUnlock()
+
+	c, err := loadConf(name)
 	if err != nil {
 		panic(fmt.Sprintf("load redis conf err: %v", err))
 	}
 
-	RedisClient = redis.NewClient(&redis.Options{
+	// create a redis client
+	r.Lock()
+	defer r.Unlock()
+	rdb := redis.NewClient(&redis.Options{
 		Addr:         c.Addr,
 		Password:     c.Password,
 		DB:           c.DB,
@@ -52,27 +77,35 @@ func Init() *redis.Client {
 		PoolTimeout:  c.PoolTimeout,
 	})
 
-	_, err = RedisClient.Ping(context.Background()).Result()
+	// check redis if is ok
+	_, err = rdb.Ping(context.Background()).Result()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	// hook tracing (using open telemetry)
 	if c.EnableTrace {
-		RedisClient.AddHook(redisotel.NewTracingHook())
+		rdb.AddHook(redisotel.NewTracingHook())
 	}
+	r.clients[name] = rdb
 
-	return RedisClient
+	return rdb, nil
 }
 
 // loadConf load redis config
-func loadConf() (ret *Config, err error) {
-	var cfg Config
-	if err := config.Load("redis", &cfg); err != nil {
+func loadConf(name string) (ret *Config, err error) {
+	v, err := config.LoadWithType("redis", "yaml")
+	if err != nil {
 		return nil, err
 	}
 
-	return &cfg, nil
+	var c Config
+	err = v.UnmarshalKey(name, &c)
+	if err != nil {
+		return nil, err
+	}
+
+	return &c, nil
 }
 
 // InitTestRedis 实例化一个可以用于单元测试的redis
