@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/go-eagle/eagle/api"
 	"github.com/go-eagle/eagle/pkg/errcode"
 	"github.com/go-eagle/eagle/pkg/log"
 )
@@ -35,7 +34,7 @@ func Follow(c *gin.Context) {
 		return
 	}
 
-	userID := api.GetUserID(c)
+	userID := service.GetUserID(c)
 	// 不能关注自己
 	if userID == req.UserID {
 		response.Error(c, ecode.ErrCannotFollowSelf)

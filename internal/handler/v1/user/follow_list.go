@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/go-eagle/eagle/api"
 	"github.com/go-eagle/eagle/internal/ecode"
 	"github.com/go-eagle/eagle/internal/service"
 	"github.com/go-eagle/eagle/pkg/errcode"
@@ -37,7 +36,7 @@ func FollowList(c *gin.Context) {
 		userIDStr := c.Param("id")
 		userID, _ := strconv.Atoi(userIDStr)
 
-		curUserID := api.GetUserID(c)
+		curUserID := service.GetUserID(c)
 		log.Infof("cur uid: %d", curUserID)
 
 		_, err := service.Svc.Users().GetUserByID(ctx, uint64(userID))
