@@ -1,6 +1,10 @@
 package grpc
 
-import "time"
+import (
+	"time"
+
+	"google.golang.org/grpc"
+)
 
 // ServerOption is gRPC server option.
 type ServerOption func(o *Server)
@@ -23,5 +27,19 @@ func Address(addr string) ServerOption {
 func Timeout(timeout time.Duration) ServerOption {
 	return func(s *Server) {
 		s.timeout = timeout
+	}
+}
+
+// UnaryInterceptor returns a ServerOption that sets the UnaryServerInterceptor for the server.
+func UnaryInterceptor(in ...grpc.UnaryServerInterceptor) ServerOption {
+	return func(s *Server) {
+		s.inters = in
+	}
+}
+
+// Options with grpc options.
+func Options(opts ...grpc.ServerOption) ServerOption {
+	return func(s *Server) {
+		s.grpcOpts = opts
 	}
 }

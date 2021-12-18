@@ -36,6 +36,7 @@ func (r *Response) Success(c *gin.Context, data interface{}) {
 	})
 }
 
+// Error return a error response
 func (r *Response) Error(c *gin.Context, err error) {
 	if err == nil {
 		c.JSON(http.StatusOK, Response{
