@@ -40,9 +40,6 @@ func NewRouter() *gin.Engine {
 	g.NoRoute(app.RouteNotFound)
 	g.NoMethod(app.RouteNotFound)
 
-	// 静态资源，主要是图片
-	g.Static("/static", "./static")
-
 	// swagger api docs
 	g.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// pprof router 性能分析路由
