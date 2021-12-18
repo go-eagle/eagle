@@ -7,10 +7,10 @@ import (
 
 	"github.com/go-eagle/eagle/internal/model"
 	"github.com/go-eagle/eagle/internal/service"
+	"github.com/go-eagle/eagle/internal/web"
 	"github.com/go-eagle/eagle/pkg/errcode"
 	"github.com/go-eagle/eagle/pkg/flash"
 	"github.com/go-eagle/eagle/pkg/log"
-	"github.com/go-eagle/eagle/web"
 )
 
 // GetRegister register as a new user
