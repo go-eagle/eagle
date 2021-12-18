@@ -10,6 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var resp *Response
+
+func init() {
+	resp = NewResponse()
+}
+
 // Response define a response struct
 type Response struct {
 	Code    int         `json:"code"`
@@ -24,6 +30,7 @@ func NewResponse() *Response {
 }
 
 // Success return a success response
+func Success(c *gin.Context, data interface{}) { resp.Success(c, data) }
 func (r *Response) Success(c *gin.Context, data interface{}) {
 	if data == nil {
 		data = gin.H{}
@@ -37,6 +44,7 @@ func (r *Response) Success(c *gin.Context, data interface{}) {
 }
 
 // Error return a error response
+func Error(c *gin.Context, err error) { resp.Error(c, err) }
 func (r *Response) Error(c *gin.Context, err error) {
 	if err == nil {
 		c.JSON(http.StatusOK, Response{
