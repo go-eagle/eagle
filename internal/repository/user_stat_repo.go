@@ -1,4 +1,4 @@
-package dao
+package repository
 
 import (
 	"context"
@@ -25,7 +25,7 @@ func getUserStatTableName() string {
 }
 
 // IncrFollowCount 增加关注数
-func (d *Dao) IncrFollowCount(ctx context.Context, db *gorm.DB, userID uint64, step int) error {
+func (d *repository) IncrFollowCount(ctx context.Context, db *gorm.DB, userID uint64, step int) error {
 	err := db.Exec("insert into user_stat set user_id=?, follow_count=1, created_at=? on duplicate key update "+
 		"follow_count=follow_count+?, updated_at=?",
 		userID, time.Now(), step, time.Now()).Error
@@ -36,7 +36,7 @@ func (d *Dao) IncrFollowCount(ctx context.Context, db *gorm.DB, userID uint64, s
 }
 
 // IncrFollowerCount 增加粉丝数
-func (d *Dao) IncrFollowerCount(ctx context.Context, db *gorm.DB, userID uint64, step int) error {
+func (d *repository) IncrFollowerCount(ctx context.Context, db *gorm.DB, userID uint64, step int) error {
 	err := db.Exec("insert into user_stat set user_id=?, follower_count=1, created_at=? on duplicate key update "+
 		"follower_count=follower_count+?, updated_at=?",
 		userID, time.Now(), step, time.Now()).Error
@@ -47,7 +47,7 @@ func (d *Dao) IncrFollowerCount(ctx context.Context, db *gorm.DB, userID uint64,
 }
 
 // GetUserStatByID 获取用户统计数据
-func (d *Dao) GetUserStatByID(ctx context.Context, userID uint64) (res *model.UserStatModel, err error) {
+func (d *repository) GetUserStatByID(ctx context.Context, userID uint64) (res *model.UserStatModel, err error) {
 	res = &model.UserStatModel{}
 	_sql := fmt.Sprintf(_getUserStatInfo, getUserStatTableName())
 	row := d.db.QueryRow(ctx, _sql, userID)
@@ -60,7 +60,7 @@ func (d *Dao) GetUserStatByID(ctx context.Context, userID uint64) (res *model.Us
 }
 
 // GetUserStatByIDs 批量获取用户统计数据
-func (d *Dao) GetUserStatByIDs(ctx context.Context, userID []uint64) (map[uint64]*model.UserStatModel, error) {
+func (d *repository) GetUserStatByIDs(ctx context.Context, userID []uint64) (map[uint64]*model.UserStatModel, error) {
 	if len(userID) == 0 {
 		return nil, nil
 	}

@@ -1,4 +1,4 @@
-package dao
+package repository
 
 import (
 	"context"
@@ -18,7 +18,7 @@ import (
 )
 
 // CreateUser 创建用户
-func (d *Dao) CreateUser(ctx context.Context, user *model.UserBaseModel) (id uint64, err error) {
+func (d *repository) CreateUser(ctx context.Context, user *model.UserBaseModel) (id uint64, err error) {
 	err = d.orm.Create(&user).Error
 	if err != nil {
 		//prom.BusinessErrCount.Incr("mysql: CreateUser")
@@ -29,8 +29,8 @@ func (d *Dao) CreateUser(ctx context.Context, user *model.UserBaseModel) (id uin
 }
 
 // UpdateUser 更新用户信息
-func (d *Dao) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
-	user, err := d.GetOneUser(ctx, id)
+func (d *repository) UpdateUser(ctx context.Context, id uint64, userMap map[string]interface{}) error {
+	user, err := d.GetUser(ctx, id)
 	if err != nil {
 		//prom.BusinessErrCount.Incr("mysql: getOneUser")
 		return errors.Wrap(err, "[repo.user_base] update user data err")
@@ -52,8 +52,8 @@ func (d *Dao) UpdateUser(ctx context.Context, id uint64, userMap map[string]inte
 // GetOneUser 获取用户
 // 缓存的更新策略使用 Cache Aside Pattern
 // see: https://coolshell.cn/articles/17416.html
-func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserBaseModel, err error) {
-	ctx, span := d.tracer.Start(ctx, "GetOneUser",
+func (d *repository) GetUser(ctx context.Context, uid uint64) (userBase *model.UserBaseModel, err error) {
+	ctx, span := d.tracer.Start(ctx, "GetUser",
 		oteltrace.WithAttributes(attribute.String("param.uid", cast.ToString(uid))))
 	defer span.End()
 
@@ -132,7 +132,7 @@ func (d *Dao) GetOneUser(ctx context.Context, uid uint64) (userBase *model.UserB
 }
 
 // GetUsersByIds 批量获取用户
-func (d *Dao) GetUsersByIds(ctx context.Context, userIDs []uint64) ([]*model.UserBaseModel, error) {
+func (d *repository) GetUsersByIds(ctx context.Context, userIDs []uint64) ([]*model.UserBaseModel, error) {
 	users := make([]*model.UserBaseModel, 0)
 
 	// 从cache批量获取
@@ -146,7 +146,7 @@ func (d *Dao) GetUsersByIds(ctx context.Context, userIDs []uint64) ([]*model.Use
 		idx := d.userCache.GetUserBaseCacheKey(userID)
 		userModel, ok := userCacheMap[idx]
 		if !ok {
-			userModel, err = d.GetOneUser(ctx, userID)
+			userModel, err = d.GetUser(ctx, userID)
 			if err != nil {
 				log.Warnf("[repo.user_base] get user model err: %v", err)
 				continue
@@ -158,7 +158,7 @@ func (d *Dao) GetUsersByIds(ctx context.Context, userIDs []uint64) ([]*model.Use
 }
 
 // GetUserByPhone 根据手机号获取用户
-func (d *Dao) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error) {
+func (d *repository) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseModel, error) {
 	user := model.UserBaseModel{}
 	err := d.orm.Where("phone = ?", phone).First(&user).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -169,7 +169,7 @@ func (d *Dao) GetUserByPhone(ctx context.Context, phone int64) (*model.UserBaseM
 }
 
 // GetUserByEmail 根据邮箱获取手机号
-func (d *Dao) GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error) {
+func (d *repository) GetUserByEmail(ctx context.Context, email string) (*model.UserBaseModel, error) {
 	userBase := model.UserBaseModel{}
 	err := d.orm.Where("email = ?", email).First(&userBase).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -180,7 +180,7 @@ func (d *Dao) GetUserByEmail(ctx context.Context, email string) (*model.UserBase
 }
 
 // UserIsExist 判断用户是否存在, 用户名和邮箱要保持唯一
-func (d *Dao) UserIsExist(user *model.UserBaseModel) (bool, error) {
+func (d *repository) UserIsExist(user *model.UserBaseModel) (bool, error) {
 	err := d.orm.Where("username = ? or email = ?", user.Username, user.Email).First(&model.UserBaseModel{}).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return false, nil

@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 
-	"github.com/go-eagle/eagle/internal/dao"
 	"github.com/go-eagle/eagle/internal/ecode"
+	"github.com/go-eagle/eagle/internal/repository"
 	"github.com/go-eagle/eagle/internal/service"
 	"github.com/go-eagle/eagle/pkg/errcode"
 	"github.com/go-eagle/eagle/pkg/log"
@@ -45,7 +45,7 @@ func Get(c *gin.Context) {
 
 		// Get the user by the `user_id` from the database.
 		u, err := service.Svc.Users().GetUserByID(c.Request.Context(), userID)
-		if errors.Is(err, dao.ErrNotFound) {
+		if errors.Is(err, repository.ErrNotFound) {
 			log.Errorf("get user info err: %+v", err)
 			errChan <- ecode.ErrUserNotFound
 			return

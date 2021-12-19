@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/go-eagle/eagle/internal/dao"
+	"github.com/go-eagle/eagle/internal/repository"
 )
 
 // Svc global var
@@ -28,13 +28,13 @@ type Service interface {
 
 // service struct
 type service struct {
-	dao *dao.Dao
+	repo repository.Repository
 }
 
 // New init service
-func New(dao *dao.Dao) Service {
+func New(repo repository.Repository) Service {
 	return &service{
-		dao: dao,
+		repo: repo,
 	}
 }
 
