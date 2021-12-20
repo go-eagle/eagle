@@ -24,8 +24,8 @@ import (
 	etcdclient "go.etcd.io/etcd/client/v3"
 	_ "go.uber.org/automaxprocs"
 
-	"github.com/go-eagle/eagle/internal/dao"
 	"github.com/go-eagle/eagle/internal/model"
+	"github.com/go-eagle/eagle/internal/repository"
 	"github.com/go-eagle/eagle/internal/server"
 	"github.com/go-eagle/eagle/internal/service"
 	eagle "github.com/go-eagle/eagle/pkg/app"
@@ -70,7 +70,7 @@ func main() {
 	eagle.Conf = &cfg
 
 	// init service
-	service.Svc = service.New(dao.New(model.GetDB()))
+	service.Svc = service.New(repository.New(model.GetDB()))
 
 	gin.SetMode(cfg.Mode)
 

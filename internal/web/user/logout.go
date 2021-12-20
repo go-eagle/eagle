@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
 
+	"github.com/go-eagle/eagle/internal/web"
 	"github.com/go-eagle/eagle/pkg/log"
-	"github.com/go-eagle/eagle/web"
 )
 
 // Logout user logout

@@ -1,4 +1,4 @@
-package dao
+package repository
 
 import (
 	"context"
@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	d      *Dao
+	d      *repository
 	cfgDir = pflag.StringP("config", "c", "", "eagle config file path.")
 )
 

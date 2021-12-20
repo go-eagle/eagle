@@ -1,8 +1,6 @@
-package api
+package service
 
-import (
-	"github.com/gin-gonic/gin"
-)
+import "github.com/gin-gonic/gin"
 
 // GetUserID 返回用户id
 func GetUserID(c *gin.Context) uint64 {

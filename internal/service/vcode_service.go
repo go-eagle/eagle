@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-eagle/eagle/internal/dao"
+	"github.com/go-eagle/eagle/internal/repository"
 
 	"github.com/pkg/errors"
 
@@ -30,13 +30,13 @@ type VCodeService interface {
 }
 
 type vcodeService struct {
-	dao *dao.Dao
+	repo repository.Repository
 }
 
 var _ VCodeService = (*vcodeService)(nil)
 
 func newVCode(svc *service) *vcodeService {
-	return &vcodeService{dao: svc.dao}
+	return &vcodeService{repo: svc.repo}
 }
 
 // GenLoginVCode 生成校验码
