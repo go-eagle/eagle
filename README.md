@@ -238,6 +238,7 @@ supervisorctl restart eagle
 
 - Issue: https://github.com/go-eagle/eagle/issues
 - QQ交流群：1074476202
+- Gitter: https://gitter.im/go-eagle/eagle
 - 微信交流群
 <img src="https://user-images.githubusercontent.com/3043638/147016053-049f30cd-faa7-4e4e-ab78-2e6a06c905d0.jpeg" width="300px">
 
