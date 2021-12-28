@@ -242,7 +242,7 @@ supervisorctl restart eagle
 
 ## Stargazers over time
 
-[![Stargazers over time](https://starchart.cc/go-eagle/eagle.svg)](https://starchart.cc/go-eagle/eagle)
+[![Stargazers over time](https://starchart.cc/go-eagle/eagle.svg)](https://starchart.cc/go-eagle/eagle) [![Join the chat at https://gitter.im/go-eagle/eagle](https://badges.gitter.im/go-eagle/eagle.svg)](https://gitter.im/go-eagle/eagle?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## 🔋 JetBrains 开源证书支持
 
