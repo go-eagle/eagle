@@ -20,6 +20,11 @@ var CmdUpgrade = &cobra.Command{
 func Run(cmd *cobra.Command, args []string) {
 	err := base.GoGet(
 		"github.com/go-eagle/eagle/cmd/eagle",
+		"google.golang.org/protobuf/cmd/protoc-gen-go",
+		"google.golang.org/grpc/cmd/protoc-gen-go-grpc",
+		"github.com/envoyproxy/protoc-gen-validate",
+		"github.com/google/gnostic",
+		"github.com/google/gnostic/apps/protoc-gen-openapi",
 	)
 	if err != nil {
 		fmt.Println(err)
