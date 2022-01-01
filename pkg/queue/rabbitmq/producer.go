@@ -23,10 +23,9 @@ type Producer struct {
 // NewProducer create a producer
 func NewProducer(addr, exchange string) *Producer {
 	p := &Producer{
-		addr:       addr,
-		exchange:   exchange,
-		routingKey: "",
-		quit:       make(chan struct{}),
+		addr:     addr,
+		exchange: exchange,
+		quit:     make(chan struct{}),
 	}
 
 	return p
@@ -125,17 +124,18 @@ func (p *Producer) ReConnect() {
 }
 
 // Publish push data to queue
-func (p *Producer) Publish(message string) error {
+func (p *Producer) Publish(routingKey, message string) error {
 	return p.channel.Publish(
-		p.exchange,   // exchange
-		p.routingKey, // routing key
-		false,        // mandatory
-		false,        // immediate
+		p.exchange, // exchange
+		routingKey, // routing key
+		false,      // mandatory
+		false,      // immediate
 		amqp.Publishing{
 			DeliveryMode: amqp.Persistent,
 			ContentType:  "text/plain",
 			MessageId:    uuid.New().String(),
 			Type:         "",
 			Body:         []byte(message),
+			Timestamp:    time.Now(),
 		})
 }
