@@ -39,7 +39,7 @@ func run(cmd *cobra.Command, args []string) {
 		err   error
 		proto = strings.TrimSpace(args[0])
 	)
-	if err = look("protoc-gen-go", "protoc-gen-go-grpc", "protoc-gen-validate", "protoc-gen-openapi"); err != nil {
+	if err = look("protoc-gen-go", "protoc-gen-go-grpc", "protoc-gen-go-gin", "protoc-gen-validate", "protoc-gen-openapi"); err != nil {
 		// update all plugins
 		cmd := exec.Command("eagle", "upgrade")
 		cmd.Stdout = os.Stdout
