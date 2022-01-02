@@ -15,7 +15,6 @@ import (
 const (
 	contextPackage     = protogen.GoImportPath("context")
 	ginPackage         = protogen.GoImportPath("github.com/gin-gonic/gin")
-	errPackage         = protogen.GoImportPath("errors")
 	metadataPackage    = protogen.GoImportPath("google.golang.org/grpc/metadata")
 	eagleAppPackage    = protogen.GoImportPath("github.com/go-eagle/eagle/pkg/app")
 	errcodePackage     = protogen.GoImportPath("github.com/go-eagle/eagle/pkg/errcode")
@@ -39,7 +38,6 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 	g.P("// This is a compile-time assertion to ensure that this generated file")
 	g.P("// is compatible with the eagle package it is being compiled against.")
 	g.P("// ", contextPackage.Ident(""), metadataPackage.Ident(""))
-	g.P("// ", ginPackage.Ident(""), errPackage.Ident(""))
 	g.P()
 
 	for _, service := range file.Services {
