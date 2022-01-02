@@ -32,7 +32,6 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 	filename := file.GeneratedFilenamePrefix + "_gin.pb.go"
 	g := gen.NewGeneratedFile(filename, file.GoImportPath)
 	g.P("// Code generated protoc-gen-go-gin. DO NOT EDIT.")
-	g.P("// versions:")
 	g.P(fmt.Sprintf("// protoc-gen-go-gin %s", version))
 	g.P()
 	g.P("package ", file.GoPackageName)
@@ -41,10 +40,6 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 	g.P("// is compatible with the eagle package it is being compiled against.")
 	g.P("// ", contextPackage.Ident(""), metadataPackage.Ident(""))
 	g.P("// ", ginPackage.Ident(""), errPackage.Ident(""))
-	g.P()
-	g.P("// ", eagleAppPackage.Ident(""))
-	g.P()
-	g.P("// ", errcodePackage.Ident(""))
 	g.P()
 
 	for _, service := range file.Services {
