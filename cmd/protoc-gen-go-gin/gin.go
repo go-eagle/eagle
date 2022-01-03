@@ -38,7 +38,8 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 	g.P("// This is a compile-time assertion to ensure that this generated file")
 	g.P("// is compatible with the eagle package it is being compiled against.")
 	g.P()
-	g.P("// ", contextPackage.Ident(""), metadataPackage.Ident(""))
+	g.P("// ", contextPackage.Ident(""))
+	g.P("// ", metadataPackage.Ident(""))
 	g.P("// ", ginPackage.Ident(""), eagleAppPackage.Ident(""), errCodePackage.Ident(""))
 	g.P()
 
