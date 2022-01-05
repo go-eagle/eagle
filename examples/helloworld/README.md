@@ -123,3 +123,4 @@ Greeting : "Hello eagle"
 - https://cloud.google.com/apis/design/errors
 - https://github.com/grpc/grpc/blob/master/doc/health-checking.md
 - https://eddycjy.com/posts/where-is-proto/
+- https://stackoverflow.com/questions/52969205/how-to-assert-grpc-error-codes-client-side-in-go
