@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	"unicode"
 )
 
 // Cache is a cache generator.
@@ -14,6 +13,7 @@ type Cache struct {
 	Path    string
 	Service string
 	Package string
+	ModName string
 }
 
 // Generate generate a cache template.
@@ -32,17 +32,9 @@ func (c *Cache) Generate() error {
 			return err
 		}
 	}
-	name := path.Join(to, Lcfirst(c.Name))
+	name := path.Join(to, Camel2Case(c.Name)+".go")
 	if _, err := os.Stat(name); !os.IsNotExist(err) {
 		return fmt.Errorf("%s already exists", c.Name)
 	}
 	return ioutil.WriteFile(name, body, 0644)
-}
-
-// 首字母小写
-func Lcfirst(str string) string {
-	for i, v := range str {
-		return string(unicode.ToLower(v)) + str[i+1:]
-	}
-	return ""
 }
