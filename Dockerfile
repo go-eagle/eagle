@@ -13,7 +13,8 @@ ENV GO111MODULE=on \
     GOOS=linux \
     GOARCH=amd64 \
     GOPROXY="https://goproxy.cn,direct" \
-    TZ=Asia/Shanghai
+    TZ=Asia/Shanghai \
+    APP_ENV=docer
 
 # 移动到工作目录
 WORKDIR /go/src/github.com/go-eagle/eagle

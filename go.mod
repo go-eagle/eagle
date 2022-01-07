@@ -34,6 +34,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-test/deep v1.0.6
+	github.com/golang/protobuf v1.5.2
 	github.com/golang/snappy v0.0.2
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/sessions v1.2.1

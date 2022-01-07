@@ -44,4 +44,4 @@ vendor
 
 # custom
 eagle
-config/config.yaml
+config/local/config.yaml
