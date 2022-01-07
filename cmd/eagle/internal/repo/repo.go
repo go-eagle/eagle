@@ -34,7 +34,7 @@ func (r *Repo) Generate() error {
 			return err
 		}
 	}
-	name := path.Join(to, utils.Camel2Case(r.Name)+".go")
+	name := path.Join(to, utils.Camel2Case(r.Name)+"_repo.go")
 	if _, err := os.Stat(name); !os.IsNotExist(err) {
 		return fmt.Errorf("%s already exists", r.Name)
 	}
