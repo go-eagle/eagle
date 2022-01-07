@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+
+	"github.com/go-eagle/eagle/cmd/eagle/internal/utils"
 )
 
 // Cache is a cache generator.
@@ -32,7 +34,7 @@ func (c *Cache) Generate() error {
 			return err
 		}
 	}
-	name := path.Join(to, Camel2Case(c.Name)+".go")
+	name := path.Join(to, utils.Camel2Case(c.Name)+".go")
 	if _, err := os.Stat(name); !os.IsNotExist(err) {
 		return fmt.Errorf("%s already exists", c.Name)
 	}
