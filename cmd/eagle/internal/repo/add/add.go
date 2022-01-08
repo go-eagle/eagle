@@ -1,4 +1,4 @@
-package repo
+package add
 
 import (
 	"fmt"
@@ -8,11 +8,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// CmdRepo represents the new command.
-var CmdRepo = &cobra.Command{
-	Use:   "repo",
-	Short: "Create a repo by template",
-	Long:  "Create a repo using the repo template. Example: eagle repo UserCache",
+// CmdAdd represents the new command.
+var CmdAdd = &cobra.Command{
+	Use:   "add",
+	Short: "Create a repo file by template",
+	Long:  "Create a repo file using the repo template. Example: eagle repo add UserCache",
 	Run:   run,
 }
 
@@ -21,7 +21,7 @@ var (
 )
 
 func init() {
-	CmdRepo.Flags().StringVarP(&targetDir, "-target-dir", "t", "internal/repository", "generate target directory")
+	CmdAdd.Flags().StringVarP(&targetDir, "-target-dir", "t", "internal/repository", "generate target directory")
 }
 
 func run(cmd *cobra.Command, args []string) {

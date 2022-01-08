@@ -1,42 +1,21 @@
 package cache
 
 import (
-	"fmt"
-	"io/ioutil"
-	"os"
-	"path"
-
-	"github.com/go-eagle/eagle/cmd/eagle/internal/utils"
+	"github.com/go-eagle/eagle/cmd/eagle/internal/cache/add"
+	"github.com/spf13/cobra"
 )
 
-// Cache is a cache generator.
-type Cache struct {
-	Name    string
-	Path    string
-	Service string
-	Package string
-	ModName string
+// CmdProto represents the proto command.
+var CmdCache = &cobra.Command{
+	Use:   "cache",
+	Short: "Generate the cache file",
+	Long:  "Generate the cache file.",
+	Run:   run,
 }
 
-// Generate generate a cache template.
-func (c *Cache) Generate() error {
-	body, err := c.execute()
-	if err != nil {
-		return err
-	}
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	to := path.Join(wd, c.Path)
-	if _, err := os.Stat(to); os.IsNotExist(err) {
-		if err := os.MkdirAll(to, 0700); err != nil {
-			return err
-		}
-	}
-	name := path.Join(to, utils.Camel2Case(c.Name)+".go")
-	if _, err := os.Stat(name); !os.IsNotExist(err) {
-		return fmt.Errorf("%s already exists", c.Name)
-	}
-	return ioutil.WriteFile(name, body, 0644)
+func init() {
+	CmdCache.AddCommand(add.CmdAdd)
+}
+
+func run(cmd *cobra.Command, args []string) {
 }

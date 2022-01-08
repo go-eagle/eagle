@@ -1,4 +1,4 @@
-package cache
+package add
 
 import (
 	"fmt"
@@ -9,10 +9,10 @@ import (
 )
 
 // CmdCache represents the new command.
-var CmdCache = &cobra.Command{
-	Use:   "cache",
-	Short: "Create a cache by template",
-	Long:  "Create a cache using the cache template. Example: eagle cache UserCache",
+var CmdAdd = &cobra.Command{
+	Use:   "add",
+	Short: "Create a cache file by template",
+	Long:  "Create a cache file using the cache template. Example: eagle cache add UserCache",
 	Run:   run,
 }
 
@@ -21,7 +21,7 @@ var (
 )
 
 func init() {
-	CmdCache.Flags().StringVarP(&targetDir, "-target-dir", "t", "internal/cache", "generate target directory")
+	CmdAdd.Flags().StringVarP(&targetDir, "-target-dir", "t", "internal/cache", "generate target directory")
 }
 
 func run(cmd *cobra.Command, args []string) {

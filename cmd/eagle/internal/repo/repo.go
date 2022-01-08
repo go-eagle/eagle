@@ -1,42 +1,22 @@
 package repo
 
 import (
-	"fmt"
-	"io/ioutil"
-	"os"
-	"path"
+	"github.com/spf13/cobra"
 
-	"github.com/go-eagle/eagle/cmd/eagle/internal/utils"
+	"github.com/go-eagle/eagle/cmd/eagle/internal/repo/add"
 )
 
-// Repo is a cache generator.
-type Repo struct {
-	Name    string
-	Path    string
-	Service string
-	Package string
-	ModName string
+// CmdProto represents the proto command.
+var CmdRepo = &cobra.Command{
+	Use:   "repo",
+	Short: "Generate the repo file",
+	Long:  "Generate the repo file.",
+	Run:   run,
 }
 
-// Generate generate a cache template.
-func (r *Repo) Generate() error {
-	body, err := r.execute()
-	if err != nil {
-		return err
-	}
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	to := path.Join(wd, r.Path)
-	if _, err := os.Stat(to); os.IsNotExist(err) {
-		if err := os.MkdirAll(to, 0700); err != nil {
-			return err
-		}
-	}
-	name := path.Join(to, utils.Camel2Case(r.Name)+"_repo.go")
-	if _, err := os.Stat(name); !os.IsNotExist(err) {
-		return fmt.Errorf("%s already exists", r.Name)
-	}
-	return ioutil.WriteFile(name, body, 0644)
+func init() {
+	CmdRepo.AddCommand(add.CmdAdd)
+}
+
+func run(cmd *cobra.Command, args []string) {
 }

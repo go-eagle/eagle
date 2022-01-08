@@ -1,4 +1,4 @@
-package cache
+package add
 
 import (
 	"bytes"
@@ -15,10 +15,12 @@ import (
 	"fmt"
 	"time"
 
-	"{{.ModName}}/internal/model"
 	"github.com/go-eagle/eagle/pkg/cache"
+	"github.com/go-eagle/eagle/pkg/encoding"
 	"github.com/go-eagle/eagle/pkg/log"
 	"github.com/go-eagle/eagle/pkg/redis"
+
+	"{{.ModName}}/internal/model"
 )
 
 const (
@@ -28,15 +30,15 @@ const (
 
 // {{.Name}}Cache define a cache struct
 type {{.Name}}Cache struct {
-	cache cache.Driver
+	cache cache.Cache
 }
 
 // New{{.Name}} new a cache
 func New{{.Name}}() *Cache {
-	encoding := cache.JSONEncoding{}
+	jsonEncoding := encoding.JSONEncoding{}
 	cachePrefix := ""
 	return &Cache{
-		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, encoding, func() interface{} {
+		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, jsonEncoding, func() interface{} {
 			return &model.{{.Name}}Model{}
 		}),
 	}
