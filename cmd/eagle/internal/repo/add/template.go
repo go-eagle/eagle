@@ -20,7 +20,7 @@ import (
 )
 
 var (
-	_tableName           = (&model.{{.Name}}Model{}).TableName()
+	_table{{.Name}}Name   = (&model.{{.Name}}Model{}).TableName()
 	_get{{.Name}}SQL      = "SELECT * FROM %s WHERE id = ?"
 	_batchGet{{.Name}}SQL = "SELECT * FROM %s WHERE id IN (?)"
 )
@@ -51,7 +51,7 @@ func (r *repository) Update{{.Name}}(ctx context.Context, id int64, data *model.
 // Get{{.Name}} get a record
 func (r *repository) Get{{.Name}}(ctx context.Context, id int64) (ret *model.{{.Name}}Model, err error) {
 	item := new(model.{{.Name}}Model)
-	err = r.db.WithContext(ctx).Raw(fmt.Sprintf(_get{{.Name}}SQL, _tableName), id).Scan(&item).Error
+	err = r.db.WithContext(ctx).Raw(fmt.Sprintf(_get{{.Name}}SQL, _table{{.Name}}Name), id).Scan(&item).Error
 	if err != nil {
 		return
 	}
@@ -61,7 +61,7 @@ func (r *repository) Get{{.Name}}(ctx context.Context, id int64) (ret *model.{{.
 // BatchGet{{.Name}} batch get items
 func (r *repository) BatchGet{{.Name}}(ctx context.Context, ids int64) (ret []*model.{{.Name}}Model, err error) {
 	items := make([]*model.{{.Name}}Model, 0)
-	err = r.db.WithContext(ctx).Raw(fmt.Sprintf(_batchGet{{.Name}}SQL, _tableName), ids).Scan(&items).Error
+	err = r.db.WithContext(ctx).Raw(fmt.Sprintf(_batchGet{{.Name}}SQL, _table{{.Name}}Name), ids).Scan(&items).Error
 	if err != nil {
 		return
 	}

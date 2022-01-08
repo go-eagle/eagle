@@ -33,11 +33,11 @@ type {{.Name}}Cache struct {
 	cache cache.Cache
 }
 
-// New{{.Name}} new a cache
-func New{{.Name}}() *Cache {
+// New{{.Name}}Cache new a cache
+func New{{.Name}}Cache() *{{.Name}}Cache {
 	jsonEncoding := encoding.JSONEncoding{}
 	cachePrefix := ""
-	return &Cache{
+	return &{{.Name}}Cache{
 		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, jsonEncoding, func() interface{} {
 			return &model.{{.Name}}Model{}
 		}),
@@ -55,7 +55,7 @@ func (c *{{.Name}}Cache) Set{{.Name}}Cache(ctx context.Context, id int64, data *
 		return nil
 	}
 	cacheKey := c.Get{{.Name}}CacheKey(id)
-	err := c.cache.Set(cacheKey, data, duration)
+	err := c.cache.Set(ctx, cacheKey, data, duration)
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func (c *{{.Name}}Cache) Set{{.Name}}Cache(ctx context.Context, id int64, data *
 // Get{{.Name}}Cache 获取cache
 func (c *{{.Name}}Cache) Get{{.Name}}Cache(ctx context.Context, id int64) (data *model.{{.Name}}Model, err error) {
 	cacheKey := c.Get{{.Name}}CacheKey(id)
-	err = c.cache.Get(cacheKey, &data)
+	err = c.cache.Get(ctx, cacheKey, &data)
 	if err != nil {
 		log.WithContext(ctx).Warnf("get err from redis, err: %+v", err)
 		return nil, err
@@ -83,7 +83,7 @@ func (c *{{.Name}}Cache) MultiGet{{.Name}}Cache(ctx context.Context, ids []int64
 
 	// NOTE: 需要在这里make实例化，如果在返回参数里直接定义会报 nil map
 	retMap := make(map[string]*model.{{.Name}}Model)
-	err := c.cache.MultiGet(keys, retMap)
+	err := c.cache.MultiGet(ctx, keys, retMap)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (c *{{.Name}}Cache) MultiGet{{.Name}}Cache(ctx context.Context, ids []int64
 // Del{{.Name}}Cache 删除cache
 func (c *{{.Name}}Cache) Del{{.Name}}Cache(ctx context.Context, id int64) error {
 	cacheKey := c.Get{{.Name}}CacheKey(id)
-	err := c.cache.Del(cacheKey)
+	err := c.cache.Del(ctx, cacheKey)
 	if err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func (c *{{.Name}}Cache) Del{{.Name}}Cache(ctx context.Context, id int64) error 
 // Del{{.Name}}Cache set empty cache
 func (c *{{.Name}}Cache) SetCacheWithNotFound(ctx context.Context, id int64) error {
 	cacheKey := c.Get{{.Name}}CacheKey(id)
-	err := c.cache.SetCacheWithNotFound(cacheKey)
+	err := c.cache.SetCacheWithNotFound(ctx, cacheKey)
 	if err != nil {
 		return err
 	}
