@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/go-eagle/eagle/cmd/eagle/internal/service"
 	"log"
 
 	"github.com/spf13/cobra"
@@ -15,7 +16,7 @@ import (
 
 var (
 	// Version is the version of the compiled software.
-	Version = "v0.7.3"
+	Version = "v0.8.0"
 
 	rootCmd = &cobra.Command{
 		Use:     "eagle",
@@ -30,6 +31,7 @@ func init() {
 	rootCmd.AddCommand(run.CmdRun)
 	rootCmd.AddCommand(cache.CmdCache)
 	rootCmd.AddCommand(repo.CmdRepo)
+	rootCmd.AddCommand(service.CmdService)
 	rootCmd.AddCommand(proto.CmdProto)
 	rootCmd.AddCommand(upgrade.CmdUpgrade)
 }
