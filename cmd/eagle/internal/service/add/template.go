@@ -27,7 +27,7 @@ type {{.LcName}}Service struct {
 
 var _ {{.Name}}Service = (*{{.LcName}}Service)(nil)
 
-func new{{.Name}}(svc *service) *{{.LcName}}Service {
+func new{{.Name}}Service(svc *service) *{{.LcName}}Service {
 	return &{{.LcName}}Service{repo: svc.repo}
 }
 
