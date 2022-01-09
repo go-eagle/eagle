@@ -18,7 +18,7 @@ type Repo struct {
 	ModName string
 }
 
-// Generate generate a cache template.
+// Generate generate a repo template.
 func (r *Repo) Generate() error {
 	body, err := r.execute()
 	if err != nil {

@@ -26,7 +26,7 @@ func init() {
 
 func run(cmd *cobra.Command, args []string) {
 	if len(args) == 0 {
-		fmt.Println("Please enter the cache filename")
+		fmt.Println("Please enter the repo filename")
 		return
 	}
 	// eg: eagle cache UserCache
