@@ -14,10 +14,10 @@ ENV GO111MODULE=on \
     GOARCH=amd64 \
     GOPROXY="https://goproxy.cn,direct" \
     TZ=Asia/Shanghai \
-    APP_ENV=docer
+    APP_ENV=docker
 
 # 移动到工作目录
-WORKDIR /go/src/github.com/go-eagle/eagle
+WORKDIR /go/src/eagle
 
 # 复制项目中的 go.mod 和 go.sum文件并下载依赖信息
 COPY go.mod .
@@ -35,11 +35,11 @@ RUN make build
 # Final stage
 FROM debian:stretch-slim
 
-WORKDIR /app
+WORKDIR /bin
 
 # 从builder镜像中把 /build 拷贝到当前目录
-COPY --from=builder /go/src/github.com/go-eagle/eagle/eagle    /app/eagle
-COPY --from=builder /go/src/github.com/go-eagle/eagle/config   /app/config
+COPY --from=builder /go/src/eagle    /bin/eagle
+COPY --from=builder /go/src/config   /bin/config
 
 RUN mkdir -p /data/logs/
 
@@ -47,7 +47,7 @@ RUN mkdir -p /data/logs/
 EXPOSE 8080
 
 # 需要运行的命令
-CMD ["/app/eagle", "-c", "config"]
+CMD ["/bin/eagle", "-c", "config"]
 
 # 1. build image: docker build -t eagle:v1 -f Dockerfile .
 # 2. start: docker run --rm -it -p 8080:8080 eagle:v1
