@@ -1,5 +1,10 @@
 ## Changelog
 
+## v1.5.0
+- add: cache, repo, service cmd
+- add: grpc error
+- optimize: proto cmd
+
 ## v1.4.0
 - 新增 run,proto,protoc-gen-go-gin 命令工具
 - 新增 服务注册
