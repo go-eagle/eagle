@@ -56,7 +56,6 @@ require (
 	github.com/prometheus/client_golang v1.11.0
 	github.com/qiniu/api.v7 v0.0.0-20190520053455-bea02cd22bf4
 	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a // indirect
-	github.com/robfig/cron/v3 v3.0.1
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/afero v1.8.0 // indirect
 	github.com/spf13/cast v1.4.1
@@ -91,7 +90,7 @@ require (
 	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
 	golang.org/x/tools v0.1.8 // indirect
 	google.golang.org/genproto v0.0.0-20220107163113-42d7afdf6368 // indirect
-	google.golang.org/grpc v1.42.0
+	google.golang.org/grpc v1.43.0
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
