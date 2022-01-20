@@ -12,6 +12,7 @@ import (
 	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
+	_ "google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/health"
 	healthPb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
@@ -114,7 +115,6 @@ func NewServer(opts ...ServerOption) *Server {
 	}
 
 	grpcOpts := []grpc.ServerOption{
-		grpc.CustomCodec(&codec{}),
 		grpc.ChainUnaryInterceptor(chainUnaryInterceptors...),
 		grpc.ChainStreamInterceptor(chainStreamInterceptors...),
 	}
