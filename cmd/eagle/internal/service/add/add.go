@@ -1,4 +1,4 @@
-package repo
+package add
 
 import (
 	"fmt"
@@ -8,11 +8,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// CmdRepo represents the new command.
-var CmdRepo = &cobra.Command{
-	Use:   "repo",
-	Short: "Create a repo by template",
-	Long:  "Create a repo using the repo template. Example: eagle repo UserCache",
+// CmdAdd represents the new command.
+var CmdAdd = &cobra.Command{
+	Use:   "add",
+	Short: "Create a svc file by template",
+	Long:  "Create a svc file using the svc template. Example: eagle svc add UserCache",
 	Run:   run,
 }
 
@@ -21,7 +21,7 @@ var (
 )
 
 func init() {
-	CmdRepo.Flags().StringVarP(&targetDir, "-target-dir", "t", "internal/repository", "generate target directory")
+	CmdAdd.Flags().StringVarP(&targetDir, "-target-dir", "t", "internal/service", "generate target directory")
 }
 
 func run(cmd *cobra.Command, args []string) {
@@ -29,11 +29,12 @@ func run(cmd *cobra.Command, args []string) {
 		fmt.Println("Please enter the cache filename")
 		return
 	}
-	// eg: eagle cache UserCache
+	// eg: eagle service add User
 	filename := args[0]
 
-	c := &Repo{
+	c := &Service{
 		Name:    utils.Ucfirst(filename), // 首字母大写
+		LcName:  utils.Lcfirst(filename),
 		Path:    targetDir,
 		ModName: utils.ModName(),
 	}
