@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/balancer/roundrobin"
 	grpcInsecure "google.golang.org/grpc/credentials/insecure"
 )
 
@@ -62,7 +63,7 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 	// default client options
 	options := clientOptions{
 		timeout:      2000 * time.Millisecond,
-		balancerName: "round_robin",
+		balancerName: roundrobin.Name,
 	}
 	for _, opt := range opts {
 		opt(&options)
