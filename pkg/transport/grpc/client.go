@@ -10,46 +10,6 @@ import (
 	grpcInsecure "google.golang.org/grpc/credentials/insecure"
 )
 
-// ClientOption is a gRPC client option.
-type ClientOption func(o *clientOptions)
-
-// WithEndpoint with a endpoint.
-func WithEndpoint(endpoint string) ClientOption {
-	return func(o *clientOptions) {
-		o.endpoint = endpoint
-	}
-}
-
-// WithTimeout with a client timeout.
-func WithTimeout(timeout time.Duration) ClientOption {
-	return func(o *clientOptions) {
-		o.timeout = timeout
-	}
-}
-
-// WithUnaryInterceptor with unary client interceptor.
-func WithUnaryInterceptor(inter ...grpc.UnaryClientInterceptor) ClientOption {
-	return func(o *clientOptions) {
-		o.inters = inter
-	}
-}
-
-// WithOptions with gRPC dial option.
-func WithOptions(opts ...grpc.DialOption) ClientOption {
-	return func(o *clientOptions) {
-		o.dialOpts = opts
-	}
-}
-
-// clientOptions define gRPc client options.
-type clientOptions struct {
-	endpoint     string
-	timeout      time.Duration
-	inters       []grpc.UnaryClientInterceptor
-	dialOpts     []grpc.DialOption
-	balancerName string
-}
-
 // Dial
 func Dial(ctx context.Context, opts ...ClientOption) (*grpc.ClientConn, error) {
 	return dial(ctx, false, opts...)
