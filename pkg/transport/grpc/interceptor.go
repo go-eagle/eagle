@@ -11,7 +11,7 @@ var (
 	MetadataClientAPIVersionKey = "client-api-version"
 )
 
-func newUnaryInterceptor(s *Server) grpc.UnaryServerInterceptor {
+func unaryServerInterceptor(s *Server) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		md, ok := metadata.FromIncomingContext(ctx)
 		if ok {

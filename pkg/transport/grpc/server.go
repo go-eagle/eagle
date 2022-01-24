@@ -94,7 +94,7 @@ func NewServer(opts ...ServerOption) *Server {
 	}
 	// Unary
 	chainUnaryInterceptors := []grpc.UnaryServerInterceptor{
-		newUnaryInterceptor(srv),
+		unaryServerInterceptor(srv),
 		grpcPrometheus.UnaryServerInterceptor,
 		grpcRecovery.UnaryServerInterceptor(),
 	}
