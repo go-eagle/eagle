@@ -5,7 +5,7 @@ import (
 	"github.com/qiniu/api.v7/auth"
 	"github.com/qiniu/api.v7/sms"
 
-	"github.com/go-eagle/eagle/internal/dao"
+	"github.com/go-eagle/eagle/internal/repository"
 )
 
 // SMSService define interface func
@@ -14,13 +14,13 @@ type SMSService interface {
 }
 
 type smsService struct {
-	dao *dao.Dao
+	repo repository.Repository
 }
 
 var _ SMSService = (*smsService)(nil)
 
 func newSMS(svc *service) *smsService {
-	return &smsService{dao: svc.dao}
+	return &smsService{repo: svc.repo}
 }
 
 // Send 发送短信

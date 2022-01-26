@@ -8,6 +8,7 @@ import (
 var serviceTemplate = `
 {{- /* delete empty line */ -}}
 package service
+
 import (
 	{{- if .UseContext }}
 	"context"
@@ -15,26 +16,35 @@ import (
 	{{- if .UseIO }}
 	"io"
 	{{- end }}
+
 	pb "{{ .Package }}"
 	{{- if .GoogleEmpty }}
 	"google.golang.org/protobuf/types/known/emptypb"
 	{{- end }}
 )
-type {{ .Service }}Service struct {
+
+var (
+	_ pb.{{ .Service }}Server = (*{{ .Service }}Server)(nil)
+)
+
+type {{ .Service }}Server struct {
 	pb.Unimplemented{{ .Service }}Server
 }
-func New{{ .Service }}Service() *{{ .Service }}Service {
-	return &{{ .Service }}Service{}
+
+func New{{ .Service }}Server() *{{ .Service }}Server {
+	return &{{ .Service }}Server{}
 }
+
 {{- $s1 := "google.protobuf.Empty" }}
 {{ range .Methods }}
 {{- if eq .Type 1 }}
-func (s *{{ .Service }}Service) {{ .Name }}(ctx context.Context, req {{ if eq .Request $s1 }}*emptypb.Empty
+func (s *{{ .Service }}Server) {{ .Name }}(ctx context.Context, req {{ if eq .Request $s1 }}*emptypb.Empty
 {{ else }}*pb.{{ .Request }}{{ end }}) ({{ if eq .Reply $s1 }}*emptypb.Empty{{ else }}*pb.{{ .Reply }}{{ end }}, error) {
 	return {{ if eq .Reply $s1 }}&emptypb.Empty{}{{ else }}&pb.{{ .Reply }}{}{{ end }}, nil
 }
+
 {{- else if eq .Type 2 }}
-func (s *{{ .Service }}Service) {{ .Name }}(conn pb.{{ .Service }}_{{ .Name }}Server) error {
+func (s *{{ .Service }}Server) {{ .Name }}(conn pb.{{ .Service }}_{{ .Name }}Server) error {
 	for {
 		req, err := conn.Recv()
 		if err == io.EOF {
@@ -50,8 +60,9 @@ func (s *{{ .Service }}Service) {{ .Name }}(conn pb.{{ .Service }}_{{ .Name }}Se
 		}
 	}
 }
+
 {{- else if eq .Type 3 }}
-func (s *{{ .Service }}Service) {{ .Name }}(conn pb.{{ .Service }}_{{ .Name }}Server) error {
+func (s *{{ .Service }}Server) {{ .Name }}(conn pb.{{ .Service }}_{{ .Name }}Server) error {
 	for {
 		req, err := conn.Recv()
 		if err == io.EOF {
@@ -62,8 +73,9 @@ func (s *{{ .Service }}Service) {{ .Name }}(conn pb.{{ .Service }}_{{ .Name }}Se
 		}
 	}
 }
+
 {{- else if eq .Type 4 }}
-func (s *{{ .Service }}Service) {{ .Name }}(req {{ if eq .Request $s1 }}*emptypb.Empty
+func (s *{{ .Service }}Server) {{ .Name }}(req {{ if eq .Request $s1 }}*emptypb.Empty
 {{ else }}*pb.{{ .Request }}{{ end }}, conn pb.{{ .Service }}_{{ .Name }}Server) error {
 	for {
 		err := conn.Send(&pb.{{ .Reply }}{})

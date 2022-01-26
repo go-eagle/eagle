@@ -7,6 +7,8 @@ import (
 	"os"
 
 	"github.com/Shopify/sarama"
+
+	logger "github.com/go-eagle/eagle/pkg/log"
 )
 
 // Consumer kafka consumer
@@ -14,11 +16,15 @@ type Consumer struct {
 	group   sarama.ConsumerGroup
 	topics  []string
 	groupID string
+	handler sarama.ConsumerGroupHandler
+
+	ctx    context.Context
+	cancel context.CancelFunc
 }
 
 // NewConsumer create a consumer
 // nolint
-func NewConsumer(config *sarama.Config, logger *log.Logger, topic string, groupID string, brokers []string) *Consumer {
+func NewConsumer(config *sarama.Config, logger *log.Logger, topic string, groupID string, brokers []string, handler *ConsumerGroupHandler) *Consumer {
 	// Init config, specify appropriate versio
 	sarama.Logger = log.New(os.Stderr, "[sarama_logger]", log.LstdFlags)
 	sarama.Logger = logger
@@ -36,17 +42,19 @@ func NewConsumer(config *sarama.Config, logger *log.Logger, topic string, groupI
 		panic(err)
 	}
 
-	log.Println("Consumer up and running")
-
+	ctx, cancel := context.WithCancel(context.Background())
 	return &Consumer{
 		group:   group,
 		topics:  []string{topic},
 		groupID: groupID,
+		handler: handler,
+		ctx:     ctx,
+		cancel:  cancel,
 	}
 }
 
 // Consume consume data
-func (c Consumer) Consume() {
+func (c *Consumer) Consume() {
 	// Track errors
 	go func() {
 		for err := range c.group.Errors() {
@@ -57,16 +65,20 @@ func (c Consumer) Consume() {
 	// Iterate over consumer sessions.
 	ctx := context.Background()
 	for {
-		handler := ConsumerGroupHandler{}
-
-		err := c.group.Consume(ctx, c.topics, handler)
-		if err != nil {
-			panic(err)
+		select {
+		case <-c.ctx.Done():
+			_ = c.group.Close()
+			logger.Info("[Kafka] Consume ctx done")
+			return
+		default:
+			if err := c.group.Consume(ctx, c.topics, c.handler); err != nil {
+				logger.Errorf("[Kafka] Consume err: %s", err.Error())
+			}
 		}
 	}
 }
 
-// CloseConnection close conn
-func (c Consumer) CloseConnection() {
-	_ = c.group.Close()
+// Stop close conn
+func (c Consumer) Stop() {
+	c.cancel()
 }

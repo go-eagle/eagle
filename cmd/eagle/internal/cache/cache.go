@@ -1,48 +1,21 @@
 package cache
 
 import (
-	"fmt"
-	"io/ioutil"
-	"os"
-	"path"
-	"unicode"
+	"github.com/go-eagle/eagle/cmd/eagle/internal/cache/add"
+	"github.com/spf13/cobra"
 )
 
-// Cache is a cache generator.
-type Cache struct {
-	Name    string
-	Path    string
-	Service string
-	Package string
+// CmdProto represents the proto command.
+var CmdCache = &cobra.Command{
+	Use:   "cache",
+	Short: "Generate the cache file",
+	Long:  "Generate the cache file.",
+	Run:   run,
 }
 
-// Generate generate a cache template.
-func (c *Cache) Generate() error {
-	body, err := c.execute()
-	if err != nil {
-		return err
-	}
-	wd, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	to := path.Join(wd, c.Path)
-	if _, err := os.Stat(to); os.IsNotExist(err) {
-		if err := os.MkdirAll(to, 0700); err != nil {
-			return err
-		}
-	}
-	name := path.Join(to, Lcfirst(c.Name))
-	if _, err := os.Stat(name); !os.IsNotExist(err) {
-		return fmt.Errorf("%s already exists", c.Name)
-	}
-	return ioutil.WriteFile(name, body, 0644)
+func init() {
+	CmdCache.AddCommand(add.CmdAdd)
 }
 
-// 首字母小写
-func Lcfirst(str string) string {
-	for i, v := range str {
-		return string(unicode.ToLower(v)) + str[i+1:]
-	}
-	return ""
+func run(cmd *cobra.Command, args []string) {
 }

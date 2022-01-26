@@ -17,12 +17,31 @@ service Greeter {
 
 // The request message containing the user's name.
 message HelloRequest {
+  // 字段定义，如果使用 form 表单传输，则只支持
+  // int32, int64, uint32, unint64, double, float, bool, string,
+  // 以及对应的 repeated 类型，不支持 map 和 message 类型！
+  // 框架会自动解析并转换参数类型
+  // 如果用 json 或 protobuf 传输则没有限制
   string name = 1;
 }
 
 // The response message containing the greetings
 message HelloReply {
   string message = 1;
+}
+
+// 出参定义, 理论上可以输出任意消息
+// 但我们约定只能包含 code, msg, data 三个字段，
+// 其中 data 需要定义成 message
+// 开源版本可以怱略这一约定
+message HelloResponse {
+  // 业务错误码[机读]，必须大于零
+  // 小于零的主站框架在用，注意避让。
+  int32 code = 1;
+  // 业务错误信息[人读]
+  string msg = 2;
+  // 业务数据对象
+  HelloReply data = 3;
 }
 ```
 
@@ -103,3 +122,5 @@ Greeting : "Hello eagle"
 - https://godoc.org/google.golang.org/genproto/googleapis/rpc/errdetails
 - https://cloud.google.com/apis/design/errors
 - https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+- https://eddycjy.com/posts/where-is-proto/
+- https://stackoverflow.com/questions/52969205/how-to-assert-grpc-error-codes-client-side-in-go

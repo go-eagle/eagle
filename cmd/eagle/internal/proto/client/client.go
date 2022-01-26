@@ -39,7 +39,7 @@ func run(cmd *cobra.Command, args []string) {
 		err   error
 		proto = strings.TrimSpace(args[0])
 	)
-	if err = look("protoc-gen-go", "protoc-gen-go-grpc"); err != nil {
+	if err = look("protoc-gen-go", "protoc-gen-go-grpc", "protoc-gen-go-gin", "protoc-gen-validate", "protoc-gen-openapi"); err != nil {
 		// update all plugins
 		cmd := exec.Command("eagle", "upgrade")
 		cmd.Stdout = os.Stdout
@@ -96,6 +96,7 @@ func generate(proto string, args []string) error {
 		"--proto_path=" + filepath.Join(base.EagleMod(), "third_party"),
 		"--go_out=paths=source_relative:.",
 		"--go-grpc_out=paths=source_relative:.",
+		"--openapi_out=paths=source_relative:.",
 	}
 	input = append(input, inputExt...)
 	protoBytes, err := os.ReadFile(proto)

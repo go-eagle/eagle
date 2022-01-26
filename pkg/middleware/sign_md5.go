@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-eagle/eagle/pkg/app"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 
-	"github.com/go-eagle/eagle/api"
 	"github.com/go-eagle/eagle/pkg/errcode"
 	"github.com/go-eagle/eagle/pkg/sign"
 )
@@ -16,14 +17,15 @@ import (
 func SignMd5Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		sn, err := verifySign(c)
+		response := app.NewResponse()
 		if err != nil {
-			api.SendResponse(c, errcode.ErrInternalServer, nil)
+			response.Error(c, errcode.ErrInternalServer)
 			c.Abort()
 			return
 		}
 
 		if sn != nil {
-			api.SendResponse(c, errcode.ErrSignParam, sn)
+			response.Error(c, errcode.ErrSignParam)
 			c.Abort()
 			return
 		}

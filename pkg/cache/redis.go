@@ -83,6 +83,9 @@ func (c *redisCache) MultiSet(ctx context.Context, valueMap map[string]interface
 	if len(valueMap) == 0 {
 		return nil
 	}
+	if expiration == 0 {
+		expiration = DefaultExpireTime
+	}
 	// key-value是成对的，所以这里的容量是map的2倍
 	paris := make([]interface{}, 0, 2*len(valueMap))
 	for key, value := range valueMap {
@@ -96,26 +99,25 @@ func (c *redisCache) MultiSet(ctx context.Context, valueMap map[string]interface
 			log.Warnf("build cache key err: %+v, key is %+v", err, key)
 			continue
 		}
-		if expiration == 0 {
-			expiration = DefaultExpireTime
-		}
 		paris = append(paris, []byte(cacheKey))
 		paris = append(paris, buf)
 	}
-	if expiration == 0 {
-		expiration = DefaultExpireTime
-	}
-	err := c.client.MSet(ctx, paris...).Err()
+	pipeline := c.client.Pipeline()
+	err := pipeline.MSet(ctx, paris...).Err()
 	if err != nil {
 		return errors.Wrapf(err, "redis multi set error")
 	}
 	for i := 0; i < len(paris); i = i + 2 {
 		switch paris[i].(type) {
 		case []byte:
-			c.client.Expire(ctx, string(paris[i].([]byte)), expiration)
+			pipeline.Expire(ctx, string(paris[i].([]byte)), expiration)
 		default:
 			log.Warnf("redis expire is unsupported key type: %+v", reflect.TypeOf(paris[i]))
 		}
+	}
+	_, err = pipeline.Exec(ctx)
+	if err != nil {
+		return errors.Wrapf(err, "redis multi set pipeline exec error")
 	}
 	return nil
 }

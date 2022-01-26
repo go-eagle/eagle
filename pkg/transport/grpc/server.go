@@ -12,12 +12,51 @@ import (
 	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
+	_ "google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/health"
 	healthPb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 
 	"github.com/go-eagle/eagle/pkg/utils"
 )
+
+// ServerOption is gRPC server option.
+type ServerOption func(o *Server)
+
+// Network with server network.
+func Network(network string) ServerOption {
+	return func(s *Server) {
+		s.network = network
+	}
+}
+
+// Address with server address.
+func Address(addr string) ServerOption {
+	return func(s *Server) {
+		s.address = addr
+	}
+}
+
+// Timeout with server timeout.
+func Timeout(timeout time.Duration) ServerOption {
+	return func(s *Server) {
+		s.timeout = timeout
+	}
+}
+
+// UnaryInterceptor returns a ServerOption that sets the UnaryServerInterceptor for the server.
+func UnaryInterceptor(in ...grpc.UnaryServerInterceptor) ServerOption {
+	return func(s *Server) {
+		s.inters = in
+	}
+}
+
+// Options with grpc options.
+func Options(opts ...grpc.ServerOption) ServerOption {
+	return func(s *Server) {
+		s.grpcOpts = opts
+	}
+}
 
 // Server is a gRPC server wrapper.
 // nolint
@@ -55,6 +94,7 @@ func NewServer(opts ...ServerOption) *Server {
 	}
 	// Unary
 	chainUnaryInterceptors := []grpc.UnaryServerInterceptor{
+		unaryServerInterceptor(srv),
 		grpcPrometheus.UnaryServerInterceptor,
 		grpcRecovery.UnaryServerInterceptor(),
 	}
