@@ -13,6 +13,8 @@ type clientOptions struct {
 	inters       []grpc.UnaryClientInterceptor
 	dialOpts     []grpc.DialOption
 	balancerName string
+	enableGzip   bool
+	enableMetric bool
 }
 
 // ClientOption is a gRPC client option.

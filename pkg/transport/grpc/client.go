@@ -2,12 +2,17 @@ package grpc
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"time"
 
+	"google.golang.org/grpc/credentials"
+
+	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/balancer/roundrobin"
 	grpcInsecure "google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/encoding/gzip"
 )
 
 // Dial
@@ -47,6 +52,21 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 	}
 	if insecure {
 		dialOpts = append(dialOpts, grpc.WithTransportCredentials(grpcInsecure.NewCredentials()))
+	} else {
+		tlsConfig := &tls.Config{
+			InsecureSkipVerify: true,
+		}
+		cred := credentials.NewTLS(tlsConfig)
+		dialOpts = append(dialOpts, grpc.WithTransportCredentials(cred))
+	}
+	if options.enableGzip {
+		dialOpts = append(dialOpts, grpc.WithDefaultCallOptions(grpc.UseCompressor(gzip.Name)))
+	}
+	if options.enableMetric {
+		dialOpts = append(dialOpts,
+			grpc.WithChainUnaryInterceptor(grpcPrometheus.UnaryClientInterceptor),
+			grpc.WithChainStreamInterceptor(grpcPrometheus.StreamClientInterceptor),
+		)
 	}
 
 	return grpc.DialContext(ctx, options.endpoint, dialOpts...)
