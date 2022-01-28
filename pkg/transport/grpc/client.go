@@ -31,7 +31,7 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 
 	// merge inters
 	inters := []grpc.UnaryClientInterceptor{
-		// here add default unary client interceptor
+		unaryClientInterceptor(),
 	}
 	if len(options.inters) > 0 {
 		inters = append(inters, options.inters...)
