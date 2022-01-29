@@ -124,9 +124,11 @@ func NewServer(opts ...ServerOption) *Server {
 
 	grpcServer := grpc.NewServer(grpcOpts...)
 
+	// health check
 	// see https://github.com/grpc/grpc/blob/master/doc/health-checking.md for more
-	srv.health.SetServingStatus("", healthPb.HealthCheckResponse_SERVING)
 	healthPb.RegisterHealthServer(grpcServer, srv.health)
+
+	// register reflection
 	reflection.Register(grpcServer)
 
 	// set zero values for metrics registered for this grpc server
