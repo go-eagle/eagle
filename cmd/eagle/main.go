@@ -17,7 +17,7 @@ import (
 
 var (
 	// Version is the version of the compiled software.
-	Version = "v0.8.2"
+	Version = "v0.8.3"
 
 	rootCmd = &cobra.Command{
 		Use:     "eagle",
