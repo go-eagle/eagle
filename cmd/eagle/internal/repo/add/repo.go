@@ -11,11 +11,13 @@ import (
 
 // Repo is a cache generator.
 type Repo struct {
-	Name    string
-	Path    string
-	Service string
-	Package string
-	ModName string
+	Name      string
+	LcName    string
+	Path      string
+	Service   string
+	Package   string
+	ModName   string
+	WithCache bool
 }
 
 // Generate generate a repo template.
