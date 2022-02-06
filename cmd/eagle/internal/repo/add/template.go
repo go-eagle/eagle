@@ -28,7 +28,7 @@ import (
 var (
 	_table{{.Name}}Name   = (&model.{{.Name}}Model{}).TableName()
 	_get{{.Name}}SQL      = "SELECT * FROM %s WHERE id = ?"
-	_batchGet{{.Name}}SQL = "SELECT * FROM %s WHERE id IN (?)"
+	_batchGet{{.Name}}SQL = "SELECT * FROM %s WHERE id IN (%s)"
 )
 
 var _ {{.Name}}Repo = (*{{.LcName}}Repo)(nil)
@@ -126,7 +126,7 @@ s
 }
 
 // BatchGet{{.Name}} batch get items
-func (r *{{.LcName}}Repo) BatchGet{{.Name}}(ctx context.Context, ids int64) (ret []*model.{{.Name}}Model, err error) {
+func (r *{{.LcName}}Repo) BatchGet{{.Name}}(ctx context.Context, ids []int64) (ret []*model.{{.Name}}Model, err error) {
 {{- if .WithCache }}
 	idsStr := cast.ToStringSlice(ids)
 	itemMap, err := r.cache.MultiGet{{.Name}}Cache(ctx, ids)
@@ -145,7 +145,7 @@ func (r *{{.LcName}}Repo) BatchGet{{.Name}}(ctx context.Context, ids int64) (ret
 	// get missed data
 	if len(missedID) > 0 {
 		var missedData []*model.{{.Name}}Model
-		_sql := fmt.Sprintf(_batch{{.Name}}SQL, _table{{.Name}}Name, strings.Join(idsStr, ","))
+		_sql := fmt.Sprintf(_batchGet{{.Name}}SQL, _table{{.Name}}Name, strings.Join(idsStr, ","))
 		err = r.db.WithContext(ctx).Raw(_sql).Scan(&missedData).Error
 		if err != nil {
 			// you can degrade to ignore error

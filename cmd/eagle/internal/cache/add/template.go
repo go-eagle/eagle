@@ -73,7 +73,7 @@ func (c *{{.Name}}Cache) Get{{.Name}}Cache(ctx context.Context, id int64) (data 
 	return data, nil
 }
 
-// MultiGet{{.Name}}Cache 批量获取cache
+// MultiGet{{.Name}}Cache batch get cache
 func (c *{{.Name}}Cache) MultiGet{{.Name}}Cache(ctx context.Context, ids []int64) (map[string]*model.{{.Name}}Model, error) {
 	var keys []string
 	for _, v := range ids {
@@ -88,6 +88,21 @@ func (c *{{.Name}}Cache) MultiGet{{.Name}}Cache(ctx context.Context, ids []int64
 		return nil, err
 	}
 	return retMap, nil
+}
+
+// MultiSet{{.Name}}Cache batch set cache
+func (c *{{.Name}}Cache) MultiSet{{.Name}}Cache(ctx context.Context, data []*model.{{.Name}}Model, duration time.Duration) error {
+	valMap := make(map[string]interface{})
+	for _, v := range data {
+		cacheKey := c.Get{{.Name}}CacheKey(v.ID)
+		valMap[cacheKey] = v
+	}
+
+	err := c.cache.MultiSet(ctx, valMap, duration)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Del{{.Name}}Cache 删除cache
