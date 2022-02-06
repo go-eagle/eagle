@@ -2,9 +2,8 @@ package add
 
 import (
 	"bytes"
+	"html/template"
 	"strings"
-
-	"github.com/alecthomas/template"
 )
 
 const repoTemplate = `
@@ -45,7 +44,7 @@ type {{.Name}}Repo interface {
 type {{.LcName}}Repo struct {
 	db     *gorm.DB
 	tracer trace.Tracer
-{{- if .WithCache }}
+{{- if eq .WithCache true }}
 	cache  *cache.{{.Name}}Cache
 {{- end }}
 }

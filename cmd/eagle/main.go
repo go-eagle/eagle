@@ -3,8 +3,6 @@ package main
 import (
 	"log"
 
-	"github.com/go-eagle/eagle/cmd/eagle/internal/service"
-
 	"github.com/spf13/cobra"
 
 	"github.com/go-eagle/eagle/cmd/eagle/internal/cache"
@@ -12,12 +10,13 @@ import (
 	"github.com/go-eagle/eagle/cmd/eagle/internal/proto"
 	"github.com/go-eagle/eagle/cmd/eagle/internal/repo"
 	"github.com/go-eagle/eagle/cmd/eagle/internal/run"
+	"github.com/go-eagle/eagle/cmd/eagle/internal/service"
 	"github.com/go-eagle/eagle/cmd/eagle/internal/upgrade"
 )
 
 var (
 	// Version is the version of the compiled software.
-	Version = "v0.9.0"
+	Version = "v0.9.1"
 
 	rootCmd = &cobra.Command{
 		Use:     "eagle",

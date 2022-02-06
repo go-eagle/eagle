@@ -134,7 +134,7 @@ func (s *Service) execute() ([]byte, error) {
 			s.UseContext = true
 		}
 	}
-	tmpl, err := template.New("service").Parse(serviceTemplate)
+	tmpl, err := template.New("server").Parse(serviceTemplate)
 	if err != nil {
 		return nil, err
 	}
