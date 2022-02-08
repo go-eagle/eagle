@@ -15,6 +15,9 @@ type clientOptions struct {
 	balancerName string
 	enableGzip   bool
 	enableMetric bool
+	// retry config
+	DisableRetry bool
+	NumRetries   int // maximum number of retry attempts
 }
 
 // ClientOption is a gRPC client option.
