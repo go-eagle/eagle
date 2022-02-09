@@ -1,5 +1,5 @@
-//go:build !go1.16
-// +build !go1.16
+//go:build go1.16
+// +build go1.16
 
 package base
 
@@ -7,19 +7,22 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 // GoInstall go get path.
 func GoInstall(path ...string) error {
 	for _, p := range path {
-		fmt.Printf("go get -u %s\n", p)
-		cmd := exec.Command("go", "get", "-u", p)
+		if !strings.Contains(p, "@") {
+			p += "@latest"
+		}
+		fmt.Printf("go install %s\n", p)
+		cmd := exec.Command("go", "install", p)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {
 			return err
 		}
 	}
-
 	return nil
 }
