@@ -12,6 +12,7 @@ import (
 // Cache is a cache generator.
 type Cache struct {
 	Name    string
+	LcName  string
 	Path    string
 	Service string
 	Package string

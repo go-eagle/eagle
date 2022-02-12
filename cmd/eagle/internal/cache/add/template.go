@@ -25,11 +25,20 @@ import (
 
 const (
 	// Prefix{{.Name}}CacheKey cache prefix
-	Prefix{{.Name}}CacheKey = "{{.Name}}:%d"
+	Prefix{{.Name}}CacheKey = "{{.LcName}}:%d"
 )
 
-// {{.Name}}Cache define a cache struct
-type {{.Name}}Cache struct {
+// {{.Name}} define cache interface
+type {{.Name}}Cache interface {
+	Set{{.Name}}Cache(ctx context.Context, id int64, data *model.{{.Name}}Model, duration time.Duration) error
+	Get{{.Name}}Cache(ctx context.Context, id int64) (data *model.{{.Name}}Model, err error)
+	MultiGet{{.Name}}Cache(ctx context.Context, ids []int64) (map[string]*model.{{.Name}}Model, error)
+	MultiSet{{.Name}}Cache(ctx context.Context, data []*model.{{.Name}}Model, duration time.Duration) error
+	Del{{.Name}}Cache(ctx context.Context, id int64) error
+}
+
+// {{.LcName}}Cache define cache struct
+type {{.LcName}}Cache struct {
 	cache cache.Cache
 }
 
@@ -62,7 +71,7 @@ func (c *{{.Name}}Cache) Set{{.Name}}Cache(ctx context.Context, id int64, data *
 	return nil
 }
 
-// Get{{.Name}}Cache 获取cache
+// Get{{.Name}}Cache get from cache
 func (c *{{.Name}}Cache) Get{{.Name}}Cache(ctx context.Context, id int64) (data *model.{{.Name}}Model, err error) {
 	cacheKey := c.Get{{.Name}}CacheKey(id)
 	err = c.cache.Get(ctx, cacheKey, &data)
@@ -105,7 +114,7 @@ func (c *{{.Name}}Cache) MultiSet{{.Name}}Cache(ctx context.Context, data []*mod
 	return nil
 }
 
-// Del{{.Name}}Cache 删除cache
+// Del{{.Name}}Cache delete cache
 func (c *{{.Name}}Cache) Del{{.Name}}Cache(ctx context.Context, id int64) error {
 	cacheKey := c.Get{{.Name}}CacheKey(id)
 	err := c.cache.Del(ctx, cacheKey)

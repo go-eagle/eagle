@@ -34,6 +34,7 @@ func run(cmd *cobra.Command, args []string) {
 
 	c := &Cache{
 		Name:    utils.Ucfirst(filename), // 首字母大写
+		LcName:  utils.Lcfirst(filename), // 首字母小写
 		Path:    targetDir,
 		ModName: utils.ModName(),
 	}
