@@ -30,13 +30,15 @@ type RedisManager struct {
 }
 
 // Init init a default redis instance
-func Init() {
+func Init() *redis.Client {
 	clientManager := NewRedisManager()
 	rdb, err := clientManager.GetClient(DefaultRedisName)
 	if err != nil {
 		panic(fmt.Sprintf("init redis err: %s", err.Error()))
 	}
 	RedisClient = rdb
+
+	return rdb
 }
 
 // NewRedisManager create a redis manager
