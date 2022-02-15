@@ -240,7 +240,7 @@ supervisorctl restart eagle
 - QQ交流群：1074476202
 - Gitter: https://gitter.im/go-eagle/eagle
 - 微信交流群
-<img src="https://user-images.githubusercontent.com/3043638/147016053-049f30cd-faa7-4e4e-ab78-2e6a06c905d0.jpeg" width="300px">
+<img src="https://user-images.githubusercontent.com/3043638/154026442-47b8d17e-fb82-4e4c-8cbc-6a35ce4ff858.jpg" width="300px">
 
 ## Stargazers over time
 
