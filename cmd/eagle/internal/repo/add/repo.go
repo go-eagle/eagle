@@ -13,6 +13,7 @@ import (
 type Repo struct {
 	Name      string
 	LcName    string
+	UsName    string
 	Path      string
 	Service   string
 	Package   string

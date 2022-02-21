@@ -10,6 +10,8 @@ import (
 const cacheTemplate = `
 package cache
 
+//go:generate mockgen -source=internal/cache/{{.UsName}}.go -destination=internal/mock/{{.UsName}}_mock.go  -package mock
+
 import (
 	"context"
 	"fmt"
