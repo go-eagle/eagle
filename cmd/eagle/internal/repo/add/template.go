@@ -9,7 +9,7 @@ import (
 const repoTemplate = `
 package repository
 
-//go:generate mockgen -source=internal/repository/{{.UsName}}_repo.go -destination=internal/mock/{{.UsName}}_repo_mock.go  -package mock
+//go:generate mockgen -source={{.UsName}}_repo.go -destination=../../internal/mocks/{{.UsName}}_repo_mock.go  -package mocks
 
 import (
 	"context"
