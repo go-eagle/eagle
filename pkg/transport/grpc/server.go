@@ -73,7 +73,6 @@ type Server struct {
 	inters   []grpc.UnaryServerInterceptor
 	grpcOpts []grpc.ServerOption
 	health   *health.Server
-	log      log.Logger
 
 	// EnableTracer enables distributed tracing using OpenTelemetry protocol
 	EnableTracing bool

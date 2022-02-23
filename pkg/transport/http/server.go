@@ -3,16 +3,14 @@ package http
 import (
 	"context"
 	"errors"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"time"
 
-	"github.com/go-eagle/eagle/pkg/utils"
-
 	"github.com/go-eagle/eagle/pkg/transport"
-
-	"github.com/go-eagle/eagle/pkg/log"
+	"github.com/go-eagle/eagle/pkg/utils"
 )
 
 var (
@@ -39,7 +37,6 @@ func defaultServer() *Server {
 		address:      ":8080",
 		readTimeout:  time.Second,
 		writeTimeout: time.Second,
-		log:          log.GetLogger(),
 	}
 }
 
@@ -87,7 +84,7 @@ func (s *Server) Start(ctx context.Context) error {
 	if _, err := s.Endpoint(); err != nil {
 		return err
 	}
-	s.log.Infof("[HTTP] server is listening on: %s", lis.Addr().String())
+	log.Printf("[HTTP] server is listening on: %s", lis.Addr().String())
 	if err := s.Serve(lis); !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
@@ -96,6 +93,6 @@ func (s *Server) Start(ctx context.Context) error {
 
 // Stop stop server
 func (s *Server) Stop(ctx context.Context) error {
-	s.log.Info("[HTTP] server is stopping")
+	log.Printf("[HTTP] server is stopping")
 	return s.Shutdown(ctx)
 }
