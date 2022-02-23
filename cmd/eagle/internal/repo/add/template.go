@@ -9,6 +9,8 @@ import (
 const repoTemplate = `
 package repository
 
+//go:generate mockgen -source={{.UsName}}_repo.go -destination=../../internal/mocks/{{.UsName}}_repo_mock.go  -package mocks
+
 import (
 	"context"
 	"fmt"

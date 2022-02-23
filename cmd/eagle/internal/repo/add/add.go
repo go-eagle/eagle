@@ -35,8 +35,9 @@ func run(cmd *cobra.Command, args []string) {
 	filename := args[0]
 
 	c := &Repo{
-		Name:      utils.Ucfirst(filename), // 首字母大写
-		LcName:    utils.Lcfirst(filename),
+		Name:      utils.Ucfirst(filename),    // 首字母大写
+		LcName:    utils.Lcfirst(filename),    // 首字母小写
+		UsName:    utils.Camel2Case(filename), // 下划线分隔
 		Path:      targetDir,
 		ModName:   utils.ModName(),
 		WithCache: withCache,
