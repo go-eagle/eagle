@@ -3,6 +3,9 @@ package app
 import (
 	"net/http"
 
+	"github.com/spf13/cast"
+	"google.golang.org/grpc/status"
+
 	"github.com/go-eagle/eagle/pkg/utils"
 
 	"github.com/go-eagle/eagle/pkg/errcode"
@@ -68,6 +71,24 @@ func (r *Response) Error(c *gin.Context, err error) {
 		}
 		c.JSON(v.StatusCode(), response)
 		return
+	} else {
+		// receive gRPC error
+		if st, ok := status.FromError(err); ok {
+			response := Response{
+				Code:    int(st.Code()),
+				Message: st.Message(),
+				Data:    gin.H{},
+				Details: []string{},
+			}
+			details := st.Details()
+			if len(details) > 0 {
+				for _, v := range details {
+					response.Details = append(response.Details, cast.ToString(v))
+				}
+			}
+			c.JSON(http.StatusBadRequest, response)
+			return
+		}
 	}
 }
 
