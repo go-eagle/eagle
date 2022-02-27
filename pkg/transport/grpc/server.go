@@ -127,7 +127,9 @@ func NewServer(opts ...ServerOption) *Server {
 	// see https://github.com/grpc/grpc/blob/master/doc/health-checking.md for more
 	healthPb.RegisterHealthServer(grpcServer, srv.health)
 
-	// register reflection
+	// register reflection and the interface can be debugged through the grpcurl tool
+	// https://github.com/grpc/grpc-go/blob/master/Documentation/server-reflection-tutorial.md#enable-server-reflection
+	// see https://github.com/fullstorydev/grpcurl
 	reflection.Register(grpcServer)
 
 	// set zero values for metrics registered for this grpc server

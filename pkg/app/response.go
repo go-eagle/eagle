@@ -70,7 +70,7 @@ func (r *Response) Error(c *gin.Context, err error) {
 		if len(details) > 0 {
 			response.Details = details
 		}
-		c.JSON(v.StatusCode(), response)
+		c.JSON(errcode.ToHTTPStatusCode(v.Code()), response)
 		return
 	} else {
 		// receive gRPC error

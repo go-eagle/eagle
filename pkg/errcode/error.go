@@ -13,20 +13,20 @@ type Error struct {
 	details []string `json:"details"`
 }
 
-var codes = map[int]struct{}{}
+var errorCodes = map[int]struct{}{}
 
 // NewError create a error
 func NewError(code int, msg string) *Error {
-	if _, ok := codes[code]; ok {
+	if _, ok := errorCodes[code]; ok {
 		panic(fmt.Sprintf("code %d is exsit, please change one", code))
 	}
-	codes[code] = struct{}{}
+	errorCodes[code] = struct{}{}
 	return &Error{code: code, msg: msg}
 }
 
 // Error return a error string
 func (e Error) Error() string {
-	return fmt.Sprintf("code：%d, msg:：%s", e.Code(), e.Msg())
+	return fmt.Sprintf("code: %d, msg: %s", e.Code(), e.Msg())
 }
 
 // Code return error code
@@ -58,9 +58,9 @@ func (e *Error) WithDetails(details ...string) *Error {
 	return &newError
 }
 
-// StatusCode trans err code to http status code
-func (e *Error) StatusCode() int {
-	switch e.Code() {
+// ToHTTPStatusCode convert custom error code to http status code and avoid return unknown status code.
+func ToHTTPStatusCode(code int) int {
+	switch code {
 	case Success.Code():
 		return http.StatusOK
 	case ErrInternalServer.Code():
