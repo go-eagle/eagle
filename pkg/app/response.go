@@ -3,10 +3,11 @@ package app
 import (
 	"net/http"
 
-	"github.com/spf13/cast"
-	"google.golang.org/grpc/status"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
 	"github.com/go-eagle/eagle/pkg/utils"
+	"github.com/spf13/cast"
+	"google.golang.org/grpc/status"
 
 	"github.com/go-eagle/eagle/pkg/errcode"
 
@@ -86,7 +87,10 @@ func (r *Response) Error(c *gin.Context, err error) {
 					response.Details = append(response.Details, cast.ToString(v))
 				}
 			}
-			c.JSON(http.StatusBadRequest, response)
+			// https://httpstatus.in/
+			// https://github.com/grpc-ecosystem/grpc-gateway/blob/master/runtime/errors.go#L15
+			// https://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
+			c.JSON(runtime.HTTPStatusFromCode(st.Code()), response)
 			return
 		}
 	}
