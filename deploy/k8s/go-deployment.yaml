@@ -28,3 +28,15 @@ spec:
               cpu: "100m" # 0.1核，1000m = 1核心
           ports:
             - containerPort: 80
+        - name: server
+          image: "kasunindrasiri/grpc-productinfo-server"
+          ports:
+            - containerPort: 50051
+          readinessProbe:
+            exec:
+              command: [ "/bin/grpc_health_probe", "-addr=:9090" ]
+            initialDelaySeconds: 5
+          livenessProbe:
+            exec:
+              command: [ "/bin/grpc_health_probe", "-addr=:9090" ]
+            initialDelaySeconds: 10
