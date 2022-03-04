@@ -2,7 +2,7 @@ package errcode
 
 import (
 	"github.com/golang/protobuf/proto"
-	grpcCodes "google.golang.org/grpc/codes"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/structpb"
 )
@@ -12,7 +12,7 @@ type GrpcStatus struct {
 	details []proto.Message
 }
 
-func New(code grpcCodes.Code, msg string) *GrpcStatus {
+func New(code codes.Code, msg string) *GrpcStatus {
 	return &GrpcStatus{
 		status: status.New(code, msg),
 	}
@@ -38,4 +38,32 @@ func NewDetails(details map[string]interface{}) proto.Message {
 		return nil
 	}
 	return detailStruct
+}
+
+// ToRPCCode 自定义错误码转换为RPC识别的错误码，避免返回Unknown状态码
+func ToRPCCode(code int) codes.Code {
+	var statusCode codes.Code
+
+	switch code {
+	case ErrInternalServer.code:
+		statusCode = codes.Internal
+	case ErrInvalidParam.code:
+		statusCode = codes.InvalidArgument
+	case ErrUnauthorized.code:
+		statusCode = codes.Unauthenticated
+	case ErrNotFound.code:
+		statusCode = codes.NotFound
+	case ErrDeadlineExceeded.code:
+		statusCode = codes.DeadlineExceeded
+	case ErrAccessDenied.code:
+		statusCode = codes.PermissionDenied
+	case ErrLimitExceed.code:
+		statusCode = codes.ResourceExhausted
+	case ErrMethodNotAllowed.code:
+		statusCode = codes.Unimplemented
+	default:
+		statusCode = codes.Unknown
+	}
+
+	return statusCode
 }

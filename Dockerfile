@@ -7,6 +7,12 @@ RUN apk add --no-cache git make bash ca-certificates tzdata \
     --repository http://mirrors.aliyun.com/alpine/v3.11/community \
     --repository http://mirrors.aliyun.com/alpine/v3.11/main
 
+RUN GRPC_HEALTH_PROBE_VERSION=v0.3.0 && \
+    wget -qO/bin/grpc_health_probe \
+    https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/
+    ${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+    chmod +x /bin/grpc_health_probe
+
 # 镜像设置必要的环境变量
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
