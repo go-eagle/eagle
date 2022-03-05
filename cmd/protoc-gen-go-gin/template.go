@@ -34,23 +34,23 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 	var in {{.Request}}
 {{if .HasPathParams }}
 	if err := ctx.ShouldBindUri(&in); err != nil {
-		response.Error(ctx, errcode.ErrBind.WithDetails(err.Error()))
+		response.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
 {{end}}
 {{if eq .Method "GET" "DELETE" }}
 	if err := ctx.ShouldBindQuery(&in); err != nil {
-		response.Error(ctx, errcode.ErrBind.WithDetails(err.Error()))
+		response.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
 {{else if eq .Method "POST" "PUT" }}
 	if err := ctx.ShouldBindJSON(&in); err != nil {
-		response.Error(ctx, errcode.ErrBind.WithDetails(err.Error()))
+		response.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
 {{else}}
 	if err := ctx.ShouldBind(&in); err != nil {
-		response.Error(ctx, errcode.ErrBind.WithDetails(err.Error()))
+		response.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
 {{end}}
