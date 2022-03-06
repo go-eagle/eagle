@@ -30,7 +30,7 @@ func Update(c *gin.Context) {
 	var req UpdateRequest
 	if err := c.Bind(&req); err != nil {
 		log.Warnf("bind request param err: %+v", err)
-		response.Error(c, errcode.ErrBind)
+		response.Error(c, errcode.ErrInvalidParam)
 		return
 	}
 	log.Infof("user update req: %#v", req)

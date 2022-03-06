@@ -23,7 +23,7 @@ func Follow(c *gin.Context) {
 	var req FollowRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Warnf("follow bind param err: %v", err)
-		response.Error(c, errcode.ErrBind.WithDetails(err.Error()))
+		response.Error(c, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
 

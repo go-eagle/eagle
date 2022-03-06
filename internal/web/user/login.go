@@ -30,7 +30,7 @@ func DoLogin(c *gin.Context) {
 	var req LoginCredentials
 	if err := c.Bind(&req); err != nil {
 		log.Warnf("[web.login] bind err: %v", err)
-		web.Response(c, errcode.ErrBind, nil)
+		web.Response(c, errcode.ErrInvalidParam, nil)
 		return
 	}
 

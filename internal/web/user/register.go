@@ -26,7 +26,7 @@ func DoRegister(c *gin.Context) {
 	log.Info("User Register function called.")
 	var r RegisterRequest
 	if err := c.Bind(&r); err != nil {
-		web.Response(c, errcode.ErrBind, nil)
+		web.Response(c, errcode.ErrInvalidParam, nil)
 		return
 	}
 
