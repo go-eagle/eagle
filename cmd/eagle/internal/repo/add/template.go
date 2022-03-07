@@ -54,9 +54,9 @@ type {{.LcName}}Repo struct {
 {{- if .WithCache }}
 // New{{.Name}} new a repository and return
 func New{{.Name}}(db *gorm.DB, cache *cache.{{.Name}}Cache) {{.Name}}Repo {
-	return &userBaseRepo{
+	return &{{.LcName}}{
 		db:     db,
-		tracer: otel.Tracer("userBaseRepo"),
+		tracer: otel.Tracer("{{.LcName}}"),
 		cache:  cache,
 	}
 }
