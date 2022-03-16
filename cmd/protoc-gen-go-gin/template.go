@@ -12,9 +12,9 @@ var httpTemplate = `
 var response = app.NewResponse()
 
 type {{ $.InterfaceName }} interface {
-{{range .MethodSet}}
+{{- range .MethodSet}}
 	{{.Name}}(context.Context, *{{.Request}}) (*{{.Reply}}, error)
-{{end}}
+{{- end}}
 }
 func Register{{ $.InterfaceName }}(r gin.IRouter, srv {{ $.InterfaceName }}) {
 	s := {{.Name}}{
@@ -70,9 +70,9 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 {{end}}
 
 func (s *{{$.Name}}) RegisterService() {
-{{range .Methods}}
+{{- range .Methods}}
 		s.router.Handle("{{.Method}}", "{{.Path}}", s.{{ .HandlerName }})
-{{end}}
+{{- end}}
 }
 `
 
