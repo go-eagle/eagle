@@ -45,10 +45,10 @@ type {{.LcName}}Cache struct {
 }
 
 // New{{.Name}}Cache new a cache
-func New{{.Name}}Cache() *{{.Name}}Cache {
+func New{{.Name}}Cache() {{.Name}}Cache {
 	jsonEncoding := encoding.JSONEncoding{}
 	cachePrefix := ""
-	return &{{.Name}}Cache{
+	return &{{.LcName}}Cache{
 		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, jsonEncoding, func() interface{} {
 			return &model.{{.Name}}Model{}
 		}),
