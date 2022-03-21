@@ -10,6 +10,8 @@ import (
 const cacheTemplate = `
 package cache
 
+//go:generate mockgen -source=internal/cache/{{.UsName}}_cache.go -destination=internal/mock/{{.UsName}}_cache_mock.go  -package mock
+
 import (
 	"context"
 	"fmt"
@@ -25,19 +27,28 @@ import (
 
 const (
 	// Prefix{{.Name}}CacheKey cache prefix
-	Prefix{{.Name}}CacheKey = "{{.Name}}:%d"
+	Prefix{{.Name}}CacheKey = "{{.LcName}}:%d"
 )
 
-// {{.Name}}Cache define a cache struct
-type {{.Name}}Cache struct {
+// {{.Name}} define cache interface
+type {{.Name}}Cache interface {
+	Set{{.Name}}Cache(ctx context.Context, id int64, data *model.{{.Name}}Model, duration time.Duration) error
+	Get{{.Name}}Cache(ctx context.Context, id int64) (data *model.{{.Name}}Model, err error)
+	MultiGet{{.Name}}Cache(ctx context.Context, ids []int64) (map[string]*model.{{.Name}}Model, error)
+	MultiSet{{.Name}}Cache(ctx context.Context, data []*model.{{.Name}}Model, duration time.Duration) error
+	Del{{.Name}}Cache(ctx context.Context, id int64) error
+}
+
+// {{.LcName}}Cache define cache struct
+type {{.LcName}}Cache struct {
 	cache cache.Cache
 }
 
 // New{{.Name}}Cache new a cache
-func New{{.Name}}Cache() *{{.Name}}Cache {
+func New{{.Name}}Cache() {{.Name}}Cache {
 	jsonEncoding := encoding.JSONEncoding{}
 	cachePrefix := ""
-	return &{{.Name}}Cache{
+	return &{{.LcName}}Cache{
 		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, jsonEncoding, func() interface{} {
 			return &model.{{.Name}}Model{}
 		}),
@@ -62,7 +73,7 @@ func (c *{{.Name}}Cache) Set{{.Name}}Cache(ctx context.Context, id int64, data *
 	return nil
 }
 
-// Get{{.Name}}Cache 获取cache
+// Get{{.Name}}Cache get from cache
 func (c *{{.Name}}Cache) Get{{.Name}}Cache(ctx context.Context, id int64) (data *model.{{.Name}}Model, err error) {
 	cacheKey := c.Get{{.Name}}CacheKey(id)
 	err = c.cache.Get(ctx, cacheKey, &data)
@@ -73,7 +84,7 @@ func (c *{{.Name}}Cache) Get{{.Name}}Cache(ctx context.Context, id int64) (data 
 	return data, nil
 }
 
-// MultiGet{{.Name}}Cache 批量获取cache
+// MultiGet{{.Name}}Cache batch get cache
 func (c *{{.Name}}Cache) MultiGet{{.Name}}Cache(ctx context.Context, ids []int64) (map[string]*model.{{.Name}}Model, error) {
 	var keys []string
 	for _, v := range ids {
@@ -90,7 +101,22 @@ func (c *{{.Name}}Cache) MultiGet{{.Name}}Cache(ctx context.Context, ids []int64
 	return retMap, nil
 }
 
-// Del{{.Name}}Cache 删除cache
+// MultiSet{{.Name}}Cache batch set cache
+func (c *{{.Name}}Cache) MultiSet{{.Name}}Cache(ctx context.Context, data []*model.{{.Name}}Model, duration time.Duration) error {
+	valMap := make(map[string]interface{})
+	for _, v := range data {
+		cacheKey := c.Get{{.Name}}CacheKey(v.ID)
+		valMap[cacheKey] = v
+	}
+
+	err := c.cache.MultiSet(ctx, valMap, duration)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Del{{.Name}}Cache delete cache
 func (c *{{.Name}}Cache) Del{{.Name}}Cache(ctx context.Context, id int64) error {
 	cacheKey := c.Get{{.Name}}CacheKey(id)
 	err := c.cache.Del(ctx, cacheKey)

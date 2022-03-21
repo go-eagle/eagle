@@ -73,7 +73,6 @@ type Server struct {
 	inters   []grpc.UnaryServerInterceptor
 	grpcOpts []grpc.ServerOption
 	health   *health.Server
-	log      log.Logger
 
 	// EnableTracer enables distributed tracing using OpenTelemetry protocol
 	EnableTracing bool
@@ -124,9 +123,13 @@ func NewServer(opts ...ServerOption) *Server {
 
 	grpcServer := grpc.NewServer(grpcOpts...)
 
+	// health check
 	// see https://github.com/grpc/grpc/blob/master/doc/health-checking.md for more
-	srv.health.SetServingStatus("", healthPb.HealthCheckResponse_SERVING)
 	healthPb.RegisterHealthServer(grpcServer, srv.health)
+
+	// register reflection and the interface can be debugged through the grpcurl tool
+	// https://github.com/grpc/grpc-go/blob/master/Documentation/server-reflection-tutorial.md#enable-server-reflection
+	// see https://github.com/fullstorydev/grpcurl
 	reflection.Register(grpcServer)
 
 	// set zero values for metrics registered for this grpc server

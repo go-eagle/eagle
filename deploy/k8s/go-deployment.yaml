@@ -21,10 +21,19 @@ spec:
     spec: # Pod里容器相关的定义
       containers:
         - name: go-app-container
-          image: 1024casts/go-app:v1.0.0
+          image: go-eagle/go-app:v1.0.0
           resources:
             limits:
               memory: "128Mi"
               cpu: "100m" # 0.1核，1000m = 1核心
           ports:
             - containerPort: 80
+            - containerPort: 9090
+          readinessProbe:
+            exec:
+              command: [ "/bin/grpc_health_probe", "-addr=:9090" ]
+            initialDelaySeconds: 5
+          livenessProbe:
+            exec:
+              command: [ "/bin/grpc_health_probe", "-addr=:9090" ]
+            initialDelaySeconds: 10

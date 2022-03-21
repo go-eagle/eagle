@@ -17,6 +17,8 @@ import (
 	"io"
 	{{- end }}
 
+	"github.com/google/wire"
+
 	pb "{{ .Package }}"
 	{{- if .GoogleEmpty }}
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -26,6 +28,9 @@ import (
 var (
 	_ pb.{{ .Service }}Server = (*{{ .Service }}Server)(nil)
 )
+
+// ProviderSet is service providers.
+var ProviderSet = wire.NewSet(New{{ .Service }}Server)
 
 type {{ .Service }}Server struct {
 	pb.Unimplemented{{ .Service }}Server
@@ -134,7 +139,7 @@ func (s *Service) execute() ([]byte, error) {
 			s.UseContext = true
 		}
 	}
-	tmpl, err := template.New("service").Parse(serviceTemplate)
+	tmpl, err := template.New("server").Parse(serviceTemplate)
 	if err != nil {
 		return nil, err
 	}

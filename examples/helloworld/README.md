@@ -89,6 +89,8 @@ $ protoc --go_out=. --go_opt=paths=source_relative \
 
 > https://grpc.io/docs/languages/go/quickstart/#regenerate-grpc-code
 
+`github.com/golang/protobuf` 和 `google.golang.org/protobuf` 有什么区别？https://developers.google.com/protocol-buffers/docs/reference/go/faq
+
 ## Run
 
 1. run the server

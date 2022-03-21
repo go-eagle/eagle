@@ -3,7 +3,11 @@ package app
 import (
 	"net/http"
 
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+
 	"github.com/go-eagle/eagle/pkg/utils"
+	"github.com/spf13/cast"
+	"google.golang.org/grpc/status"
 
 	"github.com/go-eagle/eagle/pkg/errcode"
 
@@ -66,8 +70,29 @@ func (r *Response) Error(c *gin.Context, err error) {
 		if len(details) > 0 {
 			response.Details = details
 		}
-		c.JSON(v.StatusCode(), response)
+		c.JSON(errcode.ToHTTPStatusCode(v.Code()), response)
 		return
+	} else {
+		// receive gRPC error
+		if st, ok := status.FromError(err); ok {
+			response := Response{
+				Code:    int(st.Code()),
+				Message: st.Message(),
+				Data:    gin.H{},
+				Details: []string{},
+			}
+			details := st.Details()
+			if len(details) > 0 {
+				for _, v := range details {
+					response.Details = append(response.Details, cast.ToString(v))
+				}
+			}
+			// https://httpstatus.in/
+			// https://github.com/grpc-ecosystem/grpc-gateway/blob/master/runtime/errors.go#L15
+			// https://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
+			c.JSON(runtime.HTTPStatusFromCode(st.Code()), response)
+			return
+		}
 	}
 }
 

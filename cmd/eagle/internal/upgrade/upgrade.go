@@ -18,14 +18,14 @@ var CmdUpgrade = &cobra.Command{
 
 // Run upgrade the eagle tools.
 func Run(cmd *cobra.Command, args []string) {
-	err := base.GoGet(
+	err := base.GoInstall(
 		"github.com/go-eagle/eagle/cmd/eagle",
 		"github.com/go-eagle/eagle/cmd/protoc-gen-go-gin",
 		"google.golang.org/protobuf/cmd/protoc-gen-go",
 		"google.golang.org/grpc/cmd/protoc-gen-go-grpc",
 		"github.com/envoyproxy/protoc-gen-validate",
 		"github.com/google/gnostic",
-		"github.com/google/gnostic/apps/protoc-gen-openapi",
+		"github.com/google/gnostic/cmd/protoc-gen-openapi",
 	)
 	if err != nil {
 		fmt.Println(err)

@@ -18,10 +18,12 @@ var CmdAdd = &cobra.Command{
 
 var (
 	targetDir string
+	withCache bool
 )
 
 func init() {
 	CmdAdd.Flags().StringVarP(&targetDir, "-target-dir", "t", "internal/repository", "generate target directory")
+	CmdAdd.Flags().BoolVarP(&withCache, "-with-cache", "c", true, "add cache operate")
 }
 
 func run(cmd *cobra.Command, args []string) {
@@ -33,9 +35,12 @@ func run(cmd *cobra.Command, args []string) {
 	filename := args[0]
 
 	c := &Repo{
-		Name:    utils.Ucfirst(filename), // 首字母大写
-		Path:    targetDir,
-		ModName: utils.ModName(),
+		Name:      utils.Ucfirst(filename),    // 首字母大写
+		LcName:    utils.Lcfirst(filename),    // 首字母小写
+		UsName:    utils.Camel2Case(filename), // 下划线分隔
+		Path:      targetDir,
+		ModName:   utils.ModName(),
+		WithCache: withCache,
 	}
 	if err := c.Generate(); err != nil {
 		fmt.Println(err)

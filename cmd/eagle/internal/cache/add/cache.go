@@ -12,6 +12,8 @@ import (
 // Cache is a cache generator.
 type Cache struct {
 	Name    string
+	LcName  string
+	UsName  string
 	Path    string
 	Service string
 	Package string
@@ -34,7 +36,7 @@ func (c *Cache) Generate() error {
 			return err
 		}
 	}
-	name := path.Join(to, utils.Camel2Case(c.Name)+".go")
+	name := path.Join(to, utils.Camel2Case(c.Name)+"_cache.go")
 	if _, err := os.Stat(name); !os.IsNotExist(err) {
 		return fmt.Errorf("%s already exists", c.Name)
 	}

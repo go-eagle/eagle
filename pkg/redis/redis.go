@@ -30,13 +30,15 @@ type RedisManager struct {
 }
 
 // Init init a default redis instance
-func Init() {
+func Init() *redis.Client {
 	clientManager := NewRedisManager()
 	rdb, err := clientManager.GetClient(DefaultRedisName)
 	if err != nil {
 		panic(fmt.Sprintf("init redis err: %s", err.Error()))
 	}
 	RedisClient = rdb
+
+	return rdb
 }
 
 // NewRedisManager create a redis manager
@@ -57,7 +59,7 @@ func (r *RedisManager) GetClient(name string) (*redis.Client, error) {
 	}
 	r.RUnlock()
 
-	c, err := loadConf(name)
+	c, err := LoadConf(name)
 	if err != nil {
 		panic(fmt.Sprintf("load redis conf err: %v", err))
 	}
@@ -92,8 +94,8 @@ func (r *RedisManager) GetClient(name string) (*redis.Client, error) {
 	return rdb, nil
 }
 
-// loadConf load redis config
-func loadConf(name string) (ret *Config, err error) {
+// LoadConf load redis config
+func LoadConf(name string) (ret *Config, err error) {
 	v, err := config.LoadWithType("redis", "yaml")
 	if err != nil {
 		return nil, err

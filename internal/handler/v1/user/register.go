@@ -22,7 +22,7 @@ func Register(c *gin.Context) {
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Warnf("register bind param err: %v", err)
-		response.Error(c, errcode.ErrBind)
+		response.Error(c, errcode.ErrInvalidParam)
 		return
 	}
 

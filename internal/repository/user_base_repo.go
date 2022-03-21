@@ -17,6 +17,8 @@ import (
 	"github.com/go-eagle/eagle/pkg/redis"
 )
 
+var g singleflight.Group
+
 // CreateUser 创建用户
 func (d *repository) CreateUser(ctx context.Context, user *model.UserBaseModel) (id uint64, err error) {
 	err = d.orm.Create(&user).Error
@@ -53,76 +55,71 @@ func (d *repository) UpdateUser(ctx context.Context, id uint64, userMap map[stri
 // 缓存的更新策略使用 Cache Aside Pattern
 // see: https://coolshell.cn/articles/17416.html
 func (d *repository) GetUser(ctx context.Context, uid uint64) (userBase *model.UserBaseModel, err error) {
-	ctx, span := d.tracer.Start(ctx, "GetUser",
-		oteltrace.WithAttributes(attribute.String("param.uid", cast.ToString(uid))))
+	ctx, span := d.tracer.Start(ctx, "GetUser", oteltrace.WithAttributes(
+		attribute.String("param.uid", cast.ToString(uid)),
+	))
 	defer span.End()
 
-	//var userBase *model.UserBaseModel
-	// 从cache获取
+	var data *model.UserBaseModel
+
 	userBase, err = d.userCache.GetUserBaseCache(ctx, uid)
-	if err != nil {
-		if err == cache.ErrPlaceholder {
-			span.SetName("eq ErrPlaceholder")
+	if errors.Is(err, cache.ErrPlaceholder) {
+		span.SetName("eq ErrPlaceholder")
+		span.RecordError(err)
+		return nil, ErrNotFound
+	} else if errors.Is(err, redis.ErrRedisNotFound) {
+		// use sync/singleflight mode to get data
+		// demo see: https://github.com/go-demo/singleflight-demo/blob/master/main.go
+		// https://juejin.cn/post/6844904084445593613
+		key := fmt.Sprintf("get_user_base_%d", uid)
+		val, err, _ := g.Do(key, func() (interface{}, error) {
+			data := new(model.UserBaseModel)
+			// 从数据库中获取
+			err = d.orm.WithContext(ctx).First(data, uid).Error
+			// if data is empty, set not found cache to prevent cache penetration(缓存穿透)
+			if errors.Is(err, ErrNotFound) {
+				err = d.userCache.SetCacheWithNotFound(ctx, uid)
+				if err != nil {
+					span.SetName("SetCacheWithNotFound")
+					span.RecordError(err)
+					log.Warnf("[repo.user_base] SetCacheWithNotFound err, uid: %d", uid)
+				}
+				return nil, ErrNotFound
+			} else if err != nil {
+				span.SetName("find from db err")
+				span.RecordError(err)
+				//prom.BusinessErrCount.Incr("mysql: getOneUser")
+				return nil, errors.Wrapf(err, "[repo.user_base] query db err")
+			}
+
+			// set cache
+			err = d.userCache.SetUserBaseCache(ctx, uid, data, cache.DefaultExpireTime)
+			if err != nil {
+				span.SetName("SetUserBaseCache")
+				span.RecordError(err)
+				return nil, errors.Wrap(err, "[repo.user_base] SetUserBaseCache err")
+			}
+			return data, nil
+		})
+
+		if err != nil && err != ErrNotFound {
+			span.SetName("sg.do")
 			span.RecordError(err)
-			return nil, ErrNotFound
-		} else if !errors.Is(err, redis.ErrRedisNotFound) {
-			// fail fast, if cache error return, don't request to db
-			span.SetName("not ErrRedisNotFound")
-			span.RecordError(err)
-			return nil, errors.Wrapf(err, "[repo.user_base] get user by uid: %d", uid)
+			return nil, errors.Wrap(err, "[repo.user_base] get user base err via single flight do")
 		}
+		if val != nil {
+			data = val.(*model.UserBaseModel)
+		}
+	} else if err != nil {
+		// fail fast, if cache error return, don't request to db
+		return nil, err
 	}
+
 	// cache hit
 	if userBase != nil {
 		//prom.CacheHit.Incr("getOneUser")
 		log.WithContext(ctx).Infof("[repo.user_base] get user base data from cache, uid: %d", uid)
 		return
-	}
-
-	// use sync/singleflight mode to get data
-	// demo see: https://github.com/go-demo/singleflight-demo/blob/master/main.go
-	// https://juejin.cn/post/6844904084445593613
-	getDataFn := func() (interface{}, error) {
-		data := new(model.UserBaseModel)
-		// 从数据库中获取
-		err = d.orm.WithContext(ctx).First(data, uid).Error
-		// if data is empty, set not found cache to prevent cache penetration(缓存穿透)
-		if errors.Is(err, ErrNotFound) {
-			err = d.userCache.SetCacheWithNotFound(ctx, uid)
-			if err != nil {
-				span.SetName("SetCacheWithNotFound")
-				span.RecordError(err)
-				log.Warnf("[repo.user_base] SetCacheWithNotFound err, uid: %d", uid)
-			}
-			return nil, ErrNotFound
-		} else if err != nil {
-			span.SetName("not errors is")
-			span.RecordError(err)
-			//prom.BusinessErrCount.Incr("mysql: getOneUser")
-			return nil, errors.Wrapf(err, "[repo.user_base] query db err")
-		}
-
-		// set cache
-		err = d.userCache.SetUserBaseCache(ctx, uid, data, cache.DefaultExpireTime)
-		if err != nil {
-			span.SetName("SetUserBaseCache")
-			span.RecordError(err)
-			return data, errors.Wrap(err, "[repo.user_base] SetUserBaseCache err")
-		}
-		return data, nil
-	}
-
-	g := singleflight.Group{}
-	doKey := fmt.Sprintf("get_user_base_%d", uid)
-	val, err, _ := g.Do(doKey, getDataFn)
-	if err != nil && err != ErrNotFound {
-		span.SetName("sg.do")
-		span.RecordError(err)
-		return nil, errors.Wrap(err, "[repo.user_base] get user base err via single flight do")
-	}
-	var data *model.UserBaseModel
-	if val != nil {
-		data = val.(*model.UserBaseModel)
 	}
 
 	// cache miss

@@ -56,7 +56,7 @@ func PhoneLogin(c *gin.Context) {
 	var req PhoneLoginCredentials
 	if err := c.Bind(&req); err != nil {
 		log.Warnf("phone login bind param err: %v", err)
-		response.Error(c, errcode.ErrBind)
+		response.Error(c, errcode.ErrInvalidParam)
 		return
 	}
 
