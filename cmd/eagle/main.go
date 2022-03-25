@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"github.com/go-eagle/eagle/cmd/eagle/internal/task"
+
 	"github.com/spf13/cobra"
 
 	"github.com/go-eagle/eagle/cmd/eagle/internal/cache"
@@ -16,7 +18,7 @@ import (
 
 var (
 	// Version is the version of the compiled software.
-	Version = "v0.12.1"
+	Version = "v0.13.0"
 
 	rootCmd = &cobra.Command{
 		Use:     "eagle",
@@ -33,6 +35,7 @@ func init() {
 	rootCmd.AddCommand(repo.CmdRepo)
 	rootCmd.AddCommand(service.CmdService)
 	rootCmd.AddCommand(proto.CmdProto)
+	rootCmd.AddCommand(task.CmdTask)
 	rootCmd.AddCommand(upgrade.CmdUpgrade)
 }
 
