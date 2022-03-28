@@ -29,11 +29,11 @@ spec:
           ports:
             - containerPort: 80
             - containerPort: 9090
-          readinessProbe:
+          readinessProbe: # 就绪探针
             exec:
               command: [ "/bin/grpc_health_probe", "-addr=:9090" ]
             initialDelaySeconds: 5
-          livenessProbe:
+          livenessProbe: # 存活探针
             exec:
               command: [ "/bin/grpc_health_probe", "-addr=:9090" ]
             initialDelaySeconds: 10
