@@ -39,7 +39,7 @@ func run(cmd *cobra.Command, args []string) {
 		Name:      utils.Ucfirst(filename),                                  // 首字母大写
 		LcName:    utils.Lcfirst(filename),                                  // 首字母小写
 		UsName:    utils.Camel2Case(filename),                               // 下划线分隔
-		ColonName: strings.Replace(utils.Camel2Case(filename), "_", ":", 5), // 冒号分隔
+		ColonName: strings.ReplaceAll(utils.Camel2Case(filename), "_", ":"), // 冒号分隔
 		Path:      targetDir,
 		ModName:   utils.ModName(),
 	}
