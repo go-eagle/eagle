@@ -47,14 +47,14 @@ type {{.LcName}}Repo struct {
 	db     *gorm.DB
 	tracer trace.Tracer
 {{- if eq .WithCache true }}
-	cache  *cache.{{.Name}}Cache
+	cache  cache.{{.Name}}Cache
 {{- end }}
 }
 
 {{- if .WithCache }}
 // New{{.Name}} new a repository and return
-func New{{.Name}}(db *gorm.DB, cache *cache.{{.Name}}Cache) {{.Name}}Repo {
-	return &{{.LcName}}{
+func New{{.Name}}(db *gorm.DB, cache cache.{{.Name}}Cache) {{.Name}}Repo {
+	return &{{.LcName}}Repo{
 		db:     db,
 		tracer: otel.Tracer("{{.LcName}}"),
 		cache:  cache,
