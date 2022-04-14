@@ -28,6 +28,8 @@ const (
 	RotateTimeHourly = "hourly"
 )
 
+const defaultSkip = 1 // zapLogger 包装了一层 zap.Logger，默认要跳过一层
+
 // For mapping config logger to app logger levels
 var loggerLevelMap = map[string]zapcore.Level{
 	"debug":  zapcore.DebugLevel,
@@ -58,15 +60,20 @@ type zapLogger struct {
 
 // newZapLogger new zap logger
 func newZapLogger(cfg *Config) (*zap.Logger, error) {
-	return buildLogger(cfg), nil
+	return buildLogger(cfg, defaultSkip), nil
+}
+
+// newLoggerWithCallerSkip new logger with caller skip
+func newLoggerWithCallerSkip(cfg *Config, skip int) (Logger, error) {
+	return &zapLogger{sugarLogger: buildLogger(cfg, defaultSkip+skip).Sugar()}, nil
 }
 
 // newLogger new logger
 func newLogger(cfg *Config) (Logger, error) {
-	return &zapLogger{sugarLogger: buildLogger(cfg).Sugar()}, nil
+	return newLoggerWithCallerSkip(cfg, 0)
 }
 
-func buildLogger(cfg *Config) *zap.Logger {
+func buildLogger(cfg *Config, skip int) *zap.Logger {
 	var encoderCfg zapcore.EncoderConfig
 	if cfg.Development {
 		encoderCfg = zap.NewDevelopmentEncoderConfig()
@@ -132,7 +139,7 @@ func buildLogger(cfg *Config) *zap.Logger {
 	}
 
 	// 跳过文件调用层数
-	addCallerSkip := zap.AddCallerSkip(2)
+	addCallerSkip := zap.AddCallerSkip(skip)
 	options = append(options, addCallerSkip)
 
 	// 构造日志
