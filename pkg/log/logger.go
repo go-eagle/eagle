@@ -20,6 +20,9 @@ type Fields map[string]interface{}
 
 // Logger is a contract for the logger
 type Logger interface {
+	Debug(args ...interface{})
+	Debugf(format string, args ...interface{})
+
 	Info(args ...interface{})
 	Infof(format string, args ...interface{})
 
@@ -88,6 +91,11 @@ func WithContext(ctx context.Context) Logger {
 	return log
 }
 
+// Debug logger
+func Debug(args ...interface{}) {
+	log.Debug(args...)
+}
+
 // Info logger
 func Info(args ...interface{}) {
 	log.Info(args...)
@@ -101,6 +109,11 @@ func Warn(args ...interface{}) {
 // Error logger
 func Error(args ...interface{}) {
 	log.Error(args...)
+}
+
+// Debugf logger
+func Debugf(format string, args ...interface{}) {
+	log.Debugf(format, args...)
 }
 
 // Infof logger

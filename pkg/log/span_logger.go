@@ -18,6 +18,20 @@ type spanLogger struct {
 	spanFields []zapcore.Field
 }
 
+func (sl spanLogger) Debug(args ...interface{}) {
+	msg := fmt.Sprint(args...)
+	var fields []zap.Field
+	sl.logToSpan("debug", msg)
+	sl.logger.Debug(msg, append(sl.spanFields, fields...)...)
+}
+
+func (sl spanLogger) Debugf(format string, args ...interface{}) {
+	msg := fmt.Sprintf(format, args...)
+	var fields []zap.Field
+	sl.logToSpan("Debugf", msg)
+	sl.logger.Debug(msg, append(sl.spanFields, fields...)...)
+}
+
 func (sl spanLogger) Info(args ...interface{}) {
 	msg := fmt.Sprint(args...)
 	var fields []zap.Field
