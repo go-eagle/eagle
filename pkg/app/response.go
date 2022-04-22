@@ -107,7 +107,8 @@ type healthCheckResponse struct {
 	Hostname string `json:"hostname"`
 }
 
-// HealthCheck will return OK if the underlying BoltDB is healthy. At least healthy enough for demoing purposes.
+// HealthCheck will return OK if the underlying BoltDB is healthy.
+// At least healthy enough for demoing purposes.
 func HealthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, healthCheckResponse{Status: "UP", Hostname: utils.GetHostname()})
 }
