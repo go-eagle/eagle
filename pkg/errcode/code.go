@@ -4,7 +4,7 @@ package errcode
 var (
 	// 预定义错误
 	// Common errors
-	Success               = NewError(0, "Success")
+	Success               = NewError(0, "Ok")
 	ErrInternalServer     = NewError(10000, "Internal server error")
 	ErrInvalidParam       = NewError(10001, "Invalid params")
 	ErrUnauthorized       = NewError(10002, "Unauthorized error")

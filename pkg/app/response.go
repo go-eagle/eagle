@@ -3,15 +3,13 @@ package app
 import (
 	"net/http"
 
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-
-	"github.com/go-eagle/eagle/pkg/utils"
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"google.golang.org/grpc/status"
 
 	"github.com/go-eagle/eagle/pkg/errcode"
-
-	"github.com/gin-gonic/gin"
+	httpstatus "github.com/go-eagle/eagle/pkg/transport/http/status"
+	"github.com/go-eagle/eagle/pkg/utils"
 )
 
 var resp *Response
@@ -90,7 +88,7 @@ func (r *Response) Error(c *gin.Context, err error) {
 			// https://httpstatus.in/
 			// https://github.com/grpc-ecosystem/grpc-gateway/blob/master/runtime/errors.go#L15
 			// https://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
-			c.JSON(runtime.HTTPStatusFromCode(st.Code()), response)
+			c.JSON(httpstatus.HTTPStatusFromCode(st.Code()), response)
 			return
 		}
 	}
