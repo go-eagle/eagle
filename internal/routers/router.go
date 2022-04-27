@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/gin-contrib/pprof"
-	"github.com/gin-contrib/timeout"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	ginSwagger "github.com/swaggo/gin-swagger" //nolint: goimports
@@ -31,12 +30,7 @@ func NewRouter() *gin.Engine {
 	g.Use(middleware.RequestID())
 	g.Use(middleware.Metrics(app.Conf.Name))
 	g.Use(middleware.Tracing(app.Conf.Name))
-	// see: https://github.com/gin-contrib/timeout
-	// https://github.com/vearne/gin-timeout
-	// https://vearne.cc/archives/39135
-	g.Use(timeout.New(
-		timeout.WithTimeout(3 * time.Second),
-	))
+	g.Use(middleware.Timeout(3 * time.Second))
 	g.Use(mw.Translations())
 
 	// load web router

@@ -118,7 +118,7 @@ func (d *repository) GetUser(ctx context.Context, uid uint64) (userBase *model.U
 	// cache hit
 	if userBase != nil {
 		//prom.CacheHit.Incr("getOneUser")
-		log.WithContext(ctx).Infof("[repo.user_base] get user base data from cache, uid: %d", uid)
+		log.WithContext(ctx).Warnf("[repo.user_base] get user base data from cache, uid: %d", uid)
 		return
 	}
 
