@@ -67,7 +67,6 @@ func NewRouter() *gin.Engine {
 		apiV1.POST("/login", user.Login)
 		apiV1.POST("/login/phone", user.PhoneLogin)
 		apiV1.GET("/vcode", user.VCode)
-		apiV1.GET("/test", user.Test)
 
 		// 用户
 		apiV1.GET("/users/:id", user.Get)
