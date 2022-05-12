@@ -9,8 +9,6 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-
-	"github.com/go-eagle/eagle/cmd/eagle/internal/base"
 )
 
 // CmdClient represents the source command.
@@ -39,16 +37,6 @@ func run(cmd *cobra.Command, args []string) {
 		err   error
 		proto = strings.TrimSpace(args[0])
 	)
-	if err = look("protoc-gen-go", "protoc-gen-go-grpc", "protoc-gen-go-gin", "protoc-gen-validate", "protoc-gen-openapi"); err != nil {
-		// update all plugins
-		cmd := exec.Command("eagle", "upgrade")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err = cmd.Run(); err != nil {
-			fmt.Println(err)
-			return
-		}
-	}
 	// generate by proto file
 	if strings.HasSuffix(proto, ".proto") {
 		err = generate(proto, args)
@@ -91,11 +79,12 @@ func generate(proto string, args []string) error {
 	if pathExists(protoPath) {
 		input = append(input, "--proto_path="+protoPath)
 	}
+	// NOTE: one option per line, otherwise an error will be reported
 	inputExt := []string{
-		"--proto_path=" + base.EagleMod(),
-		"--proto_path=" + filepath.Join(base.EagleMod(), "third_party"),
-		"--go_out=paths=source_relative:.",
-		"--go-grpc_out=paths=source_relative:.",
+		"--go_out=.",
+		"--go_opt=paths=source_relative",
+		"--go-grpc_out=.",
+		"--go-grpc_opt=paths=source_relative",
 		"--openapi_out=paths=source_relative:.",
 	}
 	input = append(input, inputExt...)
