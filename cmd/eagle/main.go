@@ -18,12 +18,12 @@ import (
 
 var (
 	// Version is the version of the compiled software.
-	Version = "v0.13.3"
+	Version = "v0.13.4"
 
 	rootCmd = &cobra.Command{
 		Use:     "eagle",
-		Short:   "Eagle: An develop kit for Go microservices.",
-		Long:    `Eagle: An develop kit for Go microservices.`,
+		Short:   "Eagle: A development framework for Go microservices.",
+		Long:    `Eagle: A development framework for Go microservices.`,
 		Version: Version,
 	}
 )
