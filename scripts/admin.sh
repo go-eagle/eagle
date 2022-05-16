@@ -14,9 +14,16 @@ function start()
 		exit 1
 	fi
 
+	# set default
+	if [ "$ENV" = "" ]; then
+	  ARGS="-c config/local"
+	else
+	  ARGS="-c config/$ENV"
+	fi
+
 	nohup $BASE_DIR/$SERVER $ARGS  server &>/dev/null &
 
-	echo "sleeping..." &&  sleep $INTERVAL
+	echo "starting..." &&  sleep $INTERVAL
 
 	# check status
 	if [ "`pgrep $SERVER -u $UID`" == "" ];then
@@ -40,7 +47,7 @@ function stop()
 		kill -9 `pgrep $SERVER -u $UID`
 	fi
 
-	echo "sleeping..." &&  sleep $INTERVAL
+	echo "stopping..." &&  sleep $INTERVAL
 
 	if [ "`pgrep $SERVER -u $UID`" != "" ];then
 		echo "$SERVER stop failed"
