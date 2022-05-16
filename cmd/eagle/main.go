@@ -22,8 +22,8 @@ var (
 
 	rootCmd = &cobra.Command{
 		Use:     "eagle",
-		Short:   "Eagle: A development framework for Go microservices.",
-		Long:    `Eagle: A development framework for Go microservices.`,
+		Short:   "Eagle: A microservice framework for Go",
+		Long:    `Eagle: A microservice framework for Go`,
 		Version: Version,
 	}
 )
