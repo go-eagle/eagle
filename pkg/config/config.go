@@ -14,6 +14,11 @@ import (
 var (
 	// conf conf var
 	conf *Config
+
+	// conf file type
+	fileTypeYaml = "yaml"
+	fileTypeJson = "json"
+	fileTypeToml = "toml"
 )
 
 // Config conf struct.
@@ -33,7 +38,7 @@ func New(cfgDir string, opts ...Option) *Config {
 	}
 	c := Config{
 		configDir:  cfgDir,
-		configType: "yaml",
+		configType: fileTypeYaml,
 		val:        make(map[string]*viper.Viper),
 	}
 	for _, opt := range opts {
@@ -51,6 +56,38 @@ func Load(filename string, val interface{}) error { return conf.Load(filename, v
 // Load scan data to struct.
 func (c *Config) Load(filename string, val interface{}) error {
 	v, err := c.LoadWithType(filename, c.configType)
+	if err != nil {
+		return err
+	}
+	err = v.Unmarshal(&val)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// LoadJson alias for config func.
+func LoadJson(filename string, val interface{}) error { return conf.LoadJson(filename, val) }
+
+// LoadJson scan data to struct.
+func (c *Config) LoadJson(filename string, val interface{}) error {
+	v, err := c.LoadWithType(filename, fileTypeJson)
+	if err != nil {
+		return err
+	}
+	err = v.Unmarshal(&val)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// LoadToml alias for config func.
+func LoadToml(filename string, val interface{}) error { return conf.LoadToml(filename, val) }
+
+// LoadToml scan data to struct.
+func (c *Config) LoadToml(filename string, val interface{}) error {
+	v, err := c.LoadWithType(filename, fileTypeToml)
 	if err != nil {
 		return err
 	}
