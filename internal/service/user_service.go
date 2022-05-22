@@ -11,7 +11,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	pb "github.com/go-eagle/eagle/api/grpc/user/v1"
+	pb "github.com/go-eagle/eagle/api/user/v1"
 	"github.com/go-eagle/eagle/internal/model"
 	"github.com/go-eagle/eagle/pkg/app"
 	"github.com/go-eagle/eagle/pkg/auth"

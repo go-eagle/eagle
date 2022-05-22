@@ -9,7 +9,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	pb "github.com/go-eagle/eagle/api/grpc/user/v1"
+	pb "github.com/go-eagle/eagle/api/user/v1"
 )
 
 const (
