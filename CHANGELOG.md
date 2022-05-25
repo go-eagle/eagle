@@ -1,5 +1,8 @@
 ## Changelog
 
+## v1.6.0
+- add(cli): gen model
+
 ## v1.5.0
 - add: cache, repo, service cmd
 - add: grpc error
