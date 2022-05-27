@@ -58,7 +58,7 @@ func (c *redisCache) Get(ctx context.Context, key string, val interface{}) error
 	}
 
 	bytes, err := c.client.Get(ctx, cacheKey).Bytes()
-	if err != nil {
+	if err != nil && !errors.Is(err, redis.Nil) {
 		return err
 	}
 
