@@ -2,6 +2,7 @@
 
 ## v1.6.0
 - add(cli): gen model
+- feat: add more option for server and client
 
 ## v1.5.0
 - add: cache, repo, service cmd

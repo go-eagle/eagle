@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	grpcZap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpcRecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
@@ -17,6 +18,7 @@ import (
 	healthPb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 
+	logger "github.com/go-eagle/eagle/pkg/log"
 	"github.com/go-eagle/eagle/pkg/utils"
 )
 
@@ -41,6 +43,20 @@ func Address(addr string) ServerOption {
 func Timeout(timeout time.Duration) ServerOption {
 	return func(s *Server) {
 		s.timeout = timeout
+	}
+}
+
+// EnableTracing enable tracing.
+func EnableTracing() ServerOption {
+	return func(s *Server) {
+		s.enableTracing = true
+	}
+}
+
+// EnableLog enable log for server.
+func EnableLog() ServerOption {
+	return func(s *Server) {
+		s.enableLog = true
 	}
 }
 
@@ -74,8 +90,10 @@ type Server struct {
 	grpcOpts []grpc.ServerOption
 	health   *health.Server
 
-	// EnableTracer enables distributed tracing using OpenTelemetry protocol
-	EnableTracing bool
+	// enableTracing enables distributed tracing using OpenTelemetry protocol
+	enableTracing bool
+	// enableLog enables log for requesting server
+	enableLog bool
 	// TracerOptions are options for OpenTelemetry gRPC interceptor.
 	TracerOptions []otelgrpc.Option
 }
@@ -108,9 +126,15 @@ func NewServer(opts ...ServerOption) *Server {
 	}
 
 	// enable tracing
-	if srv.EnableTracing {
+	if srv.enableTracing {
 		chainUnaryInterceptors = append(chainUnaryInterceptors, otelgrpc.UnaryServerInterceptor(srv.TracerOptions...))
 		chainStreamInterceptors = append(chainStreamInterceptors, otelgrpc.StreamServerInterceptor(srv.TracerOptions...))
+	}
+
+	// enable log
+	if srv.enableLog {
+		chainUnaryInterceptors = append(chainUnaryInterceptors, grpcZap.UnaryServerInterceptor(logger.GetZapLogger()))
+		chainStreamInterceptors = append(chainStreamInterceptors, grpcZap.StreamServerInterceptor(logger.GetZapLogger()))
 	}
 
 	grpcOpts := []grpc.ServerOption{

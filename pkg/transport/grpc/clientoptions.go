@@ -15,8 +15,9 @@ type clientOptions struct {
 	balancerName string
 	enableGzip   bool
 	enableMetric bool
+	enableLog    bool
 	// retry config
-	DisableRetry bool
+	disableRetry bool
 	NumRetries   int // maximum number of retry attempts
 }
 
@@ -34,6 +35,34 @@ func WithEndpoint(endpoint string) ClientOption {
 func WithTimeout(timeout time.Duration) ClientOption {
 	return func(o *clientOptions) {
 		o.timeout = timeout
+	}
+}
+
+// WithMetric enable metric.
+func WithMetric() ClientOption {
+	return func(o *clientOptions) {
+		o.enableMetric = true
+	}
+}
+
+// WithLog enable log.
+func WithLog() ClientOption {
+	return func(o *clientOptions) {
+		o.enableLog = true
+	}
+}
+
+// WithGzip enable gzip.
+func WithGzip() ClientOption {
+	return func(o *clientOptions) {
+		o.enableGzip = true
+	}
+}
+
+// WithoutRetry disable retry.
+func WithoutRetry() ClientOption {
+	return func(o *clientOptions) {
+		o.disableRetry = true
 	}
 }
 

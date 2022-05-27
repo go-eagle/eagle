@@ -31,7 +31,7 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 		balancerName: roundrobin.Name,
 		enableGzip:   true,
 		enableMetric: true,
-		DisableRetry: false,
+		disableRetry: false,
 		NumRetries:   2,
 	}
 	for _, opt := range opts {
@@ -72,7 +72,7 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 			grpc.WithChainStreamInterceptor(grpcPrometheus.StreamClientInterceptor),
 		)
 	}
-	if !options.DisableRetry {
+	if !options.disableRetry {
 		dialOpts = append(dialOpts,
 			grpc.WithDefaultServiceConfig(getRetryPolicy(options.balancerName, options.NumRetries)),
 		)
