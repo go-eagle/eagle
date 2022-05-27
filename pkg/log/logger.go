@@ -79,6 +79,11 @@ func GetLogger() Logger {
 	return logger
 }
 
+// GetZapLogger return raw zap logger
+func GetZapLogger() *zap.Logger {
+	return zl
+}
+
 // WithContext is a logger that can log msg and log span for trace
 func WithContext(ctx context.Context) Logger {
 	//return zap logger
