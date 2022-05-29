@@ -8,6 +8,7 @@ import (
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
 
+	"github.com/go-eagle/eagle/pkg/config"
 	"github.com/go-eagle/eagle/pkg/log"
 )
 
@@ -30,8 +31,12 @@ type Client struct {
 	config *Config
 }
 
-func New(config *Config) (*Client, error) {
-	return newClient(config)
+func New() (*Client, error) {
+	cfg, err := loadConf()
+	if err != nil {
+		panic(fmt.Sprintf("[etcd] load etcd conf err: %v", err))
+	}
+	return newClient(cfg)
 }
 
 // New ...
@@ -52,7 +57,7 @@ func newClient(config *Config) (*Client, error) {
 	config.logger = log.GetLogger()
 
 	if config.Endpoints == nil {
-		return nil, fmt.Errorf("client etcd endpoints empty, empty endpoints")
+		return nil, fmt.Errorf("[etcd]  client etcd endpoints empty, empty endpoints")
 	}
 
 	if !config.Secure {
@@ -68,7 +73,7 @@ func newClient(config *Config) (*Client, error) {
 
 	if err != nil {
 		// config.logger.Panic("client etcd start panic", xlog.FieldMod(ecode.ModClientETCD), xlog.FieldErrKind(ecode.ErrKindAny), xlog.FieldErr(err), xlog.FieldValueAny(config))
-		return nil, fmt.Errorf("client etcd start failed: %v", err)
+		return nil, fmt.Errorf("[etcd] client etcd start failed: %v", err)
 	}
 
 	cc := &Client{
@@ -78,4 +83,19 @@ func newClient(config *Config) (*Client, error) {
 
 	config.logger.Info("dial etcd server")
 	return cc, nil
+}
+
+// loadConf load register config
+func loadConf() (ret *Config, err error) {
+	var cfg Config
+	v, err := config.LoadWithType("registry", config.FileTypeYaml)
+	if err != nil {
+		return nil, err
+	}
+
+	err = v.UnmarshalKey("etcd", &cfg)
+	if err != nil {
+		return nil, err
+	}
+	return &cfg, nil
 }
