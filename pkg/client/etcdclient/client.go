@@ -30,6 +30,10 @@ type Client struct {
 	config *Config
 }
 
+func New(config *Config) (*Client, error) {
+	return newClient(config)
+}
+
 // New ...
 func newClient(config *Config) (*Client, error) {
 	conf := clientv3.Config{
