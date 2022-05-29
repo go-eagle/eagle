@@ -14,13 +14,13 @@ import (
 
 // Config etcd config
 type Config struct {
-	Endpoints        []string      `json:"endpoints"`
-	BasicAuth        bool          `json:"basicAuth"`
-	UserName         string        `json:"userName"`
-	Password         string        `json:"-"`
-	ConnectTimeout   time.Duration `json:"connectTimeout"` // 连接超时时间
-	Secure           bool          `json:"secure"`
-	AutoSyncInterval time.Duration `json:"autoAsyncInterval"` // 自动同步member list的间隔
+	Endpoints        []string
+	BasicAuth        bool
+	UserName         string
+	Password         string
+	ConnectTimeout   time.Duration // 连接超时时间
+	Secure           bool
+	AutoSyncInterval time.Duration // 自动同步member list的间隔
 	TTL              int           // 单位：s
 	logger           log.Logger
 }
