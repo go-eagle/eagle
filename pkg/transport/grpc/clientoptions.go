@@ -3,6 +3,8 @@ package grpc
 import (
 	"time"
 
+	"github.com/go-eagle/eagle/pkg/registry"
+
 	"google.golang.org/grpc"
 )
 
@@ -13,6 +15,7 @@ type clientOptions struct {
 	inters       []grpc.UnaryClientInterceptor
 	dialOpts     []grpc.DialOption
 	balancerName string
+	discovery    registry.Discovery
 	enableGzip   bool
 	enableMetric bool
 	enableLog    bool
@@ -63,6 +66,12 @@ func WithGzip() ClientOption {
 func WithoutRetry() ClientOption {
 	return func(o *clientOptions) {
 		o.disableRetry = true
+	}
+}
+
+func WithDiscovery(d registry.Discovery) ClientOption {
+	return func(o *clientOptions) {
+		o.discovery = d
 	}
 }
 

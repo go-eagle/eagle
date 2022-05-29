@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"time"
 
-	"google.golang.org/grpc/credentials"
-
 	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/balancer/roundrobin"
+	"google.golang.org/grpc/credentials"
 	grpcInsecure "google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding/gzip"
+
+	"github.com/go-eagle/eagle/pkg/transport/grpc/resolver/discovery"
 )
 
 // Dial
@@ -53,6 +54,11 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 	}
 	if len(options.dialOpts) > 0 {
 		dialOpts = append(dialOpts, options.dialOpts...)
+	}
+	// service discovery
+	if options.discovery != nil {
+		dialOpts = append(dialOpts, grpc.WithResolvers(discovery.NewBuilder(
+			options.discovery, discovery.WithInsecure(insecure))))
 	}
 	if insecure {
 		dialOpts = append(dialOpts, grpc.WithTransportCredentials(grpcInsecure.NewCredentials()))
