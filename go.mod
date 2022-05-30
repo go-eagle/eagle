@@ -48,6 +48,7 @@ require (
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
+	github.com/nacos-group/nacos-sdk-go v1.1.1 // indirect
 	github.com/nats-io/nats-server/v2 v2.1.2 // indirect
 	github.com/nats-io/nats.go v1.13.0
 	github.com/opentracing/opentracing-go v1.2.0
