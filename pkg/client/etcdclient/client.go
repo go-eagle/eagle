@@ -72,7 +72,6 @@ func newClient(config *Config) (*Client, error) {
 	client, err := clientv3.New(conf)
 
 	if err != nil {
-		// config.logger.Panic("client etcd start panic", xlog.FieldMod(ecode.ModClientETCD), xlog.FieldErrKind(ecode.ErrKindAny), xlog.FieldErr(err), xlog.FieldValueAny(config))
 		return nil, fmt.Errorf("[etcd] client etcd start failed: %v", err)
 	}
 
