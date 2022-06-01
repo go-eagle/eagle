@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	logger "github.com/go-eagle/eagle/pkg/log"
+	grpcZap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+
 	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/balancer/roundrobin"
@@ -76,6 +79,12 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 		dialOpts = append(dialOpts,
 			grpc.WithChainUnaryInterceptor(grpcPrometheus.UnaryClientInterceptor),
 			grpc.WithChainStreamInterceptor(grpcPrometheus.StreamClientInterceptor),
+		)
+	}
+	if options.enableLog {
+		dialOpts = append(dialOpts,
+			grpc.WithChainUnaryInterceptor(grpcZap.UnaryClientInterceptor(logger.GetZapLogger())),
+			grpc.WithChainStreamInterceptor(grpcZap.StreamClientInterceptor(logger.GetZapLogger())),
 		)
 	}
 	if !options.disableRetry {
