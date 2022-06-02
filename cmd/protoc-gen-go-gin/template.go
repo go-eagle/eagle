@@ -9,7 +9,6 @@ import (
 )
 
 var httpTemplate = `
-var response = app.NewResponse()
 
 type {{ $.InterfaceName }} interface {
 {{- range .MethodSet}}
@@ -34,23 +33,22 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 	var in {{.Request}}
 {{if .HasPathParams }}
 	if err := ctx.ShouldBindUri(&in); err != nil {
-		response.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
+		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
-{{end}}
-{{if eq .Method "GET" "DELETE" }}
+{{else if eq .Method "GET" }}
 	if err := ctx.ShouldBindQuery(&in); err != nil {
-		response.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
+		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
-{{else if eq .Method "POST" "PUT" }}
+{{else if eq .Method "POST" "PUT" "PATCH" "DELETE"}}
 	if err := ctx.ShouldBindJSON(&in); err != nil {
-		response.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
+		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
 {{else}}
 	if err := ctx.ShouldBind(&in); err != nil {
-		response.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
+		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
 {{end}}
@@ -61,11 +59,11 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 	newCtx := metadata.NewIncomingContext(ctx, md)
 	out, err := s.server.({{ $.InterfaceName }}).{{.Name}}(newCtx, &in)
 	if err != nil {
-		response.Error(ctx, err)
+		app.Error(ctx, err)
 		return
 	}
 
-	response.Success(ctx, out)
+	app.Success(ctx, out)
 }
 {{end}}
 
