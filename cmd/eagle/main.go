@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/go-eagle/eagle/cmd/eagle/internal/cache"
+	"github.com/go-eagle/eagle/cmd/eagle/internal/handler"
 	"github.com/go-eagle/eagle/cmd/eagle/internal/model"
 	"github.com/go-eagle/eagle/cmd/eagle/internal/project"
 	"github.com/go-eagle/eagle/cmd/eagle/internal/proto"
@@ -18,7 +19,7 @@ import (
 
 var (
 	// Version is the version of the compiled software.
-	Version = "v0.14.0"
+	Version = "v0.15.0"
 
 	rootCmd = &cobra.Command{
 		Use:     "eagle",
@@ -31,6 +32,7 @@ var (
 func init() {
 	rootCmd.AddCommand(project.CmdNew)
 	rootCmd.AddCommand(run.CmdRun)
+	rootCmd.AddCommand(handler.CmdHandler)
 	rootCmd.AddCommand(cache.CmdCache)
 	rootCmd.AddCommand(repo.CmdRepo)
 	rootCmd.AddCommand(service.CmdService)
