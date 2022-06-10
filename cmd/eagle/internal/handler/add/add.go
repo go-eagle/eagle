@@ -24,7 +24,7 @@ var (
 
 func init() {
 	CmdAdd.Flags().StringVarP(&targetDir, "target-dir", "t", "internal/handler", "generate target directory")
-	CmdAdd.Flags().StringVarP(&version, "version", "v", "v1", "handler version, default v1")
+	CmdAdd.Flags().StringVarP(&version, "version", "v", "v1", "handler version")
 	CmdAdd.Flags().StringVarP(&method, "method", "m", "get", "http method")
 }
 
