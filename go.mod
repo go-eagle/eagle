@@ -48,7 +48,7 @@ require (
 	github.com/lib/pq v1.3.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
-	github.com/nacos-group/nacos-sdk-go v1.1.1 // indirect
+	github.com/nacos-group/nacos-sdk-go v1.1.1
 	github.com/nats-io/nats-server/v2 v2.1.2 // indirect
 	github.com/nats-io/nats.go v1.13.0
 	github.com/opentracing/opentracing-go v1.2.0
@@ -70,7 +70,7 @@ require (
 	github.com/toolkits/net v0.0.0-20160910085801-3f39ab6fe3ce
 	github.com/uber/jaeger-client-go v2.25.0+incompatible
 	github.com/uber/jaeger-lib v2.4.0+incompatible
-	github.com/vearne/gin-timeout v0.0.9
+	github.com/vearne/gin-timeout v0.1.0
 	github.com/vmihailenco/msgpack v4.0.4+incompatible
 	github.com/willf/pad v0.0.0-20190207183901-eccfe5d84172
 	go.etcd.io/etcd/client/v3 v3.5.1
