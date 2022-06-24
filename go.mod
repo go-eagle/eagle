@@ -31,16 +31,18 @@ require (
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis/extra/redisotel/v8 v8.10.0
-	github.com/go-redis/redis/v8 v8.11.0
+	github.com/go-redis/redis/v7 v7.4.0 // indirect
+	github.com/go-redis/redis/v8 v8.11.2
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/go-test/deep v1.0.6
 	github.com/golang/protobuf v1.5.2
 	github.com/golang/snappy v0.0.3
-	github.com/google/uuid v1.1.2
+	github.com/google/uuid v1.2.0
 	github.com/gorilla/sessions v1.2.1
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/hashicorp/consul/api v1.11.0
+	github.com/hibiken/asynq v0.23.0 // indirect
 	github.com/jinzhu/gorm v1.9.16
 	github.com/jonboulle/clockwork v0.1.0 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
