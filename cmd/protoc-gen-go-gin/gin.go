@@ -62,6 +62,9 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	}
 
 	for _, method := range s.Methods {
+		if method.Desc.IsStreamingClient() || method.Desc.IsStreamingServer() {
+			continue
+		}
 		sd.Methods = append(sd.Methods, genMethod(method)...)
 	}
 	if len(sd.Methods) != 0 {
