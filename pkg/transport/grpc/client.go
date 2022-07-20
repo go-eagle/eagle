@@ -6,13 +6,17 @@ import (
 	"fmt"
 	"time"
 
-	"google.golang.org/grpc/credentials"
+	logger "github.com/go-eagle/eagle/pkg/log"
+	grpcZap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 
 	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/balancer/roundrobin"
+	"google.golang.org/grpc/credentials"
 	grpcInsecure "google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding/gzip"
+
+	"github.com/go-eagle/eagle/pkg/transport/grpc/resolver/discovery"
 )
 
 // Dial
@@ -31,7 +35,7 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 		balancerName: roundrobin.Name,
 		enableGzip:   true,
 		enableMetric: true,
-		DisableRetry: false,
+		disableRetry: false,
 		NumRetries:   2,
 	}
 	for _, opt := range opts {
@@ -54,6 +58,11 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 	if len(options.dialOpts) > 0 {
 		dialOpts = append(dialOpts, options.dialOpts...)
 	}
+	// service discovery
+	if options.discovery != nil {
+		dialOpts = append(dialOpts, grpc.WithResolvers(discovery.NewBuilder(
+			options.discovery, discovery.WithInsecure(insecure))))
+	}
 	if insecure {
 		dialOpts = append(dialOpts, grpc.WithTransportCredentials(grpcInsecure.NewCredentials()))
 	} else {
@@ -72,7 +81,13 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 			grpc.WithChainStreamInterceptor(grpcPrometheus.StreamClientInterceptor),
 		)
 	}
-	if !options.DisableRetry {
+	if options.enableLog {
+		dialOpts = append(dialOpts,
+			grpc.WithChainUnaryInterceptor(grpcZap.UnaryClientInterceptor(logger.GetZapLogger())),
+			grpc.WithChainStreamInterceptor(grpcZap.StreamClientInterceptor(logger.GetZapLogger())),
+		)
+	}
+	if !options.disableRetry {
 		dialOpts = append(dialOpts,
 			grpc.WithDefaultServiceConfig(getRetryPolicy(options.balancerName, options.NumRetries)),
 		)

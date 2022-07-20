@@ -7,7 +7,7 @@ RUN apk add --no-cache git make bash ca-certificates tzdata \
     --repository http://mirrors.aliyun.com/alpine/v3.11/community \
     --repository http://mirrors.aliyun.com/alpine/v3.11/main
 
-RUN GRPC_HEALTH_PROBE_VERSION=v0.3.0 && \
+RUN GRPC_HEALTH_PROBE_VERSION=v0.4.8 && \
     wget -qO/bin/grpc_health_probe \
     https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/
     ${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
@@ -46,6 +46,7 @@ WORKDIR /bin
 # 从builder镜像中把 /build 拷贝到当前目录
 COPY --from=builder /go/src/github.com/go-eagle/eagle          /bin/eagle
 COPY --from=builder /go/src/github.com/go-eagle/eagle/config   /data/conf/eagle/config
+COPY --from=builder /bin/grpc_health_probe                     /bin/grpc_health_probe
 
 RUN mkdir -p /data/logs/
 

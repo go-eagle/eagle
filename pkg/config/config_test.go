@@ -39,4 +39,22 @@ func TestLoad(t *testing.T) {
 
 		t.Log(appConfig.Name)
 	})
+
+	t.Run("test load json file", func(t *testing.T) {
+		c := New("../../config/")
+		if err := c.LoadJson("app", &appConfig); err != nil {
+			t.Fatal(err)
+		}
+
+		t.Log(appConfig.Name)
+	})
+
+	t.Run("test load toml file", func(t *testing.T) {
+		c := New("../../config/")
+		if err := c.LoadToml("app", &appConfig); err != nil {
+			t.Fatal(err)
+		}
+
+		t.Log(appConfig.Name)
+	})
 }

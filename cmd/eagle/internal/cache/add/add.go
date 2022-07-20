@@ -2,6 +2,7 @@ package add
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/go-eagle/eagle/cmd/eagle/internal/utils"
 
@@ -33,11 +34,12 @@ func run(cmd *cobra.Command, args []string) {
 	filename := args[0]
 
 	c := &Cache{
-		Name:    utils.Ucfirst(filename),    // 首字母大写
-		LcName:  utils.Lcfirst(filename),    // 首字母小写
-		UsName:  utils.Camel2Case(filename), // 下划线分隔
-		Path:    targetDir,
-		ModName: utils.ModName(),
+		Name:      utils.Ucfirst(filename),                                  // 首字母大写
+		LcName:    utils.Lcfirst(filename),                                  // 首字母小写
+		UsName:    utils.Camel2Case(filename),                               // 下划线分隔
+		ColonName: strings.ReplaceAll(utils.Camel2Case(filename), "_", ":"), // 冒号分隔
+		Path:      targetDir,
+		ModName:   utils.ModName(),
 	}
 	if err := c.Generate(); err != nil {
 		fmt.Println(err)

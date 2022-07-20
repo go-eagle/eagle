@@ -15,7 +15,7 @@ option go_package = "{{.GoPackage}}";
 option java_multiple_files = true;
 option java_package = "{{.JavaPackage}}";
 
-service {{.Service}} {
+service {{.Service}}Service {
 	rpc Create{{.Service}} (Create{{.Service}}Request) returns (Create{{.Service}}Reply);
 	rpc Update{{.Service}} (Update{{.Service}}Request) returns (Update{{.Service}}Reply);
 	rpc Delete{{.Service}} (Delete{{.Service}}Request) returns (Delete{{.Service}}Reply);

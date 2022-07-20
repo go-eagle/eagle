@@ -27,10 +27,10 @@ import (
 
 const (
 	// Prefix{{.Name}}CacheKey cache prefix
-	Prefix{{.Name}}CacheKey = "{{.LcName}}:%d"
+	Prefix{{.Name}}CacheKey = "{{.ColonName}}:%d"
 )
 
-// {{.Name}} define cache interface
+// {{.Name}}Cache define cache interface
 type {{.Name}}Cache interface {
 	Set{{.Name}}Cache(ctx context.Context, id int64, data *model.{{.Name}}Model, duration time.Duration) error
 	Get{{.Name}}Cache(ctx context.Context, id int64) (data *model.{{.Name}}Model, err error)
@@ -56,12 +56,12 @@ func New{{.Name}}Cache() {{.Name}}Cache {
 }
 
 // Get{{.Name}}CacheKey get cache key
-func (c *{{.Name}}Cache) Get{{.Name}}CacheKey(id int64) string {
+func (c *{{.LcName}}Cache) Get{{.Name}}CacheKey(id int64) string {
 	return fmt.Sprintf(Prefix{{.Name}}CacheKey, id)
 }
 
 // Set{{.Name}}Cache write to cache
-func (c *{{.Name}}Cache) Set{{.Name}}Cache(ctx context.Context, id int64, data *model.{{.Name}}Model, duration time.Duration) error {
+func (c *{{.LcName}}Cache) Set{{.Name}}Cache(ctx context.Context, id int64, data *model.{{.Name}}Model, duration time.Duration) error {
 	if data == nil || id == 0 {
 		return nil
 	}
@@ -74,7 +74,7 @@ func (c *{{.Name}}Cache) Set{{.Name}}Cache(ctx context.Context, id int64, data *
 }
 
 // Get{{.Name}}Cache get from cache
-func (c *{{.Name}}Cache) Get{{.Name}}Cache(ctx context.Context, id int64) (data *model.{{.Name}}Model, err error) {
+func (c *{{.LcName}}Cache) Get{{.Name}}Cache(ctx context.Context, id int64) (data *model.{{.Name}}Model, err error) {
 	cacheKey := c.Get{{.Name}}CacheKey(id)
 	err = c.cache.Get(ctx, cacheKey, &data)
 	if err != nil {
@@ -85,7 +85,7 @@ func (c *{{.Name}}Cache) Get{{.Name}}Cache(ctx context.Context, id int64) (data 
 }
 
 // MultiGet{{.Name}}Cache batch get cache
-func (c *{{.Name}}Cache) MultiGet{{.Name}}Cache(ctx context.Context, ids []int64) (map[string]*model.{{.Name}}Model, error) {
+func (c *{{.LcName}}Cache) MultiGet{{.Name}}Cache(ctx context.Context, ids []int64) (map[string]*model.{{.Name}}Model, error) {
 	var keys []string
 	for _, v := range ids {
 		cacheKey := c.Get{{.Name}}CacheKey(v)
@@ -102,7 +102,7 @@ func (c *{{.Name}}Cache) MultiGet{{.Name}}Cache(ctx context.Context, ids []int64
 }
 
 // MultiSet{{.Name}}Cache batch set cache
-func (c *{{.Name}}Cache) MultiSet{{.Name}}Cache(ctx context.Context, data []*model.{{.Name}}Model, duration time.Duration) error {
+func (c *{{.LcName}}Cache) MultiSet{{.Name}}Cache(ctx context.Context, data []*model.{{.Name}}Model, duration time.Duration) error {
 	valMap := make(map[string]interface{})
 	for _, v := range data {
 		cacheKey := c.Get{{.Name}}CacheKey(v.ID)
@@ -117,7 +117,7 @@ func (c *{{.Name}}Cache) MultiSet{{.Name}}Cache(ctx context.Context, data []*mod
 }
 
 // Del{{.Name}}Cache delete cache
-func (c *{{.Name}}Cache) Del{{.Name}}Cache(ctx context.Context, id int64) error {
+func (c *{{.LcName}}Cache) Del{{.Name}}Cache(ctx context.Context, id int64) error {
 	cacheKey := c.Get{{.Name}}CacheKey(id)
 	err := c.cache.Del(ctx, cacheKey)
 	if err != nil {
@@ -126,8 +126,8 @@ func (c *{{.Name}}Cache) Del{{.Name}}Cache(ctx context.Context, id int64) error 
 	return nil
 }
 
-// Del{{.Name}}Cache set empty cache
-func (c *{{.Name}}Cache) SetCacheWithNotFound(ctx context.Context, id int64) error {
+// SetCacheWithNotFound set empty cache
+func (c *{{.LcName}}Cache) SetCacheWithNotFound(ctx context.Context, id int64) error {
 	cacheKey := c.Get{{.Name}}CacheKey(id)
 	err := c.cache.SetCacheWithNotFound(ctx, cacheKey)
 	if err != nil {

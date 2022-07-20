@@ -42,7 +42,7 @@ func generateID() string {
 
 // GetRequestIDFromContext returns 'RequestID' from the given context if present.
 func GetRequestIDFromContext(c *gin.Context) string {
-	if v, ok := c.Get(HeaderXRequestIDKey); ok {
+	if v, ok := c.Get(ContextRequestIDKey); ok {
 		if requestID, ok := v.(string); ok {
 			return requestID
 		}

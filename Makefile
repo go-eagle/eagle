@@ -108,9 +108,6 @@ docs:
   		go get -u github.com/swaggo/swag/cmd/swag; \
   	fi
 	@swag init
-	@mv docs/docs.go api/http
-	@mv docs/swagger.json api/http
-	@mv docs/swagger.yaml api/http
 	@echo "gen-docs done"
 	@echo "see docs by: http://localhost:8080/swagger/index.html"
 

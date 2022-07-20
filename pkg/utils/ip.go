@@ -2,10 +2,10 @@ package utils
 
 import (
 	"net"
+	"net/http"
 	"strings"
 	"sync"
 
-	"github.com/gin-gonic/gin"
 	tnet "github.com/toolkits/net"
 )
 
@@ -52,8 +52,8 @@ func GetInternalIP() string {
 }
 
 // GetRealIP get user real ip
-func GetRealIP(ctx *gin.Context) (ip string) {
-	var header = ctx.Request.Header
+func GetRealIP(r *http.Request) (ip string) {
+	var header = r.Header
 	var index int
 	if ip = header.Get("X-Forwarded-For"); ip != "" {
 		index = strings.IndexByte(ip, ',')
@@ -82,6 +82,7 @@ func GetRealIP(ctx *gin.Context) (ip string) {
 			return ip
 		}
 	}
-	ip, _, _ = net.SplitHostPort(ctx.Request.RemoteAddr)
+	ip, _, _ = net.SplitHostPort(r.RemoteAddr)
+
 	return ip
 }

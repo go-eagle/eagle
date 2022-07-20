@@ -13,6 +13,7 @@ import (
 
 // log is A global variable so that log functions can be directly accessed
 var log Logger
+var logger Logger
 var zl *zap.Logger
 
 // Fields Type to pass when we want to call WithFields for structured logging
@@ -20,6 +21,9 @@ type Fields map[string]interface{}
 
 // Logger is a contract for the logger
 type Logger interface {
+	Debug(args ...interface{})
+	Debugf(format string, args ...interface{})
+
 	Info(args ...interface{})
 	Infof(format string, args ...interface{})
 
@@ -56,10 +60,15 @@ func Init() Logger {
 	}
 	_ = zl
 
-	// new sugar logger
-	log, err = newLogger(cfg)
+	// log 用于支持模块级的方法调用，所以要比其他 Logger 多跳一层
+	log, err = newLoggerWithCallerSkip(cfg, 1)
 	if err != nil {
 		_ = fmt.Errorf("init newLogger err: %v", err)
+	}
+
+	logger, err = newLogger(cfg)
+	if err != nil {
+		_ = fmt.Errorf("init logger err: %v", err)
 	}
 
 	return log
@@ -67,7 +76,12 @@ func Init() Logger {
 
 // GetLogger return a log
 func GetLogger() Logger {
-	return log
+	return logger
+}
+
+// GetZapLogger return raw zap logger
+func GetZapLogger() *zap.Logger {
+	return zl
 }
 
 // WithContext is a logger that can log msg and log span for trace
@@ -85,7 +99,12 @@ func WithContext(ctx context.Context) Logger {
 
 		return logger
 	}
-	return log
+	return GetLogger()
+}
+
+// Debug logger
+func Debug(args ...interface{}) {
+	log.Debug(args...)
 }
 
 // Info logger
@@ -101,6 +120,11 @@ func Warn(args ...interface{}) {
 // Error logger
 func Error(args ...interface{}) {
 	log.Error(args...)
+}
+
+// Debugf logger
+func Debugf(format string, args ...interface{}) {
+	log.Debugf(format, args...)
 }
 
 // Infof logger
@@ -126,5 +150,5 @@ func Errorf(format string, args ...interface{}) {
 // 	    log.WithFields(log.Fields{"key1": "value1"}).Info("this is a test log")
 // 	    log.WithFields(log.Fields{"key1": "value1"}).Infof("this is a test log, user_id: %d", userID)
 func WithFields(keyValues Fields) Logger {
-	return log.WithFields(keyValues)
+	return GetLogger().WithFields(keyValues)
 }

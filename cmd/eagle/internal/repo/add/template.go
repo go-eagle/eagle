@@ -47,14 +47,14 @@ type {{.LcName}}Repo struct {
 	db     *gorm.DB
 	tracer trace.Tracer
 {{- if eq .WithCache true }}
-	cache  *cache.{{.Name}}Cache
+	cache  cache.{{.Name}}Cache
 {{- end }}
 }
 
 {{- if .WithCache }}
 // New{{.Name}} new a repository and return
-func New{{.Name}}(db *gorm.DB, cache *cache.{{.Name}}Cache) {{.Name}}Repo {
-	return &{{.LcName}}{
+func New{{.Name}}(db *gorm.DB, cache cache.{{.Name}}Cache) {{.Name}}Repo {
+	return &{{.LcName}}Repo{
 		db:     db,
 		tracer: otel.Tracer("{{.LcName}}"),
 		cache:  cache,
@@ -110,13 +110,15 @@ func (r *{{.LcName}}Repo) Get{{.Name}}(ctx context.Context, id int64) (ret *mode
 		return item, nil
 	}
 {{- end }}
+	// read db
 	data := new(model.{{.Name}}Model)
 	err = r.db.WithContext(ctx).Raw(fmt.Sprintf(_get{{.Name}}SQL, _table{{.Name}}Name), id).Scan(&data).Error
 	if err != nil {
 		return
 	}
-s
+
 {{- if .WithCache }}
+	// write cache
 	if data.ID > 0 {
 		err = r.cache.Set{{.Name}}Cache(ctx, id, data, 5*time.Minute)
 		if err != nil {
@@ -130,6 +132,7 @@ s
 // BatchGet{{.Name}} batch get items
 func (r *{{.LcName}}Repo) BatchGet{{.Name}}(ctx context.Context, ids []int64) (ret []*model.{{.Name}}Model, err error) {
 {{- if .WithCache }}
+	// read cache
 	idsStr := cast.ToStringSlice(ids)
 	itemMap, err := r.cache.MultiGet{{.Name}}Cache(ctx, ids)
 	if err != nil {
@@ -164,6 +167,7 @@ func (r *{{.LcName}}Repo) BatchGet{{.Name}}(ctx context.Context, ids []int64) (r
 	}
 	return ret, nil
 {{- else }}
+	// read db
 	items := make([]*model.{{.Name}}Model, 0)
 	err = r.db.WithContext(ctx).Raw(fmt.Sprintf(_batchGet{{.Name}}SQL, _table{{.Name}}Name), ids).Scan(&items).Error
 	if err != nil {
