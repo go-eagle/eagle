@@ -12,7 +12,9 @@ func main() {
 
 	// NOTE: need to create exchange and queue manually, than bind exchange to queue
 	exchangeName := "test-exchange"
-	queueName := "test-bind-to-exchange"
+	// like topic
+	routingKey := "test-routing-key"
+	queueName := "test-queue"
 
 	var message = "Hello World RabbitMQ!"
 
@@ -22,7 +24,7 @@ func main() {
 	if err := producer.Start(); err != nil {
 		log.Fatalf("start producer err: %s", err.Error())
 	}
-	if err := producer.Publish(message); err != nil {
+	if err := producer.Publish(routingKey, message); err != nil {
 		log.Fatalf("failed publish message: %s", err.Error())
 	}
 
