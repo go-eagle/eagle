@@ -76,18 +76,18 @@ func (c *Consumer) Run() error {
 		return err
 	}
 
-	// bind queue
-	if _, err = c.channel.QueueDeclare(c.queueName, true, c.autoDelete, false, false, nil); err != nil {
-		_ = c.channel.Close()
-		_ = c.conn.Close()
-		return err
-	}
-
-	if err = c.channel.QueueBind(c.queueName, c.routingKey, c.exchange, false, nil); err != nil {
-		_ = c.channel.Close()
-		_ = c.conn.Close()
-		return err
-	}
+	// bind queue in rabbitmq admin ui
+	//if _, err = c.channel.QueueDeclare(c.queueName, true, c.autoDelete, false, false, nil); err != nil {
+	//	_ = c.channel.Close()
+	//	_ = c.conn.Close()
+	//	return err
+	//}
+	//
+	//if err = c.channel.QueueBind(c.queueName, c.routingKey, c.exchange, false, nil); err != nil {
+	//	_ = c.channel.Close()
+	//	_ = c.conn.Close()
+	//	return err
+	//}
 
 	var delivery <-chan amqp.Delivery
 	// NOTE: autoAck param
