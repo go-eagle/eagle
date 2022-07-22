@@ -87,33 +87,38 @@ func (c *Consumer) Run() error {
 	//	return err
 	//}
 
-	c.connNotify = c.conn.NotifyClose(make(chan *amqp.Error))
-	c.channelNotify = c.channel.NotifyClose(make(chan *amqp.Error))
-
 	return nil
 }
 
-func (c *Consumer) Consume(ctx context.Context, queueName string, handler Handler) error {
+func (c *Consumer) Consume(ctx context.Context, queueName string, handler Handler) {
 	var (
 		err      error
 		delivery <-chan amqp.Delivery
 	)
-	// NOTE: autoAck param
-	delivery, err = c.channel.Consume(
-		queueName,
-		c.consumerTag,
-		true,
-		false,
-		false,
-		false,
-		nil)
-	if err != nil {
-		return err
+
+	c.connNotify = c.conn.NotifyClose(make(chan *amqp.Error))
+	c.channelNotify = c.channel.NotifyClose(make(chan *amqp.Error))
+
+	for {
+		// NOTE: autoAck param
+		delivery, err = c.channel.Consume(
+			queueName,
+			c.consumerTag,
+			true,
+			false,
+			false,
+			false,
+			nil)
+		if err != nil {
+			log.Errorf("Consumer channel Consume err: %#v", err)
+			time.Sleep(5 * time.Second)
+		}
+
+		time.Sleep(5 * time.Second)
+
+		go c.Handle(delivery, handler)
 	}
 
-	go c.Handle(delivery, handler)
-
-	return nil
 }
 
 // Handle handle data

@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/go-eagle/eagle/pkg/queue/rabbitmq"
 )
@@ -14,15 +15,19 @@ func main() {
 	// like topic, bind to queue: test-queue
 	routingKey := "test-routing-key"
 
-	var message = "Hello World RabbitMQ!"
-
 	// rabbitmq publish message
 	producer := rabbitmq.NewProducer(addr, exchangeName)
 	defer producer.Stop()
 	if err := producer.Start(); err != nil {
 		log.Fatalf("start producer err: %s", err.Error())
 	}
-	if err := producer.Publish(routingKey, message); err != nil {
-		log.Fatalf("failed publish message: %s", err.Error())
+
+	var message string
+	for i := 0; i < 10000; i++ {
+		message = "Hello World RabbitMQ!" + time.Now().String()
+		if err := producer.Publish(routingKey, message); err != nil {
+			log.Fatalf("failed publish message: %s", err.Error())
+		}
 	}
+
 }
