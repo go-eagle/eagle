@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/go-eagle/eagle/pkg/queue/rabbitmq"
@@ -12,9 +11,8 @@ func main() {
 
 	// NOTE: need to create exchange and queue manually, than bind exchange to queue
 	exchangeName := "test-exchange"
-	// like topic
+	// like topic, bind to queue: test-queue
 	routingKey := "test-routing-key"
-	queueName := "test-queue"
 
 	var message = "Hello World RabbitMQ!"
 
@@ -26,19 +24,5 @@ func main() {
 	}
 	if err := producer.Publish(routingKey, message); err != nil {
 		log.Fatalf("failed publish message: %s", err.Error())
-	}
-
-	// 自定义消息处理函数
-	handler := func(body []byte) error {
-		fmt.Println("consumer handler receive msg: ", string(body))
-		return nil
-	}
-
-	// rabbitmq consume message
-	// NOTE: autoDelete param
-	consumer := rabbitmq.NewConsumer(addr, exchangeName, queueName, false, handler)
-	defer consumer.Stop()
-	if err := consumer.Start(); err != nil {
-		log.Fatalf("failed consume: %s", err)
 	}
 }
