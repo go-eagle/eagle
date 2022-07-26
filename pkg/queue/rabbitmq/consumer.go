@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/go-eagle/eagle/pkg/log"
@@ -22,6 +23,7 @@ type Consumer struct {
 	queueName     string
 	consumerTag   string
 	autoDelete    bool // 是否自动删除
+	done          chan error
 }
 
 // NewConsumer instance a consumer
@@ -47,19 +49,22 @@ func (c *Consumer) Start() error {
 }
 
 // Stop a consumer
-func (c *Consumer) Stop() {
+func (c *Consumer) Stop() error {
 	close(c.quit)
 
 	if !c.conn.IsClosed() {
 		// 关闭 SubMsg message delivery
 		if err := c.channel.Cancel(c.consumerTag, true); err != nil {
-			log.Errorf("rabbitmq consumer - channel cancel failed: ", err)
+			return fmt.Errorf("rabbitmq consumer - channel cancel failed: %v", err)
 		}
 
 		if err := c.conn.Close(); err != nil {
-			log.Errorf("rabbitmq consumer - connection close failed: ", err)
+			return fmt.Errorf("rabbitmq consumer - connection close failed: %v", err)
 		}
 	}
+
+	// wait for handle() to exit
+	return <-c.done
 }
 
 // Run .
@@ -111,13 +116,13 @@ func (c *Consumer) Consume(ctx context.Context, queueName string, handler Handle
 		return err
 	}
 
-	go c.Handle(delivery, handler)
+	go c.Handle(delivery, handler, c.done)
 
 	return nil
 }
 
 // Handle handle data
-func (c *Consumer) Handle(delivery <-chan amqp.Delivery, handler Handler) {
+func (c *Consumer) Handle(delivery <-chan amqp.Delivery, handler Handler, done chan error) {
 	ctx := context.Background()
 	for d := range delivery {
 		log.Infof("Consumer received a message: %s in queue: %s", d.Body, c.queueName)
@@ -136,6 +141,7 @@ func (c *Consumer) Handle(delivery <-chan amqp.Delivery, handler Handler) {
 		}(d)
 	}
 	log.Infof("handle: async deliveries channel closed")
+	done <- nil
 }
 
 // ReConnect .
