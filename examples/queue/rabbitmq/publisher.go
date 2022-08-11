@@ -7,6 +7,9 @@ import (
 	"github.com/go-eagle/eagle/pkg/queue/rabbitmq"
 )
 
+// 启动 rabbitmq
+// docker run -it  --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.10-management
+// 访问ui: http://127.0.0.1:15672/
 func main() {
 	addr := "guest:guest@localhost:5672"
 

@@ -39,19 +39,30 @@ func main() {
 	// NOTE: need to create exchange and queue manually, than bind exchange to queue
 	exchangeName := "test-exchange"
 	queueName := "test-queue"
+	queueName2 := "test-queue2"
+
+	done := make(chan struct{})
 
 	// 自定义消息处理函数
 	handler := func(ctx context.Context, body []byte) error {
 		logger.Infof("consumer handler receive msg: %s", string(body))
 		return nil
 	}
+	handler2 := func(ctx context.Context, body []byte) error {
+		logger.Infof("consumer handler2 receive msg: %s", string(body))
+		return nil
+	}
 
 	// rabbitmq consume message
 	ctx := context.Background()
 	srv := rabbitmq.NewServer(addr, exchangeName)
-	// defer srv.Stop(ctx)
+	defer srv.Stop(ctx)
 
 	err := srv.RegisterSubscriber(ctx, queueName, handler)
+	if err != nil {
+		logger.Errorf("RegisterSubscriber, err: %#v", err)
+	}
+	err = srv.RegisterSubscriber(ctx, queueName2, handler2)
 	if err != nil {
 		logger.Errorf("RegisterSubscriber, err: %#v", err)
 	}
@@ -59,5 +70,7 @@ func main() {
 	if err := srv.Start(ctx); err != nil {
 		logger.Errorf("Start, err: %#v", err)
 	}
+
+	<-done
 
 }
