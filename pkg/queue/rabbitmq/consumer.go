@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-eagle/eagle/pkg/utils"
+
 	"github.com/go-eagle/eagle/pkg/log"
 	"github.com/streadway/amqp"
 )
@@ -28,10 +30,11 @@ type Consumer struct {
 
 // NewConsumer instance a consumer
 func NewConsumer(addr, exchange string, autoDelete bool) *Consumer {
+	tag, _ := utils.GenShortID()
 	return &Consumer{
 		addr:        addr,
 		exchange:    exchange,
-		consumerTag: "consumer",
+		consumerTag: tag,
 		autoDelete:  autoDelete,
 		quit:        make(chan struct{}),
 	}
@@ -104,10 +107,12 @@ func (c *Consumer) Consume(ctx context.Context, queueName string, handler Handle
 		delivery <-chan amqp.Delivery
 	)
 	// NOTE: autoAck param
+	// Consumer Tag必须保持唯一，即已被某个Consumer使用的Consumer Tag不可同时被另一个Consumer使用。
+	// Consumer Tag在同一个channel内有效，即已在某个channel内被创建的Consumer Tag不可在另一个channel内被使用。
 	delivery, err = c.channel.Consume(
 		queueName,
-		c.consumerTag,
-		true,
+		queueName,
+		false, // noAck
 		false,
 		false,
 		false,
@@ -150,11 +155,11 @@ func (c *Consumer) ReConnect() {
 		select {
 		case err := <-c.connNotify:
 			if err != nil {
-				log.Errorf("rabbitmq consumer - connection NotifyClose: %+v", err)
+				log.Errorf("[rabbitmq] consumer - connection NotifyClose: %+v", err)
 			}
 		case err := <-c.channelNotify:
 			if err != nil {
-				log.Errorf("rabbitmq consumer - channel NotifyClose: %+v", err)
+				log.Errorf("[rabbitmq] consumer - channel NotifyClose: %+v", err)
 			}
 		case <-c.quit:
 			return
@@ -164,19 +169,19 @@ func (c *Consumer) ReConnect() {
 		if !c.conn.IsClosed() {
 			// 关闭 SubMsg message delivery
 			if err := c.channel.Cancel(c.consumerTag, true); err != nil {
-				log.Errorf("rabbitmq consumer - channel cancel failed: %+v", err)
+				log.Errorf("[rabbitmq] consumer - channel cancel failed: %+v", err)
 			}
 			if err := c.conn.Close(); err != nil {
-				log.Errorf("rabbitmq consumer - conn cancel failed: %+v", err)
+				log.Errorf("[rabbitmq consumer] - conn cancel failed: %+v", err)
 			}
 		}
 
 		// IMPORTANT: 必须清空 Notify，否则死连接不会释放
 		for err := range c.channelNotify {
-			log.Errorf("rabbitmq consumer - channelNotify err: %+v", err)
+			log.Errorf("[rabbitmq] consumer - channelNotify err: %+v", err)
 		}
 		for err := range c.connNotify {
-			log.Errorf("rabbitmq consumer - connNotify err: %+v", err)
+			log.Errorf("[rabbitmq] consumer - connNotify err: %+v", err)
 		}
 
 	quit:
@@ -185,10 +190,10 @@ func (c *Consumer) ReConnect() {
 			case <-c.quit:
 				return
 			default:
-				log.Infof("rabbitmq consumer - reconnect")
+				log.Infof("[rabbitmq] consumer - reconnect")
 
 				if err := c.Run(); err != nil {
-					log.Infof("rabbitmq consumer - failCheck: %+v", err)
+					log.Errorf("[rabbitmq] consumer - failCheck: %+v", err)
 
 					// sleep 5s reconnect
 					time.Sleep(time.Second * 5)

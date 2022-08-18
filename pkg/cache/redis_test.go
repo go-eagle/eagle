@@ -30,6 +30,7 @@ func Test_redisCache_SetGet(t *testing.T) {
 		expiration time.Duration
 	}
 
+	value := "val-001"
 	setTests := []struct {
 		name    string
 		cache   Cache
@@ -39,7 +40,7 @@ func Test_redisCache_SetGet(t *testing.T) {
 		{
 			"test redis set",
 			cache,
-			setArgs{"key-001", "val-001", 60 * time.Second},
+			setArgs{"key-001", &value, 60 * time.Second},
 			false,
 		},
 	}

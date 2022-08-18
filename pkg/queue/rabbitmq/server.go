@@ -66,10 +66,7 @@ func (s *Server) RegisterSubscriber(ctx context.Context, queueName string, h Han
 }
 
 func (s *Server) doConsume(ctx context.Context, queueName string, h Handler) error {
-	err := s.consumer.Consume(ctx, queueName, h)
-	if err != nil {
-		return err
-	}
+	go s.consumer.Consume(ctx, queueName, h)
 
 	return nil
 }
