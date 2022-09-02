@@ -14,6 +14,17 @@ type Error struct {
 }
 
 var errorCodes = map[int]struct{}{}
+var toHTTPStatusMap = map[int]int{
+	Success.Code():               http.StatusOK,
+	ErrInternalServer.Code():     http.StatusInternalServerError,
+	ErrNotFound.Code():           http.StatusNotFound,
+	ErrInvalidParam.Code():       http.StatusBadRequest,
+	ErrToken.Code():              http.StatusUnauthorized,
+	ErrInvalidToken.Code():       http.StatusUnauthorized,
+	ErrTokenTimeout.Code():       http.StatusUnauthorized,
+	ErrTooManyRequests.Code():    http.StatusTooManyRequests,
+	ErrServiceUnavailable.Code(): http.StatusServiceUnavailable,
+}
 
 // NewError create a error
 func NewError(code int, msg string) *Error {
@@ -58,25 +69,15 @@ func (e *Error) WithDetails(details ...string) *Error {
 	return &newError
 }
 
+// SetHTTPStatusCode set a specific http status code to err
+func SetHTTPStatusCode(err *Error, status int) {
+	toHTTPStatusMap[err.Code()] = status
+}
+
 // ToHTTPStatusCode convert custom error code to http status code and avoid return unknown status code.
 func ToHTTPStatusCode(code int) int {
-	switch code {
-	case Success.Code():
-		return http.StatusOK
-	case ErrInternalServer.Code():
-		return http.StatusInternalServerError
-	case ErrInvalidParam.Code():
-		return http.StatusBadRequest
-	case ErrToken.Code():
-		fallthrough
-	case ErrInvalidToken.Code():
-		fallthrough
-	case ErrTokenTimeout.Code():
-		return http.StatusUnauthorized
-	case ErrTooManyRequests.Code():
-		return http.StatusTooManyRequests
-	case ErrServiceUnavailable.Code():
-		return http.StatusServiceUnavailable
+	if status, ok := toHTTPStatusMap[code]; ok {
+		return status
 	}
 
 	return http.StatusInternalServerError
