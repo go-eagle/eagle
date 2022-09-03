@@ -98,7 +98,7 @@ func (c statusConverter) HTTPStatusFromCode(code codes.Code) int {
 		return http.StatusInternalServerError
 	}
 
-	return http.StatusInternalServerError
+	return http.StatusOK
 }
 
 // GRPCCodeFromStatus converts a HTTP error code into the corresponding gRPC response status.
