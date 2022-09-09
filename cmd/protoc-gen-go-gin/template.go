@@ -44,7 +44,7 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 	{{if .HasPathParams }}
 		id := ctx.Param("id")
 		in.Id = id
-	}}
+	{{end}}
 {{else}}
 	if err := ctx.ShouldBind(&in); err != nil {
 		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
