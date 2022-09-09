@@ -11,7 +11,7 @@ import (
 )
 
 // Auth authorize user
-func Auth(paths []string) gin.HandlerFunc {
+func Auth(paths ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// ignore some path
 		// eg: register, login, logout

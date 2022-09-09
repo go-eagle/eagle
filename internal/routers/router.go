@@ -67,7 +67,7 @@ func NewRouter() *gin.Engine {
 
 		// 用户
 		apiV1.GET("/users/:id", user.Get)
-		apiV1.Use(middleware.Auth([]string{}))
+		apiV1.Use(middleware.Auth())
 		{
 			apiV1.PUT("/users/:id", user.Update)
 			apiV1.POST("/users/follow", user.Follow)
