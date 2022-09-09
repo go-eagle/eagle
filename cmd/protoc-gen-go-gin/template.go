@@ -31,12 +31,7 @@ type {{$.Name}} struct{
 {{range .Methods}}
 func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 	var in {{.Request}}
-{{if .HasPathParams }}
-	if err := ctx.ShouldBindUri(&in); err != nil {
-		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
-		return
-	}
-{{else if eq .Method "GET" }}
+{{if eq .Method "GET" }}
 	if err := ctx.ShouldBindQuery(&in); err != nil {
 		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
@@ -46,6 +41,10 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
+	{{if .HasPathParams }}
+		id := ctx.Param("id")
+		in.Id = id
+	}}
 {{else}}
 	if err := ctx.ShouldBind(&in); err != nil {
 		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
