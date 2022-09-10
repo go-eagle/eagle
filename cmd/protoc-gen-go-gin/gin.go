@@ -14,6 +14,7 @@ import (
 
 const (
 	contextPackage     = protogen.GoImportPath("context")
+	strconvPackage     = protogen.GoImportPath("strconv")
 	ginPackage         = protogen.GoImportPath("github.com/gin-gonic/gin")
 	metadataPackage    = protogen.GoImportPath("google.golang.org/grpc/metadata")
 	eagleAppPackage    = protogen.GoImportPath("github.com/go-eagle/eagle/pkg/app")
@@ -39,6 +40,8 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 	g.P("// is compatible with the eagle package it is being compiled against.")
 	g.P()
 	g.P("// ", contextPackage.Ident(""))
+	g.P("// ", strconvPackage.Ident(""))
+	g.P()
 	g.P("// ", metadataPackage.Ident(""))
 	g.P("// ", ginPackage.Ident(""), eagleAppPackage.Ident(""), errCodePackage.Ident(""))
 	g.P()
