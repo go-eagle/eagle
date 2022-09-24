@@ -36,7 +36,7 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
-	// 确保uri中包含 :id
+	// make sure the uri include :id
 	{{if .HasPathParams }}
 	in.Id = ctx.Param("id")
 	{{end}}
@@ -45,7 +45,7 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
-	// 确保uri中包含 :id
+	// make sure the uri include :id
 	{{if .HasPathParams }}
 	in.Id = ctx.Param("id")
 	{{end}}
