@@ -3,6 +3,7 @@ package errcode
 import (
 	"fmt"
 	"net/http"
+	"sync"
 )
 
 // Error 返回错误码和消息的结构体
@@ -14,6 +15,7 @@ type Error struct {
 }
 
 var errorCodes = map[int]struct{}{}
+var toStatus sync.Map
 
 // NewError create a error
 func NewError(code int, msg string) *Error {
@@ -58,25 +60,15 @@ func (e *Error) WithDetails(details ...string) *Error {
 	return &newError
 }
 
+// SetHTTPStatusCode set a specific http status code to err
+func SetHTTPStatusCode(err *Error, status int) {
+	toStatus.Store(err.Code(), status)
+}
+
 // ToHTTPStatusCode convert custom error code to http status code and avoid return unknown status code.
 func ToHTTPStatusCode(code int) int {
-	switch code {
-	case Success.Code():
-		return http.StatusOK
-	case ErrInternalServer.Code():
-		return http.StatusInternalServerError
-	case ErrInvalidParam.Code():
-		return http.StatusBadRequest
-	case ErrToken.Code():
-		fallthrough
-	case ErrInvalidToken.Code():
-		fallthrough
-	case ErrTokenTimeout.Code():
-		return http.StatusUnauthorized
-	case ErrTooManyRequests.Code():
-		return http.StatusTooManyRequests
-	case ErrServiceUnavailable.Code():
-		return http.StatusServiceUnavailable
+	if status, ok := toStatus.Load(code); ok {
+		return status.(int)
 	}
 
 	return http.StatusInternalServerError
@@ -109,4 +101,24 @@ func DecodeErr(err error) (int, string) {
 	}
 
 	return ErrInternalServer.Code(), err.Error()
+}
+
+func initToStatus() {
+	for code, status := range map[int]int{
+		Success.Code():               http.StatusOK,
+		ErrInternalServer.Code():     http.StatusInternalServerError,
+		ErrNotFound.Code():           http.StatusNotFound,
+		ErrInvalidParam.Code():       http.StatusBadRequest,
+		ErrToken.Code():              http.StatusUnauthorized,
+		ErrInvalidToken.Code():       http.StatusUnauthorized,
+		ErrTokenTimeout.Code():       http.StatusUnauthorized,
+		ErrTooManyRequests.Code():    http.StatusTooManyRequests,
+		ErrServiceUnavailable.Code(): http.StatusServiceUnavailable,
+	} {
+		toStatus.Store(code, status)
+	}
+}
+
+func init() {
+	initToStatus()
 }
