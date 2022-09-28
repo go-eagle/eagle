@@ -16,10 +16,11 @@ type EtcdLock struct {
 }
 
 // NewEtcdLock create a etcd lock
-func NewEtcdLock(client *v3.Client, key string, opts ...concurrency.SessionOption) (mutex *EtcdLock, err error) {
+// ttl for lease
+func NewEtcdLock(client *v3.Client, key string, ttl int) (mutex *EtcdLock, err error) {
 	mutex = &EtcdLock{}
-	// 默认session ttl = 60s
-	mutex.sess, err = concurrency.NewSession(client, opts...)
+	// default session ttl = 60s
+	mutex.sess, err = concurrency.NewSession(client, concurrency.WithTTL(ttl))
 	if err != nil {
 		return
 	}
@@ -29,6 +30,7 @@ func NewEtcdLock(client *v3.Client, key string, opts ...concurrency.SessionOptio
 
 // Lock acquires the lock.
 func (l *EtcdLock) Lock(ctx context.Context, timeout time.Duration) (b bool, err error) {
+	// get lock timeout
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	// NOTE: ignore bool value
