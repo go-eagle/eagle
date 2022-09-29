@@ -2,7 +2,6 @@ package lock
 
 import (
 	"context"
-	"time"
 )
 
 const (
@@ -14,6 +13,6 @@ const (
 
 // Lock define common func
 type Lock interface {
-	Lock(ctx context.Context, timeout time.Duration) (bool, error)
+	Lock(ctx context.Context) (bool, error)
 	Unlock(ctx context.Context) (bool, error)
 }
