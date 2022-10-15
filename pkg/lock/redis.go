@@ -15,22 +15,24 @@ type RedisLock struct {
 	key         string
 	redisClient *redis.Client
 	token       string
+	expiration  time.Duration
 }
 
 // NewRedisLock new a redis lock instance
 // nolint
-func NewRedisLock(rdb *redis.Client, key string) *RedisLock {
+func NewRedisLock(rdb *redis.Client, key string, expiration time.Duration) *RedisLock {
 	opt := &RedisLock{
 		key:         getRedisKey(key),
 		redisClient: rdb,
 		token:       genToken(),
+		expiration:  expiration,
 	}
 	return opt
 }
 
 // Lock acquires the lock.
-func (l *RedisLock) Lock(ctx context.Context, timeout time.Duration) (bool, error) {
-	isSet, err := l.redisClient.SetNX(ctx, l.key, l.token, timeout).Result()
+func (l *RedisLock) Lock(ctx context.Context) (bool, error) {
+	isSet, err := l.redisClient.SetNX(ctx, l.key, l.token, l.expiration).Result()
 	if err == redis.Nil {
 		return false, nil
 	} else if err != nil {
