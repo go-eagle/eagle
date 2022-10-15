@@ -1,14 +1,13 @@
 package utils
 
 import (
+	"fmt"
 	"runtime"
-
-	"github.com/go-eagle/eagle/pkg/log"
 )
 
 // PrintStackTrace print stack info
-func PrintStackTrace(msg string, err interface{}) {
+func PrintStackTrace(msg string, err interface{}) string {
 	buf := make([]byte, 64*1024)
 	buf = buf[:runtime.Stack(buf, false)]
-	log.Error("%s, err: %s\nstack: %s", msg, err, buf)
+	return fmt.Sprintf("%s, err: %s\nstack: %s", msg, err, buf)
 }
