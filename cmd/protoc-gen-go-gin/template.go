@@ -36,18 +36,18 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
-	// make sure the uri include :id
 	{{if .HasPathParams }}
-	in.Id = ctx.Param("id")
+	// make sure the uri include :id
+	in.Id, _ = strconv.ParseInt(ctx.Param("id"), 10, 64)
 	{{end}}
 {{else if eq .Method "POST" "PUT" "PATCH" "DELETE"}}
 	if err := ctx.ShouldBindJSON(&in); err != nil {
 		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
-	// make sure the uri include :id
 	{{if .HasPathParams }}
-	in.Id = ctx.Param("id")
+	// make sure the uri include :id
+	in.Id, _ = strconv.ParseInt(ctx.Param("id"), 10, 64)
 	{{end}}
 {{else}}
 	if err := ctx.ShouldBind(&in); err != nil {
