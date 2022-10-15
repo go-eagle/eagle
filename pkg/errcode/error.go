@@ -71,7 +71,7 @@ func ToHTTPStatusCode(code int) int {
 		return status.(int)
 	}
 
-	return http.StatusInternalServerError
+	return http.StatusBadRequest
 }
 
 // Err represents an error
