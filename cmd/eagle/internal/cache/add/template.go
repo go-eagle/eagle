@@ -77,7 +77,7 @@ func (c *{{.LcName}}Cache) Set{{.Name}}Cache(ctx context.Context, id int64, data
 func (c *{{.LcName}}Cache) Get{{.Name}}Cache(ctx context.Context, id int64) (data *model.{{.Name}}Model, err error) {
 	cacheKey := c.Get{{.Name}}CacheKey(id)
 	err = c.cache.Get(ctx, cacheKey, &data)
-	if err != nil &&  && err != redis.ErrRedisNotFound {
+	if err != nil && err != redis.ErrRedisNotFound {
 		log.WithContext(ctx).Warnf("get err from redis, err: %+v", err)
 		return nil, err
 	}
