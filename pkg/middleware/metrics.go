@@ -13,13 +13,13 @@ import (
 var namespace = "eagle"
 
 var (
-	labels = []string{"status", "endpoint", "method", "service"}
+	labels = []string{"status", "handler", "method", "service"}
 
 	// QPS
 	reqCount = metric.NewCounterVec(
 		&metric.CounterVecOpts{
 			Namespace: namespace,
-			Name:      "http_request_count_total",
+			Name:      "http_requests_total",
 			Help:      "Total number of HTTP requests made.",
 			Labels:    labels,
 		})
@@ -28,7 +28,7 @@ var (
 	curReqCount = metric.NewGaugeVec(
 		&metric.GaugeVecOpts{
 			Namespace: namespace,
-			Name:      "http_request_in_flight",
+			Name:      "http_requests_in_flight",
 			Help:      "Current number of http requests in flight.",
 			Labels:    labels,
 		})
@@ -93,10 +93,10 @@ func Metrics(serviceName string) gin.HandlerFunc {
 		c.Next()
 
 		status := fmt.Sprintf("%d", c.Writer.Status())
-		endpoint := c.Request.URL.Path
+		handler := c.Request.URL.Path
 		method := c.Request.Method
 
-		labels := []string{status, endpoint, method, serviceName}
+		labels := []string{status, handler, method, serviceName}
 
 		// no response content will return -1
 		respSize := c.Writer.Size()
