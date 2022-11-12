@@ -10,7 +10,7 @@ import (
 	"github.com/go-eagle/eagle/pkg/metric"
 )
 
-var namespace = "eagle"
+var namespace = ""
 
 var (
 	labels = []string{"status", "handler", "method", "service"}
