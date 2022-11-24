@@ -7,16 +7,15 @@ import (
 	"time"
 
 	logger "github.com/go-eagle/eagle/pkg/log"
+	"github.com/go-eagle/eagle/pkg/transport/grpc/resolver/discovery"
 	grpcZap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
-
 	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/balancer/roundrobin"
 	"google.golang.org/grpc/credentials"
 	grpcInsecure "google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding/gzip"
-
-	"github.com/go-eagle/eagle/pkg/transport/grpc/resolver/discovery"
 )
 
 // Dial
@@ -79,6 +78,13 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 		dialOpts = append(dialOpts,
 			grpc.WithChainUnaryInterceptor(grpcPrometheus.UnaryClientInterceptor),
 			grpc.WithChainStreamInterceptor(grpcPrometheus.StreamClientInterceptor),
+		)
+	}
+	// enable tracing
+	if options.enableTracing {
+		dialOpts = append(dialOpts,
+			grpc.WithChainUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
+			grpc.WithChainStreamInterceptor(otelgrpc.StreamClientInterceptor()),
 		)
 	}
 	if options.enableLog {

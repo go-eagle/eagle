@@ -3,6 +3,8 @@ package grpc
 import (
 	"time"
 
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+
 	"github.com/go-eagle/eagle/pkg/registry"
 
 	"google.golang.org/grpc"
@@ -19,9 +21,14 @@ type clientOptions struct {
 	enableGzip   bool
 	enableMetric bool
 	enableLog    bool
+
+	// enableTracing enables distributed tracing using OpenTelemetry protocol
+	enableTracing bool
 	// retry config
 	disableRetry bool
 	NumRetries   int // maximum number of retry attempts
+	// TracerOptions are options for OpenTelemetry gRPC interceptor.
+	TracerOptions []otelgrpc.Option
 }
 
 // ClientOption is a gRPC client option.
@@ -52,6 +59,13 @@ func WithMetric() ClientOption {
 func WithLog() ClientOption {
 	return func(o *clientOptions) {
 		o.enableLog = true
+	}
+}
+
+// WithTracing enable trace.
+func WithTracing() ClientOption {
+	return func(o *clientOptions) {
+		o.enableTracing = true
 	}
 }
 
