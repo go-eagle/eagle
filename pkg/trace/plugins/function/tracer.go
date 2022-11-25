@@ -27,7 +27,7 @@ func init() {
 func StartFromContext(ctx context.Context) (context.Context, trace.Span) {
 	var spanAttrs []trace.SpanStartOption
 
-	fileName, lineNo, funcName := getCallerInfo(1)
+	fileName, lineNo, funcName := getCallerInfo(2)
 	caller := fmt.Sprintf("FuncName: %s, file: %s, line: %d", funcName, fileName, lineNo)
 	if caller != "" {
 		spanAttrs = append(spanAttrs, trace.WithAttributes(attribute.String("caller", caller)))
