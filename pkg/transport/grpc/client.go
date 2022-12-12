@@ -16,6 +16,7 @@ import (
 	"google.golang.org/grpc/credentials"
 	grpcInsecure "google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding/gzip"
+	"google.golang.org/grpc/keepalive"
 )
 
 // Dial
@@ -30,12 +31,18 @@ func DialInsecure(ctx context.Context, opts ...ClientOption) (*grpc.ClientConn, 
 func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.ClientConn, error) {
 	// default client options
 	options := clientOptions{
-		timeout:      2000 * time.Millisecond,
-		balancerName: roundrobin.Name,
-		enableGzip:   true,
-		enableMetric: true,
-		disableRetry: false,
-		NumRetries:   2,
+		timeout:         2000 * time.Millisecond,
+		balancerName:    roundrobin.Name,
+		enableGzip:      true,
+		enableMetric:    true,
+		disableRetry:    false,
+		NumRetries:      2,
+		enableKeepalive: true,
+		kp: keepalive.ClientParameters{
+			Time:                10 * time.Second,
+			Timeout:             time.Second,
+			PermitWithoutStream: false,
+		},
 	}
 	for _, opt := range opts {
 		opt(&options)
@@ -70,6 +77,14 @@ func dial(ctx context.Context, insecure bool, opts ...ClientOption) (*grpc.Clien
 		}
 		cred := credentials.NewTLS(tlsConfig)
 		dialOpts = append(dialOpts, grpc.WithTransportCredentials(cred))
+	}
+	if options.enableKeepalive {
+		kp := keepalive.ClientParameters{
+			Time:                options.kp.Time,
+			Timeout:             options.kp.Timeout,
+			PermitWithoutStream: options.kp.PermitWithoutStream,
+		}
+		dialOpts = append(dialOpts, grpc.WithKeepaliveParams(kp))
 	}
 	if options.enableGzip {
 		dialOpts = append(dialOpts, grpc.WithDefaultCallOptions(grpc.UseCompressor(gzip.Name)))

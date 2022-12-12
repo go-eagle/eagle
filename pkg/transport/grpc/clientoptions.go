@@ -4,29 +4,32 @@ import (
 	"time"
 
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
 
 	"github.com/go-eagle/eagle/pkg/registry"
-
-	"google.golang.org/grpc"
 )
 
 // clientOptions define gRPc client options.
 type clientOptions struct {
-	endpoint     string
-	timeout      time.Duration
-	inters       []grpc.UnaryClientInterceptor
-	dialOpts     []grpc.DialOption
-	balancerName string
-	discovery    registry.Discovery
-	enableGzip   bool
-	enableMetric bool
-	enableLog    bool
+	endpoint        string
+	timeout         time.Duration
+	inters          []grpc.UnaryClientInterceptor
+	dialOpts        []grpc.DialOption
+	balancerName    string
+	discovery       registry.Discovery
+	enableKeepalive bool
+	kp              keepalive.ClientParameters
+	enableGzip      bool
+	enableMetric    bool
+	enableLog       bool
 
 	// enableTracing enables distributed tracing using OpenTelemetry protocol
 	enableTracing bool
 	// retry config
 	disableRetry bool
-	NumRetries   int // maximum number of retry attempts
+	// maximum number of retry attempts
+	NumRetries int
 	// TracerOptions are options for OpenTelemetry gRPC interceptor.
 	TracerOptions []otelgrpc.Option
 }
@@ -66,6 +69,13 @@ func WithLog() ClientOption {
 func WithTracing() ClientOption {
 	return func(o *clientOptions) {
 		o.enableTracing = true
+	}
+}
+
+// WithKeepalive enable keepalive.
+func WithKeepalive() ClientOption {
+	return func(o *clientOptions) {
+		o.enableKeepalive = true
 	}
 }
 
