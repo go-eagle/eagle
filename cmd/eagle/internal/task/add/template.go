@@ -13,9 +13,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/hibiken/asynq"
+
+	"github.com/go-eagle/eagle/pkg/log"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -29,12 +31,18 @@ type {{.Name}}Payload struct {
 }
 
 // New{{.Name}}Task to create a task. 
-func New{{.Name}}Task(userID int) (*asynq.Task, error) {
+func New{{.Name}}Task(userID int) error {
 	payload, err := json.Marshal({{.Name}}Payload{UserID: userID})
 	if err != nil {
-		return nil, err
+		return errors.Wrapf(err, "[tasks] json marshal error, name: %s", Type{{.Name}})
 	}
-	return asynq.NewTask(Type{{.Name}}, payload), nil
+	task := asynq.NewTask(Type{{.Name}}, payload)
+	info, err := GetClient().Enqueue(task)
+	if err != nil {
+		return errors.Wrapf(err, "[tasks] Enqueue task error, name: %s", Type{{.Name}})
+	}
+
+	return nil
 }
 
 // Handle{{.Name}}Task to handle the input task.
