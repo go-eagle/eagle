@@ -14,10 +14,10 @@ type Server struct {
 	jobs map[string]*asynq.Task
 }
 
-func NewServer() *Server {
+func NewServer(redisOpt asynq.RedisClientOpt) *Server {
 	srv := &Server{
 		sche: asynq.NewScheduler(
-			asynq.RedisClientOpt{Addr: "127.0.0.1:6379"},
+			redisOpt,
 			&asynq.SchedulerOpts{Location: time.Local},
 		),
 	}
