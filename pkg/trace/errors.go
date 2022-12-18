@@ -7,8 +7,8 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-// SetError record error to tracing system
-func SetError(ctx context.Context, err error) {
+// SetSpanError record error to tracing system
+func SetSpanError(ctx context.Context, err error) {
 	span := trace.SpanFromContext(ctx)
 
 	if span.IsRecording() {
