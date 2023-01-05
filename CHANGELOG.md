@@ -1,5 +1,14 @@
 ## Changelog
 
+## v1.7.0
+- feat(http): can custom http status
+- feat(util): add util for printing stack
+- feat(grpc): add tracing and keepalive for grpc client
+- feat(trace): add function trace 
+- chore(auth): support ignore path for auth middleware
+- chore(cli): approve gen gin and proto command
+- chore(lock): approve etcd lock
+
 ## v1.6.0
 - add(cli): gen model
 - add(cli): add gen handler cmd
