@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 
@@ -34,7 +35,7 @@ func Init() (*redis.Client, func(), error) {
 	clientManager := NewRedisManager()
 	rdb, err := clientManager.GetClient(DefaultRedisName)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.New(fmt.Sprintf("init redis err: %s", err.Error()))
 	}
 	cleanFunc := func() {
 		rdb.Close()
