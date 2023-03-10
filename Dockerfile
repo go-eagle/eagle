@@ -9,8 +9,7 @@ RUN apk add --no-cache git make bash ca-certificates tzdata \
 
 RUN GRPC_HEALTH_PROBE_VERSION=v0.4.8 && \
     wget -qO/bin/grpc_health_probe \
-    https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/
-    ${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+    https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
 
 # 镜像设置必要的环境变量
@@ -39,7 +38,7 @@ RUN make build
 
 # 创建一个小镜像
 # Final stage
-FROM debian:stretch-slim
+FROM alpine:3.15
 
 WORKDIR /bin
 
@@ -48,10 +47,14 @@ COPY --from=builder /go/src/github.com/go-eagle/eagle          /bin/eagle
 COPY --from=builder /go/src/github.com/go-eagle/eagle/config   /data/conf/eagle/config
 COPY --from=builder /bin/grpc_health_probe                     /bin/grpc_health_probe
 
-RUN mkdir -p /data/logs/
+RUN apk update \
+ && apk add --no-cache curl jq \
+ && rm -rf /var/cache/apk/* \
+ && mkdir -p  /data/logs/
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
+EXPOSE 9090
 
 # 需要运行的命令
 CMD ["/bin/eagle", "-c", "/data/conf/eagle/config"]
