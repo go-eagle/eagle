@@ -31,6 +31,11 @@ func (e Error) Error() string {
 	return fmt.Sprintf("code: %d, msg: %s", e.Code(), e.Msg())
 }
 
+// HTTPCode return http code
+func (e *Error) HTTPCode() int {
+	return ToHTTPStatusCode(e.code)
+}
+
 // Code return error code
 func (e *Error) Code() int {
 	return e.code
@@ -39,6 +44,11 @@ func (e *Error) Code() int {
 // Msg return error msg
 func (e *Error) Msg() string {
 	return e.msg
+}
+
+// Message return error msg
+func (e *Error) Message() string {
+	return fmt.Sprintf("%s %v", e.msg, e.details)
 }
 
 // Msgf format error string
