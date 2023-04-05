@@ -1,5 +1,8 @@
 ## Changelog
 
+## v1.7.1
+- chore(cli): approve gen task command
+
 ## v1.7.0
 - feat(http): can custom http status
 - feat(util): add util for printing stack

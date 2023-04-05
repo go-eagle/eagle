@@ -27,17 +27,17 @@ const (
 
 // {{.Name}}Payload define data payload
 type {{.Name}}Payload struct {
-	UserID int
+	// fill your biz field
 }
 
 // New{{.Name}}Task to create a task. 
-func New{{.Name}}Task(userID int) error {
-	payload, err := json.Marshal({{.Name}}Payload{UserID: userID})
+func New{{.Name}}Task(data {{.Name}}Payload) error {
+	payload, err := json.Marshal(data)
 	if err != nil {
 		return errors.Wrapf(err, "[tasks] json marshal error, name: %s", Type{{.Name}})
 	}
 	task := asynq.NewTask(Type{{.Name}}, payload)
-	info, err := GetClient().Enqueue(task)
+	_, err = GetClient().Enqueue(task)
 	if err != nil {
 		return errors.Wrapf(err, "[tasks] Enqueue task error, name: %s", Type{{.Name}})
 	}
@@ -49,7 +49,7 @@ func New{{.Name}}Task(userID int) error {
 func Handle{{.Name}}Task(ctx context.Context, t *asynq.Task) error {
 	var p {{.Name}}Payload
 	if err := json.Unmarshal(t.Payload(), &p); err != nil {
-		return fmt.Errorf("json.Unmarshal failed: %v: %w", err, asynq.SkipRetry)
+		log.Errorf("json.Unmarshal failed: %v: %w", err, asynq.SkipRetry)
 	}
 
 	// here to write biz logic
