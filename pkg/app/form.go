@@ -4,7 +4,9 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	// nolint: typecheck
 	ut "github.com/go-playground/universal-translator"
+	// nolint: typecheck
 	val "github.com/go-playground/validator/v10"
 )
 

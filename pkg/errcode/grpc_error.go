@@ -13,6 +13,7 @@ type GrpcStatus struct {
 	details []proto.Message
 }
 
+// New instance a status
 func New(code codes.Code, msg string) *GrpcStatus {
 	return &GrpcStatus{
 		status: status.New(code, msg),

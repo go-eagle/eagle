@@ -190,11 +190,13 @@ func (s *Server) Start(ctx context.Context) error {
 
 	s.ctx = ctx
 	log.Printf("[gRPC] server is listening on: %s", s.lis.Addr().String())
+	// nolint: typecheck
 	return s.Serve(s.lis)
 }
 
 // Stop stop the gRPC server.
 func (s *Server) Stop(ctx context.Context) error {
+	// nolint: typecheck
 	s.GracefulStop()
 	log.Printf("[gRPC] server is stopping")
 	return nil

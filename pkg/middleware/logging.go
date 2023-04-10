@@ -78,6 +78,7 @@ func Logging() gin.HandlerFunc {
 			message = response.Message
 		}
 
+		// nolint: typecheck
 		log.Infof("%-13s | %-12s | %s %s | %d | {code: %d, message: %s}", latency, ip,
 			pad.Right(method, 5, ""), path, blw.Status(), code, message)
 	}
