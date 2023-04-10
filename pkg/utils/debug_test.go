@@ -21,5 +21,4 @@ func TestPrintStackTrace(t *testing.T) {
 
 		panic("throw a panic")
 	})
-
 }

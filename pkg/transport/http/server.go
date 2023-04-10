@@ -27,7 +27,7 @@ type Server struct {
 	readTimeout  time.Duration
 	writeTimeout time.Duration
 	endpoint     *url.URL
-	log          log.Logger
+	// log          log.Logger
 }
 
 // defaultServer return a default config server

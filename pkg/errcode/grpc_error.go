@@ -7,6 +7,7 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
+// GrpcStatus grpc error
 type GrpcStatus struct {
 	status  *status.Status
 	details []proto.Message
@@ -18,6 +19,7 @@ func New(code codes.Code, msg string) *GrpcStatus {
 	}
 }
 
+// Status .
 func (g *GrpcStatus) Status(details ...proto.Message) *status.Status {
 	details = append(details, g.details...)
 	st, err := g.status.WithDetails(details...)
@@ -27,11 +29,13 @@ func (g *GrpcStatus) Status(details ...proto.Message) *status.Status {
 	return st
 }
 
+// WithDetails .
 func (g *GrpcStatus) WithDetails(details ...proto.Message) *GrpcStatus {
 	g.details = details
 	return g
 }
 
+// NewDetails .
 func NewDetails(details map[string]interface{}) proto.Message {
 	detailStruct, err := structpb.NewStruct(details)
 	if err != nil {

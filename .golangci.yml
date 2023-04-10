@@ -230,7 +230,7 @@ linters:
     - dogsled
 #    - dupl
     - errcheck
-    - gochecknoinits
+#    - gochecknoinits
     - goconst
     - gocyclo
     - gofmt

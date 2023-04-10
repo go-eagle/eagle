@@ -14,7 +14,9 @@ import (
 )
 
 const (
-	TraceName  = "github.com/go-eagle/eagle/trace/plugins/function"
+	// TraceName function trance name
+	TraceName = "github.com/go-eagle/eagle/trace/plugins/function"
+	// PluginName plugin category name
 	PluginName = "function"
 )
 
@@ -24,6 +26,7 @@ func init() {
 	tracer = otel.GetTracerProvider().Tracer(TraceName, trace.WithInstrumentationVersion(contrib.SemVersion()))
 }
 
+// StartFromContext create a new context
 func StartFromContext(ctx context.Context) (context.Context, trace.Span) {
 	var spanAttrs []trace.SpanStartOption
 

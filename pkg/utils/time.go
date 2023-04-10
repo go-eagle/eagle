@@ -7,8 +7,11 @@ import (
 )
 
 const (
+	// DateTime date time layout
 	DateTime = "2006-01-02 15:04:05"
+	// DateOnly date layout
 	DateOnly = "2006-01-02"
+	// TimeOnly time layout
 	TimeOnly = "15:04:05"
 )
 
