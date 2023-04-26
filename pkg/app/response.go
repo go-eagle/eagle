@@ -12,12 +12,6 @@ import (
 	"github.com/go-eagle/eagle/pkg/utils"
 )
 
-var resp *Response
-
-func init() {
-	resp = NewResponse()
-}
-
 // Response define a response struct
 type Response struct {
 	Code    int         `json:"code"`
@@ -32,7 +26,10 @@ func NewResponse() *Response {
 }
 
 // Success return a success response
-func Success(c *gin.Context, data interface{}) { resp.Success(c, data) }
+func Success(c *gin.Context, data interface{}) {
+	resp := NewResponse()
+	resp.Success(c, data)
+}
 func (r *Response) Success(c *gin.Context, data interface{}) {
 	if data == nil {
 		data = gin.H{}
@@ -46,7 +43,10 @@ func (r *Response) Success(c *gin.Context, data interface{}) {
 }
 
 // Error return a error response
-func Error(c *gin.Context, err error) { resp.Error(c, err) }
+func Error(c *gin.Context, err error) {
+	resp := NewResponse()
+	resp.Error(c, err)
+}
 func (r *Response) Error(c *gin.Context, err error) {
 	if err == nil {
 		c.JSON(http.StatusOK, Response{
@@ -57,20 +57,21 @@ func (r *Response) Error(c *gin.Context, err error) {
 		return
 	}
 
-	if v, ok := err.(*errcode.Error); ok {
+	switch typed := err.(type) {
+	case *errcode.Error:
 		response := Response{
-			Code:    v.Code(),
-			Message: v.Msg(),
+			Code:    typed.Code(),
+			Message: typed.Msg(),
 			Data:    gin.H{},
 			Details: []string{},
 		}
-		details := v.Details()
+		details := typed.Details()
 		if len(details) > 0 {
 			response.Details = details
 		}
-		c.JSON(errcode.ToHTTPStatusCode(v.Code()), response)
+		c.JSON(errcode.ToHTTPStatusCode(typed.Code()), response)
 		return
-	} else {
+	default:
 		// receive gRPC error
 		if st, ok := status.FromError(err); ok {
 			response := Response{

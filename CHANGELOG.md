@@ -2,6 +2,7 @@
 
 ## v1.7.1
 - chore(cli): approve gen task command
+- chore(response): remove init resp and improve Error
 
 ## v1.7.0
 - feat(http): can custom http status
