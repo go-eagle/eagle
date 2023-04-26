@@ -56,25 +56,25 @@ jobs:
 #          token: ${{secrets.CODECOV_TOKEN}}
 #          file: ./coverage.txt
 #
-#  build:
-#    name: Build
-#    runs-on: ubuntu-latest
-#    needs: [lint, test]
-#    steps:
-#      - name: Set up Go
-#        uses: actions/setup-go@v2
-#        with:
-#          go-version: 1.15
-#
-#      - name: Check out code
-#        uses: actions/checkout@v2
-#
-#      - name: Download dependencies
-#        run: go mod download
-#        env:
-#          GOPROXY: https://proxy.golang.org
-#
-#
-#      - name: Build
-#        # or run: go build -v .
-#        run: make build
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Download dependencies
+        run: go mod download
+        env:
+          GOPROXY: https://proxy.golang.org
+
+
+      - name: Build
+        # or run: go build -v .
+        run: make build
