@@ -58,7 +58,7 @@ lint: prepare-lint
 prepare-lint:
 	@if ! which golangci-lint &>/dev/null; then \
   		echo "Installing golangci-lint"; \
-  		go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.43.0; \
+  		go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.0; \
   	fi
 
 .PHONY: test
