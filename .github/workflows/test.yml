@@ -1,4 +1,4 @@
-name: Build and Test
+name: Run unit tests
 # see: https://www.qikqiak.com/post/use-github-actions-build-go-app/
 # This workflow will run on master branch and on any pull requests targeting master
 # 主要用于 pull request
@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - master
-      - release/*
     pull_request:
       branches:
         - master
@@ -35,22 +34,23 @@ jobs:
           make lint
 
 #  test:
+#    needs: lint
 #    name: Test
 #    runs-on: ubuntu-latest
 #    steps:
 #      - name: Set up Go
-#        uses: actions/setup-go@v2
+#        uses: actions/setup-go@v3
 #        with:
-#          go-version: 1.15
+#          go-version: 1.16
 #
 #      - name: Check out code
-#        uses: actions/checkout@v2
+#        uses: actions/checkout@v3
 #
 #      - name: Run Unit tests.
 #        run: make cover
 #
-#      - name: Upload Coverage report to CodeCov
-#        uses: codecov/codecov-action@v1.0.0
+#      - name: Upload Coverage to CodeCov
+#        uses: codecov/codecov-action@v3
 #        with:
 #          token: ${{secrets.CODECOV_TOKEN}}
 #          file: ./coverage.txt
