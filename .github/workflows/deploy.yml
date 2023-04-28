@@ -1,8 +1,8 @@
-name: Deploy to production
+name: Deploy
 
 on:
   push:
-    branches: [ release ]
+    branches: [ master ]
 
 jobs:
 
