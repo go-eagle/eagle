@@ -8,26 +8,25 @@ on:
     branches:
       - master
       - release/*
-  # 当只有pull_request被合并到master分支的时候
-  pull_request:
-    branches:
-      - master
-  # 星期一到星期五的每天2点构建任务
-  #schedule:
-  #  - cron: 0 2 * * 1-5
+    pull_request:
+      branches:
+        - master
+
+permissions:
+  contents: read
 
 jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Go
-        uses: actions/setup-go@v2
+      - name: Setup Go
+        uses: actions/setup-go@v3
         with:
           go-version: 1.16
 
-      - name: Check out code
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Lint Go Code
         run: |
