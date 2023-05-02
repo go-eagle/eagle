@@ -39,7 +39,7 @@
 - 校验器使用 [validator](https://github.com/go-playground/validator)  也是 Gin 框架默认的校验器
 - 任务调度 [cron](https://github.com/robfig/cron)
 - 包管理工具 [Go Modules](https://github.com/golang/go/wiki/Modules)
-- 测试框架 [GoConvey](http://goconvey.co/)
+- 测试框架 [GoConvey](https://github.com/smartystreets/goconvey)
 - CI/CD [GitHub Actions](https://github.com/actions)
 - 使用 [GolangCI-lint](https://golangci.com/) 进行代码检测
 - 使用 make 来管理 Go 工程
