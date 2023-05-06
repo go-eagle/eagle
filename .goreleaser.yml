@@ -49,6 +49,6 @@ archives:
 
 release:
   github:
-    owner: qloog
+    owner: go-eagle
     name: eagle
   name_template: '{{.Tag}}'
