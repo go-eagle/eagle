@@ -1,7 +1,5 @@
-# 主要用于release
-# see: https://www.qikqiak.com/post/use-github-actions-build-go-app/
-# https://goreleaser.com/
 name: GoRelease
+
 on:
   push:
     tags:
@@ -17,6 +15,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Git fetch
         run: git fetch --force --tags
@@ -31,6 +31,6 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: release --clean
+          args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GORELEASER_TOKEN }}

@@ -2,53 +2,58 @@
 
 project_name: eagle
 
-env:
-  - GO111MODULE=on
-
-before:
-  hooks:
-    - go mod download
-
 builds:
-  - main: ./main.go
-    binary: eagle
-    ldflags: -s -w -X main.Version={{.Version}}  -X main.BuildDate={{.Date}} -X main.commit={{.Commit}}
-    goos:
-      - linux
-      - darwin
-      - windows
-    goarch:
-      - amd64
-      - arm64
-    ignore:
-      - goos: windows
-        goarch: arm64
-      - goos: darwin
-        goarch: arm64
+  -
+    # If true, skip the build.
+    # Useful for library projects.
+    # Default is false
+    skip: true
 
 changelog:
+  # Set it to true if you wish to skip the changelog generation.
+  # This may result in an empty release notes on GitHub/GitLab/Gitea.
+  skip: false
+
+  # Changelog generation implementation to use.
+  #
+  # Valid options are:
+  # - `git`: uses `git log`;
+  # - `github`: uses the compare GitHub API, appending the author login to the changelog.
+  # - `gitlab`: uses the compare GitLab API, appending the author name and email to the changelog.
+  # - `github-native`: uses the GitHub release notes generation API, disables the groups feature.
+  #
+  # Defaults to `git`.
+  use: git
+
+  # Sorts the changelog by the commit's messages.
+  # Could either be asc, desc or empty
+  # Default is empty
   sort: asc
+
+  # Group commits messages by given regex and title.
+  # Order value defines the order of the groups.
+  # Proving no regex means all commits will be grouped under the default group.
+  # Groups are disabled when using github-native, as it already groups things by itself.
+  #
+  # Default is no groups.
+  groups:
+    - title: Features
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: 'Bug fixes'
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 1
+    - title: 'Enhancements'
+      regexp: "^.*chore[(\\w)]*:+.*$"
+      order: 2
+    - title: Others
+      order: 999
+
   filters:
+    # Commit messages matching the regexp listed here will be removed from
+    # the changelog
+    # Default is empty
     exclude:
-      - '^docs:'
-      - '^test:'
-      - Merge pull request
-      - Merge branch
-
-archives:
-  - id: eagle
-    name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
-    format: tar.gz
-    format_overrides:
-      - goos: windows
-        format: zip
-    files:
-      - LICENSE*
-      - README*
-      - CHANGELOG*
-
-release:
-  github:
-    owner: go-eagle
-    name: eagle
-  name_template: '{{.Tag}}'
+      - '^docs'
+      - 'CICD'
+      - typo
