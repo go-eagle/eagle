@@ -1,5 +1,6 @@
 name: Run unit tests
 # This workflow will run on master branch and on any pull requests targeting master
+
 on:
   push:
     branches:
@@ -32,12 +33,11 @@ jobs:
 
   test:
     needs: lint
-    name: Test
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
         go: ['1.16', '1.17', '1.18']
-    name: ${{ matrix.os }} @ Go ${{ matrix.go }}
+    name: Test ${{ matrix.os }} @ Go ${{ matrix.go }}
     runs-on: ${{ matrix.os }}
     env:
       GO111MODULE: on
