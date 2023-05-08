@@ -1,9 +1,6 @@
 name: Run unit tests
-# see: https://www.qikqiak.com/post/use-github-actions-build-go-app/
 # This workflow will run on master branch and on any pull requests targeting master
-# 主要用于 pull request
 on:
-  # 当代码推送到master和release分支的时候触发
   push:
     branches:
       - master
@@ -20,60 +17,50 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
-          go-version: 1.16
+          go-version: '^1.18'
 
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Lint Go Code
-        run: |
-          export PATH=$PATH:$(go env GOPATH)/bin # temporary fix. See https://github.com/actions/setup-go/issues/14
-          go get -u golang.org/x/lint/golint
-          make lint
-
-#  test:
-#    needs: lint
-#    name: Test
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Set up Go
-#        uses: actions/setup-go@v3
-#        with:
-#          go-version: 1.16
-#
-#      - name: Check out code
-#        uses: actions/checkout@v3
-#
-#      - name: Run Unit tests.
-#        run: make cover
-#
-#      - name: Upload Coverage to CodeCov
-#        uses: codecov/codecov-action@v3
-#        with:
-#          token: ${{secrets.CODECOV_TOKEN}}
-#          file: ./coverage.txt
-#
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: [lint]
-    steps:
-      - name: Set up Go
-        uses: actions/setup-go@v2
+      - name: Setup golangci-lint
+        uses: golangci/golangci-lint-action@v3.4.0
         with:
-          go-version: 1.16
+          version: v1.52.2
+          args: --verbose
+
+  test:
+    needs: lint
+    name: Test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        go: ['1.16', '1.17', '1.18']
+    name: ${{ matrix.os }} @ Go ${{ matrix.go }}
+    runs-on: ${{ matrix.os }}
+    env:
+      GO111MODULE: on
+      GOPROXY: https://proxy.golang.org
+    steps:
+      - name: Set up Go ${{ matrix.go }}
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go }}
 
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
 
-      - name: Download dependencies
-        run: go mod download
-        env:
-          GOPROXY: https://proxy.golang.org
+      - name: Run Unit tests
+        run: |
+          make test
+          make cover
 
-
-      - name: Build
-        # or run: go build -v .
-        run: make build
+      - name: Upload Coverage to CodeCov
+        uses: codecov/codecov-action@v3
+        with:
+          flags: ${{ matrix.os }},go-${{ matrix.go }}
+          token: ${{secrets.CODECOV_TOKEN}}
+          file: ./coverage.txt

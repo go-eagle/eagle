@@ -12,6 +12,7 @@ ldflags="-w -X ${versionDir}.gitTag=${gitTag} -X ${versionDir}.buildDate=${build
 
 PROJECT_NAME := "github.com/go-eagle/eagle"
 PKG := "$(PROJECT_NAME)"
+GO_VERSION=$(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f2)
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
 
@@ -50,16 +51,12 @@ golint:
 
 .PHONY: lint
 # make lint
-lint: prepare-lint
-	${GOPATH}/bin/golangci-lint run ./...
-
-.PHONY: prepare-lint
-# make prepare-lint
-prepare-lint:
+lint:
 	@if ! which golangci-lint &>/dev/null; then \
   		echo "Installing golangci-lint"; \
-  		go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.0; \
+  		go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.43.0; \
   	fi
+	${GOPATH}/bin/golangci-lint run ./...
 
 .PHONY: test
 # make test
@@ -78,13 +75,9 @@ vet:
 
 .PHONY: cover
 # make cover
-cover: gen-coverage
+cover:
 	@go tool cover -html=coverage.txt
-
-.PHONY: gen-coverage
-# make gen-coverage
-gen-coverage:
-	@go test -short -coverprofile coverage.txt -covermode=atomic ${PKG_LIST}
+	@go test -short -coverprofile coverage.txt -covermode=atomic ${PKG_LIST}	
 
 .PHONY: docker
 # make docker  生成docker镜像
