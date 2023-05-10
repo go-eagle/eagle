@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata: # Deployment的元数据
-  name: go-deployment
+metadata:
+  name: go-app-deployment
   labels:
     app: go-app
 spec:
-  replicas: 3 # ReplicaSet部分的定义
+  replicas: 3
   selector:
     matchLabels:
       app: go-app
@@ -21,7 +21,7 @@ spec:
     spec: # Pod里容器相关的定义
       containers:
         - name: go-app-container
-          image: go-eagle/go-app:v1.0.0
+          image: go-eagle/eagle:latest
           resources:
             limits:
               memory: "128Mi"
