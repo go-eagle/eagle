@@ -60,7 +60,10 @@ func (d *repository) GetUser(ctx context.Context, uid uint64) (userBase *model.U
 	))
 	defer span.End()
 
-	var data *model.UserBaseModel
+	var (
+		data *model.UserBaseModel
+		val  interface{}
+	)
 
 	userBase, err = d.userCache.GetUserBaseCache(ctx, uid)
 	if errors.Is(err, cache.ErrPlaceholder) {
@@ -72,8 +75,8 @@ func (d *repository) GetUser(ctx context.Context, uid uint64) (userBase *model.U
 		// demo see: https://github.com/go-demo/singleflight-demo/blob/master/main.go
 		// https://juejin.cn/post/6844904084445593613
 		key := fmt.Sprintf("get_user_base_%d", uid)
-		val, err, _ := g.Do(key, func() (interface{}, error) {
-			data := new(model.UserBaseModel)
+		val, err, _ = g.Do(key, func() (interface{}, error) {
+			data = new(model.UserBaseModel)
 			// 从数据库中获取
 			err = d.orm.WithContext(ctx).First(data, uid).Error
 			// if data is empty, set not found cache to prevent cache penetration(缓存穿透)

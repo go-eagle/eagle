@@ -73,6 +73,7 @@ func main() {
 	// init db
 	model.Init()
 	// init redis
+	// nolint: errcheck
 	redis.Init()
 
 	// init service

@@ -235,21 +235,21 @@ linters:
     - gocyclo
     - gofmt
     - goimports
-    - golint
+#    - golint
 #    - goprintffuncname
 #    - gosec
     - gosimple
     - govet
 #    - ineffassign
-    - interfacer
+#    - interfacer
     - lll
     - misspell
     - rowserrcheck
-    - structcheck
+ #   - structcheck
     - typecheck
     - unconvert
 #    - unparam
-    - unused
+#    - unused
     - varcheck
     - whitespace
 

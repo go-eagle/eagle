@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-eagle/eagle/pkg/utils"
+	"github.com/streadway/amqp"
 
 	"github.com/go-eagle/eagle/pkg/log"
-	"github.com/streadway/amqp"
+	"github.com/go-eagle/eagle/pkg/utils"
 )
 
 type Handler func(ctx context.Context, body []byte) error

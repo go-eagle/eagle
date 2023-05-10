@@ -52,7 +52,10 @@ func (s *Server) Start(ctx context.Context) error {
 func (s *Server) Stop(ctx context.Context) error {
 	log.Info("[rabbitmq] server stopping...")
 	s.started = false
-	s.consumer.Stop()
+	err := s.consumer.Stop()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -66,7 +69,9 @@ func (s *Server) RegisterSubscriber(ctx context.Context, queueName string, h Han
 }
 
 func (s *Server) doConsume(ctx context.Context, queueName string, h Handler) error {
-	go s.consumer.Consume(ctx, queueName, h)
+	go func() {
+		_ = s.consumer.Consume(ctx, queueName, h)
+	}()
 
 	return nil
 }
