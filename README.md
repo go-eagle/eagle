@@ -31,26 +31,26 @@ A Go framework suitable for rapid business development, which can quickly build 
 ## Directory Structure
 
 ```shell
-├── Makefile                     # 项目管理文件
-├── api                          # grpc客户端和Swagger 文档
-├── cmd                          # 脚手架目录
-├── config                       # 配置文件统一存放目录
-├── docs                         # 框架相关文档
-├── internal                     # 业务目录
-│   ├── cache                    # 基于业务封装的cache
-│   ├── handler                  # http 接口
-│   ├── middleware               # 自定义中间件
-│   ├── model                    # 数据库 model
-│   ├── dao                      # 数据访问层
-│   ├── ecode                    # 业务自定义错误码
-│   ├── routers                  # 业务路由
-│   ├── server                   # http server 和 grpc server
-│   └── service                  # 业务逻辑层
-├── logs                         # 存放日志的目录
-├── main.go                      # 项目入口文件
-├── pkg                          # 公共的 package
-├── test                         # 单元测试依赖的配置文件，主要是供docker使用的一些环境配置文件
-└── scripts                      # 存放用于执行各种构建，安装，分析等操作的脚本
+├── Makefile                     
+├── api                          
+├── cmd                          
+├── config                       
+├── docs                         
+├── internal                     
+│   ├── cache                    
+│   ├── handler                  
+│   ├── middleware               
+│   ├── model                    
+│   ├── dao                      
+│   ├── ecode                    
+│   ├── routers                  
+│   ├── server                   
+│   └── service                  
+├── logs                         
+├── main.go                      
+├── pkg                          
+├── test                         
+└── scripts                      
 ```
 
 ## Installtion CLI
@@ -95,6 +95,16 @@ make build
 
 - Issue: https://github.com/go-eagle/eagle/issues
 - Gitter: https://gitter.im/go-eagle/eagle
+
+## Contributing
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thanks again!
+
+- Fork the repository to your own GitHub account.
+- Create a new branch for your changes.
+- Make your changes to the code.
+- Commit your changes and push the branch to your forked repository.
+- Open a pull request on our repository.
 
 ## Stargazers over time
 
