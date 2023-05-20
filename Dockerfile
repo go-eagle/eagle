@@ -41,11 +41,10 @@ RUN make build
 FROM alpine:3.15
 
 WORKDIR /bin
-
 ENV APP_ENV local
 
 # 从builder镜像中把 /build 拷贝到当前目录
-COPY --from=builder /go/src/github.com/go-eagle/eagle          /bin/eagle
+COPY --from=builder /go/src/github.com/go-eagle/eagle/eagle    /bin/eagle
 COPY --from=builder /go/src/github.com/go-eagle/eagle/config   /data/conf/eagle/config
 COPY --from=builder /bin/grpc_health_probe                     /bin/grpc_health_probe
 
@@ -56,12 +55,12 @@ RUN apk update \
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
-EXPOSE 9090
+# EXPOSE 9090
 
 # 需要运行的命令
-ENTRYPOINT ["/bin/eagle", "-c", "/data/conf/eagle/config"]
+CMD ["/bin/eagle", "-c", "/data/conf/eagle/config"]
 
-# 1. build image: docker build -t eagle:v1 -f Dockerfile .
+# 1. build image: docker build -t eagle:v1.0.1 -f Dockerfile .
 # 2. start: docker run --rm -it -p 8080:8080 eagle:v1
 # 3. test: curl -i http://localhost:8080/health
 

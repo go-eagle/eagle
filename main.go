@@ -29,7 +29,6 @@ import (
 	eagle "github.com/go-eagle/eagle/pkg/app"
 	"github.com/go-eagle/eagle/pkg/config"
 	logger "github.com/go-eagle/eagle/pkg/log"
-	"github.com/go-eagle/eagle/pkg/redis"
 	v "github.com/go-eagle/eagle/pkg/version"
 )
 
@@ -71,10 +70,10 @@ func main() {
 	// -------------- init resource -------------
 	logger.Init()
 	// init db
-	model.Init()
+	// model.Init()
 	// init redis
 	// nolint: errcheck
-	redis.Init()
+	// redis.Init()
 
 	// init service
 	service.Svc = service.New(repository.New(model.GetDB()))
