@@ -21,7 +21,7 @@ spec:
     spec: # Pod里容器相关的定义
       containers:
         - name: go-app
-          image: 456992256689.dkr.ecr.us-east-1.amazonaws.com/microservices:latest
+          image: 456002253389.dkr.ecr.us-east-1.amazonaws.com/microservices:latest
           resources:
             limits:
               memory: "128Mi"
