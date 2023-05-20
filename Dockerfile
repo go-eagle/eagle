@@ -50,8 +50,9 @@ COPY --from=builder /bin/grpc_health_probe                     /bin/grpc_health_
 RUN apk update \
  && apk add --no-cache curl jq \
  && rm -rf /var/cache/apk/* \
- && mkdir -p  /data/logs/ \
- && chmod +x /bin/eagle
+ && mkdir -p  /data/logs/
+
+RUN sudo chmod +x /bin/eagle
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
