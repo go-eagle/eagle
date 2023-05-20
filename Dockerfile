@@ -52,7 +52,7 @@ RUN apk update \
  && rm -rf /var/cache/apk/* \
  && mkdir -p  /data/logs/
 
-RUN sudo chmod +x /bin/eagle
+RUN chmod +x /bin/eagle
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
