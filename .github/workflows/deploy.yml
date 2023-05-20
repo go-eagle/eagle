@@ -20,6 +20,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.26' # default is latest stable
+      id: install
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
@@ -46,3 +52,11 @@ jobs:
         echo ${{ env.RELEASE_VERSION }}
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
         docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
+
+    - name: Update kube config
+      run: aws eks update-kubeconfig --name microservice --region ap-southeast-1
+
+    - name: Deploy image to Amazon EKS
+      run: |
+        kubectl apply -f deploy/k8s/go-deployment.yaml
+        kubectl apply -f deploy/k8s/go-service.yaml

@@ -5,7 +5,7 @@ metadata:
   labels:
     app: go-app
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: go-app
@@ -20,20 +20,20 @@ spec:
         app: go-app
     spec: # Pod里容器相关的定义
       containers:
-        - name: go-app-container
-          image: go-eagle/eagle:latest
+        - name: go-app
+          image: 456992256689.dkr.ecr.us-east-1.amazonaws.com/microservices:latest
           resources:
             limits:
               memory: "128Mi"
               cpu: "100m" # 0.1核，1000m = 1核心
           ports:
-            - containerPort: 80
-            - containerPort: 9090
-          readinessProbe: # 就绪探针
-            exec:
-              command: [ "/bin/grpc_health_probe", "-addr=:9090" ]
-            initialDelaySeconds: 5
-          livenessProbe: # 存活探针
-            exec:
-              command: [ "/bin/grpc_health_probe", "-addr=:9090" ]
-            initialDelaySeconds: 10
+            - containerPort: 8080
+#            - containerPort: 9090
+#          readinessProbe: # 就绪探针
+#            exec:
+#              command: [ "/bin/grpc_health_probe", "-addr=:9090" ]
+#            initialDelaySeconds: 5
+#          livenessProbe: # 存活探针
+#            exec:
+#              command: [ "/bin/grpc_health_probe", "-addr=:9090" ]
+#            initialDelaySeconds: 10
