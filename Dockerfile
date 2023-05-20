@@ -42,6 +42,8 @@ FROM alpine:3.15
 
 WORKDIR /bin
 
+ENV APP_ENV local
+
 # 从builder镜像中把 /build 拷贝到当前目录
 COPY --from=builder /go/src/github.com/go-eagle/eagle          /bin/eagle
 COPY --from=builder /go/src/github.com/go-eagle/eagle/config   /data/conf/eagle/config
@@ -52,14 +54,12 @@ RUN apk update \
  && rm -rf /var/cache/apk/* \
  && mkdir -p  /data/logs/
 
-RUN chmod +x /bin/eagle
-
 # Expose port 8080 to the outside world
 EXPOSE 8080
 EXPOSE 9090
 
 # 需要运行的命令
-CMD ["/bin/eagle", "-c", "/data/conf/eagle/config"]
+ENTRYPOINT ["/bin/eagle", "-c", "/data/conf/eagle/config"]
 
 # 1. build image: docker build -t eagle:v1 -f Dockerfile .
 # 2. start: docker run --rm -it -p 8080:8080 eagle:v1
