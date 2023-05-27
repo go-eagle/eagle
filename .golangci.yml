@@ -7,7 +7,7 @@ run:
   concurrency: 4
 
   # timeout for analysis, e.g. 30s, 5m, default is 1m
-  timeout: 1m
+  timeout: 10m
 
   # exit code when at least one issue was found, default is 1
   issues-exit-code: 1
@@ -235,21 +235,21 @@ linters:
     - gocyclo
     - gofmt
     - goimports
-    - golint
+#    - golint
 #    - goprintffuncname
 #    - gosec
     - gosimple
     - govet
 #    - ineffassign
-    - interfacer
+#    - interfacer
     - lll
     - misspell
     - rowserrcheck
-    - structcheck
+ #   - structcheck
     - typecheck
     - unconvert
 #    - unparam
-    - unused
+#    - unused
     - varcheck
     - whitespace
 

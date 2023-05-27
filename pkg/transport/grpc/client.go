@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	logger "github.com/go-eagle/eagle/pkg/log"
-	"github.com/go-eagle/eagle/pkg/transport/grpc/resolver/discovery"
 	grpcZap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
@@ -17,6 +15,9 @@ import (
 	grpcInsecure "google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/keepalive"
+
+	logger "github.com/go-eagle/eagle/pkg/log"
+	"github.com/go-eagle/eagle/pkg/transport/grpc/resolver/discovery"
 )
 
 // Dial

@@ -2,15 +2,14 @@ package redis
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"sync"
-
-	"github.com/go-eagle/eagle/pkg/config"
 
 	"github.com/alicebob/miniredis/v2"
 	"github.com/go-redis/redis/extra/redisotel/v8"
 	"github.com/go-redis/redis/v8"
+
+	"github.com/go-eagle/eagle/pkg/config"
 )
 
 // RedisClient redis 客户端
@@ -35,10 +34,10 @@ func Init() (*redis.Client, func(), error) {
 	clientManager := NewRedisManager()
 	rdb, err := clientManager.GetClient(DefaultRedisName)
 	if err != nil {
-		return nil, nil, errors.New(fmt.Sprintf("init redis err: %s", err.Error()))
+		return nil, nil, fmt.Errorf("init redis err: %s", err.Error())
 	}
 	cleanFunc := func() {
-		rdb.Close()
+		_ = rdb.Close()
 	}
 	RedisClient = rdb
 

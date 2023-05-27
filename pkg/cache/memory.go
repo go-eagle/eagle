@@ -39,7 +39,7 @@ func NewMemoryCache(keyPrefix string, encoding encoding.Encoding) Cache {
 func (m *memoryCache) Set(ctx context.Context, key string, val interface{}, expiration time.Duration) error {
 	buf, err := encoding.Marshal(m.encoding, val)
 	if err != nil {
-		return errors.Wrapf(err, "marshal data err")
+		return errors.Wrapf(err, "marshal data err, value is %+v", val)
 	}
 	cacheKey, err := BuildCacheKey(m.KeyPrefix, key)
 	if err != nil {

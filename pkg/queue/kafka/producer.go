@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Shopify/sarama"
+
 	logger "github.com/go-eagle/eagle/pkg/log"
 )
 

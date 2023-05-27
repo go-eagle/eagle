@@ -1,14 +1,32 @@
+# Ingress Class
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: nginx
+spec:
+  controller: k8s.io/ingress-nginx
+---
+
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: test-ingress
+  name: go-app-ingress
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
+  ingressClassName: nginx
   rules:
-    - host: website-ingress.local
+    - host: api.go-app.org
       http:
         paths:
-          - backend:
-              serviceName: awesome-project-svc
-              servicePort: 9001
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: go-app-svc
+                port: 
+                  number: 80
+  tls:
+  - hosts:
+    - api.go-app.org
+    secretName: go-app-cert

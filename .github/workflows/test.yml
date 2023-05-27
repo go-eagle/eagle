@@ -1,0 +1,66 @@
+name: Run unit tests
+# This workflow will run on master branch and on any pull requests targeting master
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.16'
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup golangci-lint
+        uses: golangci/golangci-lint-action@v3.4.0
+        with:
+          version: v1.43.0
+          args: --verbose
+
+  test:
+    needs: lint
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        go: ['1.16', '1.17', '1.18']
+    name: Test ${{ matrix.os }} @ Go ${{ matrix.go }}
+    runs-on: ${{ matrix.os }}
+    env:
+      GO111MODULE: on
+      GOPROXY: https://proxy.golang.org
+    steps:
+      - name: Set up Go ${{ matrix.go }}
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Run Unit tests
+        run: |
+          make test
+          make cover
+
+      - name: Upload Coverage to CodeCov
+        uses: codecov/codecov-action@v3
+        with:
+          flags: ${{ matrix.os }},go-${{ matrix.go }}
+          token: ${{secrets.CODECOV_TOKEN}}
+          file: ./coverage.txt

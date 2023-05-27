@@ -1,12 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: awesome-project-svc
+  name: go-app-svc
   labels:
-    app: awesome-project
+    app: go-app
 spec:
-  ports:
-    - port: 9001
-  type: ClusterIP
   selector:
-    app: awesome-project
+    app: go-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP

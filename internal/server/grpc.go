@@ -9,7 +9,6 @@ import (
 
 // NewGRPCServer creates a gRPC server
 func NewGRPCServer(cfg *app.ServerConfig) *grpc.Server {
-
 	grpcServer := grpc.NewServer(
 		grpc.Network("tcp"),
 		grpc.Address(":9090"),
