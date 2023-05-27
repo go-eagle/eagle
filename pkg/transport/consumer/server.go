@@ -34,14 +34,18 @@ func NewServer(redisOpt asynq.RedisClientOpt, asyncCfg asynq.Config) *Server {
 }
 
 func (s *Server) Start(ctx context.Context) error {
+	go func() {
+		err := s.sche.Run()
+		if err != nil {
+			panic(err)
+		}
+	}()
+
 	err := s.srv.Run(s.mux)
 	if err != nil {
 		return errors.Wrapf(err, "failed to run async server: %v")
 	}
-	err = s.sche.Run()
-	if err != nil {
-		return errors.Wrapf(err, "failed to run async Scheduler server: %v")
-	}
+
 	return nil
 }
 
