@@ -1,4 +1,4 @@
-package cronjob
+package cron
 
 // ServerOption is cron server option.
 type ServerOption func(o *Server)

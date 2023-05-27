@@ -1,4 +1,4 @@
-package cronjob
+package cron
 
 import (
 	"context"
@@ -11,7 +11,7 @@ type Server struct {
 	clientOpt asynq.RedisClientOpt
 	sche      *asynq.Scheduler
 
-	jobs map[string]*asynq.Task
+	tasks map[string]*asynq.Task
 }
 
 func NewServer(redisOpt asynq.RedisClientOpt) *Server {
@@ -38,6 +38,6 @@ func (s *Server) Stop(ctx context.Context) error {
 	return nil
 }
 
-func (s *Server) RegisterJob(schedule string, job *asynq.Task) (entryID string, err error) {
-	return s.sche.Register(schedule, job)
+func (s *Server) RegisterTask(schedule string, task *asynq.Task) (entryID string, err error) {
+	return s.sche.Register(schedule, task)
 }
