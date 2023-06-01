@@ -19,7 +19,7 @@ require (
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/pprof v1.3.0
 	github.com/gin-contrib/static v0.0.0-20200916080430-d45d9a37d28e
-	github.com/gin-gonic/gin v1.9.0
+	github.com/gin-gonic/gin v1.9.1
 	github.com/go-kratos/aegis v0.1.1
 	github.com/go-mail/mail v2.3.1+incompatible
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
@@ -27,7 +27,7 @@ require (
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
-	github.com/go-playground/validator/v10 v10.11.2
+	github.com/go-playground/validator/v10 v10.14.0
 	github.com/go-redis/redis/extra/redisotel/v8 v8.10.0
 	github.com/go-redis/redis/v8 v8.11.2
 	github.com/go-sql-driver/mysql v1.5.0
@@ -43,6 +43,7 @@ require (
 	github.com/hibiken/asynq v0.23.0
 	github.com/jinzhu/gorm v1.9.16
 	github.com/jonboulle/clockwork v0.1.0 // indirect
+	github.com/kr/pretty v0.3.0 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.5 // indirect
 	github.com/lib/pq v1.3.0 // indirect
@@ -57,13 +58,14 @@ require (
 	github.com/prometheus/client_golang v1.11.0
 	github.com/qiniu/api.v7 v0.0.0-20190520053455-bea02cd22bf4
 	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a // indirect
+	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/afero v1.8.0 // indirect
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.10.0
 	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.3
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.7.0 // indirect
 	github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
@@ -86,12 +88,13 @@ require (
 	go.opentelemetry.io/otel/trace v1.3.0
 	go.uber.org/automaxprocs v1.5.1
 	go.uber.org/zap v1.17.0
-	golang.org/x/crypto v0.5.0
-	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
+	golang.org/x/crypto v0.9.0
+	golang.org/x/sync v0.1.0
 	google.golang.org/genproto v0.0.0-20220107163113-42d7afdf6368 // indirect
 	google.golang.org/grpc v1.43.0
-	google.golang.org/protobuf v1.28.1
+	google.golang.org/protobuf v1.30.0
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/mail.v2 v2.3.1 // indirect
 	gorm.io/driver/mysql v1.0.4
 	gorm.io/gorm v1.20.12
