@@ -11,7 +11,7 @@
  [![License](https://img.shields.io/github/license/go-eagle/eagle?style=flat-square)](/LICENSE)
 
 A Go framework suitable for rapid business development, which can quickly build API services or Web sites.   
-English | [中文文档](https://github.com/go-eagle/eagle/blob/master/README.md)
+English | [中文文档](https://github.com/go-eagle/eagle/blob/master/README_ZH.md)
 
 ## Features
 
