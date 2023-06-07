@@ -12,6 +12,8 @@
 
 一款适合于快速开发业务的 Go 框架，可快速构建 API 服务 或 Web 网站。
 
+[English](https://github.com/go-eagle/eagle/blob/master/README.md) | [中文文档](https://github.com/go-eagle/eagle/blob/master/README_ZH.md)
+
 ## 官方文档
 
  - 开发文档 [https://go-eagle.org/](https://go-eagle.org/)
