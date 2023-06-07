@@ -10,9 +10,8 @@
  [![gitmoji](https://img.shields.io/badge/gitmoji-%20%F0%9F%98%9C%20%F0%9F%98%8D-FFDD67.svg?style=flat-square)](https://github.com/carloscuesta/gitmoji)
  [![License](https://img.shields.io/github/license/go-eagle/eagle?style=flat-square)](/LICENSE)
 
-## Introduction
-
-A Go framework suitable for rapid business development, which can quickly build API services or Web sites.
+A Go framework suitable for rapid business development, which can quickly build API services or Web sites.   
+English | [中文文档](https://github.com/go-eagle/eagle/edit/master/README_ZH.md)
 
 ## Features
 
