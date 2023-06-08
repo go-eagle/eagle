@@ -85,9 +85,6 @@ func doRequest(ctx context.Context, method, url string, payload []byte, opt *opt
 		req.Header.Set(key, value[0])
 	}
 
-	ctx, span := tracer.Start(req.Context(), fmt.Sprintf("HTTP %s", method))
-	defer span.End()
-
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, errors.Wrapf(err, "[httpClient] do request from [%s %s] err", method, url)
