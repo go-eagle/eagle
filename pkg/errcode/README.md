@@ -25,3 +25,9 @@
 - 建议代码中按服务模块将错误分类
 - 错误码均为 >= 0 的数
 - 在本项目中 HTTP Code 固定为 http.StatusOK，错误码通过 code 来表示。
+
+
+## Reference
+
+- [gRPC错误处理](https://mp.weixin.qq.com/s/ghJiTvJxYzLKTFs5gZga5w)
+
