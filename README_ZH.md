@@ -12,6 +12,8 @@
 
 一款适合于快速开发业务的 Go 框架，可快速构建 API 服务 或 Web 网站。
 
+[English](https://github.com/go-eagle/eagle/blob/master/README.md) | 中文文档
+
 ## 官方文档
 
  - 开发文档 [https://go-eagle.org/](https://go-eagle.org/)
@@ -148,8 +150,8 @@ eagle new github.com/foo/bar
 
 ## 📖 开发规约
 
-- [配置说明](https://github.com/go-eagle/eagle/blob/master/conf)
-- [错误码设计](https://github.com/go-eagle/eagle/tree/master/pkg/errno)
+- [配置说明](https://github.com/go-eagle/eagle/blob/master/config)
+- [错误码设计](https://github.com/go-eagle/eagle/tree/master/pkg/errcode)
 - [service 的使用规则](https://github.com/go-eagle/eagle/blob/master/internal/service)
 - [repository 的使用规则](https://github.com/go-eagle/eagle/blob/master/internal/repository)
 - [cache 使用说明](https://github.com/go-eagle/eagle/blob/master/pkg/cache)
