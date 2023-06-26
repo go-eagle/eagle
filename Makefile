@@ -60,13 +60,8 @@ lint:
 
 .PHONY: test
 # make test
-test: test-case vet
-	@go test -short ${PKG_LIST} -tags test
-
-.PHONY: test-case
-# make test-case
-test-case:
-	@go test -cover ./... | grep -v vendor;true
+test:
+	@go test -short ${PKG_LIST} | grep -v examples
 
 .PHONY: vet
 # make vet

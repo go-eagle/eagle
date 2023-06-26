@@ -1,6 +1,7 @@
 ## Changelog
 
 ## v1.7.1
+- feat(es): add elasticsearch client(v7)
 - chore(cli): approve gen task command
 - chore(response): remove init resp and improve Error
 - chore(server): improve consumer server
