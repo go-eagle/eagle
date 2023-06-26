@@ -4,6 +4,7 @@
 - feat(es): add elasticsearch client(v7)
 - chore(cli): approve gen task command
 - chore(response): remove init resp and improve Error
+- chore(server): improve consumer server
 
 ## v1.7.0
 - feat(http): can custom http status
