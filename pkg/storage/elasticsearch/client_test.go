@@ -37,6 +37,31 @@ func TestNewESClientWithContext(t *testing.T) {
 func TestCreateIndex(t *testing.T) {
 	a := assert.New(t)
 	bodyStr := `{
+		  "settings": {
+			"analysis": {
+			  "analyzer": {
+				"nickname_analyzer": {
+				  "type": "custom",
+				  "tokenizer": "ngram",
+				  "char_filter": [
+					"html_strip"
+				  ],
+				  "filter": [
+					"lowercase",
+					"trim",
+					"unique"
+				  ]
+				}
+			  },
+			  "tokenizer": {
+				"ngram": {
+				  "type": "ngram",
+				  "min_gram": 2,
+				  "max_gram": 20
+				}
+			  }
+			}
+		  },
 		  "mappings" : {
 			  "properties" : {
 				"id" : {
@@ -50,12 +75,7 @@ func TestCreateIndex(t *testing.T) {
 				"nickname" : {
 				  "index": true,
 				  "type" : "text",
-				  "fields": {
-					"keyword": {
-						"type": "keyword",
-						"ignore_above": 256
-					}
-				  }
+				  "analyzer": "partial"
 				},
 				"bio" : {
 				  "index": true,
