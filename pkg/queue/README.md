@@ -37,3 +37,4 @@
 - [阿里云RocketMQ](https://cn.aliyun.com/product/rocketmq)
 - https://github.com/GSabadini/go-message-broker/blob/master/main.go
 - [Automatically recovering RabbitMQ connections in Go applications](https://medium.com/@dhanushgopinath/automatically-recovering-rabbitmq-connections-in-go-applications-7795a605ca59)
+- [https://github.com/wagslane/go-rabbitmq](https://github.com/wagslane/go-rabbitmq)
