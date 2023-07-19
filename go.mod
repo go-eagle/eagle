@@ -9,6 +9,7 @@ require (
 	github.com/Shopify/sarama v1.19.0
 	github.com/Shopify/toxiproxy v2.1.4+incompatible // indirect
 	github.com/alicebob/miniredis/v2 v2.15.1
+	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/dgraph-io/ristretto v0.0.3
 	github.com/eapache/go-resiliency v1.1.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
@@ -57,6 +58,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.11.0
 	github.com/qiniu/api.v7 v0.0.0-20190520053455-bea02cd22bf4
+	github.com/rabbitmq/amqp091-go v1.8.1 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/afero v1.8.0 // indirect
