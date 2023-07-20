@@ -2,12 +2,12 @@ package rabbitmq
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
 
 	"github.com/cenkalti/backoff/v4"
-	"github.com/pkg/errors"
 	"github.com/rabbitmq/amqp091-go"
 
 	"github.com/go-eagle/eagle/pkg/log"
@@ -17,7 +17,7 @@ import (
 type Channel struct {
 	conn              *Connection
 	ch                *amqp091.Channel
-	opts              ConnectionOptions
+	opts              *Config
 	connected         chan struct{}
 	closing           chan struct{}
 	notifyReconnected chan error
@@ -27,9 +27,10 @@ type Channel struct {
 }
 
 // NewChannel instance a channel
-func NewChannel(conn *Connection, logger log.Logger) (*Channel, error) {
+func NewChannel(conn *Connection, opts *Config, logger log.Logger) (*Channel, error) {
 	ch := &Channel{
 		conn:              conn,
+		opts:              opts,
 		connected:         make(chan struct{}),
 		closing:           make(chan struct{}),
 		notifyReconnected: make(chan error, 1),
@@ -57,30 +58,71 @@ func (c *Channel) connect() error {
 		return err
 	}
 	c.ch = channel
-	c.initDeclare()
+	err = c.initDeclare()
+	if err != nil {
+		return err
+	}
 	close(c.connected)
 	return nil
 }
 
-// initDeclare declare a channel
+// initDeclare declare resources, include exchange, queue and binding
 func (c *Channel) initDeclare() error {
 	var err error
+	if c.opts.AutoDeclare == false {
+		return nil
+	}
+
+	if c.opts.Exchange == nil {
+		return errors.New("exchange config is nil")
+	}
+
 	c.once.Do(func() {
-		exchange := ""
-		err = c.ch.ExchangeDeclare(exchange, "topic", true, false, false, false, nil)
+		// declare exchange
+		exchange := c.opts.Exchange.Name
+		err = c.ch.ExchangeDeclare(
+			exchange,
+			c.opts.Exchange.Kind,
+			c.opts.Exchange.Durable,
+			c.opts.Exchange.AutoDelete,
+			c.opts.Exchange.Internal,
+			c.opts.Exchange.NoWait,
+			c.opts.Exchange.Args,
+		)
 		if err != nil {
+			err = fmt.Errorf("rabbitmq: declare exchange failed, err: %s", err)
 			return
 		}
-		_, err = c.ch.QueueDeclare("queue", true, false, false, false, nil)
+		// declare queue
+		_, err = c.ch.QueueDeclare(
+			c.opts.Queue.Name,
+			c.opts.Queue.Durable,
+			c.opts.Queue.AutoDelete,
+			c.opts.Queue.Exclusive,
+			c.opts.Queue.NoWait,
+			c.opts.Queue.Args,
+		)
 		if err != nil {
+			err = fmt.Errorf("rabbitmq: declare queue failed, err: %s", err)
 			return
 		}
-		err = c.ch.QueueBind("queue", "routing_key", exchange, false, nil)
+		// bind queue to exchange
+		err = c.ch.QueueBind(
+			c.opts.Queue.Name,
+			c.opts.Bind.RoutingKey,
+			exchange,
+			c.opts.Bind.NoWait,
+			c.opts.Bind.Args,
+		)
+		if err != nil {
+			err = fmt.Errorf("rabbitmq: bind queue failed, err: %s", err)
+			return
+		}
 	})
 	return err
 }
 
-// watch monitor a channel
+// watch a channel
 func (c *Channel) watch() {
 	for {
 		<-c.connected

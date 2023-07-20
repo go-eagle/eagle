@@ -5,6 +5,8 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/go-eagle/eagle/pkg/queue/rabbitmq/options"
+
 	"github.com/cenkalti/backoff/v4"
 	"github.com/rabbitmq/amqp091-go"
 
@@ -12,8 +14,7 @@ import (
 )
 
 type Connection struct {
-	uri       string
-	options   ConnectionOptions
+	options   *options.ConnectionOptions
 	conn      *amqp091.Connection
 	connected chan struct{}
 	closing   chan struct{}
@@ -24,9 +25,8 @@ type Connection struct {
 	backoff backoff.BackOff
 }
 
-func NewConnection(uri string, opts ConnectionOptions, logger log.Logger) (*Connection, error) {
+func NewConnection(opts *options.ConnectionOptions, logger log.Logger) (*Connection, error) {
 	conn := &Connection{
-		uri:       uri,
 		options:   opts,
 		connected: make(chan struct{}),
 		closing:   make(chan struct{}),
@@ -51,9 +51,9 @@ func (c *Connection) connect() error {
 		err      error
 	)
 	if c.options.Config != nil {
-		amqpConn, err = amqp091.DialConfig(c.uri, c.conn.Config)
+		amqpConn, err = amqp091.DialConfig(c.options.URI, c.conn.Config)
 	} else {
-		amqpConn, err = amqp091.Dial(c.uri)
+		amqpConn, err = amqp091.Dial(c.options.URI)
 	}
 	if err != nil {
 		return err
