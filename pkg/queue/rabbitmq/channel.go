@@ -188,18 +188,28 @@ func (c *Channel) Publish(ctx context.Context, exchange, key string, mandatory, 
 	select {
 	case <-c.connected:
 		return c.ch.PublishWithContext(ctx, exchange, key, mandatory, immediate, msg)
-	case <-time.After(time.Second * 5):
-		return fmt.Errorf("rabbitmq: Publish msg is timeout: %+v", time.Second*5)
+	case <-time.After(c.opts.Timeout):
+		return fmt.Errorf("rabbitmq: Publish msg is timeout: %+v", c.opts.Timeout)
 	}
 }
 
-// Consumer consume a message
-func (c *Channel) Consumer(queue, consumer string, autoAck, exclusive, noLocal, noWait bool, args amqp091.Table) (<-chan amqp091.Delivery, error) {
+// Qos set qos
+func (c *Channel) Qos(prefetchCount, prefetchSize int, global bool) error {
+	select {
+	case <-c.connected:
+		return c.ch.Qos(prefetchCount, prefetchSize, global)
+	case <-time.After(c.opts.Timeout):
+		return fmt.Errorf("rabbitmq: Qos msg is timeout: %+v", c.opts.Timeout)
+	}
+}
+
+// Consume consume message
+func (c *Channel) Consume(queue, consumer string, autoAck, exclusive, noLocal, noWait bool, args amqp091.Table) (<-chan amqp091.Delivery, error) {
 	select {
 	case <-c.connected:
 		return c.ch.Consume(queue, consumer, autoAck, exclusive, noLocal, noWait, args)
-	case <-time.After(time.Second * 5):
-		return nil, fmt.Errorf("rabbitmq: Consumer msg is timeout: %+v", time.Second*5)
+	case <-time.After(c.opts.Timeout):
+		return nil, fmt.Errorf("rabbitmq: Consumer msg is timeout: %+v", c.opts.Timeout)
 	}
 }
 
