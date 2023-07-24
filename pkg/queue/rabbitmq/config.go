@@ -15,6 +15,7 @@ var (
 )
 
 type Config struct {
+	URI         string                     `yaml:"uri"`
 	AutoDeclare bool                       `yaml:"auto-declare"`
 	Timeout     time.Duration              `yaml:"timeout"`
 	Connection  *options.ConnectionOptions `yaml:"connection"`
@@ -44,6 +45,14 @@ func Load() {
 		conf, err := loadConf()
 		if err != nil {
 			panic(err)
+		}
+
+		for _, v := range conf {
+			conn, err := options.NewConnectionOptions(options.WithURI(v.URI))
+			if err != nil {
+				panic(err)
+			}
+			v.Connection = conn
 		}
 
 		DefaultRegister = NewRegister(conf)

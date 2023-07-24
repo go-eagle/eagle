@@ -192,6 +192,6 @@ func (c *Consumer) Close() error {
 	if err := c.channel.Close(); err != nil {
 		return err
 	}
-	c.logger.Info("rabbitmq: Consumer closed")
+	c.logger.Info("rabbitmq: Consumer closed successfully")
 	return nil
 }

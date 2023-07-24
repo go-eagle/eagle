@@ -16,9 +16,13 @@ type Server struct {
 	consumer       *Consumer
 }
 
-func NewServer(addr, exchangeName string) *Server {
+func NewServer(cfg *Config) *Server {
+	c, err := NewConsumer(cfg, log.GetLogger())
+	if err != nil {
+		panic(err)
+	}
 	srv := &Server{
-		consumer:       NewConsumer(addr, exchangeName, false),
+		consumer:       c,
 		subscriberOpts: SubscribeOptionMap{},
 	}
 
@@ -30,15 +34,8 @@ func (s *Server) Start(ctx context.Context) error {
 		return nil
 	}
 
-	err := s.consumer.Start()
-	if err != nil {
-		return err
-	}
-
-	log.Infof("[rabbitmq] server listening on: %s", s.consumer.addr)
-
-	for k, h := range s.subscriberOpts {
-		err := s.doConsume(ctx, k, h)
+	for _, h := range s.subscriberOpts {
+		err := s.doConsume(ctx, h)
 		if err != nil {
 			return err
 		}
@@ -52,7 +49,7 @@ func (s *Server) Start(ctx context.Context) error {
 func (s *Server) Stop(ctx context.Context) error {
 	log.Info("[rabbitmq] server stopping...")
 	s.started = false
-	err := s.consumer.Stop()
+	err := s.consumer.Close()
 	if err != nil {
 		return err
 	}
@@ -68,9 +65,9 @@ func (s *Server) RegisterSubscriber(ctx context.Context, queueName string, h Han
 	return nil
 }
 
-func (s *Server) doConsume(ctx context.Context, queueName string, h Handler) error {
+func (s *Server) doConsume(ctx context.Context, h Handler) error {
 	go func() {
-		_ = s.consumer.Consume(ctx, queueName, h)
+		_ = s.consumer.Consume(ctx, h)
 	}()
 
 	return nil

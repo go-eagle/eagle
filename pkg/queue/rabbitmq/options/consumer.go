@@ -23,7 +23,6 @@ func NewConsumerOptions(opts ...ConsumerOption) *ConsumerOptions {
 	options := ConsumerOptions{
 		Concurrency:      1,
 		QOSPrefetchCount: 5,
-		QOSPrefetchSize:  5,
 	}
 
 	// apply options
