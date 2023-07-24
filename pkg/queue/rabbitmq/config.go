@@ -1,9 +1,17 @@
 package rabbitmq
 
 import (
+	"sync"
 	"time"
 
+	"github.com/go-eagle/eagle/pkg/config"
+
 	"github.com/go-eagle/eagle/pkg/queue/rabbitmq/options"
+)
+
+var (
+	loadOnce  sync.Once
+	closeOnce sync.Once
 )
 
 type Config struct {
@@ -13,4 +21,40 @@ type Config struct {
 	Exchange    *options.ExchangeOptions   `yaml:"exchange"`
 	Queue       *options.QueueOptions      `yaml:"queue"`
 	Bind        *options.BindOptions       `yaml:"bind"`
+}
+
+// loadConf load config
+func loadConf() (ret map[string]*Config, err error) {
+	v, err := config.LoadWithType("rabbitmq", "yaml")
+	if err != nil {
+		return nil, err
+	}
+
+	c := make(map[string]*Config, 0)
+	err = v.Unmarshal(&c)
+	if err != nil {
+		return nil, err
+	}
+
+	return c, nil
+}
+
+func Load() {
+	loadOnce.Do(func() {
+		conf, err := loadConf()
+		if err != nil {
+			panic(err)
+		}
+
+		DefaultRegister = NewRegister(conf)
+		if err != nil {
+			panic(err)
+		}
+	})
+}
+
+func Close() {
+	closeOnce.Do(func() {
+		_ = DefaultRegister.Close()
+	})
 }

@@ -13,12 +13,6 @@ import (
 	"github.com/go-eagle/eagle/pkg/queue/rabbitmq"
 )
 
-var (
-	cfgDir  = pflag.StringP("config dir", "c", "config", "config path.")
-	env     = pflag.StringP("env name", "e", "", "env var name.")
-	version = pflag.BoolP("version", "v", false, "show version info.")
-)
-
 // go run examples/queue/rabbitmq/consumer.go -e local -c config
 func main() {
 	pflag.Parse()

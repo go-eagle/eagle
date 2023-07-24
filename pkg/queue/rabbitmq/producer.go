@@ -21,7 +21,7 @@ type Producer struct {
 }
 
 // NewProducer create a producer
-func NewProducer(conf *Config, exchange string, logger log.Logger) (*Producer, error) {
+func NewProducer(conf *Config, logger log.Logger) (*Producer, error) {
 	conn, err := NewConnection(conf.Connection, logger)
 	if err != nil {
 		return nil, err
