@@ -80,7 +80,9 @@ func (c *Connection) watch() {
 			c.connected = make(chan struct{})
 			return
 		case err := <-c.conn.NotifyClose(make(chan *amqp091.Error)):
-			c.logger.Errorf("rabbitmq: received close notification from AMQP, reconnecting, err:%+v", err)
+			// if RabbitMQ server is shutdown right now, will receive err:
+			// Exception (320) Reason: "CONNECTION_FORCED - broker forced connection closure with reason 'shutdown'"
+			c.logger.Errorf("rabbitmq: received close notification from AMQP, reconnecting, err: %v", err)
 			c.connected = make(chan struct{})
 			c.reconnect()
 		}
@@ -90,15 +92,17 @@ func (c *Connection) watch() {
 
 func (c *Connection) reconnect() {
 	reconnect := func() error {
-		c.logger.Info("rabbitmq: reconnecting")
+		c.logger.Info("rabbitmq: reconnecting connection")
+		// if RabbitMQ server is shutdown, return err: Exception (501) Reason: "EOF"
+		// or err: dial tcp [::1]:5672: connect: connection refused
 		err := c.connect()
 		if err == nil {
-			c.logger.Info("rabbitmq: reconnected")
+			c.logger.Info("rabbitmq: reconnected connection successfully")
 			return nil
 		}
-		c.logger.Errorf("rabbitmq: reconnect failed, retrying, err: %+v", err)
+		c.logger.Errorf("rabbitmq: reconnect failed, retrying, err: %v", err)
 		if c.IsClosed() {
-			return backoff.Permanent(fmt.Errorf("rabbitmq: connection is closed, err: %+v", err))
+			return backoff.Permanent(fmt.Errorf("rabbitmq: connection is closed, err: %v", err))
 		}
 
 		return err
@@ -106,7 +110,7 @@ func (c *Connection) reconnect() {
 
 	err := backoff.Retry(reconnect, c.backoff)
 	if err != nil {
-		c.logger.Errorf("rabbitmq: reconnect failed: %+v", err)
+		c.logger.Errorf("rabbitmq: reconnect failed: %v", err)
 	}
 }
 
@@ -130,7 +134,7 @@ func (c *Connection) Close() error {
 	close(c.closing)
 	c.logger.Info("rabbitmq: closing AMQP connection")
 	if err := c.conn.Close(); err != nil {
-		c.logger.Errorf("rabbitmq: close connection failed, err: %+v", err)
+		c.logger.Errorf("rabbitmq: close connection failed, err: %v", err)
 		return err
 	}
 	c.logger.Info("rabbitmq: closed AMQP connection")

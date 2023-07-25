@@ -90,7 +90,7 @@ func (c *Channel) initDeclare() error {
 			c.opts.Exchange.Args,
 		)
 		if err != nil {
-			err = fmt.Errorf("rabbitmq: declare exchange failed, err: %s", err)
+			err = fmt.Errorf("rabbitmq: declare exchange failed, err: %v", err)
 			return
 		}
 		// declare queue
@@ -103,7 +103,7 @@ func (c *Channel) initDeclare() error {
 			c.opts.Queue.Args,
 		)
 		if err != nil {
-			err = fmt.Errorf("rabbitmq: declare queue failed, err: %s", err)
+			err = fmt.Errorf("rabbitmq: declare queue failed, err: %v", err)
 			return
 		}
 		// bind queue to exchange
@@ -115,7 +115,7 @@ func (c *Channel) initDeclare() error {
 			c.opts.Bind.Args,
 		)
 		if err != nil {
-			err = fmt.Errorf("rabbitmq: bind queue failed, err: %s", err)
+			err = fmt.Errorf("rabbitmq: bind queue failed, err: %v", err)
 			return
 		}
 	})
@@ -163,13 +163,13 @@ func (c *Channel) reconnect() {
 		if err := c.connect(); err != nil {
 			return err
 		}
-		c.logger.Info("rabbitmq: channel reconnected")
+		c.logger.Info("rabbitmq: channel reconnected successfully")
 		return nil
 	}
 
 	err := backoff.Retry(reconnect, backoff.NewExponentialBackOff())
 	if err != nil {
-		c.logger.Errorf("rabbitmq: channel reconnect error: %+v", err)
+		c.logger.Errorf("rabbitmq: channel retry reconnect error: %v", err)
 	}
 }
 
@@ -189,7 +189,7 @@ func (c *Channel) Publish(ctx context.Context, exchange, key string, mandatory, 
 	case <-c.connected:
 		return c.ch.PublishWithContext(ctx, exchange, key, mandatory, immediate, msg)
 	case <-time.After(c.opts.Timeout):
-		return fmt.Errorf("rabbitmq: Publish msg is timeout: %+v", c.opts.Timeout)
+		return fmt.Errorf("rabbitmq: Publish msg is timeout: %v", c.opts.Timeout)
 	}
 }
 
@@ -199,7 +199,7 @@ func (c *Channel) Qos(prefetchCount, prefetchSize int, global bool) error {
 	case <-c.connected:
 		return c.ch.Qos(prefetchCount, prefetchSize, global)
 	case <-time.After(c.opts.Timeout):
-		return fmt.Errorf("rabbitmq: Qos msg is timeout: %+v", c.opts.Timeout)
+		return fmt.Errorf("rabbitmq: Qos msg is timeout: %v", c.opts.Timeout)
 	}
 }
 
@@ -209,7 +209,7 @@ func (c *Channel) Consume(queue, consumer string, autoAck, exclusive, noLocal, n
 	case <-c.connected:
 		return c.ch.Consume(queue, consumer, autoAck, exclusive, noLocal, noWait, args)
 	case <-time.After(c.opts.Timeout):
-		return nil, fmt.Errorf("rabbitmq: Consumer msg is timeout: %+v", c.opts.Timeout)
+		return nil, fmt.Errorf("rabbitmq: Consumer msg is timeout: %v", c.opts.Timeout)
 	}
 }
 
@@ -226,13 +226,13 @@ func (c *Channel) Close() error {
 	close(c.closing)
 	if c.ch != nil {
 		if err := c.ch.Close(); err != nil {
-			c.logger.Errorf("rabbitmq: close channel error: %+v", err)
+			c.logger.Errorf("rabbitmq: close channel error: %v", err)
 			return err
 		}
 	}
 	if c.conn != nil {
 		if err := c.conn.Close(); err != nil {
-			c.logger.Errorf("rabbitmq: close connection error: %+v", err)
+			c.logger.Errorf("rabbitmq: close connection error: %v", err)
 			return err
 		}
 	}

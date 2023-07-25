@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"context"
+	"errors"
 	"sync"
 
 	"github.com/cenkalti/backoff/v4"
@@ -79,6 +80,9 @@ func (c *Consumer) Consume(ctx context.Context, handler Handler, opts ...options
 }
 
 func (c *Consumer) parallelHandle(ctx context.Context, handler Handler) error {
+	if !c.channel.IsConnected() {
+		return errors.New("rabbitmq: channel is not connected")
+	}
 	c.logger.Info("rabbitmq: consumer start parallelHandle")
 	if err := c.channel.Qos(c.options.QOSPrefetchCount, c.options.QOSPrefetchSize, c.options.QOSGlobal); err != nil {
 		c.logger.Errorf("rabbitmq: consumer set qos error: %v", err)
@@ -152,11 +156,11 @@ func (c *Consumer) watch(handler Handler) {
 	for {
 		select {
 		case err := <-c.channel.notifyReconnected:
-			c.logger.Errorf("rabbitmq: consumer begin to reconnect after receive notify, error: %v", err)
+			c.logger.Errorf("rabbitmq: consumer begin to retry after receiving reconnect notify, error: %v", err)
 			parallelHandleFunc := func() error {
 				err = c.parallelHandle(context.Background(), handler)
 				if err != nil {
-					c.logger.Errorf("rabbitmq: consumer parallelHandle reconnect error: %v", err)
+					c.logger.Errorf("rabbitmq: consumer retry parallelHandle error: %v", err)
 					return err
 				}
 				return nil
@@ -166,7 +170,7 @@ func (c *Consumer) watch(handler Handler) {
 			if err != nil {
 				c.logger.Errorf("rabbitmq: consumer watch retry error: %v", err)
 			} else {
-				c.logger.Info("rabbitmq: consumer watch retry success")
+				c.logger.Info("rabbitmq: consumer watch retry successfully")
 			}
 		case <-c.closing:
 			c.logger.Info("rabbitmq: watch consumer has closed")
