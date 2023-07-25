@@ -55,7 +55,7 @@ func Load() {
 			v.Connection = conn
 		}
 
-		DefaultManager = NewRegister(conf)
+		DefaultManager = NewManager(conf)
 		if err != nil {
 			panic(err)
 		}

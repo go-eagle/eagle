@@ -21,7 +21,7 @@ type Manager struct {
 	publishers map[string]*Producer
 }
 
-func NewRegister(opts map[string]*Config) *Manager {
+func NewManager(opts map[string]*Config) *Manager {
 	return &Manager{
 		opts:       opts,
 		cmu:        &sync.RWMutex{},
