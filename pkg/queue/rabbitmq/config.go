@@ -55,7 +55,7 @@ func Load() {
 			v.Connection = conn
 		}
 
-		DefaultRegister = NewRegister(conf)
+		DefaultManager = NewRegister(conf)
 		if err != nil {
 			panic(err)
 		}
@@ -64,6 +64,6 @@ func Load() {
 
 func Close() {
 	closeOnce.Do(func() {
-		_ = DefaultRegister.Close()
+		_ = DefaultManager.Close()
 	})
 }

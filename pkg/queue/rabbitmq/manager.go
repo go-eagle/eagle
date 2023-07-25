@@ -8,10 +8,10 @@ import (
 )
 
 var (
-	DefaultRegister *Register
+	DefaultManager *Manager
 )
 
-type Register struct {
+type Manager struct {
 	opts map[string]*Config
 
 	cmu *sync.RWMutex
@@ -21,8 +21,8 @@ type Register struct {
 	publishers map[string]*Producer
 }
 
-func NewRegister(opts map[string]*Config) *Register {
-	return &Register{
+func NewRegister(opts map[string]*Config) *Manager {
+	return &Manager{
 		opts:       opts,
 		cmu:        &sync.RWMutex{},
 		pmu:        &sync.RWMutex{},
@@ -31,7 +31,7 @@ func NewRegister(opts map[string]*Config) *Register {
 	}
 }
 
-func (c *Register) GetProducer(name string) (*Producer, error) {
+func (c *Manager) GetProducer(name string) (*Producer, error) {
 	c.pmu.Lock()
 	defer c.pmu.Unlock()
 
@@ -49,7 +49,7 @@ func (c *Register) GetProducer(name string) (*Producer, error) {
 	return nil, fmt.Errorf("rabbitmq: GetPublisher error, config %s not found", name)
 }
 
-func (c *Register) GetConsumer(name string) (*Consumer, error) {
+func (c *Manager) GetConsumer(name string) (*Consumer, error) {
 	c.cmu.Lock()
 	defer c.cmu.Unlock()
 
@@ -67,7 +67,7 @@ func (c *Register) GetConsumer(name string) (*Consumer, error) {
 	return nil, fmt.Errorf("rabbitmq: GetConsumer error, config %s not found", name)
 }
 
-func (c *Register) Close() error {
+func (c *Manager) Close() error {
 	for _, consumer := range c.consumers {
 		_ = consumer.Close()
 	}

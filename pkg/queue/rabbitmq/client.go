@@ -9,7 +9,7 @@ import (
 
 // Publish add data to queue
 func Publish(ctx context.Context, name string, data []byte, retry uint64, opts ...options.PublishOption) error {
-	p, err := DefaultRegister.GetProducer(name)
+	p, err := DefaultManager.GetProducer(name)
 	if err != nil {
 		return err
 	}
@@ -18,7 +18,7 @@ func Publish(ctx context.Context, name string, data []byte, retry uint64, opts .
 
 // Consume data from queue
 func Consume(ctx context.Context, name string, handler Handler, opts ...options.ConsumerOption) error {
-	c, err := DefaultRegister.GetConsumer(name)
+	c, err := DefaultManager.GetConsumer(name)
 	if err != nil {
 		return err
 	}
