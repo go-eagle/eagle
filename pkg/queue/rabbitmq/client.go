@@ -8,11 +8,24 @@ import (
 )
 
 // Publish add data to queue
-func Publish(ctx context.Context, name string, data []byte, retry uint64, opts ...options.PublishOption) error {
+func Publish(ctx context.Context, name string, data []byte, opts ...options.PublishOption) error {
 	p, err := DefaultManager.GetProducer(name)
 	if err != nil {
 		return err
 	}
+	return p.Publish(ctx, data, opts...)
+}
+
+// PublishWithDelay add a delay msg to queue
+// delayTime: seconds
+func PublishWithDelay(ctx context.Context, name string, data []byte, delayTime int, opts ...options.PublishOption) error {
+	p, err := DefaultManager.GetProducer(name)
+	if err != nil {
+		return err
+	}
+	opts = append(opts, options.WithPublishOptionHeaders(map[string]interface{}{
+		"x-delay": delayTime * 1000, // seconds
+	}))
 	return p.Publish(ctx, data, opts...)
 }
 
