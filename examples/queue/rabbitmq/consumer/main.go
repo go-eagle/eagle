@@ -79,14 +79,14 @@ func main() {
 	for {
 		select {
 		case <-stopSig:
-			logger.Info("receive stop signal")
+			logger.Info("received stop signal")
 			stop <- struct{}{}
 		case <-stop:
-			logger.Info("service is stopping")
+			logger.Info("stopping service")
 			close(done)
 			return
 		case <-done:
-			logger.Info("service stopped gracefully")
+			logger.Info("stopped service gracefully")
 			return
 		}
 	}

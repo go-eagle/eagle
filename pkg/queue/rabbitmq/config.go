@@ -12,6 +12,7 @@ import (
 var (
 	loadOnce  sync.Once
 	closeOnce sync.Once
+	conf      map[string]*Config
 )
 
 type Config struct {
@@ -37,7 +38,13 @@ func loadConf() (ret map[string]*Config, err error) {
 		return nil, err
 	}
 
+	conf = c
+
 	return c, nil
+}
+
+func GetConfig() map[string]*Config {
+	return conf
 }
 
 func Load() {
