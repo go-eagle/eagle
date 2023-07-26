@@ -26,7 +26,8 @@ var (
 	env    = pflag.StringP("env name", "e", "", "env var name.")
 )
 
-// go run examples/queue/rabbitmq/consumer/main.go -e local -c config
+// cd examples/queue/rabbitmq/consumer/
+// go run main.go
 func main() {
 	pflag.Parse()
 

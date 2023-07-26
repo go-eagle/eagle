@@ -10,36 +10,56 @@ import (
 	"github.com/go-eagle/eagle/pkg/queue/rabbitmq/options"
 )
 
-type SubscribeMap map[string]rabbitmq.Handler
+var (
+	// Srv is a global rabbitmq server
+	Srv *Server
+)
+
+type HandlerMap map[string]rabbitmq.Handler
 
 type Server struct {
-	subscribers SubscribeMap
-	mu          sync.RWMutex
-	opts        []options.ConsumerOption
-	stop        chan struct{}
+	handlers HandlerMap
+	mu       sync.RWMutex
+	opts     []options.ConsumerOption
+	stop     chan struct{}
 }
 
-func NewServer(opts ...options.ConsumerOption) (*Server, error) {
+func NewServer(opts ...options.ConsumerOption) *Server {
 	conf := rabbitmq.GetConfig()
 	if len(conf) == 0 {
-		return nil, fmt.Errorf("rabbitmq config is empty")
+		panic(fmt.Errorf("rabbitmq config is empty"))
 	}
 	srv := &Server{
-		opts:        opts,
-		subscribers: make(SubscribeMap),
+		opts:     opts,
+		handlers: make(HandlerMap),
+		stop:     make(chan struct{}, 1),
 	}
 
 	for name, _ := range conf {
-		srv.subscribers[name] = nil
+		srv.handlers[name] = nil
 	}
 
-	return srv, nil
+	Srv = srv
+
+	return srv
+}
+
+func GetServer() *Server {
+	return Srv
 }
 
 func (s *Server) Start(ctx context.Context) error {
 	var wg sync.WaitGroup
-	for name, h := range s.subscribers {
+	for name, _ := range s.handlers {
 		wg.Add(1)
+
+		// get handler and check it
+		h, err := s.GetRegisterHandler(name)
+		if err != nil {
+			log.Errorf("[rabbitmq] get handler %s error: %v", name, err)
+			return err
+		}
+
 		go func(taskName string, handler rabbitmq.Handler) {
 			defer func() {
 				wg.Done()
@@ -64,33 +84,49 @@ func (s *Server) Start(ctx context.Context) error {
 
 			select {
 			case <-ctx.Done():
-				log.Infof("[rabbitmq] task %s is stopping via context", taskName)
-				return
-			case <-s.stop:
-				log.Infof("[rabbitmq] task %s is stopping via stop channel", taskName)
+				log.Infof("[rabbitmq] task %s is stopping by cancel", taskName)
 				_ = consumer.Close()
-				return
-			case <-done:
-				return
+				select {
+				case <-done:
+					return
+				}
+			case <-s.stop:
+				log.Infof("[rabbitmq] receiving stop signal, task %s is stopping", taskName)
+				_ = consumer.Close()
 			}
 		}(name, h)
 	}
+
 	wg.Wait()
+
+	log.Infof("[rabbitmq] all tasks are stopped successfully")
 
 	return nil
 }
 
 func (s *Server) Stop(ctx context.Context) error {
 	log.Info("[rabbitmq] server stopping...")
-	close(s.stop)
+	s.stop <- struct{}{}
 	return nil
 }
 
-func (s *Server) RegisterSubscriber(ctx context.Context, queueName string, h rabbitmq.Handler) error {
+func (s *Server) RegisterHandler(queueName string, h rabbitmq.Handler) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.subscribers[queueName] = h
+	s.handlers[queueName] = h
 
 	return nil
+}
+
+func (s *Server) GetRegisterHandler(queueName string) (rabbitmq.Handler, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	handler, ok := s.handlers[queueName]
+	if !ok {
+		return nil, fmt.Errorf("handler %s not found", queueName)
+	}
+
+	return handler, nil
 }
