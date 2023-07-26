@@ -2,206 +2,200 @@ package rabbitmq
 
 import (
 	"context"
-	"fmt"
-	"time"
+	"errors"
+	"sync"
 
-	"github.com/streadway/amqp"
+	"github.com/cenkalti/backoff/v4"
+
+	"github.com/rabbitmq/amqp091-go"
 
 	"github.com/go-eagle/eagle/pkg/log"
-	"github.com/go-eagle/eagle/pkg/utils"
+	"github.com/go-eagle/eagle/pkg/queue/rabbitmq/options"
 )
 
-type Handler func(ctx context.Context, body []byte) error
+// Action define action
+type Action int
+
+// Handler define handler for rabbitmq
+type Handler func(ctx context.Context, msg amqp091.Delivery) (action Action)
+
+const (
+	// Ack default ack this msg after you have successfully processed this delivery.
+	Ack Action = iota
+	// NackDiscard the message will be dropped or delivered to a server configured dead-letter queue.
+	NackDiscard
+	// NackRequeue deliver this message to a different consumer.
+	NackRequeue
+)
 
 // Consumer define consumer for rabbitmq
 type Consumer struct {
-	addr          string
-	conn          *amqp.Connection
-	channel       *amqp.Channel
-	connNotify    chan *amqp.Error
-	channelNotify chan *amqp.Error
-	quit          chan struct{}
-	exchange      string
-	queueName     string
-	consumerTag   string
-	autoDelete    bool // 是否自动删除
-	done          chan error
+	channel *Channel
+	options *options.ConsumerOptions
+	logger  log.Logger
+
+	handlerWG sync.WaitGroup
+	watchWG   sync.WaitGroup
+	closing   chan struct{}
 }
 
 // NewConsumer instance a consumer
-func NewConsumer(addr, exchange string, autoDelete bool) *Consumer {
-	tag, _ := utils.GenShortID()
-	return &Consumer{
-		addr:        addr,
-		exchange:    exchange,
-		consumerTag: tag,
-		autoDelete:  autoDelete,
-		quit:        make(chan struct{}),
-	}
-}
-
-// Start start a service
-func (c *Consumer) Start() error {
-	if err := c.Run(); err != nil {
-		return err
-	}
-
-	go c.ReConnect()
-
-	return nil
-}
-
-// Stop a consumer
-func (c *Consumer) Stop() error {
-	close(c.quit)
-
-	if !c.conn.IsClosed() {
-		// 关闭 SubMsg message delivery
-		if err := c.channel.Cancel(c.consumerTag, true); err != nil {
-			return fmt.Errorf("rabbitmq consumer - channel cancel failed: %v", err)
-		}
-
-		if err := c.conn.Close(); err != nil {
-			return fmt.Errorf("rabbitmq consumer - connection close failed: %v", err)
-		}
-	}
-
-	// wait for handle() to exit
-	return <-c.done
-}
-
-// Run .
-func (c *Consumer) Run() error {
-	var err error
-	if c.conn, err = OpenConnection(c.addr); err != nil {
-		return err
-	}
-
-	if c.channel, err = NewChannel(c.conn).Create(); err != nil {
-		_ = c.conn.Close()
-		return err
-	}
-
-	// bind queue in rabbitmq admin ui
-	//if _, err = c.channel.QueueDeclare(c.queueName, true, c.autoDelete, false, false, nil); err != nil {
-	//	_ = c.channel.Close()
-	//	_ = c.conn.Close()
-	//	return err
-	//}
-	//
-	//if err = c.channel.QueueBind(c.queueName, c.routingKey, c.exchange, false, nil); err != nil {
-	//	_ = c.channel.Close()
-	//	_ = c.conn.Close()
-	//	return err
-	//}
-
-	c.connNotify = c.conn.NotifyClose(make(chan *amqp.Error))
-	c.channelNotify = c.channel.NotifyClose(make(chan *amqp.Error))
-
-	return nil
-}
-
-func (c *Consumer) Consume(ctx context.Context, queueName string, handler Handler) error {
-	var (
-		err      error
-		delivery <-chan amqp.Delivery
-	)
-	// NOTE: autoAck param
-	// Consumer Tag必须保持唯一，即已被某个Consumer使用的Consumer Tag不可同时被另一个Consumer使用。
-	// Consumer Tag在同一个channel内有效，即已在某个channel内被创建的Consumer Tag不可在另一个channel内被使用。
-	delivery, err = c.channel.Consume(
-		queueName,
-		queueName,
-		false, // noAck
-		false,
-		false,
-		false,
-		nil)
+func NewConsumer(conf *Config, logger log.Logger) (*Consumer, error) {
+	conn, err := NewConnection(conf.Connection, logger)
 	if err != nil {
+		return nil, err
+	}
+	ch, err := NewChannel(conn, conf, logger)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Consumer{
+		channel:   ch,
+		logger:    logger,
+		handlerWG: sync.WaitGroup{},
+		watchWG:   sync.WaitGroup{},
+		closing:   make(chan struct{}),
+	}, nil
+}
+
+func (c *Consumer) Consume(ctx context.Context, handler Handler, opts ...options.ConsumerOption) error {
+	c.logger.Info("rabbitmq: Consumer start consuming")
+
+	consumerOptions := options.NewConsumerOptions(opts...)
+	c.options = consumerOptions
+
+	// use one or multiple goroutines to handle deliveries
+	if err := c.parallelHandle(ctx, handler); err != nil {
+		c.logger.Errorf("rabbitmq: Consumer start parallelHandle error: %v", err)
 		return err
 	}
 
-	go c.Handle(delivery, handler, c.done)
+	go c.watch(handler)
+
+	c.handlerWG.Wait()
+	c.watchWG.Wait()
 
 	return nil
 }
 
-// Handle handle data
-func (c *Consumer) Handle(delivery <-chan amqp.Delivery, handler Handler, done chan error) {
-	ctx := context.Background()
-	for d := range delivery {
-		log.Infof("Consumer received a message: %s in queue: %s", d.Body, c.queueName)
-		log.Infof("got %dB delivery: [%v] %q", len(d.Body), d.DeliveryTag, d.Body)
-		go func(delivery amqp.Delivery) {
-			if err := handler(ctx, delivery.Body); err == nil {
-				// NOTE: 假如现在有 10 条消息，它们都是并发处理的，如果第 10 条消息最先处理完毕，
-				// 那么前 9 条消息都会被 delivery.Ack(true) 给确认掉。后续 9 条消息处理完毕时，
-				// 再执行 delivery.Ack(true)，显然就会导致消息重复确认
-				// 报 406 PRECONDITION_FAILED 错误， 所以这里为 false
-				_ = delivery.Ack(false)
-			} else {
-				// 重新入队，否则未确认的消息会持续占用内存
-				_ = delivery.Reject(true)
-			}
-		}(d)
+func (c *Consumer) parallelHandle(ctx context.Context, handler Handler) error {
+	if !c.channel.IsConnected() {
+		return errors.New("rabbitmq: channel is not connected")
 	}
-	log.Infof("handle: async deliveries channel closed")
-	done <- nil
+	c.logger.Info("rabbitmq: consumer start parallelHandle")
+	if err := c.channel.Qos(c.options.QOSPrefetchCount, c.options.QOSPrefetchSize, c.options.QOSGlobal); err != nil {
+		c.logger.Errorf("rabbitmq: consumer set qos error: %v", err)
+		return err
+	}
+
+	queue := c.channel.opts.Queue.Name
+	if c.options.ConsumerQueue != "" {
+		queue = c.options.ConsumerQueue
+	}
+
+	messages, err := c.channel.Consume(queue, c.options.ConsumerName, c.options.ConsumerAutoAck,
+		c.options.ConsumerExclusive, c.options.ConsumerNoLocal, c.options.ConsumerNoWait,
+		c.options.ConsumerArgs)
+	if err != nil {
+		c.logger.Errorf("rabbitmq: consumer start consume error: %v", err)
+		return err
+	}
+
+	for i := 0; i < c.options.Concurrency; i++ {
+		c.handlerWG.Add(1)
+		go c.handle(ctx, messages, handler)
+	}
+
+	return nil
 }
 
-// ReConnect .
-func (c *Consumer) ReConnect() {
+// Handle data
+func (c *Consumer) handle(ctx context.Context, messages <-chan amqp091.Delivery, handler Handler) {
+	defer c.handlerWG.Done()
+
 	for {
 		select {
-		case err := <-c.connNotify:
-			if err != nil {
-				log.Errorf("[rabbitmq] consumer - connection NotifyClose: %+v", err)
+		case msg, ok := <-messages:
+			if !ok {
+				return
 			}
-		case err := <-c.channelNotify:
-			if err != nil {
-				log.Errorf("[rabbitmq] consumer - channel NotifyClose: %+v", err)
+			if c.options.ConsumerAutoAck {
+				handler(ctx, msg)
+				return
 			}
-		case <-c.quit:
+			action := handler(ctx, msg)
+			switch action {
+			case Ack:
+				if err := msg.Ack(false); err != nil {
+					c.logger.Errorf("rabbitmq: consumer ack error: %v", err)
+				}
+			case NackDiscard:
+				if err := msg.Nack(false, false); err != nil {
+					c.logger.Errorf("rabbitmq: consumer nack error: %v", err)
+				}
+			case NackRequeue:
+				if err := msg.Nack(false, true); err != nil {
+					c.logger.Errorf("rabbitmq: consumer nack error: %v", err)
+				}
+			}
+		case <-c.closing:
+			c.logger.Info("rabbitmq: consumer has closed")
 			return
 		}
+	}
+}
 
-		// backstop
-		if !c.conn.IsClosed() {
-			// 关闭 SubMsg message delivery
-			if err := c.channel.Cancel(c.consumerTag, true); err != nil {
-				log.Errorf("[rabbitmq] consumer - channel cancel failed: %+v", err)
-			}
-			if err := c.conn.Close(); err != nil {
-				log.Errorf("[rabbitmq consumer] - conn cancel failed: %+v", err)
-			}
-		}
+// watch .
+func (c *Consumer) watch(handler Handler) {
+	c.watchWG.Add(1)
+	defer func() {
+		c.watchWG.Done()
+	}()
 
-		// IMPORTANT: 必须清空 Notify，否则死连接不会释放
-		for err := range c.channelNotify {
-			log.Errorf("[rabbitmq] consumer - channelNotify err: %+v", err)
-		}
-		for err := range c.connNotify {
-			log.Errorf("[rabbitmq] consumer - connNotify err: %+v", err)
-		}
-
-	quit:
-		for {
-			select {
-			case <-c.quit:
-				return
-			default:
-				log.Infof("[rabbitmq] consumer - reconnect")
-
-				if err := c.Run(); err != nil {
-					log.Errorf("[rabbitmq] consumer - failCheck: %+v", err)
-
-					// sleep 5s reconnect
-					time.Sleep(time.Second * 5)
-					continue
+	for {
+		select {
+		case err := <-c.channel.notifyReconnected:
+			c.logger.Errorf("rabbitmq: consumer begin to retry after receiving reconnect notify, error: %v", err)
+			parallelHandleFunc := func() error {
+				err = c.parallelHandle(context.Background(), handler)
+				if err != nil {
+					c.logger.Errorf("rabbitmq: consumer retry parallelHandle error: %v", err)
+					return err
 				}
-
-				break quit
+				return nil
 			}
+
+			err = backoff.Retry(parallelHandleFunc, backoff.NewExponentialBackOff())
+			if err != nil {
+				c.logger.Errorf("rabbitmq: consumer watch retry error: %v", err)
+			} else {
+				c.logger.Info("rabbitmq: consumer watch retry successfully")
+			}
+		case <-c.closing:
+			c.logger.Info("rabbitmq: watch consumer has closed")
+			return
 		}
 	}
+}
+
+// IsClosed check consumer is closed
+func (c *Consumer) IsClosed() bool {
+	select {
+	case <-c.closing:
+		return true
+	default:
+		return false
+	}
+}
+
+// Close consumer
+func (c *Consumer) Close() error {
+	c.logger.Info("rabbitmq: Consumer is closing")
+	close(c.closing)
+	if err := c.channel.Close(); err != nil {
+		return err
+	}
+	c.logger.Info("rabbitmq: Consumer closed successfully")
+	return nil
 }

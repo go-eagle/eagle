@@ -1,0 +1,23 @@
+test-demo:
+  Uri: "amqp://guest:guest@localhost:5672/"
+  AutoDeclare: true
+  Timeout: 5s
+  Exchange:
+    Name: local-test-exchange
+    Kind: direct
+    Durable: true
+    AutoDelete: false
+    Internal: false
+    NoWait: false
+    Args: {}
+  Queue:
+    name: local-test-queue
+    durable: true
+    AutoDelete: false
+    Exclusive: false
+    NoWait: false
+    Args: {}
+  Bind:
+    RoutingKey: local-test-routing-key
+    NoWait: false
+    Args: {}

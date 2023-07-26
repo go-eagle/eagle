@@ -1,141 +1,101 @@
 package rabbitmq
 
 import (
-	"log"
-	"time"
+	"context"
+	"errors"
+	"sync"
 
-	"github.com/google/uuid"
-	"github.com/streadway/amqp"
+	"github.com/cenkalti/backoff/v4"
+	"github.com/go-eagle/eagle/pkg/queue/rabbitmq/options"
+	"github.com/rabbitmq/amqp091-go"
+
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
-// Producer define struct for rabbitmq
+// Producer define struct for producer
 type Producer struct {
-	addr          string
-	conn          *amqp.Connection
-	channel       *amqp.Channel
-	routingKey    string
-	exchange      string
-	connNotify    chan *amqp.Error
-	channelNotify chan *amqp.Error
-	quit          chan struct{}
+	channel    *Channel
+	exchange   string
+	routingKey string
+	mu         sync.Mutex
 }
 
 // NewProducer create a producer
-func NewProducer(addr, exchange string) *Producer {
-	p := &Producer{
-		addr:     addr,
-		exchange: exchange,
-		quit:     make(chan struct{}),
+func NewProducer(conf *Config, logger log.Logger) (*Producer, error) {
+	conn, err := NewConnection(conf.Connection, logger)
+	if err != nil {
+		return nil, err
+	}
+	ch, err := NewChannel(conn, conf, logger)
+	if err != nil {
+		return nil, err
 	}
 
-	return p
+	if ch.opts.Exchange.Name == "" || ch.opts.Bind.RoutingKey == "" {
+		return nil, errors.New("exchange name or routing key is empty")
+	}
+
+	p := &Producer{
+		channel:    ch,
+		exchange:   ch.opts.Exchange.Name,
+		routingKey: ch.opts.Bind.RoutingKey,
+	}
+
+	return p, nil
 }
 
-// Start start a producer
-func (p *Producer) Start() error {
-	if err := p.Run(); err != nil {
+// Publish push data to queue
+func (p *Producer) Publish(ctx context.Context, message []byte, opts ...options.PublishOption) error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	msgOptions := options.NewPublishOption(opts...)
+	msg := amqp091.Publishing{
+		Headers:         msgOptions.Headers,
+		ContentType:     msgOptions.ContentType,
+		ContentEncoding: msgOptions.ContentEncoding,
+		DeliveryMode:    msgOptions.DeliveryMode,
+		Priority:        msgOptions.Priority,
+		CorrelationId:   msgOptions.CorrelationId,
+		ReplyTo:         msgOptions.ReplyTo,
+		Expiration:      msgOptions.Expiration,
+		MessageId:       msgOptions.MessageId,
+		Timestamp:       msgOptions.Timestamp,
+		Type:            msgOptions.Type,
+		UserId:          msgOptions.UserId,
+		AppId:           msgOptions.AppId,
+		Body:            message,
+	}
+
+	// if set exchange and routing key in publish option, override the default value
+	exchange := p.exchange
+	if msgOptions.MsgExchange != "" {
+		exchange = msgOptions.MsgExchange
+	}
+	routingKey := p.routingKey
+	if msgOptions.MsgRoutingKey != "" {
+		routingKey = msgOptions.MsgRoutingKey
+	}
+
+	publishFunc := func() error {
+		err := p.channel.Publish(ctx, exchange, routingKey, msgOptions.Mandatory, msgOptions.Immediate, msg)
 		return err
 	}
-	go p.ReConnect()
+
+	expBackoff := backoff.NewExponentialBackOff()
+	retry := backoff.WithMaxRetries(expBackoff, msgOptions.MaxRetry)
+	err := backoff.Retry(publishFunc, retry)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-// Stop .
-func (p *Producer) Stop() {
-	close(p.quit)
+// Close connection
+func (p *Producer) Close() error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
-	if !p.conn.IsClosed() {
-		if err := p.conn.Close(); err != nil {
-			log.Println("rabbitmq producer - connection close failed: ", err)
-		}
-	}
-}
-
-// Run .
-func (p *Producer) Run() error {
-	var err error
-	if p.conn, err = OpenConnection(p.addr); err != nil {
-		return err
-	}
-
-	if p.channel, err = NewChannel(p.conn).Create(); err != nil {
-		_ = p.conn.Close()
-		return err
-	}
-
-	p.connNotify = p.conn.NotifyClose(make(chan *amqp.Error))
-	p.channelNotify = p.channel.NotifyClose(make(chan *amqp.Error))
-
-	return err
-}
-
-// ReConnect .
-func (p *Producer) ReConnect() {
-	for {
-		select {
-		case err := <-p.connNotify:
-			if err != nil {
-				log.Println("rabbitmq producer - connection NotifyClose: ", err)
-			}
-		case err := <-p.channelNotify:
-			if err != nil {
-				log.Println("rabbitmq producer - channel NotifyClose: ", err)
-			}
-		case <-p.quit:
-			return
-		}
-
-		// backstop
-		if !p.conn.IsClosed() {
-			if err := p.conn.Close(); err != nil {
-				log.Println("rabbitmq producer - connection close failed: ", err)
-			}
-		}
-
-		// IMPORTANT: 必须清空 Notify，否则死连接不会释放
-		for err := range p.channelNotify {
-			log.Println(err)
-		}
-		for err := range p.connNotify {
-			log.Println(err)
-		}
-
-	quit:
-		for {
-			select {
-			case <-p.quit:
-				return
-			default:
-				log.Println("rabbitmq producer - reconnect")
-
-				if err := p.Run(); err != nil {
-					log.Println("rabbitmq producer - failCheck: ", err)
-
-					// sleep 5s reconnect
-					time.Sleep(time.Second * 5)
-					continue
-				}
-
-				break quit
-			}
-		}
-	}
-}
-
-// Publish push data to queue
-func (p *Producer) Publish(routingKey, message string) error {
-	return p.channel.Publish(
-		p.exchange, // exchange
-		routingKey, // routing key
-		false,      // mandatory
-		false,      // immediate
-		amqp.Publishing{
-			DeliveryMode: amqp.Persistent,
-			ContentType:  "text/plain",
-			MessageId:    uuid.New().String(),
-			Type:         "",
-			Body:         []byte(message),
-			Timestamp:    time.Now(),
-		})
+	return p.channel.Close()
 }
