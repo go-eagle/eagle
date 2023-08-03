@@ -29,6 +29,18 @@ func ConcatString(s ...string) string {
 	return buffer.String()
 }
 
+// ConcatStringBySlash concat string by slash
+func ConcatStringBySlash(s ...string) string {
+	var buffer bytes.Buffer
+	for idx, i := range s {
+		buffer.WriteString(i)
+		if idx != len(s)-1 {
+			buffer.WriteString("/")
+		}
+	}
+	return buffer.String()
+}
+
 // StringToUint64 字符串转uint64
 func StringToUint64(str string) (uint64, error) {
 	if str == "" {
