@@ -7,11 +7,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-eagle/eagle/pkg/utils"
-
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	"github.com/go-eagle/eagle/pkg/utils"
 )
 
 const (
@@ -19,6 +19,10 @@ const (
 	WriterConsole = "console"
 	// WriterFile 文件输出
 	WriterFile = "file"
+
+	logSuffix      = ".log"
+	warnLogSuffix  = "_warn.log"
+	errorLogSuffix = "_error.log"
 )
 
 const (
@@ -29,6 +33,11 @@ const (
 )
 
 const defaultSkip = 1 // zapLogger 包装了一层 zap.Logger，默认要跳过一层
+
+var (
+	hostname string
+	logDir   string
+)
 
 // For mapping config logger to app logger levels
 var loggerLevelMap = map[string]zapcore.Level{
@@ -59,21 +68,35 @@ type zapLogger struct {
 }
 
 // newZapLogger new zap logger
-func newZapLogger(cfg *Config) (*zap.Logger, error) {
+func newZapLogger(cfg *Config, opts ...Option) (*zap.Logger, error) {
+	for _, opt := range opts {
+		opt(cfg)
+	}
 	return buildLogger(cfg, defaultSkip), nil
 }
 
 // newLoggerWithCallerSkip new logger with caller skip
-func newLoggerWithCallerSkip(cfg *Config, skip int) (Logger, error) {
+func newLoggerWithCallerSkip(cfg *Config, skip int, opts ...Option) (Logger, error) {
+	for _, opt := range opts {
+		opt(cfg)
+	}
 	return &zapLogger{sugarLogger: buildLogger(cfg, defaultSkip+skip).Sugar()}, nil
 }
 
 // newLogger new logger
-func newLogger(cfg *Config) (Logger, error) {
+func newLogger(cfg *Config, opts ...Option) (Logger, error) {
+	for _, opt := range opts {
+		opt(cfg)
+	}
 	return newLoggerWithCallerSkip(cfg, 0)
 }
 
 func buildLogger(cfg *Config, skip int) *zap.Logger {
+	logDir = cfg.LoggerDir
+	if strings.HasSuffix(logDir, "/") {
+		logDir = strings.TrimRight(logDir, "/")
+	}
+
 	var encoderCfg zapcore.EncoderConfig
 	if cfg.Development {
 		encoderCfg = zap.NewDevelopmentEncoderConfig()
@@ -92,7 +115,7 @@ func buildLogger(cfg *Config, skip int) *zap.Logger {
 	var cores []zapcore.Core
 	var options []zap.Option
 	// init option
-	hostname, _ := os.Hostname()
+	hostname, _ = os.Hostname()
 	option := zap.Fields(
 		zap.String("ip", utils.GetLocalIP()),
 		zap.String("app_id", cfg.Name),
@@ -147,7 +170,7 @@ func buildLogger(cfg *Config, skip int) *zap.Logger {
 }
 
 func getAllCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
-	allWriter := getLogWriterWithTime(cfg, cfg.LoggerFile)
+	allWriter := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, logSuffix))
 	allLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.FatalLevel
 	})
@@ -155,7 +178,7 @@ func getAllCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
 }
 
 func getInfoCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
-	infoWrite := getLogWriterWithTime(cfg, cfg.LoggerFile)
+	infoWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, logSuffix))
 	infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.InfoLevel
 	})
@@ -163,7 +186,7 @@ func getInfoCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
 }
 
 func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
-	warnWrite := getLogWriterWithTime(cfg, cfg.LoggerWarnFile)
+	warnWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, warnLogSuffix))
 	var stacktrace zap.Option
 	warnLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		if !cfg.DisableCaller {
@@ -177,7 +200,7 @@ func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option
 }
 
 func getErrorCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
-	errorFilename := cfg.LoggerErrorFile
+	errorFilename := GetLogFile(cfg.Name, errorLogSuffix)
 	errorWrite := getLogWriterWithTime(cfg, errorFilename)
 	var stacktrace zap.Option
 	errorLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
@@ -197,14 +220,20 @@ func getLogWriterWithTime(cfg *Config, filename string) io.Writer {
 	rotationPolicy := cfg.LogRollingPolicy
 	backupCount := cfg.LogBackupCount
 	// 默认
-	var rotateDuration time.Duration
+	var (
+		rotateDuration time.Duration
+		// 时间格式使用shell的date时间格式
+		timeFormat string
+	)
 	if rotationPolicy == RotateTimeHourly {
 		rotateDuration = time.Hour
+		timeFormat = ".%Y%m%d%H"
 	} else if rotationPolicy == RotateTimeDaily {
 		rotateDuration = time.Hour * 24
+		timeFormat = ".%Y%m%d"
 	}
 	hook, err := rotatelogs.New(
-		logFullPath+".%Y%m%d%H",                     // 时间格式使用shell的date时间格式
+		logFullPath+timeFormat,
 		rotatelogs.WithLinkName(logFullPath),        // 生成软链，指向最新日志文件
 		rotatelogs.WithRotationCount(backupCount),   // 文件最大保存份数
 		rotatelogs.WithRotationTime(rotateDuration), // 日志切割时间间隔

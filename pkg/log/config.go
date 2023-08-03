@@ -7,11 +7,9 @@ type Config struct {
 	DisableStacktrace bool
 	Encoding          string
 	Level             string
-	Name              string
+	Name              string // service name
 	Writers           string
-	LoggerFile        string
-	LoggerWarnFile    string
-	LoggerErrorFile   string
+	LoggerDir         string
 	LogFormatText     bool
 	LogRollingPolicy  string
 	LogBackupCount    uint

@@ -46,7 +46,7 @@ func loadConf() (ret *Config, err error) {
 }
 
 // Init init log
-func Init() Logger {
+func Init(opts ...Option) Logger {
 	var err error
 	cfg, err := loadConf()
 	if err != nil {
@@ -54,19 +54,19 @@ func Init() Logger {
 	}
 
 	// new zap logger
-	zl, err = newZapLogger(cfg)
+	zl, err = newZapLogger(cfg, opts...)
 	if err != nil {
 		_ = fmt.Errorf("init newZapLogger err: %v", err)
 	}
 	_ = zl
 
 	// log 用于支持模块级的方法调用，所以要比其他 Logger 多跳一层
-	log, err = newLoggerWithCallerSkip(cfg, 1)
+	log, err = newLoggerWithCallerSkip(cfg, 1, opts...)
 	if err != nil {
 		_ = fmt.Errorf("init newLogger err: %v", err)
 	}
 
-	logger, err = newLogger(cfg)
+	logger, err = newLogger(cfg, opts...)
 	if err != nil {
 		_ = fmt.Errorf("init logger err: %v", err)
 	}
