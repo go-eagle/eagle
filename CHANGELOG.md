@@ -2,6 +2,8 @@
 
 ## v1.8.0
 - feat(es): add elasticsearch client(v7)
+- feat: support custom filename when init log
+- feat: add crontab server and example
 - refactor: improve RabbitMQ client
 - chore(cli): improve gen task command
 - chore(response): remove init resp and improve Error
