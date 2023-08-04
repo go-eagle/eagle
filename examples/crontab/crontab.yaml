@@ -1,0 +1,6 @@
+Timezone: "Asia/Shanghai"
+Tasks:
+  - Name: send_email
+    Schedule: "* * * * *"
+  - Name: greet
+    Schedule: "@every 1s"
