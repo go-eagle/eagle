@@ -6,8 +6,8 @@ import (
 	"sync"
 
 	"github.com/alicebob/miniredis/v2"
-	"github.com/go-redis/redis/extra/redisotel/v8"
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/extra/redisotel/v9"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/go-eagle/eagle/pkg/config"
 )
@@ -23,7 +23,7 @@ const (
 )
 
 // RedisManager define a redis manager
-//nolint
+// nolint
 type RedisManager struct {
 	clients map[string]*redis.Client
 	*sync.RWMutex
@@ -90,7 +90,9 @@ func (r *RedisManager) GetClient(name string) (*redis.Client, error) {
 
 	// hook tracing (using open telemetry)
 	if c.EnableTrace {
-		rdb.AddHook(redisotel.NewTracingHook())
+		if err := redisotel.InstrumentTracing(rdb); err != nil {
+			return nil, err
+		}
 	}
 	r.clients[name] = rdb
 

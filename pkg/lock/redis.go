@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-eagle/eagle/pkg/log"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 )
 
 // RedisLock is a redis lock.
