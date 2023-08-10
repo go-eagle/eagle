@@ -7,9 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-redis/redis/v8"
-
 	redis2 "github.com/go-eagle/eagle/pkg/redis"
+	"github.com/redis/go-redis/v9"
 )
 
 const (

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/url"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -32,7 +33,8 @@ func TestHttpClient(t *testing.T) {
 	t.Run("test http post json func", func(t *testing.T) {
 		var ret []byte
 		jsonStr := `{"key1":"value1"}`
-		ret, err := PostJSON(context.Background(), "http://httpbin.org/post", []byte(jsonStr))
+		ret, err := PostJSON(context.Background(), "http://httpbin.org/post", []byte(jsonStr),
+			WithTimeout(5*time.Second))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -54,7 +56,8 @@ func TestHttpClient(t *testing.T) {
 		form := url.Values{}
 		form.Set("comments", "test desc")
 
-		ret, err := PostForm(context.Background(), "http://httpbin.org/post", form)
+		ret, err := PostForm(context.Background(), "http://httpbin.org/post", form,
+			WithTimeout(5*time.Second))
 		if err != nil {
 			t.Fatal(err)
 		}

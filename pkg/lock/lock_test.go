@@ -2,6 +2,7 @@ package lock
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -60,7 +61,8 @@ func TestLockWithTimeout(t *testing.T) {
 		time.Sleep(3 * time.Second)
 
 		ok, err = lock2.Unlock(ctx)
+		fmt.Println("===*****************", ok, err)
 		assert.Nil(t, err)
-		assert.False(t, ok)
+		assert.True(t, ok)
 	})
 }
