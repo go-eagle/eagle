@@ -38,7 +38,7 @@ func NewServer(redisOpt asynq.RedisClientOpt, asyncCfg asynq.Config) *Server {
 func (s *Server) Start(ctx context.Context) error {
 	err := s.srv.Run(s.mux)
 	if err != nil {
-		return errors.Wrapf(err, "failed to run async server: %v")
+		return errors.Wrapf(err, "failed to run async server")
 	}
 
 	return nil

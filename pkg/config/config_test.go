@@ -3,6 +3,8 @@ package config
 import (
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLoad(t *testing.T) {
@@ -20,41 +22,14 @@ func TestLoad(t *testing.T) {
 		CSRF              bool
 		Debug             bool
 	}
-	var appConfig AppConfig
+	var config AppConfig
 
-	t.Run("using local var", func(t *testing.T) {
-		c := New("../../config/")
-		if err := c.Load("app", &appConfig); err != nil {
-			t.Fatal(err)
-		}
-		t.Log(appConfig.Name)
-	})
+	t.Run("using yaml config", func(t *testing.T) {
 
-	// test global conf
-	t.Run("using global conf", func(t *testing.T) {
-		c := New("../../config/")
-		if err := c.Load("app", &appConfig); err != nil {
-			t.Fatal(err)
-		}
-
-		t.Log(appConfig.Name)
-	})
-
-	t.Run("test load json file", func(t *testing.T) {
-		c := New("../../config/")
-		if err := c.LoadJson("app", &appConfig); err != nil {
-			t.Fatal(err)
-		}
-
-		t.Log(appConfig.Name)
-	})
-
-	t.Run("test load toml file", func(t *testing.T) {
-		c := New("../../config/")
-		if err := c.LoadToml("app", &appConfig); err != nil {
-			t.Fatal(err)
-		}
-
-		t.Log(appConfig.Name)
+		c := New("./testdata")
+		err := c.Load("app", &config)
+		assert.Nil(t, err)
+		assert.NotNil(t, config)
+		assert.Equal(t, "eagle", config.Name)
 	})
 }

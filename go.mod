@@ -1,10 +1,9 @@
 module github.com/go-eagle/eagle
 
-go 1.18
+go 1.19
 
 require (
 	github.com/1024casts/gorm-opentelemetry v1.0.1-0.20210805144709-183269b54068
-	github.com/DATA-DOG/go-sqlmock v1.4.1
 	github.com/Shopify/sarama v1.19.0
 	github.com/alicebob/miniredis/v2 v2.15.1
 	github.com/cenkalti/backoff/v4 v4.1.3
@@ -22,7 +21,6 @@ require (
 	github.com/go-playground/universal-translator v0.18.1
 	github.com/go-playground/validator/v10 v10.11.2
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/go-test/deep v1.0.6
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/golang/protobuf v1.5.2
 	github.com/golang/snappy v0.0.3
@@ -32,7 +30,6 @@ require (
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/hashicorp/consul/api v1.11.0
 	github.com/hibiken/asynq v0.23.0
-	github.com/jinzhu/gorm v1.9.16
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/nacos-group/nacos-sdk-go v1.1.1
 	github.com/nats-io/nats.go v1.16.1-0.20220906180156-a1017eec10b0
@@ -135,7 +132,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lestrrat-go/strftime v1.0.5 // indirect
-	github.com/lib/pq v1.3.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect

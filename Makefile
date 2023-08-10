@@ -13,8 +13,8 @@ ldflags="-w -X ${versionDir}.gitTag=${gitTag} -X ${versionDir}.buildDate=${build
 PROJECT_NAME := "github.com/go-eagle/eagle"
 PKG := "$(PROJECT_NAME)"
 GO_VERSION=$(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f2)
-PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
-GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/ | grep -v _test.go)
+PKG_LIST := $(shell go list ${PKG}/... | grep -v examples | grep -v pkg)
+GO_FILES := $(shell find . -name '*.go' | grep -v _test.go)
 
 # init environment variables
 export PATH        := $(shell go env GOPATH)/bin:$(PATH)
@@ -61,7 +61,7 @@ lint:
 .PHONY: test
 # make test
 test:
-	@go test -short ${PKG_LIST} | grep -v examples
+	@go test -short ${PKG_LIST}
 
 .PHONY: vet
 # make vet
@@ -71,8 +71,12 @@ vet:
 .PHONY: cover
 # make cover
 cover:
-	@go tool cover -html=coverage.txt
-	@go test -short -coverprofile coverage.txt -covermode=atomic ${PKG_LIST}	
+	@go test -short -coverprofile coverage.txt -covermode=atomic ${PKG_LIST}
+
+.PHONY: view-cover
+# make view-cover  preview coverage
+view-cover:
+	go tool cover -html=coverage.txt
 
 .PHONY: docker
 # make docker  生成docker镜像
