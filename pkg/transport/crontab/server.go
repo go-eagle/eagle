@@ -3,6 +3,7 @@ package crontab
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/pkg/errors"
@@ -97,7 +98,7 @@ func (s *Server) Start(ctx context.Context) error {
 
 // Stop the crontab server
 func (s *Server) Stop(ctx context.Context) error {
-	s.logger.Info("[crontab] server stopping...")
+	log.Printf("[crontab] server stopping...")
 	s.stop <- struct{}{}
 	return nil
 }
