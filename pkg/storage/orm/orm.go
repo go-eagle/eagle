@@ -30,7 +30,7 @@ type Config struct {
 }
 
 // NewMySQL 链接数据库，生成数据库实例
-func NewMySQL(c *Config) (db *gorm.DB) {
+func NewMySQL(c *Config) (db *gorm.DB, fn func()) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=%t&loc=%s",
 		c.UserName,
 		c.Password,
@@ -68,7 +68,12 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 		log.Panicf("using gorm opentelemetry, err: %+v", err)
 	}
 
-	return db
+	// return cleanup function
+	cleanup := func() {
+		sqlDB.Close()
+	}
+
+	return db, cleanup
 }
 
 // gormConfig 根据配置决定是否开启日志

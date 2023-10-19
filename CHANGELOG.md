@@ -1,5 +1,8 @@
 ## Changelog
 
+## v1.8.1
+- chore(db): add cleanup function where init db
+
 ## v1.8.0
 - feat(es): add elasticsearch client(v7)
 - feat: support custom filename when init log

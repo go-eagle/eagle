@@ -13,14 +13,14 @@ import (
 var DB *gorm.DB
 
 // Init 初始化数据库
-func Init() *gorm.DB {
+func Init() (*gorm.DB, func()) {
 	cfg, err := loadConf()
 	if err != nil {
 		panic(fmt.Sprintf("load orm conf err: %v", err))
 	}
 
-	DB = orm.NewMySQL(cfg)
-	return DB
+	DB, cleanup := orm.NewMySQL(cfg)
+	return DB, cleanup
 }
 
 // GetDB 返回默认的数据库
