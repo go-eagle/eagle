@@ -73,7 +73,7 @@ eagle new github.com/foo/eagle-demo
 make build
 
 # run
-./eagle-demo
+eagle run
 ```
 
 ## Documentation

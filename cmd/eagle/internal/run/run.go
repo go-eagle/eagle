@@ -21,7 +21,7 @@ var CmdRun = &cobra.Command{
 	Run:   Run,
 }
 
-// Run run project.
+// Run project.
 func Run(cmd *cobra.Command, args []string) {
 	var dir string
 	if len(args) > 0 {
@@ -32,6 +32,7 @@ func Run(cmd *cobra.Command, args []string) {
 		fmt.Fprintf(os.Stderr, "\033[31mERROR: %s\033[m\n", err)
 		return
 	}
+	var selectedDir string
 	if dir == "" {
 		// find the directory containing the cmd/*
 		cmdPath, err := findCMD(base)
@@ -52,17 +53,24 @@ func Run(cmd *cobra.Command, args []string) {
 				cmdPaths = append(cmdPaths, k)
 			}
 			prompt := &survey.Select{
-				Message: "Which directory do you want to run?",
-				Options: cmdPaths,
+				Message:  "Which directory do you want to run?",
+				Options:  cmdPaths,
+				PageSize: 6,
 			}
-			survey.AskOne(prompt, &dir)
-			if dir == "" {
+			// get cmd dir, eg: cmd/server
+			err := survey.AskOne(prompt, &dir)
+			if err != nil && dir == "" {
 				return
 			}
-			dir = path.Join(cmdPath[dir], dir)
+			// eg: cmd/server
+			selectedDir = dir
+			// project absolute path
+			dir = cmdPath[dir]
 		}
 	}
-	fd := exec.Command("go", "run", ".")
+
+	// go run /path/cmd/server
+	fd := exec.Command("go", []string{"run", path.Join(dir, selectedDir)}...)
 	fd.Stdout = os.Stdout
 	fd.Stderr = os.Stderr
 	fd.Dir = dir
@@ -73,6 +81,7 @@ func Run(cmd *cobra.Command, args []string) {
 	return
 }
 
+// map, eg: cmd/server -> project absolute path
 func findCMD(base string) (map[string]string, error) {
 	var root bool
 	next := func(dir string) (map[string]string, error) {

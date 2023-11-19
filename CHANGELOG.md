@@ -8,6 +8,7 @@
 - chore(cli): improve gen task command
 - chore(response): remove init resp and improve Error
 - chore: improve redis queue and add example
+- chore: improve cmd: new and run
 
 ## v1.7.0
 - feat(http): can custom http status

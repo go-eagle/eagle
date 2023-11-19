@@ -57,8 +57,8 @@ func (p *Project) New(ctx context.Context, dir string, layout string) error {
 	fmt.Print("💻 Use the following command to start the project 👇:\n\n")
 
 	fmt.Println(color.WhiteString("$ cd %s", p.Name))
-	fmt.Println(color.WhiteString("$ go build"))
-	fmt.Println(color.WhiteString("$ ./%s\n", p.Name))
+	fmt.Println(color.WhiteString("$ make build"))
+	fmt.Println(color.WhiteString("$ eagle run\n"))
 	fmt.Println("🤝 Thanks for using Eagle")
 	fmt.Println("📚 Tutorial: https://go-eagle.org/docs/getting-started/start")
 	return nil
