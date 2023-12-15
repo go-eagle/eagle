@@ -8,16 +8,24 @@ import (
 	"time"
 
 	otelgorm "github.com/1024casts/gorm-opentelemetry"
-
-	// MySQL driver.
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+
 	// GORM MySQL
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-// Config mysql config
+const (
+	// DriverMySQL mysql driver
+	DriverMySQL = "mysql"
+	// DriverPostgres postgresSQL driver
+	DriverPostgres = "postgres"
+)
+
+// Config database config
 type Config struct {
+	Driver          string
 	Name            string
 	Addr            string
 	UserName        string
@@ -29,20 +37,28 @@ type Config struct {
 	SlowThreshold   time.Duration // 慢查询时长，默认500ms
 }
 
-// NewMySQL 链接数据库，生成数据库实例
+// NewMySQL connect to database and create a db instance
 func NewMySQL(c *Config) (db *gorm.DB) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=%t&loc=%s",
-		c.UserName,
-		c.Password,
-		c.Addr,
-		c.Name,
-		true,
-		//"Asia/Shanghai"),
-		"Local")
-
-	sqlDB, err := sql.Open("mysql", dsn)
+	var (
+		err   error
+		sqlDB *sql.DB
+	)
+	dsn := getDSN(c)
+	switch c.Driver {
+	case DriverMySQL:
+		db, err = gorm.Open(mysql.Open(dsn), gormConfig(c))
+	case DriverPostgres:
+		db, err = gorm.Open(postgres.Open(dsn), gormConfig(c))
+	default:
+		db, err = gorm.Open(mysql.Open(dsn), gormConfig(c))
+	}
 	if err != nil {
-		log.Panicf("open mysql failed. database name: %s, err: %+v", c.Name, err)
+		log.Panicf("open mysql failed. driver: %s, database name: %s, err: %+v", c.Driver, c.Name, err)
+	}
+
+	sqlDB, err = db.DB()
+	if err != nil {
+		log.Panicf("database connection failed. database name: %s, err: %+v", c.Name, err)
 	}
 	// set for db connection
 	// 用于设置最大打开的连接数，默认值为0表示不限制.设置最大的连接数，可以避免并发太高导致连接mysql出现too many connections的错误。
@@ -51,10 +67,6 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 	sqlDB.SetMaxIdleConns(c.MaxIdleConn)
 	sqlDB.SetConnMaxLifetime(c.ConnMaxLifeTime)
 
-	db, err = gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), gormConfig(c))
-	if err != nil {
-		log.Panicf("database connection failed. database name: %s, err: %+v", c.Name, err)
-	}
 	db.Set("gorm:table_options", "CHARSET=utf8mb4")
 
 	// Initialize otel plugin with options
@@ -69,6 +81,30 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 	}
 
 	return db
+}
+
+// getDSN return dsn string
+func getDSN(c *Config) string {
+	// default mysql
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=%t&loc=%s",
+		c.UserName,
+		c.Password,
+		c.Addr,
+		c.Name,
+		true,
+		//"Asia/Shanghai"),
+		"Local")
+
+	if c.Driver == DriverPostgres {
+		dsn = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
+			c.UserName,
+			c.Password,
+			c.Addr,
+			c.Name,
+		)
+	}
+
+	return dsn
 }
 
 // gormConfig 根据配置决定是否开启日志

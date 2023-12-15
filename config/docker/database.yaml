@@ -1,3 +1,4 @@
+Driver: mysql                   # 驱动名称，目前支持 mysql，postgres，默认: mysql
 Name: eagle                     # 数据库名称
 Addr: db:3306            # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
 UserName: root

@@ -70,7 +70,7 @@ func main() {
 	// -------------- init resource -------------
 	logger.Init()
 	// init db
-	// model.Init()
+	model.Init()
 	// init redis
 	// nolint: errcheck
 	// redis.Init()

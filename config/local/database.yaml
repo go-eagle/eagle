@@ -1,5 +1,6 @@
+Driver: mysql                   # 驱动名称，目前支持: mysql，postgres，默认: mysql
 Name: eagle                     # 数据库名称
-Addr: localhost:3306            # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306
+Addr: localhost:3306            # 如果是 docker,可以替换为 对应的服务名称，eg: db:3306, pg:5432
 UserName: root
 Password: 123456
 ShowLog: true                   # 是否打印所有SQL日志
