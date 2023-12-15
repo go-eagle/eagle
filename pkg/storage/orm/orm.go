@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strings"
 	"time"
 
-	"gorm.io/driver/postgres"
-
-	"gorm.io/driver/mysql"
-
 	otelgorm "github.com/1024casts/gorm-opentelemetry"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 
 	// GORM MySQL
 	"gorm.io/gorm"
@@ -42,10 +39,26 @@ type Config struct {
 
 // NewMySQL connect to database and create a db instance
 func NewMySQL(c *Config) (db *gorm.DB) {
-	// create database conn
-	sqlDB, err := sql.Open(strings.ToLower(c.Driver), getDSN(c))
+	var (
+		err   error
+		sqlDB *sql.DB
+	)
+	dsn := getDSN(c)
+	switch c.Driver {
+	case DriverMySQL:
+		db, err = gorm.Open(mysql.Open(dsn), gormConfig(c))
+	case DriverPostgres:
+		db, err = gorm.Open(postgres.Open(dsn), gormConfig(c))
+	default:
+		db, err = gorm.Open(mysql.Open(dsn), gormConfig(c))
+	}
 	if err != nil {
 		log.Panicf("open mysql failed. driver: %s, database name: %s, err: %+v", c.Driver, c.Name, err)
+	}
+
+	sqlDB, err = db.DB()
+	if err != nil {
+		log.Panicf("database connection failed. database name: %s, err: %+v", c.Name, err)
 	}
 	// set for db connection
 	// 用于设置最大打开的连接数，默认值为0表示不限制.设置最大的连接数，可以避免并发太高导致连接mysql出现too many connections的错误。
@@ -54,16 +67,6 @@ func NewMySQL(c *Config) (db *gorm.DB) {
 	sqlDB.SetMaxIdleConns(c.MaxIdleConn)
 	sqlDB.SetConnMaxLifetime(c.ConnMaxLifeTime)
 
-	switch c.Driver {
-	case DriverMySQL:
-		db, err = gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), gormConfig(c))
-	case DriverPostgres:
-		db, err = gorm.Open(postgres.New(postgres.Config{Conn: sqlDB}), gormConfig(c))
-	}
-
-	if err != nil {
-		log.Panicf("database connection failed. database name: %s, err: %+v", c.Name, err)
-	}
 	db.Set("gorm:table_options", "CHARSET=utf8mb4")
 
 	// Initialize otel plugin with options
