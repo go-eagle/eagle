@@ -1,5 +1,15 @@
 ## Changelog
 
+## v1.8.2
+- feat: support PostgreSQL
+
+## v1.8.1
+- fix: GitHub workflow badge URL
+- chore: improve cmd[run/new]
+- chore: improve print log for crontab
+- chore: update config in logger.yaml
+- chore: upgrade go to v1.19
+
 ## v1.8.0
 - feat(es): add elasticsearch client(v7)
 - feat: support custom filename when init log
