@@ -37,8 +37,8 @@ type Config struct {
 	SlowThreshold   time.Duration // 慢查询时长，默认500ms
 }
 
-// NewMySQL connect to database and create a db instance
-func NewMySQL(c *Config) (db *gorm.DB) {
+// New connect to database and create a db instance
+func New(c *Config) (db *gorm.DB) {
 	var (
 		err   error
 		sqlDB *sql.DB

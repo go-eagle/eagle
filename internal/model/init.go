@@ -19,7 +19,7 @@ func Init() *gorm.DB {
 		panic(fmt.Sprintf("load orm conf err: %v", err))
 	}
 
-	DB = orm.NewMySQL(cfg)
+	DB = orm.New(cfg)
 	return DB
 }
 
@@ -28,7 +28,7 @@ func GetDB() *gorm.DB {
 	return DB
 }
 
-// loadConf load gorm config
+// loadConf load database config
 func loadConf() (ret *orm.Config, err error) {
 	var cfg orm.Config
 	if err := config.Load("database", &cfg); err != nil {
