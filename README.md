@@ -93,7 +93,10 @@ eagle run
 ## Discussion
 
 - Issue: https://github.com/go-eagle/eagle/issues
-- Gitter: https://gitter.im/go-eagle/eagle
+
+## Microservice Roadmap
+
+![Microservice-roadmap](https://github.com/go-eagle/eagle/assets/3043638/c7ef237e-e0f9-4699-843d-54588b2bcec8)
 
 ## Contributing
 
