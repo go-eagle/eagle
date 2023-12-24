@@ -2,7 +2,7 @@
 
 ## v1.8.2
 - feat: support PostgreSQL
-- feat: support multi
+- feat: support config multiple databases
 
 ## v1.8.1
 - fix: GitHub workflow badge URL
