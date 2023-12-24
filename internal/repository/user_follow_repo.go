@@ -40,7 +40,7 @@ func (d *repository) UpdateUserFansStatus(ctx context.Context, db *gorm.DB, user
 // GetFollowingUserList .
 func (d *repository) GetFollowingUserList(ctx context.Context, userID, lastID uint64, limit int) ([]*model.UserFollowModel, error) {
 	userFollowList := make([]*model.UserFollowModel, 0)
-	db := model.GetDB()
+	db, _ := model.GetDB()
 	result := db.Where("user_id=? AND id<=? and status=1", userID, lastID).
 		Order("id desc").
 		Limit(limit).Find(&userFollowList)
@@ -56,7 +56,7 @@ func (d *repository) GetFollowingUserList(ctx context.Context, userID, lastID ui
 // GetFollowerUserList get follower user list
 func (d *repository) GetFollowerUserList(ctx context.Context, userID, lastID uint64, limit int) ([]*model.UserFansModel, error) {
 	userFollowerList := make([]*model.UserFansModel, 0)
-	db := model.GetDB()
+	db, _ := model.GetDB()
 	result := db.Where("user_id=? AND id<=? and status=1", userID, lastID).
 		Order("id desc").
 		Limit(limit).Find(&userFollowerList)
@@ -73,8 +73,8 @@ func (d *repository) GetFollowerUserList(ctx context.Context, userID, lastID uin
 func (d *repository) GetFollowByUIds(ctx context.Context, userID uint64, followingUID []uint64) (map[uint64]*model.UserFollowModel, error) {
 	userFollowModel := make([]*model.UserFollowModel, 0)
 	retMap := make(map[uint64]*model.UserFollowModel)
-
-	err := model.GetDB().
+	db, _ := model.GetDB()
+	err := db.
 		Where("user_id=? AND followed_uid in (?) ", userID, followingUID).
 		Find(&userFollowModel).Error
 
@@ -93,12 +93,12 @@ func (d *repository) GetFollowByUIds(ctx context.Context, userID uint64, followi
 func (d *repository) GetFansByUIds(ctx context.Context, userID uint64, followerUID []uint64) (map[uint64]*model.UserFansModel, error) {
 	userFansModel := make([]*model.UserFansModel, 0)
 	retMap := make(map[uint64]*model.UserFansModel)
-
-	err := model.GetDB().
+	db, _ := model.GetDB()
+	err := db.
 		Where("user_id=? AND follower_uid in (?) ", userID, followerUID).
 		Find(&userFansModel).Error
 
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return retMap, errors.Wrap(err, "[user_follow] get user fans err")
 	}
 

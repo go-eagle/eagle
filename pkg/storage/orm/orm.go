@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 	"time"
+
+	"github.com/go-eagle/eagle/pkg/config"
 
 	otelgorm "github.com/1024casts/gorm-opentelemetry"
 	"gorm.io/driver/mysql"
@@ -21,6 +24,16 @@ const (
 	DriverMySQL = "mysql"
 	// DriverPostgres postgresSQL driver
 	DriverPostgres = "postgres"
+
+	// DefaultDatabase default db name
+	DefaultDatabase = "default"
+)
+
+var (
+	// DBMap store database instance
+	DBMap = make(map[string]*gorm.DB)
+	// DBLock database locker
+	DBLock sync.Mutex
 )
 
 // Config database config
@@ -37,8 +50,82 @@ type Config struct {
 	SlowThreshold   time.Duration // 慢查询时长，默认500ms
 }
 
-// New connect to database and create a db instance
-func New(c *Config) (db *gorm.DB) {
+// New create a or multi database client
+func New(names ...string) error {
+	if len(names) == 0 {
+		return fmt.Errorf("no set databasename")
+	}
+
+	clientManager := NewManager()
+	for _, name := range names {
+		_, err := clientManager.GetInstance(name)
+		if err != nil {
+			return fmt.Errorf("init database name: %+v, err: %+v", name, err)
+		}
+	}
+
+	return nil
+}
+
+// Manager define a manager
+type Manager struct {
+	instances map[string]*gorm.DB
+	*sync.RWMutex
+}
+
+// NewManager create a database manager
+func NewManager() *Manager {
+	return &Manager{
+		instances: make(map[string]*gorm.DB),
+		RWMutex:   &sync.RWMutex{},
+	}
+}
+
+// GetDB get a database
+func GetDB(name string) (*gorm.DB, error) {
+	DBLock.Lock()
+	defer DBLock.Unlock()
+
+	db, ok := DBMap[name]
+	if !ok {
+		db, err := NewManager().GetInstance(name)
+		if err != nil {
+			return nil, err
+		}
+		return db, nil
+	}
+
+	return db, nil
+}
+
+// GetInstance return a database client
+func (m *Manager) GetInstance(name string) (*gorm.DB, error) {
+	// get client from map
+	m.RLock()
+	if ins, ok := m.instances[name]; ok {
+		m.RUnlock()
+		return ins, nil
+	}
+	m.RUnlock()
+
+	c, err := LoadConf(name)
+	if err != nil {
+		return nil, fmt.Errorf("load database conf err: %+v", err)
+	}
+
+	// create a database client
+	m.Lock()
+	defer m.Unlock()
+
+	instance := NewInstance(c)
+	m.instances[name] = instance
+	DBMap[name] = instance
+
+	return instance, nil
+}
+
+// NewInstance connect to database and create a db instance
+func NewInstance(c *Config) (db *gorm.DB) {
 	var (
 		err   error
 		sqlDB *sql.DB
@@ -81,6 +168,22 @@ func New(c *Config) (db *gorm.DB) {
 	}
 
 	return db
+}
+
+// LoadConf load database config
+func LoadConf(name string) (ret *Config, err error) {
+	v, err := config.LoadWithType("database", "yaml")
+	if err != nil {
+		return nil, err
+	}
+
+	var c Config
+	err = v.UnmarshalKey(name, &c)
+	if err != nil {
+		return nil, err
+	}
+
+	return &c, nil
 }
 
 // getDSN return dsn string
