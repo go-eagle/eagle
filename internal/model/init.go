@@ -5,35 +5,33 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/go-eagle/eagle/pkg/config"
 	"github.com/go-eagle/eagle/pkg/storage/orm"
 )
 
-// DB 数据库全局变量
-var DB *gorm.DB
+const (
+	// DefaultDatabase default database
+	DefaultDatabase = "default"
+	// UserDatabase user database
+	UserDatabase = "user"
+)
 
 // Init 初始化数据库
-func Init() *gorm.DB {
-	cfg, err := loadConf()
+func Init() {
+	err := orm.New(
+		DefaultDatabase,
+		UserDatabase,
+	)
 	if err != nil {
-		panic(fmt.Sprintf("load orm conf err: %v", err))
+		panic(fmt.Sprintf("new orm database err: %v", err))
 	}
-
-	DB = orm.New(cfg)
-	return DB
 }
 
 // GetDB 返回默认的数据库
-func GetDB() *gorm.DB {
-	return DB
+func GetDB() (*gorm.DB, error) {
+	return orm.GetDB(DefaultDatabase)
 }
 
-// loadConf load database config
-func loadConf() (ret *orm.Config, err error) {
-	var cfg orm.Config
-	if err := config.Load("database", &cfg); err != nil {
-		return nil, err
-	}
-
-	return &cfg, nil
+// GetUserDB 获取用户数据库实例
+func GetUserDB() (*gorm.DB, error) {
+	return orm.GetDB(UserDatabase)
 }

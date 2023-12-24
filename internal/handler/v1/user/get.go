@@ -2,7 +2,6 @@ package user
 
 import (
 	"errors"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
@@ -44,7 +43,7 @@ func Get(c *gin.Context) {
 		return
 	}
 
-	time.Sleep(5 * time.Second)
+	//time.Sleep(5 * time.Second)
 
 	response.Success(c, u)
 }

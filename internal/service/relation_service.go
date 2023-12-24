@@ -39,7 +39,8 @@ func newRelations(svc *service) *relationService {
 // IsFollowing 是否正在关注某用户
 func (s *relationService) IsFollowing(ctx context.Context, userID uint64, followedUID uint64) bool {
 	userFollowModel := &model.UserFollowModel{}
-	result := model.GetDB().
+	db, _ := model.GetDB()
+	result := db.
 		Where("user_id=? AND followed_uid=? ", userID, followedUID).
 		Find(userFollowModel)
 
@@ -57,7 +58,7 @@ func (s *relationService) IsFollowing(ctx context.Context, userID uint64, follow
 
 // Follow 关注目标用户
 func (s *relationService) Follow(ctx context.Context, userID uint64, followedUID uint64) error {
-	db := model.GetDB()
+	db, _ := model.GetDB()
 	tx := db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -103,7 +104,7 @@ func (s *relationService) Follow(ctx context.Context, userID uint64, followedUID
 
 // Unfollow 取消用户关注
 func (s *relationService) Unfollow(ctx context.Context, userID uint64, followedUID uint64) error {
-	db := model.GetDB()
+	db, _ := model.GetDB()
 	tx := db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
