@@ -21,16 +21,18 @@ var CmdNew = &cobra.Command{
 
 var (
 	repoURL        string
+	branch         string
 	defaultTimeout string
 )
 
 func init() {
-	if repoURL = os.Getenv("eagle_LAYOUT_REPO"); repoURL == "" {
+	if repoURL = os.Getenv("EAGLE_LAYOUT_REPO"); repoURL == "" {
 		repoURL = "https://github.com/go-eagle/eagle-layout.git"
 	}
 
 	defaultTimeout = "60s"
-	CmdNew.Flags().StringVarP(&repoURL, "-repo-url", "r", repoURL, "layout repo")
+	CmdNew.Flags().StringVarP(&repoURL, "repo-url", "r", repoURL, "layout repo")
+	CmdNew.Flags().StringVarP(&branch, "branch", "b", branch, "repo branch name")
 	CmdNew.Flags().StringVarP(&defaultTimeout, "timeout", "t", defaultTimeout, "request timeout time")
 }
 
@@ -65,7 +67,7 @@ func run(cmd *cobra.Command, args []string) {
 	p := &Project{Name: name}
 	done := make(chan error, 1)
 	go func() {
-		done <- p.New(ctx, wd, repoURL)
+		done <- p.New(ctx, wd, repoURL, branch)
 	}()
 
 	select {

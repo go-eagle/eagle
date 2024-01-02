@@ -3,6 +3,7 @@
 ## v1.8.2
 - feat: support PostgreSQL
 - feat: support config multiple databases
+- chore(cli): generate project by adding branch name
 
 ## v1.8.1
 - fix: GitHub workflow badge URL
