@@ -6,7 +6,7 @@ import (
 )
 
 func TestRepo(t *testing.T) {
-	r := NewRepo("https://github.com/go-eagle/eagle-layout.git")
+	r := NewRepo("https://github.com/go-eagle/eagle-layout.git", "main")
 	if err := r.Clone(context.Background()); err != nil {
 		t.Fatal(err)
 	}
