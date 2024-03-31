@@ -18,7 +18,7 @@ English | [中文文档](https://github.com/go-eagle/eagle/blob/master/README_ZH
 - Router [Gin](https://github.com/gin-gonic/gin) 
 - Middleware [Gin](https://github.com/gin-gonic/gin) 
 - Database [GORM](https://github.com/jinzhu/gorm)
-- Document [Swagger](https://swagger.io/) 生成
+- Document [Swagger](https://swagger.io/) 
 - Config [Viper](https://github.com/spf13/viper)
 - Auth [JWT](https://jwt.io/) 
 - Validator [validator](https://github.com/go-playground/validator)
