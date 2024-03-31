@@ -27,6 +27,12 @@ English | [中文文档](https://github.com/go-eagle/eagle/blob/master/README_ZH
 - CI/CD [GitHub Actions](https://github.com/actions)
 - Lint [GolangCI-lint](https://golangci.com/)
 
+## Layered Architecture
+
+Eagle utilizes a classic layered structure and employs the Wire dependency injection framework to enhance modularity and reduce coupling between components.
+
+[![Leagle Layout Arch](https://raw.githubusercontent.com/go-eagle/eagle/master/docs/images/eagle-layout-arch.png)](https://starchart.cc/go-eagle/eagle)
+
 ## Directory Structure
 
 ```shell
