@@ -15,17 +15,23 @@ English | [中文文档](https://github.com/go-eagle/eagle/blob/master/README_ZH
 
 ## Features
 
-- Router [Gin](https://github.com/gin-gonic/gin) 
-- Middleware [Gin](https://github.com/gin-gonic/gin) 
-- Database [GORM](https://github.com/jinzhu/gorm)
-- Document [Swagger](https://swagger.io/) 
-- Config [Viper](https://github.com/spf13/viper)
-- Auth [JWT](https://jwt.io/) 
+- API framework [Gin](https://github.com/gin-gonic/gin) 
+- RPC framework [gRPC](https://github.com/grpc/grpc-go)
+- Configuration [Viper](https://github.com/spf13/viper)
+- Logging component [zap](https://github.com/uber-go/zap)
+- Database ORM component [GORM](https://github.com/go-gorm/gorm)
+- Cache component [go-redis](https://github.com/go-redis/redis), [ristretto](https://github.com/dgraph-io/ristretto)
+- Message Queue [Rabbitmq](https://github.com/rabbitmq/amqp091-go)
+- Authentication [JWT](https://jwt.io/) 
 - Validator [validator](https://github.com/go-playground/validator)
 - Cron [cron](https://github.com/robfig/cron)
-- Test [GoConvey](http://goconvey.co/)
+- Metrics monitoring [prometheus](https://github.com/prometheus/client_golang/prometheus), [grafana](https://github.com/grafana/grafana)
+- Distributed Tracing [opentelemetry](https://github.com/open-telemetry/opentelemetry-go)
+- Service registration and discovery [etcd](https://github.com/etcd-io/etcd) | [consul](https://github.com/hashicorp/consul) | [nacos](https://github.com/alibaba/nacos)
+- Unit Test [GoConvey](http://goconvey.co/)
 - CI/CD [GitHub Actions](https://github.com/actions)
 - Lint [GolangCI-lint](https://golangci.com/)
+- Continuous integration and deployment [docker](https://www.docker.com/), [kubernetes](https://github.com/kubernetes/kubernetes)
 
 ## Layered Architecture
 
