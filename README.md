@@ -34,7 +34,7 @@ English | [中文文档](https://github.com/go-eagle/eagle/blob/master/README_ZH
 - CI/CD [GitHub Actions](https://github.com/actions), [docker](https://www.docker.com/), [kubernetes](https://github.com/kubernetes/kubernetes)
 
 ## Framework Layered Architecture
-![eagle-framework-diagram](https://github.com/go-eagle/eagle/assets/3043638/cc22617b-f698-45ef-a2dc-423e1e38f058)
+![eagle-framework-diagram](https://github.com/go-eagle/eagle/assets/3043638/cd05f6d5-058c-4ab0-87ee-47148e0c68aa)
 
 ## Logic Layered Architecture
 
