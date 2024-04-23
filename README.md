@@ -33,7 +33,10 @@ English | [中文文档](https://github.com/go-eagle/eagle/blob/master/README_ZH
 - Lint [GolangCI-lint](https://golangci.com/)
 - CI/CD [GitHub Actions](https://github.com/actions), [docker](https://www.docker.com/), [kubernetes](https://github.com/kubernetes/kubernetes)
 
-## Layered Architecture
+## Framework Layered Architecture
+![eagle-framework-diagram](https://github.com/go-eagle/eagle/assets/3043638/cc22617b-f698-45ef-a2dc-423e1e38f058)
+
+## Logic Layered Architecture
 
 Eagle utilizes a classic layered structure and employs the Wire dependency injection framework to enhance modularity and reduce coupling between components.
 
