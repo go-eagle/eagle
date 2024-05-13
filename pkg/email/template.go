@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/go-eagle/eagle/pkg/log"
@@ -66,7 +66,7 @@ func NewResetPasswordHTMLEmail(username, resetURL string) (subject string, body 
 
 // getEmailHTMLContent 获取邮件模板
 func getEmailHTMLContent(tplPath string, mailData interface{}) string {
-	b, err := ioutil.ReadFile(tplPath)
+	b, err := os.ReadFile(tplPath)
 	if err != nil {
 		log.Warnf("[util.email] read file err: %v", err)
 		return ""

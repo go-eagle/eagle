@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -97,7 +97,7 @@ func doRequest(ctx context.Context, method, url string, payload []byte, opt *opt
 	if !isSuccess(resp.StatusCode) {
 		return nil, errors.Errorf("[httpClient] status code is %d", resp.StatusCode)
 	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, errors.Wrapf(err, "[httpClient] read resp body from [%s %s] err", method, url)
 	}

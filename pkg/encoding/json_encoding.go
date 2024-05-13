@@ -5,7 +5,7 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"github.com/golang/snappy"
 )
@@ -100,7 +100,7 @@ func GzipDecode(in []byte) ([]byte, error) {
 		}
 	}()
 
-	return ioutil.ReadAll(reader)
+	return io.ReadAll(reader)
 }
 
 // JSONSnappyEncoding json格式和snappy压缩
