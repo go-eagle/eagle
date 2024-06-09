@@ -20,6 +20,7 @@ var CmdNew = &cobra.Command{
 var (
 	filename    string
 	host        string
+	port        string
 	database    string
 	tableName   string
 	packageName string
@@ -33,6 +34,7 @@ var (
 func init() {
 	// default value
 	host = "localhost"
+	port = "3306"
 	packageName = "model"
 	user = "root"
 	password = "123456"
@@ -40,6 +42,7 @@ func init() {
 
 	CmdNew.Flags().StringVarP(&filename, "filename", "f", filename, "model filename")
 	CmdNew.Flags().StringVar(&host, "host", host, "database host addr")
+	CmdNew.Flags().StringVar(&port, "port", port, "database port")
 	CmdNew.Flags().StringVarP(&database, "database", "d", database, "database name")
 	CmdNew.Flags().StringVarP(&tableName, "table", "t", tableName, "table name")
 	CmdNew.Flags().StringVarP(&user, "user", "u", user, "database username")
@@ -77,6 +80,17 @@ func run(cmd *cobra.Command, args []string) {
 		}
 		err = survey.AskOne(prompt, &host)
 		if host == "" || err != nil {
+			return
+		}
+	}
+	if len(port) == 0 {
+		prompt := &survey.Input{
+			Message: "What is port for database?",
+			Help:    "Created port for database.",
+			Default: port,
+		}
+		err = survey.AskOne(prompt, &port)
+		if port == "" || err != nil {
 			return
 		}
 	}
@@ -146,6 +160,7 @@ func run(cmd *cobra.Command, args []string) {
 	m := &Model{
 		Filename:    filename,
 		Host:        host,
+		MysqlPort:   port,
 		Database:    database,
 		TableName:   tableName,
 		PackageName: packageName,

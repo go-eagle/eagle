@@ -17,6 +17,7 @@ import (
 type Model struct {
 	Filename    string
 	Host        string
+	MysqlPort   string
 	Database    string
 	TableName   string
 	PackageName string
@@ -68,6 +69,7 @@ func (m *Model) Generate() error {
 
 	input := []string{
 		"--host", m.Host,
+		"--mysql_port", m.MysqlPort,
 		"--database", m.Database,
 		"--table", m.TableName,
 		"--package", m.PackageName,
