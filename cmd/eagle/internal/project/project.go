@@ -20,9 +20,9 @@ var CmdNew = &cobra.Command{
 }
 
 var (
-	repoURL        string
-	branch         string
-	defaultTimeout string
+	repoURL string
+	branch  string
+	timeout string
 )
 
 func init() {
@@ -30,10 +30,14 @@ func init() {
 		repoURL = "https://github.com/go-eagle/eagle-layout.git"
 	}
 
-	defaultTimeout = "60s"
+	// default http, only include http server
+	branch = "http"
+	// default timeout
+	timeout = "60s"
+
 	CmdNew.Flags().StringVarP(&repoURL, "repo-url", "r", repoURL, "layout repo")
-	CmdNew.Flags().StringVarP(&branch, "branch", "b", branch, "repo branch name")
-	CmdNew.Flags().StringVarP(&defaultTimeout, "timeout", "t", defaultTimeout, "request timeout time")
+	CmdNew.Flags().StringVarP(&branch, "branch", "b", branch, "default is http server, empty is http and gRPC")
+	CmdNew.Flags().StringVarP(&timeout, "timeout", "t", timeout, "request timeout time")
 }
 
 func run(cmd *cobra.Command, args []string) {
@@ -41,7 +45,7 @@ func run(cmd *cobra.Command, args []string) {
 	if err != nil {
 		panic(err)
 	}
-	t, err := time.ParseDuration(defaultTimeout)
+	t, err := time.ParseDuration(timeout)
 	if err != nil {
 		panic(err)
 	}

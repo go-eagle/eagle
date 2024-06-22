@@ -80,7 +80,13 @@ go get github.com/go-eagle/eagle/cmd/eagle
 ## Quick Start
 
 ```bash
+# only gen a server with http
 eagle new eagle-demo
+# or 
+eagle new github.com/foo/eagle-demo
+
+# gen a server with http and gRPC
+eagle new -b=all eagle-demo
 # or 
 eagle new github.com/foo/eagle-demo
 
