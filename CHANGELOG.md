@@ -3,7 +3,8 @@
 ## v1.8.2
 - feat: support PostgreSQL
 - feat: support config multiple databases
-- chore(cli): generate project by adding branch name
+- chore(cli): generate project by adding branch name, default is http server
+- chore(db): add timeout for connect, read and write
 
 ## v1.8.1
 - fix: GitHub workflow badge URL
