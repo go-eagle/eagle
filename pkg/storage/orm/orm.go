@@ -11,9 +11,9 @@ import (
 	"github.com/go-eagle/eagle/pkg/config"
 
 	otelgorm "github.com/1024casts/gorm-opentelemetry"
+	"gorm.io/driver/clickhouse"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
-
 	// GORM MySQL
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -24,6 +24,8 @@ const (
 	DriverMySQL = "mysql"
 	// DriverPostgres postgresSQL driver
 	DriverPostgres = "postgres"
+	// DriverClickhouse
+	DriverClickhouse = "clickhouse"
 
 	// DefaultDatabase default db name
 	DefaultDatabase = "default"
@@ -139,11 +141,13 @@ func NewInstance(c *Config) (db *gorm.DB) {
 		db, err = gorm.Open(mysql.Open(dsn), gormConfig(c))
 	case DriverPostgres:
 		db, err = gorm.Open(postgres.Open(dsn), gormConfig(c))
+	case DriverClickhouse:
+		db, err = gorm.Open(clickhouse.Open(dsn), gormConfig(c))
 	default:
 		db, err = gorm.Open(mysql.Open(dsn), gormConfig(c))
 	}
 	if err != nil {
-		log.Panicf("open mysql failed. driver: %s, database name: %s, err: %+v", c.Driver, c.Name, err)
+		log.Panicf("open db failed. driver: %s, database name: %s, err: %+v", c.Driver, c.Name, err)
 	}
 
 	sqlDB, err = db.DB()
@@ -213,6 +217,17 @@ func getDSN(c *Config) string {
 			c.Name,
 			c.Timeout,
 			c.ReadTimeout,
+		)
+	}
+
+	if c.Driver == DriverClickhouse {
+		dsn = fmt.Sprintf("clickhouse://%s:%s@%s/%s?dial_timeout=%s&read_timeout=%s",
+			c.UserName,
+			c.Password,
+			c.Addr,
+			c.Name,
+			c.ReadTimeout,
+			c.WriteTimeout,
 		)
 	}
 
