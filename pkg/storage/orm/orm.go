@@ -14,6 +14,7 @@ import (
 	"gorm.io/driver/clickhouse"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
+
 	// GORM MySQL
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -226,8 +227,8 @@ func getDSN(c *Config) string {
 			c.Password,
 			c.Addr,
 			c.Name,
+			c.Timeout,
 			c.ReadTimeout,
-			c.WriteTimeout,
 		)
 	}
 
