@@ -1,5 +1,9 @@
 ## Changelog
 
+## v1.9.0
+- feat: support clickhouse
+- chore: upgrade go to v1.21
+
 ## v1.8.2
 - feat: support PostgreSQL
 - feat: support config multiple databases
