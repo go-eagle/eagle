@@ -2,10 +2,8 @@ package run
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
 	"strings"
 
@@ -24,15 +22,15 @@ var CmdRun = &cobra.Command{
 // Run project.
 func Run(cmd *cobra.Command, args []string) {
 	var dir string
-	if len(args) > 0 {
-		dir = args[0]
+	cmdArgs, programArgs := splitArgs(cmd, args)
+	if len(cmdArgs) > 0 {
+		dir = cmdArgs[0]
 	}
 	base, err := os.Getwd()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "\033[31mERROR: %s\033[m\n", err)
 		return
 	}
-	var selectedDir string
 	if dir == "" {
 		// find the directory containing the cmd/*
 		cmdPath, err := findCMD(base)
@@ -44,8 +42,7 @@ func Run(cmd *cobra.Command, args []string) {
 			fmt.Fprintf(os.Stderr, "\033[31mERROR: %s\033[m\n", "The cmd directory cannot be found in the current directory")
 			return
 		} else if len(cmdPath) == 1 {
-			for k, v := range cmdPath {
-				selectedDir = k
+			for _, v := range cmdPath {
 				dir = v
 			}
 		} else {
@@ -63,15 +60,14 @@ func Run(cmd *cobra.Command, args []string) {
 			if err != nil && dir == "" {
 				return
 			}
-			// eg: cmd/server
-			selectedDir = dir
+
 			// project absolute path
 			dir = cmdPath[dir]
 		}
 	}
 
-	// go run /path/cmd/server
-	fd := exec.Command("go", []string{"run", path.Join(dir, selectedDir)}...)
+	// go run /absolute/path/cmd/server
+	fd := exec.Command("go", append([]string{"run", dir}, programArgs...)...)
 	fd.Env = os.Environ()
 	fd.Stdout = os.Stdout
 	fd.Stderr = os.Stderr
@@ -80,24 +76,50 @@ func Run(cmd *cobra.Command, args []string) {
 		fmt.Fprintf(os.Stderr, "\033[31mERROR: %s\033[m\n", err.Error())
 		return
 	}
-	return
+}
+
+// ./cmd subcmd cmdarg1 cmdarg2 -- progamarg3 progamarg4
+// example:
+// | Command                                                       | ArgsLenAtDash |
+// |---------------------------------------------------------------|---------------|
+// | `./cmd subcmd arg1 arg2 -- arg3 arg4`                         | 2             |
+// | `./cmd subcmd -- arg1 arg2 arg3 arg4`                         | 0             |
+// | `./cmd subcmd arg1 arg2 arg3 arg4`                            | -1            |
+// | `./cmd subcmd arg1 --flag=f arg2 --otherflag=o -- arg3 arg4 --not-flag=12` | 2             |
+func splitArgs(cmd *cobra.Command, args []string) (cmdArgs, programArgs []string) {
+	dashAt := cmd.ArgsLenAtDash()
+	// have string --, or dashAt == -1
+	if dashAt >= 0 {
+		return args[:dashAt], args[dashAt:]
+	}
+	// only return cmd args
+	return args, []string{}
 }
 
 // map, eg: cmd/server -> project absolute path
 func findCMD(base string) (map[string]string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	if !strings.HasSuffix(wd, "/") {
+		wd += "/"
+	}
 	var root bool
+	// return map[cmd/server:/eagle-example/cmd/server cmd/consumer:/eagle-example/cmd/consumer
 	next := func(dir string) (map[string]string, error) {
 		cmdPath := make(map[string]string)
 		err := filepath.Walk(dir, func(walkPath string, info os.FileInfo, err error) error {
 			// multi level directory is not allowed under the cmdPath directory, so it is judged that the path ends with cmdPath.
 			if strings.HasSuffix(walkPath, "cmd") {
-				paths, err := ioutil.ReadDir(walkPath)
+				paths, err := os.ReadDir(walkPath)
 				if err != nil {
 					return err
 				}
 				for _, fileInfo := range paths {
 					if fileInfo.IsDir() {
-						cmdPath[path.Join("cmd", fileInfo.Name())] = filepath.Join(walkPath, "..")
+						abs := filepath.Join(walkPath, fileInfo.Name())
+						cmdPath[strings.TrimPrefix(abs, wd)] = abs
 					}
 				}
 				return nil
@@ -109,6 +131,7 @@ func findCMD(base string) (map[string]string, error) {
 		})
 		return cmdPath, err
 	}
+
 	for i := 0; i < 5; i++ {
 		tmp := base
 		cmd, err := next(tmp)
@@ -121,7 +144,7 @@ func findCMD(base string) (map[string]string, error) {
 		if root {
 			break
 		}
-		tmp = filepath.Join(base, "..")
+		_ = filepath.Join(base, "..")
 	}
 	return map[string]string{"": base}, nil
 }
