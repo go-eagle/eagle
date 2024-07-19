@@ -5,7 +5,7 @@ type Option func(*Config)
 // WithFilename set log filename
 func WithFilename(filename string) Option {
 	return func(cfg *Config) {
-		cfg.Fileanme = filename
+		cfg.Filename = filename
 	}
 }
 

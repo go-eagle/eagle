@@ -170,7 +170,7 @@ func buildLogger(cfg *Config, skip int) *zap.Logger {
 }
 
 func getAllCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
-	allWriter := getLogWriterWithTime(cfg, GetLogFile(cfg.Fileanme, logSuffix))
+	allWriter := getLogWriterWithTime(cfg, GetLogFile(cfg.Filename, logSuffix))
 	allLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.FatalLevel
 	})
@@ -178,7 +178,7 @@ func getAllCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
 }
 
 func getInfoCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
-	infoWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Fileanme, logSuffix))
+	infoWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Filename, logSuffix))
 	infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.InfoLevel
 	})
@@ -186,7 +186,7 @@ func getInfoCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
 }
 
 func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
-	warnWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Fileanme, warnLogSuffix))
+	warnWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Filename, warnLogSuffix))
 	var stacktrace zap.Option
 	warnLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		if !cfg.DisableCaller {
@@ -200,7 +200,7 @@ func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option
 }
 
 func getErrorCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
-	errorFilename := GetLogFile(cfg.Fileanme, errorLogSuffix)
+	errorFilename := GetLogFile(cfg.Filename, errorLogSuffix)
 	errorWrite := getLogWriterWithTime(cfg, errorFilename)
 	var stacktrace zap.Option
 	errorLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
