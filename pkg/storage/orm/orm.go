@@ -197,21 +197,18 @@ func LoadConf(name string) (ret *Config, err error) {
 // getDSN return dsn string
 func getDSN(c *Config) string {
 	// default mysql
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=%t&loc=%s&timeout=%s%readTimeout=%s%writeTimeout=%s",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true&loc=Local&timeout=%s&readTimeout=%s&writeTimeout=%s",
 		c.UserName,
 		c.Password,
 		c.Addr,
 		c.Name,
-		true,
-		//"Asia/Shanghai"),
-		"Local",
 		c.Timeout,
 		c.ReadTimeout,
 		c.WriteTimeout,
 	)
 
 	if c.Driver == DriverPostgres {
-		dsn = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable&connect_timeout=%s%statement_timeout=%s",
+		dsn = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable&connect_timeout=%s&statement_timeout=%s",
 			c.UserName,
 			c.Password,
 			c.Addr,

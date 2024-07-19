@@ -118,7 +118,7 @@ func buildLogger(cfg *Config, skip int) *zap.Logger {
 	hostname, _ = os.Hostname()
 	option := zap.Fields(
 		zap.String("ip", utils.GetLocalIP()),
-		zap.String("app_id", cfg.Name),
+		zap.String("app_id", cfg.ServiceName),
 		zap.String("instance_id", hostname),
 	)
 	options = append(options, option)
@@ -170,7 +170,7 @@ func buildLogger(cfg *Config, skip int) *zap.Logger {
 }
 
 func getAllCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
-	allWriter := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, logSuffix))
+	allWriter := getLogWriterWithTime(cfg, GetLogFile(cfg.Fileanme, logSuffix))
 	allLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.FatalLevel
 	})
@@ -178,7 +178,7 @@ func getAllCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
 }
 
 func getInfoCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
-	infoWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, logSuffix))
+	infoWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Fileanme, logSuffix))
 	infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.InfoLevel
 	})
@@ -186,7 +186,7 @@ func getInfoCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
 }
 
 func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
-	warnWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, warnLogSuffix))
+	warnWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Fileanme, warnLogSuffix))
 	var stacktrace zap.Option
 	warnLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		if !cfg.DisableCaller {
@@ -200,7 +200,7 @@ func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option
 }
 
 func getErrorCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
-	errorFilename := GetLogFile(cfg.Name, errorLogSuffix)
+	errorFilename := GetLogFile(cfg.Fileanme, errorLogSuffix)
 	errorWrite := getLogWriterWithTime(cfg, errorFilename)
 	var stacktrace zap.Option
 	errorLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
