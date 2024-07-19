@@ -8,7 +8,7 @@ type Config struct {
 	Encoding          string
 	Level             string
 	ServiceName       string // service name
-	Fileanme          string
+	Filename          string
 	Writers           string
 	LoggerDir         string
 	LogFormatText     bool
