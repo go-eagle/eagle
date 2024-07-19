@@ -144,11 +144,14 @@ func Errorf(format string, args ...interface{}) {
 
 // WithFields logger
 // output more field, eg:
-// 		contextLogger := log.WithFields(log.Fields{"key1": "value1"})
-// 		contextLogger.Info("print multi field")
+//
+//	contextLogger := log.WithFields(log.Fields{"key1": "value1"})
+//	contextLogger.Info("print multi field")
+//
 // or more sample to use:
-// 	    log.WithFields(log.Fields{"key1": "value1"}).Info("this is a test log")
-// 	    log.WithFields(log.Fields{"key1": "value1"}).Infof("this is a test log, user_id: %d", userID)
+//
+//	log.WithFields(log.Fields{"key1": "value1"}).Info("this is a test log")
+//	log.WithFields(log.Fields{"key1": "value1"}).Infof("this is a test log, user_id: %d", userID)
 func WithFields(keyValues Fields) Logger {
 	return GetLogger().WithFields(keyValues)
 }
