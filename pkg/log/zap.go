@@ -83,14 +83,6 @@ func newLoggerWithCallerSkip(cfg *Config, skip int, opts ...Option) (Logger, err
 	return &zapLogger{sugarLogger: buildLogger(cfg, defaultSkip+skip).Sugar()}, nil
 }
 
-// newLogger new logger
-func newLogger(cfg *Config, opts ...Option) (Logger, error) {
-	for _, opt := range opts {
-		opt(cfg)
-	}
-	return newLoggerWithCallerSkip(cfg, 0)
-}
-
 func buildLogger(cfg *Config, skip int) *zap.Logger {
 	logDir = cfg.LoggerDir
 	if strings.HasSuffix(logDir, "/") {

@@ -13,7 +13,6 @@ import (
 
 // log is A global variable so that log functions can be directly accessed
 var log Logger
-var logger Logger
 var zl *zap.Logger
 
 // Fields Type to pass when we want to call WithFields for structured logging
@@ -58,7 +57,6 @@ func Init(opts ...Option) Logger {
 	if err != nil {
 		_ = fmt.Errorf("init newZapLogger err: %v", err)
 	}
-	_ = zl
 
 	// log 用于支持模块级的方法调用，所以要比其他 Logger 多跳一层
 	log, err = newLoggerWithCallerSkip(cfg, 1, opts...)
@@ -66,17 +64,12 @@ func Init(opts ...Option) Logger {
 		_ = fmt.Errorf("init newLogger err: %v", err)
 	}
 
-	logger, err = newLogger(cfg, opts...)
-	if err != nil {
-		_ = fmt.Errorf("init logger err: %v", err)
-	}
-
 	return log
 }
 
 // GetLogger return a log
 func GetLogger() Logger {
-	return logger
+	return log
 }
 
 // GetZapLogger return raw zap logger
