@@ -23,6 +23,9 @@ const (
 	logSuffix      = ".log"
 	warnLogSuffix  = "_warn.log"
 	errorLogSuffix = "_error.log"
+
+	// defaultSkip zapLogger 包装了一层 zap.Logger，默认要跳过一层
+	defaultSkip = 1
 )
 
 const (
@@ -31,8 +34,6 @@ const (
 	// RotateTimeHourly 按小时切割
 	RotateTimeHourly = "hourly"
 )
-
-const defaultSkip = 1 // zapLogger 包装了一层 zap.Logger，默认要跳过一层
 
 var (
 	hostname string

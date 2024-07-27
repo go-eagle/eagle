@@ -77,6 +77,22 @@ func (sl spanLogger) Errorf(format string, args ...interface{}) {
 	sl.logger.Error(msg, append(sl.spanFields, fields...)...)
 }
 
+func (sl spanLogger) Fatal(args ...interface{}) {
+	msg := fmt.Sprint(args...)
+	var fields []zap.Field
+	sl.logToSpan("error", msg)
+	sl.span.RecordError(errors.New(msg))
+	sl.logger.Fatal(msg, append(sl.spanFields, fields...)...)
+}
+
+func (sl spanLogger) Fatalf(format string, args ...interface{}) {
+	msg := fmt.Sprint(format, args)
+	var fields []zap.Field
+	sl.logToSpan("Errorf", msg)
+	sl.span.RecordError(errors.New(msg))
+	sl.logger.Fatal(msg, append(sl.spanFields, fields...)...)
+}
+
 func (sl spanLogger) WithFields(keyValues Fields) Logger {
 	panic("implement me")
 }
