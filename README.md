@@ -90,11 +90,11 @@ eagle new -b=all eagle-demo
 # or 
 eagle new github.com/foo/eagle-demo
 
-# build
-make build
+# install dependence
+go mod tidy
 
 # run
-eagle run
+make run
 ```
 
 ## Documentation
