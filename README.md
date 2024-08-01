@@ -86,7 +86,7 @@ eagle new eagle-demo
 eagle new github.com/foo/eagle-demo
 
 # gen a server with http and gRPC
-eagle new -b=all eagle-demo
+eagle new -b=main eagle-demo
 # or 
 eagle new github.com/foo/eagle-demo
 
