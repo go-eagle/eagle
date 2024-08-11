@@ -70,6 +70,8 @@ Eagle utilizes a classic layered structure and employs the Wire dependency injec
 ## Installtion CLI
 
 ```bash
+GOPROXY="https://goproxy.cn,direct"
+
 # go >= 1.16
 go install github.com/go-eagle/eagle/cmd/eagle@latest
 
