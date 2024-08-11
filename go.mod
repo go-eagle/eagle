@@ -1,6 +1,6 @@
 module github.com/go-eagle/eagle
 
-go 1.21
+go 1.22.3
 
 require (
 	github.com/1024casts/gorm-opentelemetry v1.0.1-0.20210805144709-183269b54068

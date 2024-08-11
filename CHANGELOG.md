@@ -1,8 +1,9 @@
 ## Changelog
 
 ## v1.9.0
+
 - feat: support clickhouse
-- chore: upgrade go to v1.21
+- chore: upgrade go to v1.22.3
 - chore: optimize log and orm
 
 ## v1.8.2
