@@ -167,19 +167,29 @@ func getAllCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
 	allLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.FatalLevel
 	})
-	return zapcore.NewCore(encoder, zapcore.AddSync(allWriter), allLevel)
+
+	asyncWriter := &zapcore.BufferedWriteSyncer{
+		WS:            zapcore.AddSync(allWriter),
+		FlushInterval: cfg.FlushInterval,
+	}
+	return zapcore.NewCore(encoder, asyncWriter, allLevel)
 }
 
 func getInfoCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
-	infoWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Filename, logSuffix))
+	infoWriter := getLogWriterWithTime(cfg, GetLogFile(cfg.Filename, logSuffix))
 	infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.InfoLevel
 	})
-	return zapcore.NewCore(encoder, zapcore.AddSync(infoWrite), infoLevel)
+
+	asyncWriter := &zapcore.BufferedWriteSyncer{
+		WS:            zapcore.AddSync(infoWriter),
+		FlushInterval: cfg.FlushInterval,
+	}
+	return zapcore.NewCore(encoder, asyncWriter, infoLevel)
 }
 
 func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
-	warnWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Filename, warnLogSuffix))
+	warnWriter := getLogWriterWithTime(cfg, GetLogFile(cfg.Filename, warnLogSuffix))
 	var stacktrace zap.Option
 	warnLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		if !cfg.DisableCaller {
@@ -189,12 +199,17 @@ func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option
 		}
 		return lvl == zapcore.WarnLevel
 	})
-	return zapcore.NewCore(encoder, zapcore.AddSync(warnWrite), warnLevel), stacktrace
+
+	asyncWriter := &zapcore.BufferedWriteSyncer{
+		WS:            zapcore.AddSync(warnWriter),
+		FlushInterval: cfg.FlushInterval,
+	}
+	return zapcore.NewCore(encoder, asyncWriter, warnLevel), stacktrace
 }
 
 func getErrorCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
 	errorFilename := GetLogFile(cfg.Filename, errorLogSuffix)
-	errorWrite := getLogWriterWithTime(cfg, errorFilename)
+	errorWriter := getLogWriterWithTime(cfg, errorFilename)
 	var stacktrace zap.Option
 	errorLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		if !cfg.DisableCaller {
@@ -204,7 +219,12 @@ func getErrorCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Optio
 		}
 		return lvl >= zapcore.ErrorLevel
 	})
-	return zapcore.NewCore(encoder, zapcore.AddSync(errorWrite), errorLevel), stacktrace
+
+	asyncWriter := &zapcore.BufferedWriteSyncer{
+		WS:            zapcore.AddSync(errorWriter),
+		FlushInterval: cfg.FlushInterval,
+	}
+	return zapcore.NewCore(encoder, asyncWriter, errorLevel), stacktrace
 }
 
 // getLogWriterWithTime 按时间(小时)进行切割

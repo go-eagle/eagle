@@ -8,16 +8,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-eagle/eagle/pkg/config"
-
-	otelgorm "github.com/1024casts/gorm-opentelemetry"
 	"gorm.io/driver/clickhouse"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
-
-	// GORM MySQL
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"gorm.io/plugin/opentelemetry/tracing"
+
+	"github.com/go-eagle/eagle/pkg/config"
 )
 
 const (
@@ -54,6 +52,7 @@ type Config struct {
 	WriteTimeout    string
 	ConnMaxLifeTime time.Duration
 	SlowThreshold   time.Duration // 慢查询时长，默认500ms
+	EnableTrace     bool
 }
 
 // New create a or multi database client
@@ -164,15 +163,12 @@ func NewInstance(c *Config) (db *gorm.DB) {
 
 	db.Set("gorm:table_options", "CHARSET=utf8mb4")
 
-	// Initialize otel plugin with options
-	plugin := otelgorm.NewPlugin(
-	// include any options here
-	)
-
 	// set trace
-	err = db.Use(plugin)
-	if err != nil {
-		log.Panicf("using gorm opentelemetry, err: %+v", err)
+	if c.EnableTrace {
+		err = db.Use(tracing.NewPlugin())
+		if err != nil {
+			log.Panicf("using gorm opentelemetry, err: %+v", err)
+		}
 	}
 
 	return db

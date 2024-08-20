@@ -11,3 +11,4 @@ LogRollingPolicy: daily
 LogRotateDate: 1
 LogRotateSize: 1
 LogBackupCount: 7
+FlushInterval: 1s
