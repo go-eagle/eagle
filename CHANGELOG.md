@@ -2,7 +2,7 @@
 
 ## v1.10.0
 
-- feat: support async flush log to dish
+- feat: support async flush log to disk
 - chore: using gorm offical plguin for tracing and metrics
 
 ## v1.9.0
