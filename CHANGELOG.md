@@ -3,6 +3,7 @@
 ## v1.10.0
 
 - feat: support async flush log to disk
+- feat: add re-entry and automatic renewal for redis lock
 - chore: using gorm offical plguin for tracing and metrics
 
 ## v1.9.0
