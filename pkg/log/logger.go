@@ -49,7 +49,7 @@ func loadConf() (ret *Config, err error) {
 	return &cfg, nil
 }
 
-// Init init log
+// Init init log and return a global logger
 func Init(opts ...Option) Logger {
 	var err error
 	cfg, err := loadConf()
@@ -70,6 +70,22 @@ func Init(opts ...Option) Logger {
 	}
 
 	return log
+}
+
+// New create a customer logger
+func New(opts ...Option) Logger {
+	var err error
+	cfg, err := loadConf()
+	if err != nil {
+		panic(fmt.Sprintf("log: New load logger conf err: %v", err))
+	}
+
+	l, err := newLoggerWithCallerSkip(cfg, 1, opts...)
+	if err != nil {
+		_ = fmt.Errorf("log: New newLoggerWithCallerSkip err: %v", err)
+	}
+
+	return l
 }
 
 // GetLogger return a log
