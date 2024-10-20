@@ -245,7 +245,7 @@ func gormConfig(c *Config) *gorm.Config {
 		//将标准输出作为Writer
 		writer = log.New(os.Stdout, "\r\n", log.LstdFlags)
 		// use custom logger
-		if LogWriter == nil {
+		if LogWriter != nil {
 			writer = LogWriter
 		}
 
