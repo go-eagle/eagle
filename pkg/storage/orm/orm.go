@@ -35,6 +35,8 @@ var (
 	DBMap = make(map[string]*gorm.DB)
 	// DBLock database locker
 	DBLock sync.Mutex
+	// logWriter log writer
+	LogWriter logger.Writer
 )
 
 // Config database config
@@ -239,9 +241,17 @@ func gormConfig(c *Config) *gorm.Config {
 	}
 	// 只打印慢查询
 	if c.SlowThreshold > 0 {
+		var writer logger.Writer
+		//将标准输出作为Writer
+		writer = log.New(os.Stdout, "\r\n", log.LstdFlags)
+		// use custom logger
+		if LogWriter != nil {
+			writer = LogWriter
+		}
+
+		// new logger with writer
 		config.Logger = logger.New(
-			//将标准输出作为Writer
-			log.New(os.Stdout, "\r\n", log.LstdFlags),
+			writer,
 			logger.Config{
 				//设定慢查询时间阈值
 				SlowThreshold: c.SlowThreshold, // nolint: golint
