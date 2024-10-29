@@ -1,4 +1,17 @@
-## Changelog
+# Changelog
+
+## v1.10.0
+
+- feat: support async flush log to disk
+- feat: add re-entry and automatic renewal for redis lock
+- feat: add gorm logger
+- chore: using gorm offical plguin for tracing and metrics
+
+## v1.9.0
+
+- feat: support clickhouse
+- chore: upgrade go to v1.22.3
+- chore: optimize log and orm
 
 ## v1.8.2
 - feat: support PostgreSQL

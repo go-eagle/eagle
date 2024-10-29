@@ -23,6 +23,9 @@ const (
 	logSuffix      = ".log"
 	warnLogSuffix  = "_warn.log"
 	errorLogSuffix = "_error.log"
+
+	// defaultSkip zapLogger 包装了一层 zap.Logger，默认要跳过一层
+	defaultSkip = 1
 )
 
 const (
@@ -31,8 +34,6 @@ const (
 	// RotateTimeHourly 按小时切割
 	RotateTimeHourly = "hourly"
 )
-
-const defaultSkip = 1 // zapLogger 包装了一层 zap.Logger，默认要跳过一层
 
 var (
 	hostname string
@@ -83,14 +84,6 @@ func newLoggerWithCallerSkip(cfg *Config, skip int, opts ...Option) (Logger, err
 	return &zapLogger{sugarLogger: buildLogger(cfg, defaultSkip+skip).Sugar()}, nil
 }
 
-// newLogger new logger
-func newLogger(cfg *Config, opts ...Option) (Logger, error) {
-	for _, opt := range opts {
-		opt(cfg)
-	}
-	return newLoggerWithCallerSkip(cfg, 0)
-}
-
 func buildLogger(cfg *Config, skip int) *zap.Logger {
 	logDir = cfg.LoggerDir
 	if strings.HasSuffix(logDir, "/") {
@@ -118,7 +111,7 @@ func buildLogger(cfg *Config, skip int) *zap.Logger {
 	hostname, _ = os.Hostname()
 	option := zap.Fields(
 		zap.String("ip", utils.GetLocalIP()),
-		zap.String("app_id", cfg.Name),
+		zap.String("app_id", cfg.ServiceName),
 		zap.String("instance_id", hostname),
 	)
 	options = append(options, option)
@@ -170,23 +163,33 @@ func buildLogger(cfg *Config, skip int) *zap.Logger {
 }
 
 func getAllCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
-	allWriter := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, logSuffix))
+	allWriter := getLogWriterWithTime(cfg, GetLogFile(cfg.Filename, logSuffix))
 	allLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.FatalLevel
 	})
-	return zapcore.NewCore(encoder, zapcore.AddSync(allWriter), allLevel)
+
+	asyncWriter := &zapcore.BufferedWriteSyncer{
+		WS:            zapcore.AddSync(allWriter),
+		FlushInterval: cfg.FlushInterval,
+	}
+	return zapcore.NewCore(encoder, asyncWriter, allLevel)
 }
 
 func getInfoCore(encoder zapcore.Encoder, cfg *Config) zapcore.Core {
-	infoWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, logSuffix))
+	infoWriter := getLogWriterWithTime(cfg, GetLogFile(cfg.Filename, logSuffix))
 	infoLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		return lvl <= zapcore.InfoLevel
 	})
-	return zapcore.NewCore(encoder, zapcore.AddSync(infoWrite), infoLevel)
+
+	asyncWriter := &zapcore.BufferedWriteSyncer{
+		WS:            zapcore.AddSync(infoWriter),
+		FlushInterval: cfg.FlushInterval,
+	}
+	return zapcore.NewCore(encoder, asyncWriter, infoLevel)
 }
 
 func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
-	warnWrite := getLogWriterWithTime(cfg, GetLogFile(cfg.Name, warnLogSuffix))
+	warnWriter := getLogWriterWithTime(cfg, GetLogFile(cfg.Filename, warnLogSuffix))
 	var stacktrace zap.Option
 	warnLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		if !cfg.DisableCaller {
@@ -196,12 +199,17 @@ func getWarnCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option
 		}
 		return lvl == zapcore.WarnLevel
 	})
-	return zapcore.NewCore(encoder, zapcore.AddSync(warnWrite), warnLevel), stacktrace
+
+	asyncWriter := &zapcore.BufferedWriteSyncer{
+		WS:            zapcore.AddSync(warnWriter),
+		FlushInterval: cfg.FlushInterval,
+	}
+	return zapcore.NewCore(encoder, asyncWriter, warnLevel), stacktrace
 }
 
 func getErrorCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Option) {
-	errorFilename := GetLogFile(cfg.Name, errorLogSuffix)
-	errorWrite := getLogWriterWithTime(cfg, errorFilename)
+	errorFilename := GetLogFile(cfg.Filename, errorLogSuffix)
+	errorWriter := getLogWriterWithTime(cfg, errorFilename)
 	var stacktrace zap.Option
 	errorLevel := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 		if !cfg.DisableCaller {
@@ -211,7 +219,12 @@ func getErrorCore(encoder zapcore.Encoder, cfg *Config) (zapcore.Core, zap.Optio
 		}
 		return lvl >= zapcore.ErrorLevel
 	})
-	return zapcore.NewCore(encoder, zapcore.AddSync(errorWrite), errorLevel), stacktrace
+
+	asyncWriter := &zapcore.BufferedWriteSyncer{
+		WS:            zapcore.AddSync(errorWriter),
+		FlushInterval: cfg.FlushInterval,
+	}
+	return zapcore.NewCore(encoder, asyncWriter, errorLevel), stacktrace
 }
 
 // getLogWriterWithTime 按时间(小时)进行切割

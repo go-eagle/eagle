@@ -45,7 +45,8 @@ func Run(cmd *cobra.Command, args []string) {
 			return
 		} else if len(cmdPath) == 1 {
 			for k, v := range cmdPath {
-				dir = path.Join(v, k)
+				selectedDir = k
+				dir = v
 			}
 		} else {
 			var cmdPaths []string
@@ -71,6 +72,7 @@ func Run(cmd *cobra.Command, args []string) {
 
 	// go run /path/cmd/server
 	fd := exec.Command("go", []string{"run", path.Join(dir, selectedDir)}...)
+	fd.Env = os.Environ()
 	fd.Stdout = os.Stdout
 	fd.Stderr = os.Stderr
 	fd.Dir = dir

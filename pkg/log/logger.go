@@ -13,8 +13,7 @@ import (
 
 // log is A global variable so that log functions can be directly accessed
 var log Logger
-var logger Logger
-var zl *zap.Logger
+var logger *zap.Logger
 
 // Fields Type to pass when we want to call WithFields for structured logging
 type Fields map[string]interface{}
@@ -33,6 +32,11 @@ type Logger interface {
 	Error(args ...interface{})
 	Errorf(format string, args ...interface{})
 
+	// Fatal logs a message at Fatal level
+	// and process will exit with status set to 1.
+	Fatal(args ...interface{})
+	Fatalf(format string, args ...interface{})
+
 	WithFields(keyValues Fields) Logger
 }
 
@@ -45,7 +49,7 @@ func loadConf() (ret *Config, err error) {
 	return &cfg, nil
 }
 
-// Init init log
+// Init init log and return a global logger
 func Init(opts ...Option) Logger {
 	var err error
 	cfg, err := loadConf()
@@ -54,11 +58,10 @@ func Init(opts ...Option) Logger {
 	}
 
 	// new zap logger
-	zl, err = newZapLogger(cfg, opts...)
+	logger, err = newZapLogger(cfg, opts...)
 	if err != nil {
 		_ = fmt.Errorf("init newZapLogger err: %v", err)
 	}
-	_ = zl
 
 	// log 用于支持模块级的方法调用，所以要比其他 Logger 多跳一层
 	log, err = newLoggerWithCallerSkip(cfg, 1, opts...)
@@ -66,22 +69,33 @@ func Init(opts ...Option) Logger {
 		_ = fmt.Errorf("init newLogger err: %v", err)
 	}
 
-	logger, err = newLogger(cfg, opts...)
+	return log
+}
+
+// New create a customer logger
+func New(opts ...Option) Logger {
+	var err error
+	cfg, err := loadConf()
 	if err != nil {
-		_ = fmt.Errorf("init logger err: %v", err)
+		panic(fmt.Sprintf("log: New load logger conf err: %v", err))
 	}
 
-	return log
+	l, err := newLoggerWithCallerSkip(cfg, 1, opts...)
+	if err != nil {
+		_ = fmt.Errorf("log: New newLoggerWithCallerSkip err: %v", err)
+	}
+
+	return l
 }
 
 // GetLogger return a log
 func GetLogger() Logger {
-	return logger
+	return log
 }
 
 // GetZapLogger return raw zap logger
 func GetZapLogger() *zap.Logger {
-	return zl
+	return logger
 }
 
 // WithContext is a logger that can log msg and log span for trace
@@ -89,7 +103,7 @@ func WithContext(ctx context.Context) Logger {
 	//return zap logger
 
 	if span := trace.SpanFromContext(ctx); span != nil {
-		logger := spanLogger{span: span, logger: zl}
+		logger := spanLogger{span: span, logger: logger}
 
 		spanCtx := span.SpanContext()
 		logger.spanFields = []zapcore.Field{
@@ -122,6 +136,11 @@ func Error(args ...interface{}) {
 	log.Error(args...)
 }
 
+// Fatal logger
+func Fatal(args ...interface{}) {
+	log.Fatal(args...)
+}
+
 // Debugf logger
 func Debugf(format string, args ...interface{}) {
 	log.Debugf(format, args...)
@@ -142,13 +161,21 @@ func Errorf(format string, args ...interface{}) {
 	log.Errorf(format, args...)
 }
 
+// Fatalf logger
+func Fatalf(format string, args ...interface{}) {
+	log.Fatalf(format, args...)
+}
+
 // WithFields logger
 // output more field, eg:
-// 		contextLogger := log.WithFields(log.Fields{"key1": "value1"})
-// 		contextLogger.Info("print multi field")
+//
+//	contextLogger := log.WithFields(log.Fields{"key1": "value1"})
+//	contextLogger.Info("print multi field")
+//
 // or more sample to use:
-// 	    log.WithFields(log.Fields{"key1": "value1"}).Info("this is a test log")
-// 	    log.WithFields(log.Fields{"key1": "value1"}).Infof("this is a test log, user_id: %d", userID)
+//
+//	log.WithFields(log.Fields{"key1": "value1"}).Info("this is a test log")
+//	log.WithFields(log.Fields{"key1": "value1"}).Infof("this is a test log, user_id: %d", userID)
 func WithFields(keyValues Fields) Logger {
 	return GetLogger().WithFields(keyValues)
 }

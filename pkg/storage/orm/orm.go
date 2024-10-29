@@ -8,15 +8,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-eagle/eagle/pkg/config"
-
-	otelgorm "github.com/1024casts/gorm-opentelemetry"
 	"gorm.io/driver/clickhouse"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
-	// GORM MySQL
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"gorm.io/plugin/opentelemetry/tracing"
+
+	"github.com/go-eagle/eagle/pkg/config"
 )
 
 const (
@@ -36,6 +35,8 @@ var (
 	DBMap = make(map[string]*gorm.DB)
 	// DBLock database locker
 	DBLock sync.Mutex
+	// logWriter log writer
+	LogWriter logger.Writer
 )
 
 // Config database config
@@ -53,6 +54,7 @@ type Config struct {
 	WriteTimeout    string
 	ConnMaxLifeTime time.Duration
 	SlowThreshold   time.Duration // 慢查询时长，默认500ms
+	EnableTrace     bool
 }
 
 // New create a or multi database client
@@ -163,15 +165,12 @@ func NewInstance(c *Config) (db *gorm.DB) {
 
 	db.Set("gorm:table_options", "CHARSET=utf8mb4")
 
-	// Initialize otel plugin with options
-	plugin := otelgorm.NewPlugin(
-	// include any options here
-	)
-
 	// set trace
-	err = db.Use(plugin)
-	if err != nil {
-		log.Panicf("using gorm opentelemetry, err: %+v", err)
+	if c.EnableTrace {
+		err = db.Use(tracing.NewPlugin())
+		if err != nil {
+			log.Panicf("using gorm opentelemetry, err: %+v", err)
+		}
 	}
 
 	return db
@@ -196,21 +195,18 @@ func LoadConf(name string) (ret *Config, err error) {
 // getDSN return dsn string
 func getDSN(c *Config) string {
 	// default mysql
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=%t&loc=%s&timeout=%s%readTimeout=%s%writeTimeout=%s",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true&loc=Local&timeout=%s&readTimeout=%s&writeTimeout=%s",
 		c.UserName,
 		c.Password,
 		c.Addr,
 		c.Name,
-		true,
-		//"Asia/Shanghai"),
-		"Local",
 		c.Timeout,
 		c.ReadTimeout,
 		c.WriteTimeout,
 	)
 
 	if c.Driver == DriverPostgres {
-		dsn = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable&connect_timeout=%s%statement_timeout=%s",
+		dsn = fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable&connect_timeout=%s&statement_timeout=%s",
 			c.UserName,
 			c.Password,
 			c.Addr,
@@ -226,8 +222,8 @@ func getDSN(c *Config) string {
 			c.Password,
 			c.Addr,
 			c.Name,
+			c.Timeout,
 			c.ReadTimeout,
-			c.WriteTimeout,
 		)
 	}
 
@@ -245,9 +241,17 @@ func gormConfig(c *Config) *gorm.Config {
 	}
 	// 只打印慢查询
 	if c.SlowThreshold > 0 {
+		var writer logger.Writer
+		//将标准输出作为Writer
+		writer = log.New(os.Stdout, "\r\n", log.LstdFlags)
+		// use custom logger
+		if LogWriter != nil {
+			writer = LogWriter
+		}
+
+		// new logger with writer
 		config.Logger = logger.New(
-			//将标准输出作为Writer
-			log.New(os.Stdout, "\r\n", log.LstdFlags),
+			writer,
 			logger.Config{
 				//设定慢查询时间阈值
 				SlowThreshold: c.SlowThreshold, // nolint: golint

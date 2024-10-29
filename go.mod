@@ -1,9 +1,8 @@
 module github.com/go-eagle/eagle
 
-go 1.21
+go 1.22.3
 
 require (
-	github.com/1024casts/gorm-opentelemetry v1.0.1-0.20210805144709-183269b54068
 	github.com/Shopify/sarama v1.19.0
 	github.com/alicebob/miniredis/v2 v2.15.1
 	github.com/cenkalti/backoff/v4 v4.2.1
@@ -74,6 +73,7 @@ require (
 	gorm.io/driver/mysql v1.5.2
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.10
+	gorm.io/plugin/opentelemetry v0.1.4
 )
 
 require (
@@ -172,6 +172,7 @@ require (
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/spf13/afero v1.9.2 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/swaggo/swag v1.7.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect

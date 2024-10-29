@@ -50,21 +50,21 @@ func ToRPCCode(code int) codes.Code {
 	var statusCode codes.Code
 
 	switch code {
-	case ErrInternalServer.code:
+	case ErrInternalServer.Code():
 		statusCode = codes.Internal
-	case ErrInvalidParam.code:
+	case ErrInvalidParam.Code():
 		statusCode = codes.InvalidArgument
-	case ErrUnauthorized.code:
+	case ErrUnauthorized.Code():
 		statusCode = codes.Unauthenticated
-	case ErrNotFound.code:
+	case ErrNotFound.Code():
 		statusCode = codes.NotFound
-	case ErrDeadlineExceeded.code:
+	case ErrDeadlineExceeded.Code():
 		statusCode = codes.DeadlineExceeded
-	case ErrAccessDenied.code:
+	case ErrAccessDenied.Code():
 		statusCode = codes.PermissionDenied
-	case ErrLimitExceed.code:
+	case ErrLimitExceed.Code():
 		statusCode = codes.ResourceExhausted
-	case ErrMethodNotAllowed.code:
+	case ErrMethodNotAllowed.Code():
 		statusCode = codes.Unimplemented
 	default:
 		statusCode = codes.Unknown
