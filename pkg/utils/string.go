@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 	"unsafe"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 // IsEmpty 是否是空字符串
@@ -93,4 +95,18 @@ func StringToBytes(s string) []byte {
 	x := (*[2]uintptr)(unsafe.Pointer(&s))
 	h := [3]uintptr{x[0], x[1], x[1]}
 	return *(*[]byte)(unsafe.Pointer(&h))
+}
+
+// 对于序列化和反序列化场景较多的服务可以使用性能更高的json-iterator
+// https://github.com/json-iterator/go
+var Json = jsoniter.Config{
+	EscapeHTML:             true,
+	SortMapKeys:            true,
+	ValidateJsonRawMessage: true,
+	UseNumber:              true,
+}.Froze()
+
+func Stringify(obj interface{}) string {
+	b, _ := Json.MarshalToString(obj)
+	return b
 }
