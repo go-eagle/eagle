@@ -1,6 +1,6 @@
 module github.com/go-eagle/eagle
 
-go 1.22.3
+go 1.22
 
 require (
 	github.com/Shopify/sarama v1.19.0

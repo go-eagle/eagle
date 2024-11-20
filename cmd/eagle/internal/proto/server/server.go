@@ -74,7 +74,7 @@ func run(cmd *cobra.Command, args []string) {
 	}
 	for _, s := range res {
 		serviceName := strings.Replace(strings.ToLower(s.Service), "service", "", 1)
-		to := path.Join(targetDir, serviceName+"_svc.go")
+		to := path.Join(targetDir, serviceName+"_grpc_svc.go")
 		if _, err := os.Stat(to); !os.IsNotExist(err) {
 			fmt.Fprintf(os.Stderr, "%s already exists: %s\n", s.Service, to)
 			continue

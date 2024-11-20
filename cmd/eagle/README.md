@@ -9,7 +9,7 @@
 
 ## Go 版本要求
 
-GO >= 1.13
+GO >= 1.18
 
 ## 脚手架工具获取
 
@@ -30,7 +30,7 @@ export GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
 下载
 
 ```bash
-go get -u -v github.com/go-eagle/eagle/cmd/eagle
+go install github.com/go-eagle/eagle/cmd/eagle@latest
 ```
 
 windows:

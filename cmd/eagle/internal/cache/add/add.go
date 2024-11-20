@@ -22,7 +22,7 @@ var (
 )
 
 func init() {
-	CmdAdd.Flags().StringVarP(&targetDir, "-target-dir", "t", "internal/cache", "generate target directory")
+	CmdAdd.Flags().StringVarP(&targetDir, "-target-dir", "t", "internal/dal/cache", "generate target directory")
 }
 
 func run(cmd *cobra.Command, args []string) {

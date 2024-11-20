@@ -2,7 +2,6 @@ package add
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 
@@ -41,5 +40,5 @@ func (c *Cache) Generate() error {
 	if _, err := os.Stat(name); !os.IsNotExist(err) {
 		return fmt.Errorf("%s already exists", c.Name)
 	}
-	return ioutil.WriteFile(name, body, 0644)
+	return os.WriteFile(name, body, 0644)
 }
