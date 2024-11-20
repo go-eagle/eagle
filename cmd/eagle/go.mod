@@ -1,6 +1,6 @@
 module github.com/go-eagle/eagle/cmd/eagle
 
-go 1.16
+go 1.22
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.2.12
@@ -8,9 +8,22 @@ require (
 	github.com/emicklei/proto v1.9.1
 	github.com/fatih/color v1.9.0
 	github.com/jedib0t/go-pretty/v6 v6.2.7
-	github.com/mattn/go-colorable v0.1.6 // indirect
 	github.com/spf13/cobra v1.1.3
-	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/mod v0.8.0
+)
+
+require (
+	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
+	github.com/mattn/go-colorable v0.1.6 // indirect
+	github.com/mattn/go-isatty v0.0.12 // indirect
+	github.com/mattn/go-runewidth v0.0.13 // indirect
+	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
+	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
+	golang.org/x/crypto v0.17.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/term v0.15.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0 // indirect
 )

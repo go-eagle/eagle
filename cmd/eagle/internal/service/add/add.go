@@ -12,7 +12,7 @@ import (
 var CmdAdd = &cobra.Command{
 	Use:   "add",
 	Short: "Create a svc file by template",
-	Long:  "Create a svc file using the svc template. Example: eagle svc add UserCache",
+	Long:  "Create a svc file using the svc template. Example: eagle svc add User",
 	Run:   run,
 }
 

@@ -13,6 +13,10 @@ package v1
 import (
     "github.com/gin-gonic/gin"
     "github.com/go-eagle/eagle/pkg/app"
+	"github.com/go-eagle/eagle/pkg/errcode"
+
+	"github.com/go-eagle/eagle-layout/internal/service"
+	"github.com/go-eagle/eagle-layout/internal/types"
 )
 
 // {{.Name}} {{.LcName}}
@@ -23,9 +27,51 @@ import (
 // @Produce  json
 // @Router /{{.UsName}} {{.Method}}
 func {{.Name}}(c *gin.Context) {
-    // here add your code
+	var req types.{{.Name}}Request
+	{{- if .Method eq "GET" }}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		app.Error(c, errcode.ErrInvalidParam.WithDetails(err.Error()))
+		return
+	}
+	{{- end }}
 
-    app.Success(c, gin.H{})
+	{{- if .Method eq "POST" }}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		app.Error(c, errcode.ErrInvalidParam.WithDetails(err.Error()))
+		return
+	}
+	{{- end }}
+
+	{{- if .Method eq "PUT" }}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		app.Error(c, errcode.ErrInvalidParam.WithDetails(err.Error()))
+		return
+	}
+	{{- end }}
+
+	{{- if .Method eq "PATCH" }}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		app.Error(c, errcode.ErrInvalidParam.WithDetails(err.Error()))
+		return
+	}
+	{{- end }}
+
+	{{- if .Method eq "DELETE" }}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		app.Error(c, errcode.ErrInvalidParam.WithDetails(err.Error()))
+		return
+	}
+	{{- end }}
+
+	var ret any
+	// change to your service
+	// ret, err := service.GreeterSvc.Hello(c, req.Name)
+	// if err != nil {
+	// 	app.Error(c, err)
+	// 	return
+	// }
+
+	app.Success(c, ret)
 }
 `
 

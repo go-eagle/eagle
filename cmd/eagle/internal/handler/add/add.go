@@ -3,9 +3,9 @@ package add
 import (
 	"fmt"
 
-	"github.com/go-eagle/eagle/cmd/eagle/internal/utils"
-
 	"github.com/spf13/cobra"
+
+	"github.com/go-eagle/eagle/cmd/eagle/internal/utils"
 )
 
 // CmdCache represents the new command.
@@ -25,7 +25,7 @@ var (
 func init() {
 	CmdAdd.Flags().StringVarP(&targetDir, "target-dir", "t", "internal/handler", "generate target directory")
 	CmdAdd.Flags().StringVarP(&version, "version", "v", "v1", "handler version")
-	CmdAdd.Flags().StringVarP(&method, "method", "m", "get", "http method")
+	CmdAdd.Flags().StringVarP(&method, "method", "m", "GET", "http method, eg: GET, POST, PUT, PATCH, DELETE")
 }
 
 func run(cmd *cobra.Command, args []string) {

@@ -22,13 +22,15 @@ type {{.Name}}Service interface {
 }
 
 type {{.LcName}}Service struct {
-	repo repository.Repository
+	repo repository.{{.Name}}Repo
 }
 
 var _ {{.Name}}Service = (*{{.LcName}}Service)(nil)
 
-func new{{.Name}}Service(svc *service) *{{.LcName}}Service {
-	return &{{.LcName}}Service{repo: svc.repo}
+func New{{.Name}}Service(repo repository.{{.Name}}Repo) {{.Name}}Service {
+	return &{{.LcName}}Service{
+		repo: repo,
+	}
 }
 
 // Hello .

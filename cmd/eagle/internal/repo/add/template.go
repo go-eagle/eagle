@@ -13,24 +13,21 @@ package repository
 
 import (
 	"context"
-	"fmt"
-	"strings"
 	"time"
 
+	localCache "github.com/go-eagle/eagle/pkg/cache"
+	"github.com/go-eagle/eagle/pkg/encoding"
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
+	"golang.org/x/sync/singleflight"
 	"gorm.io/gorm"
 
-	"{{.ModName}}/internal/cache"
-	"{{.ModName}}/internal/model"
-)
-
-var (
-	_table{{.Name}}Name   = (&model.{{.Name}}Model{}).TableName()
-	_get{{.Name}}SQL      = "SELECT * FROM %s WHERE id = ?"
-	_batchGet{{.Name}}SQL = "SELECT * FROM %s WHERE id IN (%s)"
+	"{{.ModName}}/internal/dal"
+	"{{.ModName}}/internal/dal/cache"
+	"{{.ModName}}/internal/dal/db/dao"
+	"{{.ModName}}/internal/dal/db/model"
 )
 
 var _ {{.Name}}Repo = (*{{.LcName}}Repo)(nil)
@@ -44,25 +41,29 @@ type {{.Name}}Repo interface {
 }
 
 type {{.LcName}}Repo struct {
-	db     *gorm.DB
-	tracer trace.Tracer
+	db         *dal.DBClient
+	tracer 		 trace.Tracer
 {{- if eq .WithCache true }}
-	cache  cache.{{.Name}}Cache
+	cache  		 cache.{{.Name}}Cache
 {{- end }}
+	localCache localCache.Cache
+	sg         singleflight.Group
 }
 
 {{- if .WithCache }}
 // New{{.Name}} new a repository and return
-func New{{.Name}}(db *gorm.DB, cache cache.{{.Name}}Cache) {{.Name}}Repo {
+func New{{.Name}}(db *dal.DBClient, cache cache.{{.Name}}Cache) {{.Name}}Repo {
 	return &{{.LcName}}Repo{
-		db:     db,
-		tracer: otel.Tracer("{{.LcName}}"),
-		cache:  cache,
+		db:     		db,
+		tracer: 		otel.Tracer("{{.LcName}}"),
+		cache:  		cache,
+		localCache: localCache.NewMemoryCache("local:{{.LcName}}:", encoding.JSONEncoding{}),
+		sg:         singleflight.Group{},
 	}
 }
 {{- else }}
 // New{{.Name}} new a repository and return
-func New{{.Name}}(db *gorm.DB) {{.Name}}Repo {
+func New{{.Name}}(db *dal.DBClient) {{.Name}}Repo {
 	return &{{.LcName}}Repo{
 		db:     db,
 		tracer: otel.Tracer("{{.LcName}}Repo"),
@@ -72,7 +73,11 @@ func New{{.Name}}(db *gorm.DB) {{.Name}}Repo {
 
 // Create{{.Name}} create a item
 func (r *{{.LcName}}Repo) Create{{.Name}}(ctx context.Context, data *model.{{.Name}}Model) (id int64, err error) {
-	err = r.db.WithContext(ctx).Create(&data).Error
+	if data == nil {
+      return 0, errors.New("[repo] Create{{.Name}} data cannot be nil")
+  }
+	
+	err = dao.{{.Name}}Model.WithContext(ctx).Create(data)
 	if err != nil {
 		return 0, errors.Wrap(err, "[repo] create {{.Name}} err")
 	}
@@ -82,11 +87,14 @@ func (r *{{.LcName}}Repo) Create{{.Name}}(ctx context.Context, data *model.{{.Na
 
 // Update{{.Name}} update item
 func (r *{{.LcName}}Repo) Update{{.Name}}(ctx context.Context, id int64, data *model.{{.Name}}Model) error {
-	item, err := r.Get{{.Name}}(ctx, id)
-	if err != nil {
-		return errors.Wrapf(err, "[repo] update {{.Name}} err: %v", err)
+	if id == 0 {
+		return errors.New("[repo] Update{{.Name}} id cannot be equal to 0")
 	}
-	err = r.db.Model(&item).Updates(data).Error
+	if data == nil {
+		return errors.New("[repo] Update{{.Name}} data cannot be nil")
+	}
+	
+	_, err := dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.Eq(id)).Updates(data)
 	if err != nil {
 		return err
 	}
@@ -100,40 +108,78 @@ func (r *{{.LcName}}Repo) Update{{.Name}}(ctx context.Context, id int64, data *m
 
 // Get{{.Name}} get a record
 func (r *{{.LcName}}Repo) Get{{.Name}}(ctx context.Context, id int64) (ret *model.{{.Name}}Model, err error) {
-{{- if .WithCache }}
-	// read cache
-	item, err := r.cache.Get{{.Name}}Cache(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	if item != nil {
-		return item, nil
-	}
-{{- end }}
-	// read db
-	data := new(model.{{.Name}}Model)
-	err = r.db.WithContext(ctx).Raw(fmt.Sprintf(_get{{.Name}}SQL, _table{{.Name}}Name), id).Scan(&data).Error
-	if err != nil {
-		return
+	if id == 0 {
+		return nil, errors.New("[repo] Get{{.Name}} id cannot be equal to 0")
 	}
 
 {{- if .WithCache }}
-	// write cache
-	if data.ID > 0 {
-		err = r.cache.Set{{.Name}}Cache(ctx, id, data, 5*time.Minute)
-		if err != nil {
-			return nil, err
-		}
+	// get data from local cache
+	err = r.localCache.Get(ctx, cast.ToString(id), &ret)
+	if err != nil {
+		return nil, err
 	}
+	if ret != nil && ret.ID > 0 {
+		return ret, nil
+	}
+
+	// read redis cache
+	ret, err = r.cache.Get{{.Name}}Cache(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if ret != nil && ret.ID > 0 {
+		return ret, nil
+	}
+
+	// get data from db
+	// 避免缓存击穿(瞬间有大量请求过来)
+	val, err, _ := r.sg.Do("sg:{{.LcName}}:"+cast.ToString(id), func() (interface{}, error) {
+		// read db or rpc
+		data, err := dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.Eq(id)).First()
+		if err != nil {
+			// cache not found and set empty cache to avoid 缓存穿透
+			// Note: 如果缓存空数据太多，会大大降低缓存命中率，可以改为使用布隆过滤器
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				r.cache.SetCacheWithNotFound(ctx, id)
+			}
+			return nil, errors.Wrapf(err, "[repo] get {{.Name}} from db error, id: %d", id)
+		}
+
+		// write cache
+		if data != nil && data.ID > 0 {
+			// write redis
+			err = r.cache.Set{{.Name}}Cache(ctx, id, data, 5*time.Minute)
+			if err != nil {
+				return nil, errors.WithMessage(err, "[repo] Get{{.Name}} Set{{.Name}}Cache error")
+			}
+
+			// write local cache
+			err = r.localCache.Set(ctx, cast.ToString(id), data, 2*time.Minute)
+			if err != nil {
+				return nil, errors.WithMessage(err, "[repo] Get{{.Name}} localCache set error")
+			}
+		}
+		return data, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return val.(*model.{{.Name}}Model), nil
+{{- else }}
+	// read db
+	ret, err = dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.In(ids...)).Find()
+	if err != nil {
+		return nil, err
+	}
+	return ret, nil
 {{- end }}
-	return data, nil
 }
 
 // BatchGet{{.Name}} batch get items
 func (r *{{.LcName}}Repo) BatchGet{{.Name}}(ctx context.Context, ids []int64) (ret []*model.{{.Name}}Model, err error) {
 {{- if .WithCache }}
 	// read cache
-	idsStr := cast.ToStringSlice(ids)
 	itemMap, err := r.cache.MultiGet{{.Name}}Cache(ctx, ids)
 	if err != nil {
 		return nil, err
@@ -149,9 +195,7 @@ func (r *{{.LcName}}Repo) BatchGet{{.Name}}(ctx context.Context, ids []int64) (r
 	}
 	// get missed data
 	if len(missedID) > 0 {
-		var missedData []*model.{{.Name}}Model
-		_sql := fmt.Sprintf(_batchGet{{.Name}}SQL, _table{{.Name}}Name, strings.Join(idsStr, ","))
-		err = r.db.WithContext(ctx).Raw(_sql).Scan(&missedData).Error
+		missedData, err := dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.In(ids...)).Find()
 		if err != nil {
 			// you can degrade to ignore error
 			return nil, err
@@ -169,7 +213,7 @@ func (r *{{.LcName}}Repo) BatchGet{{.Name}}(ctx context.Context, ids []int64) (r
 {{- else }}
 	// read db
 	items := make([]*model.{{.Name}}Model, 0)
-	err = r.db.WithContext(ctx).Raw(fmt.Sprintf(_batchGet{{.Name}}SQL, _table{{.Name}}Name), ids).Scan(&items).Error
+	items, err := dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.In(ids...)).Find()
 	if err != nil {
 		return
 	}

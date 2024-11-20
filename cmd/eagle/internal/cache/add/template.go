@@ -10,7 +10,7 @@ import (
 const cacheTemplate = `
 package cache
 
-//go:generate mockgen -source=internal/cache/{{.UsName}}_cache.go -destination=internal/mock/{{.UsName}}_cache_mock.go  -package mock
+//go:generate mockgen -source=internal/dal/cache/{{.UsName}}_cache.go -destination=internal/mock/{{.UsName}}_cache_mock.go  -package mock
 
 import (
 	"context"
@@ -20,14 +20,15 @@ import (
 	"github.com/go-eagle/eagle/pkg/cache"
 	"github.com/go-eagle/eagle/pkg/encoding"
 	"github.com/go-eagle/eagle/pkg/log"
-	"github.com/go-eagle/eagle/pkg/redis"
+	"github.com/go-eagle/eagle/pkg/utils"
+	"github.com/redis/go-redis/v9"
 
-	"{{.ModName}}/internal/model"
+	"{{.ModName}}/internal/dal/db/model"
 )
 
-const (
+var (
 	// Prefix{{.Name}}CacheKey cache prefix
-	Prefix{{.Name}}CacheKey = "{{.ColonName}}:%d"
+	Prefix{{.Name}}CacheKey = utils.ConcatString(prefix, "{{.ColonName}}:%d")
 )
 
 // {{.Name}}Cache define cache interface
@@ -37,6 +38,7 @@ type {{.Name}}Cache interface {
 	MultiGet{{.Name}}Cache(ctx context.Context, ids []int64) (map[string]*model.{{.Name}}Model, error)
 	MultiSet{{.Name}}Cache(ctx context.Context, data []*model.{{.Name}}Model, duration time.Duration) error
 	Del{{.Name}}Cache(ctx context.Context, id int64) error
+	SetCacheWithNotFound(ctx context.Context, id int64) error
 }
 
 // {{.LcName}}Cache define cache struct
@@ -45,11 +47,11 @@ type {{.LcName}}Cache struct {
 }
 
 // New{{.Name}}Cache new a cache
-func New{{.Name}}Cache() {{.Name}}Cache {
+func New{{.Name}}Cache(rdb *redis.Client) {{.Name}}Cache {
 	jsonEncoding := encoding.JSONEncoding{}
 	cachePrefix := ""
 	return &{{.LcName}}Cache{
-		cache: cache.NewRedisCache(redis.RedisClient, cachePrefix, jsonEncoding, func() interface{} {
+		cache: cache.NewRedisCache(rdb, cachePrefix, jsonEncoding, func() interface{} {
 			return &model.{{.Name}}Model{}
 		}),
 	}
@@ -78,7 +80,7 @@ func (c *{{.LcName}}Cache) Get{{.Name}}Cache(ctx context.Context, id int64) (dat
 	cacheKey := c.Get{{.Name}}CacheKey(id)
 	err = c.cache.Get(ctx, cacheKey, &data)
 	if err != nil {
-		log.WithContext(ctx).Warnf("get err from redis, err: %+v", err)
+		log.WithContext(ctx).Warnf("[cache] Get{{.Name}}Cache err from redis, err: %+v", err)
 		return nil, err
 	}
 	return data, nil

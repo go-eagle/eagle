@@ -2,7 +2,6 @@ package add
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 
@@ -41,5 +40,5 @@ func (r *Repo) Generate() error {
 	if _, err := os.Stat(name); !os.IsNotExist(err) {
 		return fmt.Errorf("%s already exists", r.Name)
 	}
-	return ioutil.WriteFile(name, body, 0644)
+	return os.WriteFile(name, body, 0644)
 }
