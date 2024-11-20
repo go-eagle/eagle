@@ -28,7 +28,6 @@ import (
 // @Router /{{.UsName}} {{.Method}}
 func {{.Name}}(c *gin.Context) {
 	var req types.{{.Name}}Request
-
 	{{- if .Method eq "GET" }}
 	if err := c.ShouldBindQuery(&req); err != nil {
 		app.Error(c, errcode.ErrInvalidParam.WithDetails(err.Error()))

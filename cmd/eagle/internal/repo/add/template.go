@@ -13,8 +13,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
-	"strings"
 	"time"
 
 	localCache "github.com/go-eagle/eagle/pkg/cache"
@@ -75,7 +73,11 @@ func New{{.Name}}(db *dal.DBClient) {{.Name}}Repo {
 
 // Create{{.Name}} create a item
 func (r *{{.LcName}}Repo) Create{{.Name}}(ctx context.Context, data *model.{{.Name}}Model) (id int64, err error) {
-	err = dao.{{.Name}}Model.WithContext(ctx).Create(&data).Error
+	if data == nil {
+      return 0, errors.New("[repo] Create{{.Name}} data cannot be nil")
+  }
+	
+	err = dao.{{.Name}}Model.WithContext(ctx).Create(data)
 	if err != nil {
 		return 0, errors.Wrap(err, "[repo] create {{.Name}} err")
 	}
@@ -85,6 +87,13 @@ func (r *{{.LcName}}Repo) Create{{.Name}}(ctx context.Context, data *model.{{.Na
 
 // Update{{.Name}} update item
 func (r *{{.LcName}}Repo) Update{{.Name}}(ctx context.Context, id int64, data *model.{{.Name}}Model) error {
+	if id == 0 {
+		return errors.New("[repo] Update{{.Name}} id cannot be equal to 0")
+	}
+	if data == nil {
+		return errors.New("[repo] Update{{.Name}} data cannot be nil")
+	}
+	
 	_, err := dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.Eq(id)).Updates(data)
 	if err != nil {
 		return err
@@ -99,37 +108,10 @@ func (r *{{.LcName}}Repo) Update{{.Name}}(ctx context.Context, id int64, data *m
 
 // Get{{.Name}} get a record
 func (r *{{.LcName}}Repo) Get{{.Name}}(ctx context.Context, id int64) (ret *model.{{.Name}}Model, err error) {
-{{- if .WithCache }}
-	// read cache
-	item, err := r.cache.Get{{.Name}}Cache(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	if item != nil {
-		return item, nil
-	}
-{{- end }}
-	// read db
-	data := new(model.{{.Name}}Model)
-	err = r.db.WithContext(ctx).Raw(fmt.Sprintf(_get{{.Name}}SQL, _table{{.Name}}Name), id).Scan(&data).Error
-	if err != nil {
-		return
+	if id == 0 {
+		return nil, errors.New("[repo] Get{{.Name}} id cannot be equal to 0")
 	}
 
-{{- if .WithCache }}
-	// write cache
-	if data.ID > 0 {
-		err = r.cache.Set{{.Name}}Cache(ctx, id, data, 5*time.Minute)
-		if err != nil {
-			return nil, err
-		}
-	}
-{{- end }}
-	return data, nil
-}
-
-// BatchGet{{.Name}} batch get items
-func (r *{{.LcName}}Repo) BatchGet{{.Name}}(ctx context.Context, ids []int64) (ret []*model.{{.Name}}Model, err error) {
 {{- if .WithCache }}
 	// get data from local cache
 	err = r.localCache.Get(ctx, cast.ToString(id), &ret)
@@ -191,6 +173,51 @@ func (r *{{.LcName}}Repo) BatchGet{{.Name}}(ctx context.Context, ids []int64) (r
 		return nil, err
 	}
 	return ret, nil
+{{- end }}
+}
+
+// BatchGet{{.Name}} batch get items
+func (r *{{.LcName}}Repo) BatchGet{{.Name}}(ctx context.Context, ids []int64) (ret []*model.{{.Name}}Model, err error) {
+{{- if .WithCache }}
+	// read cache
+	itemMap, err := r.cache.MultiGet{{.Name}}Cache(ctx, ids)
+	if err != nil {
+		return nil, err
+	}
+	var missedID []int64
+	for _, v := range ids {
+		item, ok := itemMap[cast.ToString(v)]
+		if !ok {
+			missedID = append(missedID, v)
+			continue
+		}
+		ret = append(ret, item)
+	}
+	// get missed data
+	if len(missedID) > 0 {
+		missedData, err := dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.In(ids...)).Find()
+		if err != nil {
+			// you can degrade to ignore error
+			return nil, err
+		}
+		if len(missedData) > 0 {
+			ret = append(ret, missedData...)
+			err = r.cache.MultiSet{{.Name}}Cache(ctx, missedData, 5*time.Minute)
+			if err != nil {
+				// you can degrade to ignore error
+				return nil, err
+			}
+		}
+	}
+	return ret, nil
+{{- else }}
+	// read db
+	items := make([]*model.{{.Name}}Model, 0)
+	items, err := dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.In(ids...)).Find()
+	if err != nil {
+		return
+	}
+	return items, nil
 {{- end }}
 }
 `

@@ -27,8 +27,8 @@ type {{.LcName}}Service struct {
 
 var _ {{.Name}}Service = (*{{.LcName}}Service)(nil)
 
-func New{{.Name}}Service(repo repository.{{.Name}}Repo) {{.LcName}}Service {
-	return &{{.LcName}}{
+func New{{.Name}}Service(repo repository.{{.Name}}Repo) {{.Name}}Service {
+	return &{{.LcName}}Service{
 		repo: repo,
 	}
 }

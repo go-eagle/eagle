@@ -26,7 +26,7 @@ import (
 	"{{.ModName}}/internal/dal/db/model"
 )
 
-const (
+var (
 	// Prefix{{.Name}}CacheKey cache prefix
 	Prefix{{.Name}}CacheKey = utils.ConcatString(prefix, "{{.ColonName}}:%d")
 )
