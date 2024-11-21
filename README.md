@@ -82,13 +82,8 @@ go get github.com/go-eagle/eagle/cmd/eagle
 ## Quick Start
 
 ```bash
-# only gen a server with http
-eagle new eagle-demo
-# or 
-eagle new github.com/foo/eagle-demo
-
 # gen a server with http and gRPC
-eagle new -b=main eagle-demo
+eagle new eagle-demo
 # or 
 eagle new github.com/foo/eagle-demo
 
@@ -116,6 +111,7 @@ make run
 ## Discussion
 
 - Issue: https://github.com/go-eagle/eagle/issues
+- Discord: https://discord.com/channels/968369660900814869
 
 ## Microservice Roadmap
 

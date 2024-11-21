@@ -30,13 +30,13 @@ func init() {
 		repoURL = "https://github.com/go-eagle/eagle-layout.git"
 	}
 
-	// default http, only include http server
-	branch = "http"
+	// default main, you can change to other branch, eg: http
+	branch = "main"
 	// default timeout
 	timeout = "60s"
 
 	CmdNew.Flags().StringVarP(&repoURL, "repo-url", "r", repoURL, "layout repo")
-	CmdNew.Flags().StringVarP(&branch, "branch", "b", branch, "default is http server, empty is http and gRPC")
+	CmdNew.Flags().StringVarP(&branch, "branch", "b", branch, "default is main branch, including http and gRPC")
 	CmdNew.Flags().StringVarP(&timeout, "timeout", "t", timeout, "request timeout time")
 }
 
