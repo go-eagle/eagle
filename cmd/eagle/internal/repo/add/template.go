@@ -45,14 +45,14 @@ type {{.LcName}}Repo struct {
 	tracer 		 trace.Tracer
 {{- if eq .WithCache true }}
 	cache  		 cache.{{.Name}}Cache
-{{- end }}
 	localCache localCache.Cache
 	sg         singleflight.Group
+{{- end }}
 }
 
 {{- if .WithCache }}
-// New{{.Name}} new a repository and return
-func New{{.Name}}(db *dal.DBClient, cache cache.{{.Name}}Cache) {{.Name}}Repo {
+// New{{.Name}}Repo new a repository and return
+func New{{.Name}}Repo(db *dal.DBClient, cache cache.{{.Name}}Cache) {{.Name}}Repo {
 	return &{{.LcName}}Repo{
 		db:     		db,
 		tracer: 		otel.Tracer("{{.LcName}}"),
@@ -62,8 +62,8 @@ func New{{.Name}}(db *dal.DBClient, cache cache.{{.Name}}Cache) {{.Name}}Repo {
 	}
 }
 {{- else }}
-// New{{.Name}} new a repository and return
-func New{{.Name}}(db *dal.DBClient) {{.Name}}Repo {
+// New{{.Name}}Repo new a repository and return
+func New{{.Name}}Repo(db *dal.DBClient) {{.Name}}Repo {
 	return &{{.LcName}}Repo{
 		db:     db,
 		tracer: otel.Tracer("{{.LcName}}Repo"),
@@ -135,7 +135,7 @@ func (r *{{.LcName}}Repo) Get{{.Name}}(ctx context.Context, id int64) (ret *mode
 	// 避免缓存击穿(瞬间有大量请求过来)
 	val, err, _ := r.sg.Do("sg:{{.LcName}}:"+cast.ToString(id), func() (interface{}, error) {
 		// read db or rpc
-		data, err := dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.Eq(id)).First()
+		data, err := dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.Eq(id)).Last()
 		if err != nil {
 			// cache not found and set empty cache to avoid 缓存穿透
 			// Note: 如果缓存空数据太多，会大大降低缓存命中率，可以改为使用布隆过滤器
@@ -168,7 +168,7 @@ func (r *{{.LcName}}Repo) Get{{.Name}}(ctx context.Context, id int64) (ret *mode
 	return val.(*model.{{.Name}}Model), nil
 {{- else }}
 	// read db
-	ret, err = dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.In(ids...)).Find()
+	ret, err = dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.Eq(id)).Last()
 	if err != nil {
 		return nil, err
 	}
@@ -212,8 +212,8 @@ func (r *{{.LcName}}Repo) BatchGet{{.Name}}(ctx context.Context, ids []int64) (r
 	return ret, nil
 {{- else }}
 	// read db
-	items := make([]*model.{{.Name}}Model, 0)
-	items, err := dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.In(ids...)).Find()
+	items := make([]*model.{{.Name}}Model, len(ids))
+	items, err = dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.In(ids...)).Find()
 	if err != nil {
 		return
 	}
