@@ -9,7 +9,7 @@ require (
 	github.com/fatih/color v1.9.0
 	github.com/jedib0t/go-pretty/v6 v6.2.7
 	github.com/spf13/cobra v1.1.3
-	golang.org/x/mod v0.8.0
+	golang.org/x/mod v0.17.0
 )
 
 require (
@@ -21,9 +21,9 @@ require (
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	golang.org/x/crypto v0.17.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
-	golang.org/x/term v0.15.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/crypto v0.31.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/term v0.27.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0 // indirect
 )
