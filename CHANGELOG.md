@@ -6,6 +6,7 @@
 - feat: add re-entry and automatic renewal for redis lock
 - feat: add gorm logger
 - chore: using gorm offical plguin for tracing and metrics
+- chore: improve cmd[new]
 
 ## v1.9.0
 
