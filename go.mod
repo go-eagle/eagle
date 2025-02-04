@@ -118,7 +118,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.2 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/glog v1.1.0 // indirect
+	github.com/golang/glog v1.2.4 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-hclog v1.0.0 // indirect
