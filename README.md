@@ -29,7 +29,7 @@ English | [中文文档](https://github.com/go-eagle/eagle/blob/master/README_ZH
 - Metrics monitoring [prometheus](https://github.com/prometheus/client_golang/prometheus), [grafana](https://github.com/grafana/grafana)
 - Distributed Tracing [opentelemetry](https://github.com/open-telemetry/opentelemetry-go)
 - Service registration and discovery [etcd](https://github.com/etcd-io/etcd) | [consul](https://github.com/hashicorp/consul) | [nacos](https://github.com/alibaba/nacos)
-- Unit Test [GoConvey](http://goconvey.co/)
+- Unit Test [GoConvey](https://github.com/smartystreets/goconvey)
 - Lint [GolangCI-lint](https://golangci.com/)
 - CI/CD [GitHub Actions](https://github.com/actions), [docker](https://www.docker.com/), [kubernetes](https://github.com/kubernetes/kubernetes)
 
