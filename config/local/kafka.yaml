@@ -1,0 +1,22 @@
+default: # 实例名称
+  Version: "2.8.1"
+  RequiredAcks: 1
+  Topic: "test-topic"
+  ConsumeTopic:
+    - "test-topic1"
+    - "test-topic2"
+  Brokers:
+    - "localhost:9092"
+  GroupID: "test-group"
+  Partitioner: "hash"
+
+order: # 另一个实例配置
+  Version: "2.8.1"
+  RequiredAcks: 1
+  Topic: "order-topic"
+  ConsumeTopic:
+    - "order-topic"
+  Brokers:
+    - "localhost:9092"
+  GroupID: "order-group"
+  Partitioner: "random"

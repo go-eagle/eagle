@@ -1,74 +1,103 @@
 package kafka
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
-	"time"
 
-	"github.com/Shopify/sarama"
-
+	"github.com/IBM/sarama"
 	logger "github.com/go-eagle/eagle/pkg/log"
 )
 
 // Producer kafka producer
 type Producer struct {
 	asyncProducer sarama.AsyncProducer
-	topic         string
 	enqueued      int
+	logger        logger.Logger
 }
 
 // NewProducer create producer
 // nolint
-func NewProducer(config *sarama.Config, logger *log.Logger, topic string, brokers []string) *Producer {
-	sarama.Logger = logger
+func NewProducer(conf *Conf, logger logger.Logger) (*Producer, error) {
+	config := sarama.NewConfig()
+	config.Producer.Return.Errors = true
+	config.Producer.RequiredAcks = sarama.RequiredAcks(conf.RequiredAcks)
+	config.Producer.Retry.Max = 3
+	config.Producer.Partitioner = getPartitoner(conf)
 
-	// Start a new async producer
-	producer, err := sarama.NewAsyncProducer(brokers, config)
-	if err != nil {
-		panic(err)
+	if err := config.Validate(); err != nil {
+		return nil, fmt.Errorf("kafka: producer config validate error: %v", err)
 	}
 
-	log.Println("Kafka AsyncProducer up and running!")
+	// Start a new async producer
+	producer, err := sarama.NewAsyncProducer(conf.Brokers, config)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Println("kafka: AsyncProducer up and running!")
 
 	p := &Producer{
 		asyncProducer: producer,
-		topic:         topic,
+		logger:        logger,
 	}
 
 	go p.asyncDealMessage()
 
-	return p
+	return p, nil
 }
 
 func (p *Producer) asyncDealMessage() {
 	for {
 		select {
 		case res := <-p.asyncProducer.Successes():
-			logger.Info("push msg success", "topic is", res.Topic, "partition is ", res.Partition, "offset is ", res.Offset)
+			p.logger.Info("kafka: push msg success", "topic is", res.Topic, "partition is ", res.Partition, "offset is ", res.Offset)
 		case err := <-p.asyncProducer.Errors():
-			logger.Info("push msg failed", "err is ", err.Error())
+			p.logger.Error("kafka: push msg failed", "err is ", err.Error())
 		}
 	}
 }
 
 // Publish push data to queue
-func (p *Producer) Publish(message string) {
+func (p *Producer) Publish(ctx context.Context, topic string, message string) error {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt)
 
 	for {
-		time.Sleep(5 * time.Second)
-		message := &sarama.ProducerMessage{Topic: p.topic, Value: sarama.StringEncoder(message)}
+		message := &sarama.ProducerMessage{
+			Topic: topic,
+			Value: sarama.StringEncoder(message),
+		}
 
 		select {
 		case p.asyncProducer.Input() <- message:
 			p.enqueued++
-			logger.Infof("New message publish:  %s", message.Value)
+			p.logger.Infof("kafka: New message publish:  %s", message.Value)
 		case <-signals:
 			p.asyncProducer.AsyncClose() // Trigger a shutdown of the producer.
-			logger.Infof("Kafka AsyncProducer finished with %d messages produced.", p.enqueued)
-			return
+			p.logger.Infof("kafka: AsyncProducer finished with %d messages produced.", p.enqueued)
+			return nil
 		}
+	}
+}
+
+// Close closes the producer
+func (p *Producer) Close() error {
+	return p.asyncProducer.Close()
+}
+
+// getPartitoner returns the partitioner constructor based on the configuration
+func getPartitoner(conf *Conf) sarama.PartitionerConstructor {
+	switch conf.Partitioner {
+	case "random":
+		return sarama.NewRandomPartitioner
+	case "roundrobin":
+		return sarama.NewRoundRobinPartitioner
+	case "hash":
+		return sarama.NewHashPartitioner
+	default:
+		return sarama.NewRandomPartitioner
 	}
 }
