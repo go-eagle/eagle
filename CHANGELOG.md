@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.11.0
+
+- chore: improve kakfa component
+
 ## v1.10.0
 
 - feat: support async flush log to disk
