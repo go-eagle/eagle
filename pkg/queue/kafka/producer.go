@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/Shopify/sarama"
+	"github.com/IBM/sarama"
 	logger "github.com/go-eagle/eagle/pkg/log"
 )
 

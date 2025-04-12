@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Shopify/sarama"
+	"github.com/IBM/sarama"
 )
 
 // ConsumerGroupHandler represents the sarama consumer group
