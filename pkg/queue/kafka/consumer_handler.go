@@ -11,12 +11,12 @@ import (
 type ConsumerGroupHandler struct{}
 
 // Setup is run before consumer start consuming, is normally used to setup things such as database connections
-func (ConsumerGroupHandler) Setup(_ sarama.ConsumerGroupSession) error {
+func (h ConsumerGroupHandler) Setup(_ sarama.ConsumerGroupSession) error {
 	return nil
 }
 
 // Cleanup is run at the end of a session, once all ConsumeClaim goroutines have exited
-func (ConsumerGroupHandler) Cleanup(_ sarama.ConsumerGroupSession) error {
+func (h ConsumerGroupHandler) Cleanup(_ sarama.ConsumerGroupSession) error {
 	return nil
 }
 
