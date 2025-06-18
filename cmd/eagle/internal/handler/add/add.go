@@ -43,6 +43,7 @@ func run(cmd *cobra.Command, args []string) {
 		Path:    targetDir,
 		Version: version,
 		Method:  method,
+		ModName: utils.ModName(),
 	}
 	if err := c.Generate(); err != nil {
 		fmt.Println(err)

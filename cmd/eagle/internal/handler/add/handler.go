@@ -16,6 +16,7 @@ type Handler struct {
 	Path    string
 	Version string
 	Method  string
+	ModName string
 }
 
 // Generate generate a Handler template.

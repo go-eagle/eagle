@@ -2,9 +2,8 @@ package add
 
 import (
 	"bytes"
+	"html/template"
 	"strings"
-
-	"github.com/alecthomas/template"
 )
 
 const handlerTemplate = `
@@ -15,9 +14,21 @@ import (
     "github.com/go-eagle/eagle/pkg/app"
 	"github.com/go-eagle/eagle/pkg/errcode"
 
-	"github.com/go-eagle/eagle-layout/internal/service"
-	"github.com/go-eagle/eagle-layout/internal/types"
+	// "{{.ModName}}/internal/service"
+	"{{.ModName}}/internal/types"
 )
+
+// {{.Name}}Handler {{.LcName}}
+type {{.Name}}Handler struct {
+	// here you can add your service
+	// example:
+	// 	UserService service.UserService
+}
+
+// New{{.Name}}Handler create a new {{.Name}}Handler
+func New{{.Name}}Handler() *{{.Name}}Handler {
+	return &{{.Name}}Handler{}
+}
 
 // {{.Name}} {{.LcName}}
 // @Summary {{.LcName}}
@@ -26,37 +37,37 @@ import (
 // @Accept  json
 // @Produce  json
 // @Router /{{.UsName}} {{.Method}}
-func {{.Name}}(c *gin.Context) {
+func (h *{{.Name}}Handler) {{.Name}}(c *gin.Context) {
 	var req types.{{.Name}}Request
-	{{- if .Method eq "GET" }}
+	{{- if eq .Method "GET" }}
 	if err := c.ShouldBindQuery(&req); err != nil {
 		app.Error(c, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
 	{{- end }}
 
-	{{- if .Method eq "POST" }}
+	{{- if eq .Method "POST" }}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		app.Error(c, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
 	{{- end }}
 
-	{{- if .Method eq "PUT" }}
+	{{- if eq .Method "PUT" }}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		app.Error(c, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
 	{{- end }}
 
-	{{- if .Method eq "PATCH" }}
+	{{- if eq .Method "PATCH" }}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		app.Error(c, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
 	{{- end }}
 
-	{{- if .Method eq "DELETE" }}
+	{{- if eq .Method "DELETE" }}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		app.Error(c, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
