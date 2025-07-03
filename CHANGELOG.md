@@ -3,6 +3,7 @@
 ## v1.11.0
 
 - chore: improve kakfa component
+- chore: improve route not found method
 
 ## v1.10.0
 
