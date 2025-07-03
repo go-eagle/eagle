@@ -97,7 +97,20 @@ func (r *Response) Error(c *gin.Context, err error) {
 
 // RouteNotFound 未找到相关路由
 func RouteNotFound(c *gin.Context) {
-	c.String(http.StatusNotFound, "the route not found")
+	accept := c.GetHeader("Accept")
+	if accept == "" {
+		accept = c.ContentType()
+	}
+	if accept == "application/json" || accept == "application/json; charset=utf-8" {
+		response := Response{
+			Code:    http.StatusNotFound,
+			Message: "the route not found",
+			Data:    gin.H{},
+		}
+		c.JSON(http.StatusNotFound, response)
+	} else {
+		c.String(http.StatusNotFound, "the route not found")
+	}
 }
 
 // healthCheckResponse 健康检查响应结构体
