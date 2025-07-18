@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unsafe"
 
-	jsoniter "github.com/json-iterator/go"
+	"github.com/bytedance/sonic"
 )
 
 // IsEmpty 是否是空字符串
@@ -97,13 +97,10 @@ func StringToBytes(s string) []byte {
 	return *(*[]byte)(unsafe.Pointer(&h))
 }
 
-// 对于序列化和反序列化场景较多的服务可以使用性能更高的json-iterator
-// https://github.com/json-iterator/go
-var Json = jsoniter.Config{
-	EscapeHTML:             true,
-	SortMapKeys:            true,
-	ValidateJsonRawMessage: true,
-	UseNumber:              true,
+var Json = sonic.Config{
+	EscapeHTML:  true,
+	SortMapKeys: true,
+	UseNumber:   true,
 }.Froze()
 
 func Stringify(obj interface{}) string {

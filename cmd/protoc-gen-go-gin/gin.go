@@ -18,6 +18,7 @@ const (
 	metadataPackage    = protogen.GoImportPath("google.golang.org/grpc/metadata")
 	eagleAppPackage    = protogen.GoImportPath("github.com/go-eagle/eagle/pkg/app")
 	errCodePackage     = protogen.GoImportPath("github.com/go-eagle/eagle/pkg/errcode")
+	utilsPackage       = protogen.GoImportPath("github.com/go-eagle/eagle/pkg/utils")
 	deprecationComment = "// Deprecated: Do not use."
 )
 
@@ -40,7 +41,7 @@ func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.Generated
 	g.P()
 	g.P("// ", contextPackage.Ident(""))
 	g.P("// ", metadataPackage.Ident(""))
-	g.P("// ", ginPackage.Ident(""), eagleAppPackage.Ident(""), errCodePackage.Ident(""))
+	g.P("// ", ginPackage.Ident(""), eagleAppPackage.Ident(""), errCodePackage.Ident(""), utilsPackage.Ident(""))
 	g.P()
 
 	for _, service := range file.Services {

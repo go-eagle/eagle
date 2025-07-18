@@ -16,6 +16,7 @@ import (
 	"time"
 
 	localCache "github.com/go-eagle/eagle/pkg/cache"
+	cacheBase "github.com/go-eagle/eagle/pkg/cache"
 	"github.com/go-eagle/eagle/pkg/encoding"
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
@@ -57,7 +58,7 @@ func New{{.Name}}Repo(db *dal.DBClient, cache cache.{{.Name}}Cache) {{.Name}}Rep
 		db:     		db,
 		tracer: 		otel.Tracer("{{.LcName}}"),
 		cache:  		cache,
-		localCache: localCache.NewMemoryCache("local:{{.LcName}}:", encoding.JSONEncoding{}),
+		localCache: localCache.NewMemoryCache("local:{{.LcName}}:", encoding.SonicEncoding{}),
 		sg:         singleflight.Group{},
 	}
 }
@@ -124,48 +125,49 @@ func (r *{{.LcName}}Repo) Get{{.Name}}(ctx context.Context, id int64) (ret *mode
 
 	// read redis cache
 	ret, err = r.cache.Get{{.Name}}Cache(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	if ret != nil && ret.ID > 0 {
-		return ret, nil
-	}
-
-	// get data from db
-	// 避免缓存击穿(瞬间有大量请求过来)
-	val, err, _ := r.sg.Do("sg:{{.LcName}}:"+cast.ToString(id), func() (interface{}, error) {
-		// read db or rpc
-		data, err := dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.Eq(id)).Last()
+	if errors.Is(err, cacheBase.ErrPlaceholder) {
+		return nil, gorm.ErrRecordNotFound
+	} else if errors.Is(err, redis.ErrRedisNotFound) {
+		// get data from db
+		// 避免缓存击穿(瞬间有大量请求过来)
+		val, err, _ := r.sg.Do("sg:{{.LcName}}:"+cast.ToString(id), func() (interface{}, error) {
+			// read db or rpc
+			data, err := dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.Eq(id)).Last()
+			if err != nil {
+				// cache not found and set empty cache to avoid 缓存穿透
+				// Note: 如果缓存空数据太多，会大大降低缓存命中率，可以改为使用布隆过滤器
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					r.cache.SetCacheWithNotFound(ctx, id)
+				}
+				return nil, errors.Wrapf(err, "[repo] get {{.Name}} from db error, id: %d", id)
+			}
+	
+			// write cache
+			if data != nil && data.ID > 0 {
+				// write redis
+				err = r.cache.Set{{.Name}}Cache(ctx, id, data, 5*time.Minute)
+				if err != nil {
+					return nil, errors.WithMessage(err, "[repo] Get{{.Name}} Set{{.Name}}Cache error")
+				}
+	
+				// write local cache
+				err = r.localCache.Set(ctx, cast.ToString(id), data, 2*time.Minute)
+				if err != nil {
+					return nil, errors.WithMessage(err, "[repo] Get{{.Name}} localCache set error")
+				}
+			}
+			return data, nil
+		})
 		if err != nil {
-			// cache not found and set empty cache to avoid 缓存穿透
-			// Note: 如果缓存空数据太多，会大大降低缓存命中率，可以改为使用布隆过滤器
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				r.cache.SetCacheWithNotFound(ctx, id)
-			}
-			return nil, errors.Wrapf(err, "[repo] get {{.Name}} from db error, id: %d", id)
+			return nil, err
 		}
-
-		// write cache
-		if data != nil && data.ID > 0 {
-			// write redis
-			err = r.cache.Set{{.Name}}Cache(ctx, id, data, 5*time.Minute)
-			if err != nil {
-				return nil, errors.WithMessage(err, "[repo] Get{{.Name}} Set{{.Name}}Cache error")
-			}
-
-			// write local cache
-			err = r.localCache.Set(ctx, cast.ToString(id), data, 2*time.Minute)
-			if err != nil {
-				return nil, errors.WithMessage(err, "[repo] Get{{.Name}} localCache set error")
-			}
-		}
-		return data, nil
-	})
-	if err != nil {
+	
+		return val.(*model.{{.Name}}Model), nil
+	} else if err != nil {
 		return nil, err
 	}
+		return ret, nil
 
-	return val.(*model.{{.Name}}Model), nil
 {{- else }}
 	// read db
 	ret, err = dao.{{.Name}}Model.WithContext(ctx).Where(dao.{{.Name}}Model.ID.Eq(id)).Last()
