@@ -1,6 +1,7 @@
 module github.com/go-eagle/eagle
 
 go 1.22
+toolchain go1.24.1
 
 require (
 	github.com/IBM/sarama v1.45.1
@@ -66,7 +67,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.26.0
 	go.uber.org/automaxprocs v1.5.1
 	go.uber.org/zap v1.27.0
-	golang.org/x/crypto v0.33.0
+	golang.org/x/crypto v0.35.0
 	golang.org/x/sync v0.11.0
 	google.golang.org/grpc v1.58.3
 	google.golang.org/protobuf v1.33.0
