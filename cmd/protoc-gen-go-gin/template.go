@@ -31,14 +31,19 @@ type {{$.Name}} struct{
 {{range .Methods}}
 func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 	var in {{.Request}}
+	var err error
 {{if eq .Method "GET" }}
-	if err := ctx.ShouldBindQuery(&in); err != nil {
+	if err = ctx.ShouldBindQuery(&in); err != nil {
 		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
 		return
 	}
 	{{if .HasPathParams }}
 	// make sure the uri include :id
-	in.Id = ctx.Param("id")
+	in.Id, err = utils.StringToInt64((ctx.Param("id")))
+	if err != nil {
+		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
+		return
+	}
 	{{end}}
 {{else if eq .Method "POST" "PUT" "PATCH" "DELETE"}}
 	if err := ctx.ShouldBindJSON(&in); err != nil {
@@ -47,7 +52,11 @@ func (s *{{$.Name}}) {{ .HandlerName }} (ctx *gin.Context) {
 	}
 	{{if .HasPathParams }}
 	// make sure the uri include :id
-	in.Id = ctx.Param("id")
+	in.Id, err = utils.StringToInt64((ctx.Param("id")))
+	if err != nil {
+		app.Error(ctx, errcode.ErrInvalidParam.WithDetails(err.Error()))
+		return
+	}
 	{{end}}
 {{else}}
 	if err := ctx.ShouldBind(&in); err != nil {

@@ -78,7 +78,8 @@ func main() {
 	}
 
 	// init service
-	service.Svc = service.New(repository.New(model.GetDB()))
+	db, _ := model.GetDB()
+	service.Svc = service.New(repository.New(db))
 
 	gin.SetMode(cfg.Mode)
 
