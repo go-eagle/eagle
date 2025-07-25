@@ -45,26 +45,41 @@ Eagle utilizes a classic layered structure and employs the Wire dependency injec
 ## Directory Structure
 
 ```shell
-├── Makefile                     
-├── api                          
-├── cmd                          
-├── config                       
-├── docs                         
-├── internal                     
-│   ├── cache                    
-│   ├── handler                  
-│   ├── middleware               
-│   ├── model                    
-│   ├── dao                      
-│   ├── ecode                    
-│   ├── routers                  
-│   ├── server                   
-│   └── service                  
-├── logs                         
-├── main.go                      
-├── pkg                          
-├── test                         
-└── scripts                      
+eagle-layout/
+├── api/                  # proto files and service interface definitions
+│   ├── helloworld/       # example or basic service proto definitions
+│   └── user/             # user-related proto definitions
+├── bin/                  # compiled binary files
+├── cmd/                  # service entry points, main.go and startup logic
+│   ├── server/           # main service entry
+│   ├── consumer/         # message consumer service entry
+│   └── gen/              # code generation entry
+├── config/               # configuration files for multiple environments
+├── deploy/               # deployment files, e.g. Dockerfile, K8s configs
+├── internal/             # internal implementation, not for external use
+│   ├── dal/              # data access layer
+│   │   ├── db/           # database related code
+│   │   │   ├── model/    # data model definitions
+│   │   │   ├── method/   # custom query methods
+│   │   │   └── query/    # gorm/gen generated query methods
+│   │   ├── cache/        # cache related code
+│   │   └── rpc/          # RPC/HTTP client code
+│   ├── ecode             # define error code
+│   ├── handler           # receive user request
+│   ├── repository/       # repository layer, wraps data access interfaces
+│   ├── routers/          # route and middleware registration
+│   ├── service/          # business logic layer
+│   └── event/subscribe/  # event subscription, e.g. MQ handlers
+├── logs/                 # log output directory
+├── scripts/              # script files
+├── third_party/          # third-party dependencies or proto files
+├── .github/              # GitHub workflows
+├── .gitignore            # Git ignore file
+├── CHANGELOG.md          # changelog
+├── LICENSE               # license
+├── Makefile              # build, test, code generation commands
+├── README.md             # project documentation
+└── openapi.yaml          # OpenAPI specification file                     
 ```
 
 ## Installtion CLI
