@@ -52,26 +52,42 @@
 ## 📗 目录结构
 
 ```shell
-├── Makefile                     # 项目管理文件
-├── api                          # grpc客户端和Swagger 文档
-├── cmd                          # 脚手架目录
-├── config                       # 配置文件统一存放目录
-├── docs                         # 框架相关文档
-├── internal                     # 业务目录
-│   ├── cache                    # 基于业务封装的cache
-│   ├── handler                  # http 接口
-│   ├── middleware               # 自定义中间件
-│   ├── model                    # 数据库 model
-│   ├── dao                      # 数据访问层
-│   ├── ecode                    # 业务自定义错误码
-│   ├── routers                  # 业务路由
-│   ├── server                   # http server 和 grpc server
-│   └── service                  # 业务逻辑层
-├── logs                         # 存放日志的目录
-├── main.go                      # 项目入口文件
-├── pkg                          # 公共的 package
-├── test                         # 单元测试依赖的配置文件，主要是供docker使用的一些环境配置文件
-└── scripts                      # 存放用于执行各种构建，安装，分析等操作的脚本
+eagle-layout/
+├── api/                  # proto 文件及接口协议定义
+│   ├── helloworld/       # 示例或基础服务的 proto 定义
+│   └── user/             # 用户相关 proto 定义
+├── bin/                  # 编译生成的二进制文件
+├── cmd/                  # 服务入口，main.go 及启动相关
+│   ├── server/           # 主服务启动入口
+│   ├── consumer/         # 消息消费服务入口
+│   └── gen/              # 代码生成相关入口
+├── config/               # 配置文件，支持多环境
+├── deploy/               # 部署相关，如 Dockerfile、K8s 配置
+├── internal/             # 内部实现，禁止外部依赖
+│   ├── dal/              # 数据访问层
+│   │   ├── db/           # 数据库相关代码
+│   │   │   ├── model/    # 数据模型定义
+│   │   │   ├── method/   # 自定义查询方法
+│   │   │   └── query/    # gorm/gen 生成的查询方法
+│   │   ├── cache/        # 缓存相关代码
+│   │   └── rpc/          # RPC/HTTP 客户端相关代码
+│   ├── ecode/            # 错误码定义
+│   ├── event/subscribe/  # 事件订阅相关，如 MQ handler
+│   ├── handler           # 接受请用请求的接口目录
+│   ├── repository/       # 仓储层，封装数据访问接口
+│   ├── routers/          # 路由及中间件注册
+│   ├── service/          # 业务逻辑层
+│   └── 
+├── logs/                 # 日志输出目录
+├── scripts/              # 脚本文件
+├── third_party/          # 第三方依赖或 proto 文件
+├── .github/              # GitHub workflows
+├── .gitignore            # Git 忽略文件
+├── CHANGELOG.md          # 变更日志
+├── LICENSE               # 许可证
+├── Makefile              # 构建、测试、代码生成等命令
+├── README.md             # 项目说明
+└── openapi.yaml          # OpenAPI 规范
 ```
 
 ## 🛠️ 快速开始
