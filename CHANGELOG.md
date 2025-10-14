@@ -4,6 +4,8 @@
 
 - chore: improve kakfa component
 - chore: improve route not found method
+- feat(utils): add func pointer 
+- feat: add sonic for encoding
 
 ## v1.10.0
 
