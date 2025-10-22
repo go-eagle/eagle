@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.12.0
+
+- chore(db): improve gorm logger writer
+
 ## v1.11.0
 
 - chore: improve kakfa component

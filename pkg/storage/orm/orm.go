@@ -3,8 +3,6 @@ package orm
 import (
 	"database/sql"
 	"fmt"
-	"log"
-	"os"
 	"sync"
 	"time"
 
@@ -16,6 +14,7 @@ import (
 	"gorm.io/plugin/opentelemetry/tracing"
 
 	"github.com/go-eagle/eagle/pkg/config"
+	"github.com/go-eagle/eagle/pkg/log"
 )
 
 const (
@@ -41,20 +40,22 @@ var (
 
 // Config database config
 type Config struct {
-	Driver          string
-	Name            string
-	Addr            string
-	UserName        string
-	Password        string
-	ShowLog         bool
-	MaxIdleConn     int
-	MaxOpenConn     int
-	Timeout         string // connect timeout
-	ReadTimeout     string
-	WriteTimeout    string
-	ConnMaxLifeTime time.Duration
-	SlowThreshold   time.Duration // 慢查询时长，默认500ms
-	EnableTrace     bool
+	Driver                    string
+	Name                      string
+	Addr                      string
+	UserName                  string
+	Password                  string
+	MaxIdleConn               int
+	MaxOpenConn               int
+	Timeout                   string // connect timeout
+	ReadTimeout               string
+	WriteTimeout              string
+	ConnMaxLifeTime           time.Duration
+	SlowThreshold             time.Duration // 慢查询时长，默认200ms
+	LogLevel                  string
+	Colorful                  bool
+	IgnoreRecordNotFoundError bool
+	EnableTrace               bool
 }
 
 // New create a or multi database client
@@ -149,12 +150,12 @@ func NewInstance(c *Config) (db *gorm.DB) {
 		db, err = gorm.Open(mysql.Open(dsn), gormConfig(c))
 	}
 	if err != nil {
-		log.Panicf("open db failed. driver: %s, database name: %s, err: %+v", c.Driver, c.Name, err)
+		log.Fatalf("open db failed. driver: %s, database name: %s, err: %+v", c.Driver, c.Name, err)
 	}
 
 	sqlDB, err = db.DB()
 	if err != nil {
-		log.Panicf("database connection failed. database name: %s, err: %+v", c.Name, err)
+		log.Fatalf("database connection failed. database name: %s, err: %+v", c.Name, err)
 	}
 	// set for db connection
 	// 用于设置最大打开的连接数，默认值为0表示不限制.设置最大的连接数，可以避免并发太高导致连接mysql出现too many connections的错误。
@@ -169,7 +170,7 @@ func NewInstance(c *Config) (db *gorm.DB) {
 	if c.EnableTrace {
 		err = db.Use(tracing.NewPlugin())
 		if err != nil {
-			log.Panicf("using gorm opentelemetry, err: %+v", err)
+			log.Fatalf("using gorm opentelemetry, err: %+v", err)
 		}
 	}
 
@@ -232,34 +233,11 @@ func getDSN(c *Config) string {
 
 // gormConfig 根据配置决定是否开启日志
 func gormConfig(c *Config) *gorm.Config {
-	config := &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true} // 禁止外键约束, 生产环境不建议使用外键约束
-	// 打印所有SQL
-	if c.ShowLog {
-		config.Logger = logger.Default.LogMode(logger.Info)
-	} else {
-		config.Logger = logger.Default.LogMode(logger.Silent)
+	gormCfg := &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true, // 禁止外键约束, 生产环境不建议使用外键约束
 	}
-	// 只打印慢查询
-	if c.SlowThreshold > 0 {
-		var writer logger.Writer
-		//将标准输出作为Writer
-		writer = log.New(os.Stdout, "\r\n", log.LstdFlags)
-		// use custom logger
-		if LogWriter != nil {
-			writer = LogWriter
-		}
 
-		// new logger with writer
-		config.Logger = logger.New(
-			writer,
-			logger.Config{
-				//设定慢查询时间阈值
-				SlowThreshold: c.SlowThreshold, // nolint: golint
-				Colorful:      true,
-				//设置日志级别，只有指定级别以上会输出慢查询日志
-				LogLevel: logger.Warn,
-			},
-		)
-	}
-	return config
+	gormCfg.Logger = NewGormLogger(log.GetLogger(), c)
+
+	return gormCfg
 }
