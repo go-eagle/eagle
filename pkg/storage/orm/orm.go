@@ -56,6 +56,7 @@ type Config struct {
 	Colorful                  bool
 	IgnoreRecordNotFoundError bool
 	EnableTrace               bool
+	Logger                    log.Logger
 }
 
 // New create a or multi database client
@@ -237,7 +238,13 @@ func gormConfig(c *Config) *gorm.Config {
 		DisableForeignKeyConstraintWhenMigrating: true, // 禁止外键约束, 生产环境不建议使用外键约束
 	}
 
-	gormCfg.Logger = NewGormLogger(log.GetLogger(), c)
+	logger := log.GetLogger()
+	// 如果需要自定义日志文件名可以传入logger
+	if c.Logger != nil {
+		logger = c.Logger
+	}
+
+	gormCfg.Logger = NewGormLogger(logger, c)
 
 	return gormCfg
 }

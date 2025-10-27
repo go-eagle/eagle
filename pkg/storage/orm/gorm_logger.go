@@ -109,15 +109,15 @@ func (l *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql 
 	// log error
 	case err != nil && l.LogLevel >= logger.Error && (!errors.Is(err, gorm.ErrRecordNotFound) || !l.IgnoreRecordNotFoundError):
 		fields["err"] = err
-		log.WithContext(ctx).WithFields(fields).Error("gorm query error")
+		l.log.WithFields(fields).Error("gorm query error")
 
 	// log slow query
 	case l.SlowThreshold != 0 && elapsed > l.SlowThreshold && l.LogLevel >= logger.Warn:
 		fields["slow_threshold"] = l.SlowThreshold
-		log.WithContext(ctx).WithFields(fields).Warn("gorm slow query")
+		l.log.WithFields(fields).Warn("gorm slow query")
 
 	// log all queries
 	case l.LogLevel >= logger.Info:
-		log.WithContext(ctx).WithFields(fields).Info("gorm query")
+		l.log.WithFields(fields).Info("gorm query")
 	}
 }
