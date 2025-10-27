@@ -10,7 +10,6 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 	"gorm.io/plugin/opentelemetry/tracing"
 
 	"github.com/go-eagle/eagle/pkg/config"
@@ -34,8 +33,8 @@ var (
 	DBMap = make(map[string]*gorm.DB)
 	// DBLock database locker
 	DBLock sync.Mutex
-	// logWriter log writer
-	LogWriter logger.Writer
+	// Logger log writer
+	Logger log.Logger
 )
 
 // Config database config
@@ -56,7 +55,6 @@ type Config struct {
 	Colorful                  bool
 	IgnoreRecordNotFoundError bool
 	EnableTrace               bool
-	Logger                    log.Logger
 }
 
 // New create a or multi database client
@@ -240,8 +238,8 @@ func gormConfig(c *Config) *gorm.Config {
 
 	logger := log.GetLogger()
 	// 如果需要自定义日志文件名可以传入logger
-	if c.Logger != nil {
-		logger = c.Logger
+	if Logger != nil {
+		logger = Logger
 	}
 
 	gormCfg.Logger = NewGormLogger(logger, c)
