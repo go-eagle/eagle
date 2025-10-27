@@ -44,3 +44,4 @@ vendor
 
 # custom
 eagle
+.claude/settings.local.json

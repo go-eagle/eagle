@@ -11,6 +11,19 @@ import (
 	"github.com/go-eagle/eagle/pkg/log"
 )
 
+const (
+	defaultSlowThreshold = 200 * time.Millisecond
+)
+
+var (
+	logLevelMap = map[string]logger.LogLevel{
+		"info":   logger.Info,
+		"warn":   logger.Warn,
+		"error":  logger.Error,
+		"silent": logger.Silent,
+	}
+)
+
 // GormLogger is a custom logger for Gorm that uses the eagle log package.
 type GormLogger struct {
 	log                       log.Logger
@@ -22,18 +35,19 @@ type GormLogger struct {
 
 // NewGormLogger creates a new GormLogger.
 func NewGormLogger(l log.Logger, conf *Config) logger.Interface {
-	logLevelMap := map[string]logger.LogLevel{
-		"info":   logger.Info,
-		"warn":   logger.Warn,
-		"error":  logger.Error,
-		"silent": logger.Silent,
+	if conf == nil {
+		conf = &Config{
+			LogLevel:      "info",
+			SlowThreshold: defaultSlowThreshold,
+		}
 	}
+
 	logLevel, ok := logLevelMap[conf.LogLevel]
 	if !ok {
 		logLevel = logger.Info // if not found, use the default value
 	}
 
-	slowThreshold := 200 * time.Millisecond // Default value
+	slowThreshold := defaultSlowThreshold
 	if conf.SlowThreshold != 0 {
 		slowThreshold = conf.SlowThreshold
 	}
@@ -95,15 +109,15 @@ func (l *GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql 
 	// log error
 	case err != nil && l.LogLevel >= logger.Error && (!errors.Is(err, gorm.ErrRecordNotFound) || !l.IgnoreRecordNotFoundError):
 		fields["err"] = err
-		l.log.WithFields(fields).Error("gorm record not found")
+		log.WithContext(ctx).WithFields(fields).Error("gorm query error")
 
 	// log slow query
 	case l.SlowThreshold != 0 && elapsed > l.SlowThreshold && l.LogLevel >= logger.Warn:
 		fields["slow_threshold"] = l.SlowThreshold
-		l.log.WithFields(fields).Warn("gorm slow query")
+		log.WithContext(ctx).WithFields(fields).Warn("gorm slow query")
 
 	// log all queries
 	case l.LogLevel >= logger.Info:
-		l.log.WithFields(fields).Debug("gorm trace")
+		log.WithContext(ctx).WithFields(fields).Info("gorm query")
 	}
 }
