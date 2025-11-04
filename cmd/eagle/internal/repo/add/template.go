@@ -16,7 +16,6 @@ import (
 	"time"
 
 	localCache "github.com/go-eagle/eagle/pkg/cache"
-	cacheBase "github.com/go-eagle/eagle/pkg/cache"
 	"github.com/go-eagle/eagle/pkg/encoding"
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
@@ -125,7 +124,7 @@ func (r *{{.LcName}}Repo) Get{{.Name}}(ctx context.Context, id int64) (ret *mode
 
 	// read redis cache
 	ret, err = r.cache.Get{{.Name}}Cache(ctx, id)
-	if errors.Is(err, cacheBase.ErrPlaceholder) {
+	if errors.Is(err, localCache.ErrPlaceholder) {
 		return nil, gorm.ErrRecordNotFound
 	} else if errors.Is(err, redis.ErrRedisNotFound) {
 		// get data from db
