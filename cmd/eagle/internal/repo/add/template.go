@@ -102,6 +102,7 @@ func (r *{{.LcName}}Repo) Update{{.Name}}(ctx context.Context, id int64, data *m
 {{- if .WithCache }}
 	// delete cache
 	_ = r.cache.Del{{.Name}}Cache(ctx, id)
+	_ = r.localCache.Del(ctx, cast.ToString(id))
 {{- end }}
 	return nil
 }
