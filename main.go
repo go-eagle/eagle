@@ -69,6 +69,7 @@ func main() {
 
 	// -------------- init resource -------------
 	logger.Init()
+	eagle.InitJwt()
 	// init db
 	model.Init()
 	// init redis

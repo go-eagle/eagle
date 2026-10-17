@@ -2,6 +2,8 @@ Name: eagle
 Version: 1.0.0
 PprofPort: :5555
 Mode: debug                 # debug, release, test
+# In production, avoid using default secrets.
+# Supply a secure secret (at least 32 characters) via the JWT_SECRET or EAGLE_JWT_SECRET environment variable.
 JwtSecret: JWT_SECRET
 JwtTimeout: 86400
 CookieName: jwt-token
