@@ -160,6 +160,18 @@ func (c *Config) load(filename string, cfgType string) (*viper.Viper, error) {
 		return nil, err
 	}
 
+	v.AutomaticEnv()
+	envSecret := GetEnvString("JWT_SECRET", "")
+	if envSecret == "" {
+		envSecret = GetEnvString("EAGLE_JWT_SECRET", "")
+	}
+	if envSecret != "" {
+		v.Set("jwtsecret", envSecret)
+		if v.IsSet("app") {
+			v.Set("app.jwtsecret", envSecret)
+		}
+	}
+
 	v.WatchConfig()
 	v.OnConfigChange(func(e fsnotify.Event) {
 		log.Printf("Config file changed: %s", e.Name)

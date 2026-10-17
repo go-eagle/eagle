@@ -37,6 +37,7 @@ type userService struct {
 var _ UserService = (*userService)(nil)
 
 func newUsers(svc *service) *userService {
+	app.InitJwt()
 	return &userService{repo: svc.repo}
 }
 
@@ -82,7 +83,7 @@ func (s *userService) EmailLogin(ctx context.Context, email, password string) (t
 
 	// 签发签名 Sign the json web token.
 	payload := map[string]interface{}{"user_id": u.ID, "username": u.Username}
-	tokenStr, err = app.Sign(ctx, payload, app.Conf.JwtSecret, 86400)
+	tokenStr, err = app.Sign(ctx, payload, app.GetJwtSecret(), 86400)
 	if err != nil {
 		return "", errors.Wrapf(err, "gen token sign err")
 	}
@@ -112,7 +113,7 @@ func (s *userService) PhoneLogin(ctx context.Context, phone int64, verifyCode in
 
 	// 签发签名 Sign the json web token.
 	payload := map[string]interface{}{"user_id": u.ID, "username": u.Username}
-	tokenStr, err = app.Sign(ctx, payload, app.Conf.JwtSecret, 86400)
+	tokenStr, err = app.Sign(ctx, payload, app.GetJwtSecret(), 86400)
 	if err != nil {
 		return "", errors.Wrapf(err, "[login] gen token sign err")
 	}

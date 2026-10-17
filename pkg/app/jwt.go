@@ -6,10 +6,22 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	stdlog "log"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+
+	"github.com/go-eagle/eagle/pkg/log"
+)
+
+const (
+	// DefaultJwtSecret is the insecure default JWT secret used in configuration templates.
+	DefaultJwtSecret = "JWT_SECRET"
+	// MinJwtSecretLength is the recommended minimum length for JWT HMAC secrets (256 bits / 32 bytes).
+	MinJwtSecretLength = 32
 )
 
 var (
@@ -34,9 +46,70 @@ func secretFunc(secret string) jwt.Keyfunc {
 	}
 }
 
+// IsInsecureJwtSecret checks whether the secret matches default/weak values
+// or is shorter than MinJwtSecretLength (32 characters).
+func IsInsecureJwtSecret(secret string) bool {
+	if len(secret) < MinJwtSecretLength {
+		return true
+	}
+	trimmed := strings.TrimSpace(secret)
+	if strings.EqualFold(trimmed, DefaultJwtSecret) || strings.EqualFold(trimmed, "secret") {
+		return true
+	}
+	return false
+}
+
+// WarnIfInsecureJwtSecret checks the provided secret and emits a warning log if it is insecure.
+// Returns true if the secret is considered insecure.
+func WarnIfInsecureJwtSecret(secret string) bool {
+	if !IsInsecureJwtSecret(secret) {
+		return false
+	}
+
+	msg := "[SECURITY WARNING] Insecure JWT secret detected. The JWT secret matches the default or is shorter than 32 characters. Set JWT_SECRET or EAGLE_JWT_SECRET environment variable in production."
+	if l := log.GetLogger(); l != nil {
+		l.Warn(msg)
+	} else {
+		stdlog.Println(msg)
+	}
+	return true
+}
+
+// GetJwtSecret resolves the JWT secret, prioritizing environment variables over configuration defaults.
+// Priority:
+// 1. JWT_SECRET environment variable
+// 2. EAGLE_JWT_SECRET environment variable
+// 3. Conf.JwtSecret from application configuration
+func GetJwtSecret() string {
+	if secret := os.Getenv("JWT_SECRET"); secret != "" {
+		return secret
+	}
+	if secret := os.Getenv("EAGLE_JWT_SECRET"); secret != "" {
+		return secret
+	}
+	if Conf != nil && Conf.JwtSecret != "" {
+		return Conf.JwtSecret
+	}
+	return ""
+}
+
+// InitJwt resolves the JWT secret, synchronizes Conf.JwtSecret if Conf is configured,
+// and emits a visible warning log if an insecure secret is detected.
+func InitJwt() string {
+	secret := GetJwtSecret()
+	if Conf != nil && secret != "" {
+		Conf.JwtSecret = secret
+	}
+	WarnIfInsecureJwtSecret(secret)
+	return secret
+}
+
 // Parse validates the token with the specified secret,
 // and returns the payloads if the token was valid.
 func Parse(tokenString string, secret string) (*Payload, error) {
+	if secret == "" {
+		secret = GetJwtSecret()
+	}
 	// Parse the token.
 	token, err := jwt.Parse(tokenString, secretFunc(secret))
 	if err != nil {
@@ -58,8 +131,8 @@ func Parse(tokenString string, secret string) (*Payload, error) {
 func ParseRequest(c *gin.Context) (*Payload, error) {
 	header := c.Request.Header.Get("Authorization")
 
-	// Load the jwt secret from config
-	secret := Conf.JwtSecret
+	// Load the jwt secret from env or config
+	secret := GetJwtSecret()
 
 	if len(header) == 0 {
 		return &Payload{}, ErrMissingHeader
@@ -84,6 +157,9 @@ func ParseRequest(c *gin.Context) (*Payload, error) {
 // nbf: （Not Before）不要早于这个时间
 // jti: （JWT ID）用于标识JWT的唯一ID
 func Sign(ctx context.Context, payload map[string]interface{}, secret string, timeout int64) (tokenString string, err error) {
+	if secret == "" {
+		secret = GetJwtSecret()
+	}
 	now := time.Now().Unix()
 	claims := make(jwt.MapClaims)
 	claims["nbf"] = now

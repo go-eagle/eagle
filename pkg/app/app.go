@@ -42,6 +42,8 @@ func New(opts ...Option) *App {
 		opt(&o)
 	}
 
+	InitJwt()
+
 	ctx, cancel := context.WithCancel(o.ctx)
 	return &App{
 		opts:   o,
